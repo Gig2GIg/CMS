@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Http\Exceptions\User\DeleteUserException;
 use App\Http\Exceptions\User\UpdateUserException;
 use App\Http\Exceptions\User\UserCreateException;
 use App\Http\Exceptions\User\UserNotFoundException;
@@ -108,7 +109,7 @@ class UserUnitTest extends TestCase
         $userRepo->updateUser($data);
     }
 
-    public function test_user_delete_exception()
+    public function test_user_delete_null()
     {
         $userRepo = new UserRepository(new User());
         $delete = $userRepo->deleteUser();
@@ -116,7 +117,4 @@ class UserUnitTest extends TestCase
         $this->assertNull($delete);
 
     }
-
-
-
 }

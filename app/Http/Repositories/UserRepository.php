@@ -79,14 +79,9 @@ class UserRepository
 
     /**
      * @return bool
-     * @throws DeleteUserException
      */
     public function deleteUser(): ?bool
     {
-        try {
             return $this->model->delete();
-        } catch(QueryException $e) {
-            throw new DeleteUserException($e);
-        }
     }
 }
