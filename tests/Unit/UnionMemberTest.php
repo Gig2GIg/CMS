@@ -12,7 +12,7 @@ namespace App\Http\Repositories;
 use App\Http\Exceptions\UserUnionMembers\UserUnionCreateException;
 use App\Http\Exceptions\UserUnionMembers\UserUnionNotFoundException;
 use App\Http\Exceptions\UserUnionMembers\UserUnionUpdateException;
-use App\Models\UserUnionMember;
+use App\Models\UserUnionMembers;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,37 +23,37 @@ class UnionMemberTest extends TestCase
     use RefreshDatabase;
 
     public function test_all_unions_reg(){
-        $data = factory(UserUnionMember::class)->create();
-        $dataall = new UserUnionMemberRepository(new UserUnionMember());
-        $dataall->create($data->toArray());
-        $dataTest = $dataall->all();
+        $data = factory(UserUnionMembers::class)->create();
+        $dataAll = new UserUnionMemberRepository(new UserUnionMembers());
+        $dataAll->create($data->toArray());
+        $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
     }
 
     public function test_create_union_reg()
     {
-        $data = factory(UserUnionMember::class)->create(); 
+        $data = factory(UserUnionMembers::class)->create();
 
-        $unionRepo = new UserUnionMemberRepository(new UserUnionMember());
+        $unionRepo = new UserUnionMemberRepository(new UserUnionMembers());
         $userU = $unionRepo->create($data->toArray());
-        $this->assertInstanceOf(UserUnionMember::class, $userU);
+        $this->assertInstanceOf(UserUnionMembers::class, $userU);
         $this->assertEquals($data['name'], $userU->name);
         $this->assertEquals($data['user_id'], $userU->user_id);
     }
 
     public function test_show_user_union()
     {
-        $userU = factory(UserUnionMember::class)->create();
-        $unionRepo = new UserUnionMemberRepository(new UserUnionMember());
+        $userU = factory(UserUnionMembers::class)->create();
+        $unionRepo = new UserUnionMemberRepository(new UserUnionMembers());
         $found =  $unionRepo->find($userU->id);
-        $this->assertInstanceOf(UserUnionMember::class, $found);
+        $this->assertInstanceOf(UserUnionMembers::class, $found);
         $this->assertEquals($found->name,$userU->name);
         $this->assertEquals($found->user_id,$userU->user_id);
     }
 
     public function test_update_user_union()
     {
-        $userU =factory(UserUnionMember::class)->create();
+        $userU =factory(UserUnionMembers::class)->create();
         $data = [
             'name' => $this->faker->company(),
             'user_id' => $this->faker->numberBetween(1,3),
@@ -69,7 +69,7 @@ class UnionMemberTest extends TestCase
 
     public function test_delete_user_union()
     {
-        $userU = factory(UserUnionMember::class)->create();
+        $userU = factory(UserUnionMembers::class)->create();
         $unionRepo = new UserUnionMemberRepository($userU);
         $delete = $unionRepo->delete();
         $this->assertTrue($delete);
@@ -78,21 +78,21 @@ class UnionMemberTest extends TestCase
     public function test_create_user_union_exception()
     {
         $this->expectException(UserUnionCreateException::class);
-        $unionRepo = new UserUnionMemberRepository(new UserUnionMember());
+        $unionRepo = new UserUnionMemberRepository(new UserUnionMembers());
         $unionRepo->create([]);
     }
 
     public function test_show_user_union_exception()
     {
         $this->expectException(UserUnionNotFoundException::class);
-        $unionRepo = new UserUnionMemberRepository(new UserUnionMember());
+        $unionRepo = new UserUnionMemberRepository(new UserUnionMembers());
         $unionRepo->find(28374);
     }
 
     public function test_update_user_union_exception()
     {
         $this->expectException(UserUnionUpdateException::class);
-        $userU = factory(UserUnionMember::class)->create();
+        $userU = factory(UserUnionMembers::class)->create();
         $unionRepo = new UserUnionMemberRepository($userU);
         $data = ['name'=>null];
         $unionRepo->update($data);
@@ -100,7 +100,7 @@ class UnionMemberTest extends TestCase
 
     public function test_user_delete_union_null()
     {
-        $unionRepo = new UserUnionMemberRepository(new UserUnionMember());
+        $unionRepo = new UserUnionMemberRepository(new UserUnionMembers());
         $delete = $unionRepo->delete();
         $this->assertNull($delete);
 

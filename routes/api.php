@@ -22,6 +22,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'AuthController@remember']);
     $router->post('/me', ['uses' => 'AuthController@me']);
+    $router->post('/users/create',['uses'=>'User\UserController@createUser']);
+    $router->post('/users',['uses'=>'User\UserController@getAll']);
+
 });
 
 

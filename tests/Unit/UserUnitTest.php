@@ -21,8 +21,14 @@ class UserUnitTest extends TestCase
      */
 
     public function test_all_users(){
-        $data = factory(User::class,5)->create();
-        $this->assertIsArray($data->toArray());
+        $data = [
+            'email' => $this->faker->email(),
+            'password' => bcrypt($this->faker->word()),
+        ];
+        $dataAll = new UserRepository(new User());
+        $dataAll->create($data);
+        $dataTest = $dataAll->all();
+        $this->assertIsArray($dataTest->toArray());
 }
 
     public function test_create_user()

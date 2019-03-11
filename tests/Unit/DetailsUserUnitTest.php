@@ -22,8 +22,11 @@ class DetailsUserUnitTest extends TestCase
      * @test
      */
     public function test_details_get_collection(){
-        $data = factory(UserDetails::class,10)->create();
-        $this->assertIsArray($data->toArray());
+        $data = factory(UserDetails::class)->create();
+        $dataAll = new UserDetailsRepository(new UserDetails());
+        $dataAll->create($data->toArray());
+        $dataTest = $dataAll->all();
+        $this->assertIsArray($dataTest->toArray());
     }
     public function test_create_details()
     {

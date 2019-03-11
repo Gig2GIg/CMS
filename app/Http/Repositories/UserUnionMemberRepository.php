@@ -14,7 +14,7 @@ use App\Http\Exceptions\UserUnionMembers\UserUnionCreateException;
 use App\Http\Exceptions\UserUnionMembers\UserUnionNotFoundException;
 use App\Http\Exceptions\UserUnionMembers\UserUnionUpdateException;
 use App\Http\Repositories\Interfaces\IUnionMember;
-use App\Models\UserUnionMember;
+use App\Models\UserUnionMembers;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
@@ -26,7 +26,7 @@ class UserUnionMemberRepository implements IUnionMember
     /**
      * UnionMemberRepositor constructor.
      */
-    public function __construct(UserUnionMember $unionMember)
+    public function __construct(UserUnionMembers $unionMember)
     {
         $this->model = $unionMember;
         $this->log = new LogManger();
@@ -37,7 +37,7 @@ class UserUnionMemberRepository implements IUnionMember
        return $this->model->all();
     }
 
-    public function create(array $data) : UserUnionMember
+    public function create(array $data) : UserUnionMembers
     {
         try{
             return $this->model->create($data);
@@ -47,7 +47,7 @@ class UserUnionMemberRepository implements IUnionMember
         }
     }
 
-    public function find($id): UserUnionMember
+    public function find($id): UserUnionMembers
     {
         try{
             return $this->model->findOrFail($id);
