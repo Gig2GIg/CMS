@@ -16,3 +16,12 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+$router->group(['middleware' => ['api']], function () use ($router) {
+    $router->post('/login', ['uses' => 'AuthController@login']);
+    $router->post('/logout', ['uses' => 'AuthController@logout']);
+    $router->post('/remember', ['uses' => 'AuthController@remember']);
+    $router->post('/me', ['uses' => 'AuthController@me']);
+});
+
+
