@@ -6,7 +6,7 @@
  * Time: 11:49
  */
 
-namespace App\Http\Repositories;
+namespace App\Http\Repositories\Interfaces;
 
 
 interface IDetailsUserRepository extends IRepository

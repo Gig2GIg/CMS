@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserUnionMember extends Model
 {
-    //
+    protected $fillable = ['name','user_id'];
 }

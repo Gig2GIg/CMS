@@ -13,6 +13,7 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\UserDetails\UserDetailsCreateException;
 use App\Http\Exceptions\UserDetails\UserDetailsNotFoundException;
 use App\Http\Exceptions\UserDetails\UserDetailsUpdateException;
+use App\Http\Repositories\Interfaces\IDetailsUserRepository;
 use App\Models\UserDetails;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -61,6 +62,7 @@ class UserDetailsRepository implements IDetailsUserRepository
         try{
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserDetailsNotFoundException($e);
         }
     }
@@ -75,6 +77,7 @@ class UserDetailsRepository implements IDetailsUserRepository
         try{
             return $this->model->update($data);
         }catch (QueryException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserDetailsUpdateException($e);
         }
     }

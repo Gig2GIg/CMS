@@ -10,10 +10,10 @@ namespace App\Http\Repositories;
 
 
 use App\Http\Controllers\Utils\LogManger;
-use App\Http\Exceptions\User\UserDeleteException;
 use App\Http\Exceptions\User\UserUpdateException;
 use App\Http\Exceptions\User\UserCreateException;
 use App\Http\Exceptions\User\UserNotFoundException;
+use App\Http\Repositories\Interfaces\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -60,6 +60,7 @@ class UserRepository implements UserRepositoryInterface
         try{
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserNotFoundException($e);
         }
 
@@ -75,6 +76,7 @@ class UserRepository implements UserRepositoryInterface
         try{
             return $this->model->update($data);
         }catch (QueryException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserUpdateException($e);
         }
     }
