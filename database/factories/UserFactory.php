@@ -17,11 +17,8 @@ use Faker\Generator as Faker;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'email' => 'alphyon21@gmail.com',
-        'last_name'=>$faker->word(),
-        'first_name'=>$faker->word(),
+        'email' => $faker->safeEmail(),
         'email_verified_at' => now(),
-        'type' =>$faker->numberBetween(1,3),
         'password' => bcrypt($faker->word()), // password
         'remember_token' => Str::random(10),
     ];

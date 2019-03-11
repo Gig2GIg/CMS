@@ -24,4 +24,17 @@ class SendMailTest extends TestCase
         $user = factory(User::class)->create();
         $this->assertTrue($mail->send($password, $user));
     }
+
+    public function test_send_mail_fail(){
+        $mail = new SendMail();
+        $password = $this->faker->word(12);
+        $this->assertFalse($mail->send($password, new User()));
+    }
+    public function test_send_mail_exception_error_type()
+    {
+        $this->expectException(\ErrorException::class);
+        $mail = new SendMail();
+        $mail->send('',[]);
+    }
+
 }

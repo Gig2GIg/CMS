@@ -10,17 +10,18 @@ namespace App\Http\Repositories;
 
 
 use App\Http\Controllers\Utils\LogManger;
-use App\Http\Exceptions\User\DeleteUserException;
-use App\Http\Exceptions\User\UpdateUserException;
+use App\Http\Exceptions\User\UserDeleteException;
+use App\Http\Exceptions\User\UserUpdateException;
 use App\Http\Exceptions\User\UserCreateException;
 use App\Http\Exceptions\User\UserNotFoundException;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     protected $model;
+    protected $log;
 
     /**
      * UserRepository constructor.
@@ -29,6 +30,7 @@ class UserRepository
     public function __construct(User $user)
     {
         $this->model = $user;
+        $this->log = new LogManger();
     }
 
     /**
@@ -36,14 +38,14 @@ class UserRepository
      * @return User
      * @throws UserCreateException
      */
-    public function createUser(array $data): User
+    public function create(array $data): User
     {
 
-        $log = new LogManger();
+
         try {
             return $this->model->create($data);
         } catch (QueryException $e) {
-            $log->error('ERROR IN ' . class_basename($this) . "DESCRIPTION " . $e->getMessage());
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserCreateException($e);
         }
     }
@@ -53,7 +55,7 @@ class UserRepository
      * @return User
      * @throws UserNotFoundException
      */
-    public function findUser($id): User
+    public function find($id): User
     {
         try{
             return $this->model->findOrFail($id);
@@ -66,22 +68,27 @@ class UserRepository
     /**
      * @param array $data
      * @return bool
-     * @throws UpdateUserException
+     * @throws UserUpdateException
      */
-    public function updateUser(array $data) : bool
+    public function update(array $data) : bool
     {
         try{
             return $this->model->update($data);
         }catch (QueryException $e){
-            throw new UpdateUserException($e);
+            throw new UserUpdateException($e);
         }
     }
 
     /**
      * @return bool
      */
-    public function deleteUser(): ?bool
+    public function delete(): ?bool
     {
             return $this->model->delete();
+    }
+
+    public function all()
+    {
+      return $this->model->all();
     }
 }
