@@ -24,6 +24,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->post('/users/create',['uses'=>'User\UserController@createUser']);
     $router->post('/users',['uses'=>'User\UserController@getAll']);
+    $router->post('/users/show/{id}',['uses'=>'User\UserController@getUser']);
+    $router->post('/users/update/{id}',['uses'=>'User\UserController@getUser']);
+
 
 });
 

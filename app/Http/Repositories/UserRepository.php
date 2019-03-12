@@ -44,6 +44,7 @@ class UserRepository implements UserRepositoryInterface
 
         try {
             return $this->model->create($data);
+            $this->log->info($this->model);
         } catch (QueryException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UserCreateException($e);
@@ -61,7 +62,7 @@ class UserRepository implements UserRepositoryInterface
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserNotFoundException($e);
+            throw new UserNotFoundException("Not found Data");
         }
 
     }

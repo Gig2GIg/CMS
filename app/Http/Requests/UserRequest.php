@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class UserRequest extends FormRequest
+class UserRequest extends ApiRequest
 {
-    use ApiRes
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,7 +24,7 @@ class UserRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:users',
-            'password'=>'required',
+           'password'=>'required',
             'type'=>'required',
             'first_name'=>'required|string|max:50',
             'address'=>'required|max:150',
@@ -35,6 +33,10 @@ class UserRequest extends FormRequest
             'birth'=>'required|date',
             'location'=>'required',
             'union_member'=>'required',
+            'stage_name'=>'required',
+            'profesion'=>'required'
         ];
     }
+
+
 }
