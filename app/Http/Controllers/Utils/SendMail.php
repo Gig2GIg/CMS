@@ -9,16 +9,19 @@
 namespace  App\Http\Controllers\Utils;
 
 
+use App\Http\Exceptions\SendEmailException;
 use Illuminate\Support\Facades\Log;
+use mysql_xdevapi\Exception;
 
 class SendMail
 {
-
+    protected $log;
     /**
      * SendMail constructor.
      */
     public function __construct()
     {
+        $this->log = new LogManger();
     }
 
     public function send($password,$user)
@@ -32,13 +35,13 @@ class SendMail
             $password."</strong><br/>Please, change the password now.");
 
         $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
-        try{
-            $response = $sendgrid->send($email);
-            return $response->statusCode() === 202 ? true : false;
-        }catch (\Exception $e){
-            Log::error($e->getMessage());
-            return false;
-        }
 
+            $response = $sendgrid->send($email);
+            if($response->statusCode() === 202 ){
+                return true;
+            }else {
+                $this->log->error($response->body()." ". $response->statusCode());
+                return false;
+            }
     }
 }

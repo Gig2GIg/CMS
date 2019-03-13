@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Log;
 class LogManger
 {
     public function error($message, $ref = ''){
-        Log::error($message);
+        Log::error($message ." ". $ref);
+    }
+
+    public function info($message, $ref = ''){
+        Log::info($message." ". $ref);
     }
 }
