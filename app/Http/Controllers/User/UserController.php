@@ -6,6 +6,7 @@ use App\Http\Exceptions\User\UserNotFoundException;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
+use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -67,6 +68,7 @@ class UserController extends Controller
                 'image'=>$request->image,
                 'profesion'=> $request->profesion,
                 'location' => $request->location,
+                'zip'=>$request->zip,
                 'user_id' => $usert->id,
             ];
             $usert->image()->create(['url'=>$request->image,'resorce_id'=>$usert->id]);
@@ -107,6 +109,14 @@ class UserController extends Controller
             return response()->json(['data' => "Not found Data"], 404);
         }
 
+    }
+
+    public function updateUser(UserEditRequest $request){
+        if ($request->json()) {
+
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
     }
 
 

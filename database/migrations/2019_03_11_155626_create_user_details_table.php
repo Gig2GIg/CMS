@@ -26,6 +26,7 @@ class CreateUserDetailsTable extends Migration
             $table->enum('type',[1,2,3]);
             $table->integer('user_id')->unsigned();
             $table->string('location');
+            $table->string('zip',5);
             $table->timestamps();
         });
     }

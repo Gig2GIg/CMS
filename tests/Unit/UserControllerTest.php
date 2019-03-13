@@ -26,6 +26,8 @@ class UserControllerTest extends TestCase
             'location' => '12,33334 - 23,00000',
             'stage_name'=>'test',
             'profesion'=>'lawyer',
+            'zip'=>'12345',
+            'image'=>'http://test.com/image.jpg',
             'union_member' => [['name'=>'test1'], ['name'=>'test2']]
         ]);
 
@@ -80,10 +82,8 @@ class UserControllerTest extends TestCase
     public function test_edit_user_api_200()
     {
     $data=1;
-        $response = $this->json('POST', 'api/users/update/'.$data, [
-            'email' => 'test@test.com',
+        $response = $this->json('PUT', 'api/users/update/'.$data, [
             'password' => '123456',
-            'type' => '2',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'address' => 'First Street #123',
@@ -91,7 +91,6 @@ class UserControllerTest extends TestCase
             'state' => '1',
             'birth' => '1980-05-24',
             'location' => '12,33334 - 23,00000',
-            'union_member' => [['name'=>'test1'], ['name'=>'test2']]
         ]);
 
         $response->assertStatus(200);

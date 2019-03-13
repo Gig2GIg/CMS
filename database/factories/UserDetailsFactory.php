@@ -16,6 +16,7 @@ $factory->define(UserDetails::class,function (Faker $faker){
         'user_id'=>$faker->numberBetween(1,3),
         'location'=>$faker->latitude().' '. $faker->longitude(),
         'profesion'=>$faker->jobTitle(),
-        'stage_name'=>$faker->word()
+        'stage_name'=>$faker->word(),
+        'zip'=>$faker->numberBetween(1000,10000),
     ];
 });

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
-class UserRequest extends ApiRequest
-{
+use Illuminate\Foundation\Http\FormRequest;
 
+class UserEditRequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -12,7 +13,7 @@ class UserRequest extends ApiRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,22 +24,16 @@ class UserRequest extends ApiRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users',
-           'password'=>'required',
-            'type'=>'required',
+            'password'=>'required',
             'first_name'=>'required|string|max:50',
             'address'=>'required|max:150',
             'city'=>'required|string|max:50',
             'state'=>'required|integer',
             'birth'=>'required|date',
             'location'=>'required',
-            'zip'=>'required',
-            'union_member'=>'required',
             'stage_name'=>'required',
-            'image'=>'required|url',
-            'profesion'=>'required'
+            'profesion'=>'required',
+            'zip'=>'required'
         ];
     }
-
-
 }
