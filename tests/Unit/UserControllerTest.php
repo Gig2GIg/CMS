@@ -80,7 +80,7 @@ class UserControllerTest extends TestCase
     public function test_edit_user_api_200()
     {
     $data=1;
-        $response = $this->json('PUT', 'api/users/update/'.$data, [
+        $response = $this->json('POST', 'api/users/update/'.$data, [
             'email' => 'test@test.com',
             'password' => '123456',
             'type' => '2',

@@ -65,4 +65,8 @@ class User extends Authenticatable implements JWTSubject
     public function memberunions(){
         return $this->hasMany(UserUnionMembers::class);
     }
+
+    public function image(){
+        return $this->morphOne(Resources::class,'resource');
+    }
 }

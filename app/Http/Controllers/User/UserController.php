@@ -69,6 +69,7 @@ class UserController extends Controller
                 'location' => $request->location,
                 'user_id' => $usert->id,
             ];
+            $usert->image()->create(['url'=>$request->image,'resorce_id'=>$usert->id]);
             $userDetails = new UserDetailsRepository(new UserDetails());
             $userDetails->create($userDataDetails);
 
