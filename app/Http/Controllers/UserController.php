@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\User\UserNotFoundException;
 use App\Http\Exceptions\User\UserUpdateException;
@@ -18,7 +17,6 @@ use App\Models\UserUnionMembers;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
@@ -81,7 +79,7 @@ class UserController extends Controller
                 'zip' => $request->zip,
                 'user_id' => $usert->id,
             ];
-            $usert->image()->create(['url' => $request->image]);
+            $usert->image()->create(['url' => $request->image,'type'=>'image']);
             $userDetails = new UserDetailsRepository(new UserDetails());
             $userDetails->create($userDataDetails);
 
