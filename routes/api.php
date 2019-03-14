@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/logout', ['uses' => 'AuthController@logout']);
-//    $router->post('/remember', ['uses' => 'AuthController@remember']);
+    $router->post('/remember', ['uses' => 'User\UserController@sendPassword']);
 //    $router->post('/me', ['uses' => 'AuthController@me']);
      $router->post('/users/create',['uses'=>'User\UserController@createUser']);
 //    $router->post('/users',['uses'=>'User\UserController@getAll']);
@@ -31,8 +31,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
-    $router->post('/remember', ['uses' => 'AuthController@remember']);
+   // $router->post('/remember', ['uses' => 'AuthController@remember']);
     $router->post('/me', ['uses' => 'AuthController@me']);
+
     //$router->post('/users/create',['uses'=>'User\UserController@createUser']);
     $router->post('/users',['uses'=>'User\UserController@getAll']);
     $router->post('/users/show/{id}',['uses'=>'User\UserController@getUser']);

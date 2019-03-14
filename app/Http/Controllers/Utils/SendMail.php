@@ -24,13 +24,13 @@ class SendMail
         $this->log = new LogManger();
     }
 
-    public function send($password,$user)
+    public function send($password,$emailTo)
     {
         $email = new \SendGrid\Mail\Mail();
 
         $email->setFrom(env('SUPPORT_EMIAL'));
         $email->setSubject('Recover Password');
-        $email->addTo($user['email']);
+        $email->addTo($emailTo);
         $email->addContent("text/html","Your new password is: <strong>" .
             $password."</strong><br/>Please, change the password now.");
 
