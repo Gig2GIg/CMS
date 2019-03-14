@@ -16,6 +16,7 @@ class UserControllerTest extends TestCase
     use RefreshDatabase;
     use WithFaker;
     protected $token;
+    protected $testId;
 
 
     public function setUp(): void
@@ -25,6 +26,11 @@ class UserControllerTest extends TestCase
             'email' => 'token@test.com',
             'password' => bcrypt('123456')]
         );
+       $this->testId = $user->id;
+        $user->image()->create(['url' => $this->faker->url]);
+        $userDetails = factory(UserDetails::class)->create([
+            'user_id'=>$user->id,
+        ]);
         $response = $this->post('api/login', [
             'email' => 'token@test.com',
             'password' => '123456',
@@ -106,14 +112,9 @@ class UserControllerTest extends TestCase
 
     public function test_edit_user_api_200()
     {
-        $user = factory(User::class)->create();
-        $user->image()->create(['url' => $this->faker->url]);
-        $userDetails = factory(UserDetails::class)->create([
-            'user_id'=>$user->id,
-        ]);
 
-        $response = $this->json('PUT', 'api/users/update/'.$user->id."?token=".$this->token, [
-            'password' => '123456',
+        $response = $this->json('PUT', 'api/users/update/'.$this->testId."?token=".$this->token, [
+            'password' => '123456o',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'address' => 'First Street #123',
