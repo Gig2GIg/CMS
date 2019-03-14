@@ -68,6 +68,24 @@ class UserRepository implements UserRepositoryInterface
     }
 
     /**
+     * @param $colum
+     * @param $value
+     * @return User
+     * @throws UserNotFoundException
+     */
+    public function findbyparam($colum, $value): User
+    {
+        try{
+
+            return $this->model->where($colum,'=',$value)->first();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new UserNotFoundException("Not found Data");
+        }
+
+    }
+
+    /**
      * @param array $data
      * @return bool
      * @throws UserUpdateException
