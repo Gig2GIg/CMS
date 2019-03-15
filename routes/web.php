@@ -11,8 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
+// Vue
+Route::get('{path}', function () {
+    return view('app');
+})->where('path', '.*');
