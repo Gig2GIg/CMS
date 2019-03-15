@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\SendMail;
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Exceptions\UpdateException;
 use App\Http\Exceptions\User\UserNotFoundException;
 use App\Http\Exceptions\User\UserUpdateException;
 use App\Http\Repositories\UserDetailsRepository;
@@ -25,7 +27,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt',['except' => ['createUser','sendPassword']]);
+        $this->middleware('jwt', ['except' => ['createUser', 'sendPassword']]);
     }
 
 
@@ -79,7 +81,7 @@ class UserController extends Controller
                 'zip' => $request->zip,
                 'user_id' => $usert->id,
             ];
-            $usert->image()->create(['url' => $request->image,'type'=>'image']);
+            $usert->image()->create(['url' => $request->image, 'type' => 'image']);
             $userDetails = new UserDetailsRepository(new UserDetails());
             $userDetails->create($userDataDetails);
 
@@ -105,7 +107,7 @@ class UserController extends Controller
     public function getUser(): ?\Illuminate\Http\JsonResponse
     {
         try {
-        $user = new UserRepository(new User());
+            $user = new UserRepository(new User());
 
             $data = $user->find(request('id'));
 
@@ -115,7 +117,7 @@ class UserController extends Controller
             } else {
                 return response()->json(['data' => "Not found Data"], 404);
             }
-        } catch (UserNotFoundException $e) {
+        } catch (NotFoundException $e) {
             return response()->json(['data' => "Not found Data"], 404);
         }
 
@@ -130,12 +132,12 @@ class UserController extends Controller
     {
         if ($request->json()) {
             try {
-            $user = new UserRepository(new User());
-            $dataUser = $user->find($request->id);
-            $result = $dataUser->with('details')
-                ->with('memberunions')
-                ->with('image')
-                ->get();
+                $user = new UserRepository(new User());
+                $dataUser = $user->find($request->id);
+                $result = $dataUser->with('details')
+                    ->with('memberunions')
+                    ->with('image')
+                    ->get();
 
                 if ($dataUser->password !== bcrypt($request->password)) {
                     $data = [
@@ -156,15 +158,15 @@ class UserController extends Controller
                     'location' => $request->location,
                     'zip' => $request->zip,
                 ];
-                $dataUser->image->update(['url'=>$request->image]);
+                $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
                 $dataUserDetails = $userDetails->find($result[0]['details']['id']);
                 $dataUserDetails->update($userDataDetails);
 
-                return response()->json(['data'=>'User updated'], 200);
-            } catch (UserNotFoundException $e) {
+                return response()->json(['data' => 'User updated'], 200);
+            } catch (NotFoundException $e) {
                 return response()->json(['data' => "Not found Data"], 404);
-            } catch (UserUpdateException $e){
+            } catch (UpdateException $e) {
                 return response()->json(['data' => "Unprocesable"], 406);
             }
         } else {
@@ -172,49 +174,48 @@ class UserController extends Controller
         }
     }
 
-    public function deleteUser(Request $request){
-        try{
+    public function deleteUser(Request $request)
+    {
+        try {
             $user = new UserRepository(new User());
             $dataUser = $user->find($request->id);
             $details = new UserDetails();
-            $details->where('user_id',$dataUser->id)->delete();
+            $details->where('user_id', $dataUser->id)->delete();
             $mebersUnion = new UserUnionMembers();
-            $mebersUnion->where('user_id',$dataUser->id)->delete();
+            $mebersUnion->where('user_id', $dataUser->id)->delete();
             $dataUser->image()->delete();
             $dataUser->delete();
-            return response()->json(['data'=>'User deleted'], 200);
-        }catch (UserNotFoundException $e){
+            return response()->json(['data' => 'User deleted'], 200);
+        } catch (NotFoundException $e) {
             return response()->json(['data' => "Not found Data"], 404);
-        }catch (QueryException $e){
+        } catch (QueryException $e) {
             return response()->json(['data' => "Unprocesable"], 406);
         }
     }
 
-    public function sendPassword(Request $request){
+    public function sendPassword(Request $request)
+    {
         try {
             $response = new SendMail();
             $user = new UserRepository(new User());
-            $data = $user->findbyparam('email',$request->email);
+            $data = $user->findbyparam('email', $request->email);
             $userUpdate = new UserRepository(new User());
             $userUpdate->find($data->id);
             $faker = \Faker\Factory::create();
-            $password = $faker->word."".$faker->numberBetween(2345,4565);
-           if(  $data->update(['password'=>Hash::make($password)])) {
-               $response->send($password, $data->email);
-               return response()->json(['data' => "email send"], 200);
-           }else{
-               return response()->json(['data' => "email not send"], 406);
-           }
-            }catch (UserNotFoundException $e){
-
-        } catch (UserUpdateException $e) {
-            throw new UserUpdateException($e);
+            $password = $faker->word . "" . $faker->numberBetween(2345, 4565);
+            if ($data->update(['password' => Hash::make($password)])) {
+                $response->send($password, $data->email);
+                return response()->json(['data' => "email send"], 200);
+            } else {
+                return response()->json(['data' => "email not send"], 406);
+            }
+        } catch (QueryException $e) {
+            throw new UpdateException($e);
             Log::error($e);
         }
 
 
     }
-
 
 
 }

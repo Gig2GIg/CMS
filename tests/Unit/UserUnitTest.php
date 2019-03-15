@@ -2,9 +2,9 @@
 
 namespace Tests\Unit;
 
-use App\Http\Exceptions\User\UserUpdateException;
-use App\Http\Exceptions\User\UserCreateException;
-use App\Http\Exceptions\User\UserNotFoundException;
+use App\Http\Exceptions\CreateException;
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use Tests\TestCase;
@@ -21,14 +21,11 @@ class UserUnitTest extends TestCase
      */
 
     public function test_all_users(){
-        $data = [
-            'email' => $this->faker->email(),
-            'password' => bcrypt($this->faker->word()),
-        ];
+        factory(User::class,5)->create();
         $dataAll = new UserRepository(new User());
-        $dataAll->create($data);
         $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
+        $this->assertTrue($dataTest->count() > 2);
 }
 
     public function test_create_user()
@@ -81,21 +78,21 @@ class UserUnitTest extends TestCase
 
     public function test_create_user_exception()
     {
-        $this->expectException(UserCreateException::class);
+        $this->expectException(CreateException::class);
         $userRepo = new UserRepository(new User());
         $userRepo->create([]);
     }
 
     public function test_show_user_exception()
     {
-        $this->expectException(UserNotFoundException::class);
+        $this->expectException(NotFoundException::class);
         $userRepo = new UserRepository(new User());
         $userRepo->find(28374);
     }
 
     public function test_update_user_exception()
     {
-        $this->expectException(UserUpdateException::class);
+        $this->expectException(UpdateException::class);
         $user = factory(User::class)->create();
         $userRepo = new UserRepository($user);
         $data = ['email'=>null];

@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: alphyon
- * Date: 2019-03-14
- * Time: 15:27
+ * Date: 2019-03-15
+ * Time: 14:16
  */
 
 namespace App\Http\Repositories;
@@ -13,19 +13,19 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\IAuditionsRepository;
-use App\Models\Auditions;
+use App\Http\Repositories\Interfaces\IRolesRepository;
+use App\Models\Roles;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class AuditionRepository implements IAuditionsRepository
+class RolesRepository implements IRolesRepository
 {
     protected $model;
     protected $log;
 
-    public function __construct(Auditions $auditions)
+    public function __construct(Roles $roles)
     {
-        $this->model = $auditions;
+        $this->model = $roles;
         $this->log = new LogManger();
     }
 
@@ -45,7 +45,7 @@ class AuditionRepository implements IAuditionsRepository
         }
     }
 
-    public function find($id):Auditions
+    public function find($id):Roles
     {
         try{
             return $this->model->findOrFail($id);

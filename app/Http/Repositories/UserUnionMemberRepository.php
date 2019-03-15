@@ -10,9 +10,9 @@ namespace App\Http\Repositories;
 
 
 use App\Http\Controllers\Utils\LogManger;
-use App\Http\Exceptions\UserUnionMembers\UserUnionCreateException;
-use App\Http\Exceptions\UserUnionMembers\UserUnionNotFoundException;
-use App\Http\Exceptions\UserUnionMembers\UserUnionUpdateException;
+use App\Http\Exceptions\CreateException;
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\IUnionMember;
 use App\Models\UserUnionMembers;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -43,7 +43,7 @@ class UserUnionMemberRepository implements IUnionMember
             return $this->model->create($data);
         }catch (QueryException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserUnionCreateException($e);
+            throw new CreateException($e);
         }
     }
 
@@ -53,7 +53,7 @@ class UserUnionMemberRepository implements IUnionMember
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserUnionNotFoundException($e);
+            throw new NotFoundException($e);
         }
     }
 
@@ -63,7 +63,7 @@ class UserUnionMemberRepository implements IUnionMember
             return $this->model->update($data);
         }catch (QueryException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserUnionUpdateException($e);
+            throw new UpdateException($e);
         }
     }
 

@@ -14,7 +14,17 @@ class CreateAuditionsTable extends Migration
     public function up()
     {
         Schema::create('auditions', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
+            $table->string('title');
+            $table->date('date');
+            $table->time('time');
+            $table->string('location');
+            $table->text('description');
+            $table->string('url');
+            $table->string('union');
+            $table->string('contract');
+            $table->string('production');
+            $table->boolean('status');
             $table->timestamps();
         });
     }

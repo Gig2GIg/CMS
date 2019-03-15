@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateModelsAuditionsTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,11 @@ class CreateModelsAuditionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('models_auditions', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('roles', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name');
+            $table->text('description');
+            $table->integer('audition_id')->unsigned();
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ class CreateModelsAuditionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('models_auditions');
+        Schema::dropIfExists('roles');
     }
 }

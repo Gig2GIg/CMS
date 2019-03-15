@@ -10,9 +10,9 @@ namespace App\Http\Repositories;
 
 
 use App\Http\Controllers\Utils\LogManger;
-use App\Http\Exceptions\UserDetails\UserDetailsCreateException;
-use App\Http\Exceptions\UserDetails\UserDetailsNotFoundException;
-use App\Http\Exceptions\UserDetails\UserDetailsUpdateException;
+use App\Http\Exceptions\CreateException;
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\IDetailsUserRepository;
 use App\Models\UserDetails;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -37,10 +37,11 @@ class UserDetailsRepository implements IDetailsUserRepository
        return $this->model->all();
     }
 
+
     /**
      * @param array $data
      * @return UserDetails
-     * @throws UserDetailsCreateException
+     * @throws CreateException
      */
     public function create(array $data) : UserDetails
     {
@@ -48,14 +49,15 @@ class UserDetailsRepository implements IDetailsUserRepository
             return $this->model->create($data);
         } catch (QueryException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserDetailsCreateException($e);
+            throw new CreateException($e);
         }
     }
+
 
     /**
      * @param $id
      * @return UserDetails
-     * @throws UserDetailsNotFoundException
+     * @throws NotFoundException
      */
     public function find($id): UserDetails
     {
@@ -63,14 +65,15 @@ class UserDetailsRepository implements IDetailsUserRepository
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserDetailsNotFoundException($e);
+            throw new NotFoundException($e);
         }
     }
+
 
     /**
      * @param array $data
      * @return bool
-     * @throws UserDetailsUpdateException
+     * @throws UpdateException
      */
     public function update(array $data): bool
     {
@@ -78,7 +81,7 @@ class UserDetailsRepository implements IDetailsUserRepository
             return $this->model->update($data);
         }catch (QueryException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UserDetailsUpdateException($e);
+            throw new UpdateException($e);
         }
     }
 
