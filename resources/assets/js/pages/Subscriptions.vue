@@ -69,7 +69,7 @@
                 </b-table-column>
               </template>
 
-              <template slot="detail" slot-scope="props">
+              <template slot="detail" slot-scope="">
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">                  
                   </div>
