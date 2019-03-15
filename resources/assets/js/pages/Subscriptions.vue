@@ -48,8 +48,8 @@
             >
               <template slot-scope="props">
                 <b-table-column
-                  field="title"
-                  label="Title"
+                  field="name"
+                  label="Name"
                   width="250"
                   sortable
                 >{{ props.row.performer }}</b-table-column>
@@ -116,16 +116,20 @@
               />
             </b-field>          
             <b-field
-              label="Location"
-              :type="{'is-danger': errors.has('location')}"
-              :message="errors.first('location')"
+              label="Tier"
+              :type="{'is-danger': errors.has('tier')}"
+              :message="errors.first('tier')"
             >
-              <b-input
-                v-model="selectedSubscription.tier"
-                v-validate="'required'"
-                name="location"
-                autofocus
-              />
+             <b-select placeholder="Select a name"  name="tier"   
+             v-model="selectedSubscription.tier"  v-validate="'required'"  
+             autofocus expanded>
+              <option
+                    v-for="option in options"
+                    :value="option.name"
+                    :key="option.id">
+                    {{ option.name }}
+                </option>                                                          
+              </b-select>
             </b-field>
                          
           </section>
@@ -153,7 +157,12 @@ export default {
     loaded: false,
     perPage: 10,
     searchText: "",
+    isModalActive: false,
     selectedSubscription: {},
+    options : [
+      {id: '1', name:'Paid'},
+      {id: '2', name:'Free'}
+    ],
     subscriptions: [
       {
         id: "1",

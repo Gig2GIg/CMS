@@ -10,6 +10,8 @@ import Vendors from '@/pages/Vendors';
 import ProductionTypes from '@/pages/ProductionTypes';
 import Skills from '@/pages/Skills';
 import Subscriptions from '@/pages/Subscriptions';
+import BusinessSubmissions from '@/pages/BusinessSubmissions';
+import Payments from '@/pages/Payments';
 
 import Categories from '@/pages/Categories';
 import Settings from '@/pages/Settings';
@@ -34,7 +36,8 @@ export default [
     { path: '/production-types', title: 'Production Types', name: 'production-types', component: ProductionTypes },
     { path: '/skills', title: 'Skills', name: 'skills', component: Skills },
     { path: '/subscriptions', title: 'Subscriptions', name: 'subscriptions', component: Subscriptions },
-   
+    { path: '/business-submissions', title: 'Business Submissions', name: 'business-submissions', component: BusinessSubmissions },
+    { path: '/payments', title: 'Payments', name: 'payments', component: Payments },
     // { path: '/categories', title: 'Categories', name: 'categories', component: Categories },
     { path: '/settings', title: 'Settings', name: 'settings', component: Settings },
   ]),
