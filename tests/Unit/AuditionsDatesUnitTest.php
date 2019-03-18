@@ -8,6 +8,7 @@ use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AuditionsDatesRepository;
 use App\Models\Auditions;
 use App\Models\AuditionsDate;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +23,8 @@ class AuditionsDatesUnitTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $audition  = factory(Auditions::class)->create();
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
         $this->audition_id = $audition->id;
     }
 
@@ -87,7 +89,7 @@ class AuditionsDatesUnitTest extends TestCase
         $userRepo->create([]);
     }
 
-    public function test_show_user_exception()
+    public function test_show_auditionsdate_exception()
     {
         $this->expectException(NotFoundException::class);
         $auditionsdates = new AuditionsDatesRepository(new AuditionsDate());

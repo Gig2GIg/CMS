@@ -30,10 +30,10 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/users',['uses'=>'UserController@getAll']);
     $router->post('/users/show/{id}',['uses'=>'UserController@getUser']);
     $router->put('/users/update/{id}',['uses'=>'UserController@updateUser']);
-    $router->delete('users/delete/{id}',['uses'=>'UserController@deleteUser']);
+    $router->delete('/users/delete/{id}',['uses'=>'UserController@deleteUser']);
 
     //auditions routes
-    $router->post('auditions/create',['uses'=>'AuditionsController@create']);
+    $router->post('/auditions/create',['uses'=>'AuditionsController@create']);
 
 
 });

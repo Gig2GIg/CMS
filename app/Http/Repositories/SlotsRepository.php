@@ -34,7 +34,7 @@ class SlotsRepository implements ISlotsRepository
     }
 
 
-    public function create(array $data): User
+    public function create(array $data): Slots
     {
 
 
@@ -48,7 +48,7 @@ class SlotsRepository implements ISlotsRepository
     }
 
 
-    public function find($id): User
+    public function find($id): Slots
     {
         try{
             return $this->model->findOrFail($id);

@@ -16,7 +16,8 @@ class Auditions extends Model
         'union',
         'contract',
         'production',
-        'status'
+        'status',
+        'user_id'
     ];
 
     public function media(){

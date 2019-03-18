@@ -8,6 +8,7 @@ use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\RolesRepository;
 use App\Models\Auditions;
 use App\Models\Roles;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,7 +22,8 @@ class RolesUnitTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $audition = factory(Auditions::class)->create();
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
         $this->audition_id = $audition->id;
     }
 
@@ -33,6 +35,7 @@ class RolesUnitTest extends TestCase
         $this->assertInstanceOf(Roles::class, $roles);
         $this->assertEquals($data['name'], $roles->name);
         $this->assertEquals($data['description'], $roles->description);
+        $this->assertEquals($data['cover'],$roles->cover);
     }
 
     public function test_edit_roles()

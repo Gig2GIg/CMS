@@ -7,6 +7,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Models\Appointments;
 use App\Models\Auditions;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,8 +21,9 @@ class AppointmentTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $user = factory(Auditions::class)->create();
-        $this->audition_id= $user->id;
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
+        $this->audition_id= $audition->id;
     }
 
     public function test_create_appointment()

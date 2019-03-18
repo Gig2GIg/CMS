@@ -9,7 +9,7 @@ class Slots extends Model
     protected $fillable =[
         'time',
         'status',
-        'id_appointment'
+        'appointment_id'
     ];
 
     public function appointment(){

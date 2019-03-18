@@ -17,6 +17,7 @@ class CreateRolesTable extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('description');
+            $table->string('cover');
             $table->integer('audition_id')->unsigned();
             $table->timestamps();
         });

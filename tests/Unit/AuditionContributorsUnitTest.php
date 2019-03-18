@@ -8,6 +8,7 @@ use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,7 +23,8 @@ class AuditionContributorsUnitTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $audition  = factory(Auditions::class)->create();
+        $user = factory(User::class)->create();
+        $audition  = factory(Auditions::class)->create(['user_id'=>$user->id]);
         $this->audition_id = $audition->id;
     }
 

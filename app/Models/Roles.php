@@ -9,7 +9,8 @@ class Roles extends Model
     protected $fillable = [
         'name',
         'description',
-        'audition_id'
+        'audition_id',
+        'cover',
     ];
     public function image(){
         return $this->morphOne(Resources::class,'resource');
