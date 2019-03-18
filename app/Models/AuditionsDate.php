@@ -12,4 +12,8 @@ class AuditionsDate extends Model
         'from',
         'audition_id'
     ];
+
+    public function auditions(){
+        $this->belongsTo(Auditions::class);
+    }
 }

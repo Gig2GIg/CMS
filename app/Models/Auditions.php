@@ -19,11 +19,19 @@ class Auditions extends Model
         'status'
     ];
 
-    public function image(){
-        return $this->morphOne(Resources::class,'resource');
+    public function media(){
+        return $this->hasMany(Resources::class,'resource');
     }
 
     public function roles(){
         return $this->hasMany(Roles::class);
+    }
+
+    public function dates(){
+        return $this->hasMany(AuditionsDate::class);
+    }
+
+    public function contribuitors(){
+        //TODO
     }
 }

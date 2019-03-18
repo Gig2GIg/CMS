@@ -6,6 +6,7 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\RolesRepository;
+use App\Models\Auditions;
 use App\Models\Roles;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -15,15 +16,18 @@ class RolesUnitTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
+    protected $audition_id;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $audition = factory(Auditions::class)->create();
+        $this->audition_id = $audition->id;
+    }
+
     public function test_create_roles()
     {
-        $data = factory(Roles::class)->create();
+        $data = factory(Roles::class)->create(['audition_id' => $this->audition_id]);
         $rolesRepo = new RolesRepository(new Roles());
         $roles = $rolesRepo->create($data->toArray());
         $this->assertInstanceOf(Roles::class, $roles);
@@ -33,7 +37,7 @@ class RolesUnitTest extends TestCase
 
     public function test_edit_roles()
     {
-        $data = factory(Roles::class)->create();
+        $data = factory(Roles::class)->create(['audition_id' => $this->audition_id]);
         $dataUpdate = [
             'title' => $this->faker->title(),
             'description' => $this->faker->paragraph(),
@@ -47,7 +51,7 @@ class RolesUnitTest extends TestCase
 
     public function test_delete_roles()
     {
-        $data = factory(Roles::class)->create();
+        $data = factory(Roles::class)->create(['audition_id' => $this->audition_id]);
         $rolesRepo = new RolesRepository($data);
         $delete = $rolesRepo->delete();
         $this->assertTrue($delete);
@@ -55,17 +59,17 @@ class RolesUnitTest extends TestCase
 
     public function test_find_roles()
     {
-        $data = factory(Roles::class)->create();
+        $data = factory(Roles::class)->create(['audition_id' => $this->audition_id]);
         $rolesRepo = new RolesRepository(new roles());
         $found = $rolesRepo->find($data->id);
-        $this->assertInstanceOf(Roles::class,$found);
-        $this->assertEquals($found->title,$data->title);
-        $this->assertEquals($found->description,$data->description);
+        $this->assertInstanceOf(Roles::class, $found);
+        $this->assertEquals($found->title, $data->title);
+        $this->assertEquals($found->description, $data->description);
     }
 
     public function test_all_roles()
     {
-        factory(Roles::class,5)->create();
+        factory(Roles::class, 5)->create(['audition_id' => $this->audition_id]);
         $roles = new RolesRepository(new roles());
         $data = $roles->all();
         $this->assertIsArray($data->toArray());
@@ -89,9 +93,9 @@ class RolesUnitTest extends TestCase
     public function test_update_roles_exception()
     {
         $this->expectException(UpdateException::class);
-        $roles = factory(Roles::class)->create();
+        $roles = factory(Roles::class)->create(['audition_id' => $this->audition_id]);
         $rolesRepo = new RolesRepository($roles);
-        $data = ['name'=>null];
+        $data = ['name' => null];
         $rolesRepo->update($data);
     }
 

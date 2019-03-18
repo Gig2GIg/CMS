@@ -21,4 +21,8 @@ class UserDetails extends Model
         'zip'
     ];
 
+    public function users(){
+        $this->belongsTo(User::class);
+    }
+
 }

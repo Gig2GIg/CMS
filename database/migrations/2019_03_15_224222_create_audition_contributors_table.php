@@ -14,7 +14,9 @@ class CreateAuditionContributorsTable extends Migration
     public function up()
     {
         Schema::create('audition_contributors', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
+            $table->string('email');
+            $table->integer('audition_id')->unsigned();
             $table->timestamps();
         });
     }

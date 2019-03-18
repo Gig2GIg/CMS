@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: alphyon
- * Date: 2019-03-15
- * Time: 17:05
+ * Date: 2019-03-18
+ * Time: 10:11
  */
 
 namespace App\Http\Repositories;
@@ -13,19 +13,18 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\IAuditionsDatesRespository;
-use App\Models\AuditionsDate;
+use App\Http\Repositories\Interfaces\IAuditionsContributors;
+use App\Models\AuditionContributors;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class AuditionsDatesRepository implements IAuditionsDatesRespository
+class AuditionContributorsRepository implements IAuditionsContributors
 {
     protected $model;
     protected $log;
-
-    public function __construct(AuditionsDate $auditionsDate)
+    public function __construct(AuditionContributors $contributors)
     {
-        $this->model = $auditionsDate;
+        $this->model = $contributors;
         $this->log = new LogManger();
     }
 
@@ -45,7 +44,7 @@ class AuditionsDatesRepository implements IAuditionsDatesRespository
         }
     }
 
-    public function find($id):AuditionsDate
+    public function find($id):AuditionContributors
     {
         try{
             return $this->model->findOrFail($id);
@@ -69,5 +68,4 @@ class AuditionsDatesRepository implements IAuditionsDatesRespository
     {
         return $this->model->delete();
     }
-
 }
