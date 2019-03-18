@@ -51,9 +51,7 @@ class UserController extends Controller
     /**
      * @param UserRequest $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Http\Exceptions\UserDetails\UserDetailsCreateException
-     * @throws \App\Http\Exceptions\UserUnionMembers\UserUnionCreateException
-     * @throws \App\Http\Exceptions\User\UserCreateException
+     * @throws \App\Http\Exceptions\CreateException
      */
     public function createUser(UserRequest $request)
     {

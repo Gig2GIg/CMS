@@ -25,11 +25,15 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+    //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->post('/users',['uses'=>'UserController@getAll']);
     $router->post('/users/show/{id}',['uses'=>'UserController@getUser']);
     $router->put('/users/update/{id}',['uses'=>'UserController@updateUser']);
     $router->delete('users/delete/{id}',['uses'=>'UserController@deleteUser']);
+
+    //auditions routes
+    $router->post('auditions/create',['uses'=>'AuditionsController@create']);
 
 
 });

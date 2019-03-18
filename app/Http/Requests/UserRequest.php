@@ -24,19 +24,19 @@ class UserRequest extends ApiRequest
     {
         return [
             'email' => 'required|email|unique:users',
-           'password'=>'required',
-            'type'=>'required',
-            'first_name'=>'required|string|max:50',
-            'address'=>'required|max:150',
-            'city'=>'required|string|max:50',
-            'state'=>'required|integer',
-            'birth'=>'required|date',
-            'location'=>'required',
-            'zip'=>'required',
-            'union_member'=>'required',
-            'stage_name'=>'required',
-            'image'=>'required|url',
-            'profesion'=>'required'
+            'password' => 'required',
+            'type' => 'required',
+            'first_name' => 'required|string|max:50',
+            'address' => 'required|max:150',
+            'city' => 'required|string|max:50',
+            'state' => 'required|integer',
+            'birth' => 'required|date',
+            'location' => 'required',
+            'zip' => 'required',
+            'union_member' => 'required',
+            'stage_name' => 'required',
+            'image' => 'required|url',
+            'profesion' => 'required'
         ];
     }
 
