@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: alphyon
- * Date: 2019-03-06
- * Time: 13:45
+ * Date: 2019-03-15
+ * Time: 17:05
  */
 
 namespace App\Http\Repositories;
@@ -13,31 +13,29 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\IUserRepository;
-use App\Models\User;
+use App\Http\Repositories\Interfaces\IAuditionsDatesRespository;
+use App\Models\AuditionsDate;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class UserRepository implements IUserRepository
+class AuditionsDatesRepository implements IAuditionsDatesRespository
 {
     protected $model;
     protected $log;
 
-    /**
-     * UserRepository constructor.
-     * @param User $user
-     */
-    public function __construct(User $user)
+    public function __construct(AuditionsDate $auditionsDate)
     {
-        $this->model = $user;
+        $this->model = $auditionsDate;
         $this->log = new LogManger();
     }
 
-
-    public function create(array $data): User
+    public function all()
     {
+        return $this->model->all();
+    }
 
-
+    public function create(array $data)
+    {
         try {
             return $this->model->create($data);
             $this->log->info($this->model);
@@ -47,33 +45,17 @@ class UserRepository implements IUserRepository
         }
     }
 
-
-    public function find($id): User
+    public function find($id):AuditionsDate
     {
         try{
             return $this->model->findOrFail($id);
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new NotFoundException("Not found Data");
+            throw new NotFoundException($e);
         }
-
     }
 
-
-    public function findbyparam($colum, $value): User
-    {
-        try{
-
-            return $this->model->where($colum,'=',$value)->first();
-        }catch (ModelNotFoundException $e){
-            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new NotFoundException("Not found Data");
-        }
-
-    }
-
-
-    public function update(array $data) : bool
+    public function update(array $data): bool
     {
         try{
             return $this->model->update($data);
@@ -83,16 +65,9 @@ class UserRepository implements IUserRepository
         }
     }
 
-    /**
-     * @return bool
-     */
-    public function delete(): ?bool
+    public function delete():?bool
     {
-            return $this->model->delete();
+        return $this->model->delete();
     }
 
-    public function all()
-    {
-      return $this->model->all();
-    }
 }

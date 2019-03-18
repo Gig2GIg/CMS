@@ -14,7 +14,7 @@ class CreateUserUnionMembersTable extends Migration
     public function up()
     {
         Schema::create('user_union_members', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('name');
             $table->integer('user_id')->unsigned();
             $table->timestamps();
