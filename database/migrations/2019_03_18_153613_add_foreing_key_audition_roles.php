@@ -14,7 +14,7 @@ class AddForeingKeyAuditionRoles extends Migration
     public function up()
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->foreign('audition_id')
+            $table->foreign('auditions_id')
                 ->references('id')
                 ->on('auditions')
                 ->onDelete('cascade');
@@ -29,7 +29,7 @@ class AddForeingKeyAuditionRoles extends Migration
     public function down()
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->dropForeign('roles_audition_id_foreign');
+            $table->dropForeign('roles_auditions_id_foreign');
         });
     }
 }

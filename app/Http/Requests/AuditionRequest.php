@@ -35,7 +35,7 @@ class AuditionRequest extends ApiRequest
             'contract',
             'production',
             'status',
-            'user_id'=>'required',
+            'dates',
             'roles'=>'required|array',
             'appointment'=>'required',
             'contributors'=>'required|array',

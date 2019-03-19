@@ -7,6 +7,6 @@ $factory->define(App\Models\AuditionsDate::class, function (Faker $faker) {
        'type'=>$faker->numberBetween(1,2),
        'to'=>$faker->date(),
        'from'=>$faker->date(),
-       'audition_id'=>$faker->numberBetween(1,2)
+       'auditions_id'=>$faker->numberBetween(1,2)
     ];
 });

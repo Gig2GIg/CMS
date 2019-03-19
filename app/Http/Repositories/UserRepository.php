@@ -60,7 +60,7 @@ class UserRepository implements IUserRepository
     }
 
 
-    public function findbyparam($colum, $value): User
+    public function findbyparam($colum, $value):?User
     {
         try{
 

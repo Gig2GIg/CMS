@@ -10,7 +10,8 @@ class AuditionsDate extends Model
         'type',
         'to',
         'from',
-        'audition_id'
+        'auditions_id'
+
     ];
 
     public function auditions(){

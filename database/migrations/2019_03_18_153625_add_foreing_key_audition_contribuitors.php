@@ -14,7 +14,7 @@ class AddForeingKeyAuditionContribuitors extends Migration
     public function up()
     {
         Schema::table('audition_contributors',function (Blueprint $table){
-            $table->foreign('audition_id')
+            $table->foreign('auditions_id')
                 ->references('id')
                 ->on('auditions')
                 ->onDelete('cascade');
@@ -36,7 +36,7 @@ class AddForeingKeyAuditionContribuitors extends Migration
     {
        Schema::table('audition_contributors', function (Blueprint $table) {
            $table->dropForeign('audition_contributors_user_id_foreign');
-           $table->dropForeign('audition_contributors_audition_id_foreign');
+           $table->dropForeign('audition_contributors_auditions_id_foreign');
        });
     }
 }

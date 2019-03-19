@@ -8,10 +8,14 @@ class AuditionContributors extends Model
 {
     protected $fillable =[
         'user_id',
-        'audition_id',
+        'auditions_id',
         'status'
     ];
     public function auditions(){
         $this->belongsTo(Auditions::class);
+    }
+
+    public function userdetails(){
+        $this->hasOne(UserDetails::class,'user_id','user_id');
     }
 }

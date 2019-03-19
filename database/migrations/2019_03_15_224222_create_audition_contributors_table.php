@@ -17,7 +17,7 @@ class CreateAuditionContributorsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->boolean('status');
-            $table->integer('audition_id')->unsigned();
+            $table->integer('auditions_id')->unsigned();
             $table->timestamps();
         });
     }

@@ -18,7 +18,7 @@ class CreateAuditionsDatesTable extends Migration
             $table->enum('type',['contract','rehearsal']);
             $table->date('to');
             $table->date('from');
-            $table->integer('audition_id')->unsigned();
+            $table->integer('auditions_id')->unsigned();
             $table->timestamps();
         });
     }

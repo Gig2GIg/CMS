@@ -21,18 +21,26 @@ class Auditions extends Model
     ];
 
     public function media(){
-        return $this->hasMany(Resources::class,'resource');
+        return $this->morphOne(Resources::class,'resource');
+    }
+
+    public function resources(){
+        return $this->hasMany(Resources::class,'resource_id');
     }
 
     public function roles(){
         return $this->hasMany(Roles::class);
     }
 
+    public function appointment(){
+        return $this->hasOne(Appointments::class);
+    }
+
     public function dates(){
         return $this->hasMany(AuditionsDate::class);
     }
 
-    public function contribuitors(){
-        //TODO
+    public function contributors(){
+        return $this->hasMany(AuditionContributors::class);
     }
 }

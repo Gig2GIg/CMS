@@ -17,10 +17,12 @@ use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class UserController extends Controller
 {
@@ -53,7 +55,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Http\Exceptions\CreateException
      */
-    public function createUser(UserRequest $request)
+    public function create(UserRequest $request)
     {
 
 
@@ -102,7 +104,7 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse|null
      */
-    public function getUser(): ?\Illuminate\Http\JsonResponse
+    public function get(): ?\Illuminate\Http\JsonResponse
     {
         try {
             $user = new UserRepository(new User());
@@ -126,7 +128,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Http\Exceptions\UserDetails\UserDetailsNotFoundException
      */
-    public function updateUser(UserEditRequest $request)
+    public function update(UserEditRequest $request)
     {
         if ($request->json()) {
             try {
@@ -172,7 +174,7 @@ class UserController extends Controller
         }
     }
 
-    public function deleteUser(Request $request)
+    public function delete(Request $request)
     {
         try {
             $user = new UserRepository(new User());
@@ -198,18 +200,25 @@ class UserController extends Controller
             $user = new UserRepository(new User());
             $data = $user->findbyparam('email', $request->email);
             $userUpdate = new UserRepository(new User());
-            $userUpdate->find($data->id);
-            $faker = \Faker\Factory::create();
-            $password = $faker->word . "" . $faker->numberBetween(2345, 4565);
-            if ($data->update(['password' => Hash::make($password)])) {
-                $response->send($password, $data->email);
-                return response()->json(['data' => "email send"], 200);
-            } else {
-                return response()->json(['data' => "email not send"], 406);
+            if(isset($data->id)) {
+                $userUpdate->find($data->id);
+                $faker = \Faker\Factory::create();
+                $password = $faker->word . "" . $faker->numberBetween(2345, 4565);
+                if ($data->update(['password' => Hash::make($password)])) {
+                    $response->send($password, $data->email);
+                    return response()->json(['data' => "email send"], 200);
+                } else {
+                    return response()->json(['data' => "email not send"], 406);
+                }
+            }else{
+                return response()->json(['data' => "email not found"], 404);
             }
         } catch (QueryException $e) {
             throw new UpdateException($e);
             Log::error($e);
+        }catch (NotFoundException $e){
+
+            return response()->json(['data' => "email not found"], 404);
         }
 
 

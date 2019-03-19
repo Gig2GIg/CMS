@@ -18,20 +18,20 @@ class AuditionsDatesUnitTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    protected $audition_id;
+    protected $auditions_id;
 
     public function setUp(): void
     {
         parent::setUp();
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
-        $this->audition_id = $audition->id;
+        $this->auditions_id = $audition->id;
     }
 
     public function test_create_auditionsdates()
     {
 
-        $data = factory(AuditionsDate::class)->create(['audition_id'=>$this->audition_id]);
+        $data = factory(AuditionsDate::class)->create(['auditions_id'=>$this->auditions_id]);
 
         $auditionsdatesRepo = new AuditionsDatesRepository(new AuditionsDate());
         $auditionsdates = $auditionsdatesRepo->create($data->toArray());
@@ -43,7 +43,7 @@ class AuditionsDatesUnitTest extends TestCase
 
     public function test_edit_auditionsdates()
     {
-        $data = factory(AuditionsDate::class)->create(['audition_id'=>$this->audition_id]);
+        $data = factory(AuditionsDate::class)->create(['auditions_id'=>$this->auditions_id]);
         $dataUpdate = [
             'to' => $this->faker->date(),
             'type' => $this->faker->numberBetween(1,2),
@@ -57,7 +57,7 @@ class AuditionsDatesUnitTest extends TestCase
 
     public function test_delete_auditionsdates()
     {
-        $data = factory(AuditionsDate::class)->create(['audition_id'=>$this->audition_id]);
+        $data = factory(AuditionsDate::class)->create(['auditions_id'=>$this->auditions_id]);
         $auditionsdatesRepo = new auditionsdatesRepository($data);
         $delete = $auditionsdatesRepo->delete();
         $this->assertTrue($delete);
@@ -65,7 +65,7 @@ class AuditionsDatesUnitTest extends TestCase
 
     public function test_find_auditionsdates()
     {
-        $data = factory(AuditionsDate::class)->create(['audition_id'=>$this->audition_id]);
+        $data = factory(AuditionsDate::class)->create(['auditions_id'=>$this->auditions_id]);
         $auditionsdatesRepo = new auditionsdatesRepository(new AuditionsDate());
         $found = $auditionsdatesRepo->find($data->id);
         $this->assertInstanceOf(AuditionsDate::class,$found);
@@ -75,7 +75,7 @@ class AuditionsDatesUnitTest extends TestCase
 
     public function test_all_auditionsdates()
     {
-        factory(AuditionsDate::class,5)->create(['audition_id'=>$this->audition_id]);
+        factory(AuditionsDate::class,5)->create(['auditions_id'=>$this->auditions_id]);
         $auditionsdates = new auditionsdatesRepository(new AuditionsDate());
         $data = $auditionsdates->all();
         $this->assertIsArray($data->toArray());
@@ -99,7 +99,7 @@ class AuditionsDatesUnitTest extends TestCase
     public function test_update_auditionsdates_exception()
     {
         $this->expectException(UpdateException::class);
-        $auditionsdates = factory(AuditionsDate::class)->create(['audition_id'=>$this->audition_id]);
+        $auditionsdates = factory(AuditionsDate::class)->create(['auditions_id'=>$this->auditions_id]);
         $auditionsdatesRepo = new AuditionsDatesRepository($auditionsdates);
         $data = ['to'=>null];
         $auditionsdatesRepo->update($data);

@@ -25,4 +25,8 @@ class UserDetails extends Model
         $this->belongsTo(User::class);
     }
 
+    public function contributors(){
+        $this->belongsTo(AuditionContributors::class);
+    }
+
 }

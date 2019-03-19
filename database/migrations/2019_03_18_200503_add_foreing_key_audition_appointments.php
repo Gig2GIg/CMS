@@ -14,7 +14,7 @@ class AddForeingKeyAuditionAppointments extends Migration
     public function up()
     {
         Schema::table('appointments', function (Blueprint $table) {
-            $table->foreign('audition_id')
+            $table->foreign('auditions_id')
                 ->references('id')
                 ->on('auditions')
                 ->onDelete('cascade');
@@ -30,7 +30,7 @@ class AddForeingKeyAuditionAppointments extends Migration
     {
 
           Schema::table('appointments', function (Blueprint $table) {
-              $table->dropForeign('appointments_audition_id_foreign');
+              $table->dropForeign('appointments_auditions_id_foreign');
           });
     }
 }
