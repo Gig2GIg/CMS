@@ -10,7 +10,7 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
+        <div class="mb-6">
           <button
             class="button is-primary shadow"
             :disabled="isLoading"
@@ -18,7 +18,7 @@
           >
             Broadcast notification
           </button>
-        </div>-->
+        </div>
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="vendors.length">
@@ -60,6 +60,9 @@
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
+                    <b-dropdown-item has-link>
+                       <a @click.prevent.stop="confirmNotification(props.row)">Send notification</a>
+                    </b-dropdown-item>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
                     </b-dropdown-item>
@@ -284,26 +287,26 @@ export default {
   methods: {
     ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
 
-    // confirmBroadcast() {
-    //   this.$dialog.prompt({
-    //     message: "Type a message",
-    //     inputAttrs: {
-    //       placeholder: "Message",
-    //       maxlenght: 2000
-    //     },
-    //     onConfirm: value => this.sendBroadcast(value)
-    //   });
-    // },
-    // confirmNotification(client) {
-    //   this.$dialog.prompt({
-    //     message: "Type a message",
-    //     inputAttrs: {
-    //       placeholder: "Message",
-    //       maxlenght: 2000
-    //     },
-    //     onConfirm: value => this.sendNotification(client, value)
-    //   });
-    // },
+    confirmBroadcast() {
+      this.$dialog.prompt({
+        message: "Type a message",
+        inputAttrs: {
+          placeholder: "Message",
+          maxlenght: 2000
+        },
+        onConfirm: value => this.sendBroadcast(value)
+      });
+    },
+    confirmNotification(client) {
+      this.$dialog.prompt({
+        message: "Type a message",
+        inputAttrs: {
+          placeholder: "Message",
+          maxlenght: 2000
+        },
+        onConfirm: value => this.sendNotification(client, value)
+      });
+    },
     confirmDelete(vendor) {
       this.selectedVendor = vendor;
       this.$dialog.confirm({

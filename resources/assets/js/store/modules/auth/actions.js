@@ -26,7 +26,7 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      const { data } = await axios.post('/api/v1/admin/login', credentials);
+      //const { data } = await axios.post('/api/v1/admin/login', credentials);
 
       dispatch('saveToken', {
         token: data.access_token,

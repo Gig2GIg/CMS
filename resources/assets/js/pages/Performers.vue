@@ -10,7 +10,7 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
+        <div class="mb-6">
           <button
             class="button is-primary shadow"
             :disabled="isLoading"
@@ -18,7 +18,7 @@
           >
             Broadcast notification
           </button>
-        </div>-->
+        </div>
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="performers.length">
@@ -63,6 +63,9 @@
                     </button>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmSendPassword(props.row)">Send password</a>
+                    </b-dropdown-item>
+                     <b-dropdown-item has-link>
+                       <a @click.prevent.stop="confirmNotification(props.row)">Send notification</a>
                     </b-dropdown-item>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
@@ -109,6 +112,10 @@
                       <p>
                         <strong>Work On:</strong>
                         {{ props.row.workOn }}
+                      </p>
+                      <p>
+                        <strong>Comment:</strong>
+                        <span v-html=" props.row.comment_feedback"></span>
                       </p>
                     </div>
                   </div>
@@ -209,6 +216,7 @@ export default {
           "https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg",
         city: "New York, NY",
         instantFeedback: "1",
+        comment_feedback: "<p>We love your energy and enthusiasm!!</p>",
         callBack: "0",
         workOn: "Vocals",
         photo:
@@ -225,6 +233,7 @@ export default {
           "https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg",
         city: "New York, NY",
         instantFeedback: "1",
+        comment_feedback: "<p>We love your energy and enthusiasm!!</p>",
         callBack: "0",
         workOn: "Vocals",
         photo:
@@ -256,12 +265,12 @@ export default {
 
     confirmNotification(client) {
       this.$dialog.prompt({
-        message: "Type a message",
+        message: 'Type a message',
         inputAttrs: {
-          placeholder: "Message",
+          placeholder: 'Message',
           maxlenght: 2000
         },
-        onConfirm: value => this.sendNotification(client, value)
+        onConfirm: (value) => this.sendNotification(client, value),
       });
     },
 

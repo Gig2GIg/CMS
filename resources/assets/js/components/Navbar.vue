@@ -6,8 +6,8 @@
           <img src="/storage/logo.png" alt="Logo">
         </a>
         <navbar-burger/>
-      </div>
-      <template v-if="user">
+      </div>       
+      <template v-if="user">      
         <navbar-menu :user="user"></navbar-menu>
       </template>
     </div>
