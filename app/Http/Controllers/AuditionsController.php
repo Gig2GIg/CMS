@@ -97,10 +97,14 @@ class AuditionsController extends Controller
 
             if(isset($data->id)){
                 $responseData = new AuditionResponse($data);
-                return response()->json(['data' => $responseData], 200);
+                $dataResponse =['data' => $responseData];
+                $code = 200;
             }else{
-                return response()->json(['error' => 'Not Found'], 404);
+                $dataResponse =['error' => 'Not Found'];
+                $code = 404;
             }
+            return response()->json( $dataResponse,$code);
+
         }catch (NotFoundException $exception){
             return response()->json(['error' => 'Not Found'], 404);
 
@@ -115,7 +119,7 @@ class AuditionsController extends Controller
      */
     public function dataAuditionToProcess(AuditionRequest $request): array
     {
-        $auditionData = [
+        return[
             'title' => $request->title,
             'date' => $request->date,
             'time' => $request->time,
@@ -129,7 +133,7 @@ class AuditionsController extends Controller
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];
-        return $auditionData;
+
     }
 
     /**
@@ -139,13 +143,13 @@ class AuditionsController extends Controller
      */
     public function dataDatesToProcess($date, $audition): array
     {
-        $auditionDatesData = [
+        return [
             'to' => $date['to'],
             'from' => $date['from'],
             'type' => $date['type'],
             'auditions_id' => $audition->id
         ];
-        return $auditionDatesData;
+
     }
 
     /**
@@ -155,12 +159,12 @@ class AuditionsController extends Controller
      */
     public function dataRolesToProcess($audition, $roles): array
     {
-        $roldata = [
+       return [
             'auditions_id' => $audition->id,
             'name' => $roles['name'],
             'description' => $roles['description'],
         ];
-        return $roldata;
+
     }
 
     /**
@@ -170,7 +174,7 @@ class AuditionsController extends Controller
      */
     public function dataToAppointmentProcess(AuditionRequest $request, $audition): array
     {
-        $dataAppoinment = [
+      return [
             'auditions_id' => $audition->id,
             'slots' => $request['appointment']['spaces'],
             'type' => $request['appointment']['type'],
@@ -178,7 +182,7 @@ class AuditionsController extends Controller
             'start' => $request['appointment']['start'],
             'end' => $request['appointment']['end'],
         ];
-        return $dataAppoinment;
+
     }
 
     /**
@@ -188,12 +192,12 @@ class AuditionsController extends Controller
      */
     public function dataToSlotsProcess(Appointments $appointment, $slot): array
     {
-        $dataSlots = [
+       return [
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
             'status' => $slot['status'],
         ];
-        return $dataSlots;
+
     }
 
     /**
@@ -203,11 +207,11 @@ class AuditionsController extends Controller
      */
     public function dataToContributorsProcess($contrib, $audition): array
     {
-        $auditionContributorsData = [
+       return [
             'user_id' => $contrib['user_id'],
             'auditions_id' => $audition->id,
             'status' => false
         ];
-        return $auditionContributorsData;
+
     }
 }

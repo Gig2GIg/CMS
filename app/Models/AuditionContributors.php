@@ -15,7 +15,7 @@ class AuditionContributors extends Model
         $this->belongsTo(Auditions::class);
     }
 
-    public function userdetails(){
-        $this->hasOne(UserDetails::class,'user_id','user_id');
+    public function user(){
+        $this->hasOne(User::class);
     }
 }

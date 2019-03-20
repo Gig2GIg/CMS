@@ -69,4 +69,8 @@ class User extends Authenticatable implements JWTSubject
     public function image(){
         return $this->morphOne(Resources::class,'resource');
     }
+
+    public function contributors(){
+        return $this->belongsTo(AuditionContributors::class);
+    }
 }
