@@ -3,19 +3,22 @@
 namespace Tests\Unit;
 
 use App\Models\User;
+use App\Models\UserDetails;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+
 
 class AuditionControllerTest extends TestCase
 {
-
-
-
     public function test_create_audition_201()
     {
         $cont1 = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id'=>$cont1->id,
+        ]);
         $cont2 = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id'=>$cont2->id,
+        ]);
         $data = [
             'title' => $this->faker->words(3,3),
             'date' => $this->faker->date(),

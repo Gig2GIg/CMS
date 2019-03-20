@@ -14,21 +14,20 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AppointmentTest extends TestCase
 {
-    use RefreshDatabase;
-    use WithFaker;
-    protected $audition_id;
+ 
+    protected $auditions_id;
 
     public function setUp(): void
     {
         parent::setUp();
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
-        $this->audition_id= $audition->id;
+        $this->auditions_id= $audition->id;
     }
 
     public function test_create_appointment()
     {
-        $data = factory(Appointments::class)->create(['audition_id' => $this->audition_id]);
+        $data = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
         $appointmentRepo = new AppointmentRepository(new Appointments());
         $appointment = $appointmentRepo->create($data->toArray());
         $this->assertInstanceOf(Appointments::class, $appointment);
@@ -41,7 +40,7 @@ class AppointmentTest extends TestCase
   
     public function test_find_appointment()
     {
-        $data = factory(Appointments::class)->create(['audition_id' => $this->audition_id]);
+        $data = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
         $appointmentRepo = new AppointmentRepository(new Appointments());
         $found = $appointmentRepo->find($data->id);
         $this->assertInstanceOf(Appointments::class, $found);
@@ -50,14 +49,14 @@ class AppointmentTest extends TestCase
     }
     public function test_delete_appointment()
     {
-        $data = factory(Appointments::class)->create(['audition_id' => $this->audition_id]);
+        $data = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
         $appointmentRepo = new AppointmentRepository($data);
         $delete = $appointmentRepo->delete();
         $this->assertTrue($delete);
     }
     public function test_all_appointment()
     {
-        factory(Appointments::class, 5)->create(['audition_id' => $this->audition_id]);
+        factory(Appointments::class, 5)->create(['auditions_id' => $this->auditions_id]);
         $appointment = new AppointmentRepository(new Appointments());
         $data = $appointment->all();
         $this->assertIsArray($data->toArray());

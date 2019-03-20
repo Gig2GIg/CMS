@@ -15,8 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SlotTest extends TestCase
 {
-    use RefreshDatabase;
-    use WithFaker;
+
     protected $appointment_id;
 
     public function setUp(): void
@@ -24,7 +23,7 @@ class SlotTest extends TestCase
         parent::setUp();
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
-        $appointment = factory(Appointments::class)->create(['audition_id'=>$audition->id]);
+        $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
         $this->appointment_id= $appointment->id;
     }
 

@@ -35,7 +35,7 @@ class AuditionsController extends Controller
      * @param AuditionRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function create(AuditionRequest $request)
+    public function store(AuditionRequest $request)
     {
         try {
             if ($request->isJson()) {

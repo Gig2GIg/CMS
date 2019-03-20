@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+
 
 class AuthController extends Controller
 {
@@ -25,12 +25,12 @@ class AuthController extends Controller
     public function login()
     {
         $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
+        $expiration =Carbon::now()->addDays(7)->timestamp;
+        if (! $token = auth()->attempt($credentials, ['exp' => $expiration])) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
+        return $this->respondWithToken($token, $expiration);
     }
 
     /**
@@ -72,12 +72,12 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token, $expiration)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
+            'expires_in' => $expiration
         ]);
     }
 }
