@@ -10,6 +10,7 @@ use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
 use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
@@ -243,7 +244,7 @@ class AuditionsController extends Controller
 
     }
 
-    public function update(RequesEdit $request){
+    public function update(AuditionEditRequest $request){
 
     }
 }

@@ -30,7 +30,7 @@ class AuditionEditRequest extends ApiRequest
             'location'=>'required',
             'description'=>'required',
             'url'=>'required',
-            'cover'=>'required',
+
             'union',
             'contract',
             'production',
@@ -38,7 +38,6 @@ class AuditionEditRequest extends ApiRequest
             'dates',
             'roles'=>'required|array',
             'appointment'=>'required',
-            'contributors'=>'required|array',
             'media'=>'required|array'
         ];
     }

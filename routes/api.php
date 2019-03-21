@@ -38,6 +38,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
     $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
 
 
 });
