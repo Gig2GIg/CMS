@@ -23,7 +23,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
      $router->post('/users/create',['uses'=>'UserController@store']);
 
-    $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+
 
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
@@ -36,6 +36,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
+    $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+    $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
 
 
 });

@@ -13,6 +13,7 @@ $factory->define(App\Models\Auditions::class, function (Faker $faker) {
         'union' => $faker->word(),
         'contract' => $faker->word(),
         'production' => $tags = $faker->word() . ',' . $faker->word(),
-        'status' => $faker->boolean()
+        'status' => $faker->boolean(),
+        'user_id' => $faker->numberBetween(1, 4)
     ];
 });

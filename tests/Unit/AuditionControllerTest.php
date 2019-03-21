@@ -2,6 +2,10 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
+use App\Models\Auditions;
+use App\Models\Roles;
+use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
 use Tests\TestCase;
@@ -106,11 +110,37 @@ class AuditionControllerTest extends TestCase
 
 
     public function test_show_audition_200(){
-      $id = 1;
+        $user=factory(User::class)->create();
+        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
+        $roles = factory(Roles::class)->create(['auditions_id'=>$audition->id]);
+        $appoinments = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
+        $slot = factory(Slots::class)->create(['appointment_id'=>$appoinments->id]);
 
         $response = $this->json('POST',
-            'api/auditions/show/'.$id.'?token='. $this->token);
+            'api/auditions/show/'.$audition->id.'?token='. $this->token);
         $response->assertStatus(200);
+    }
+
+    public function test_show_all_audition_200(){
+        $user=factory(User::class)->create();
+        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
+        $roles = factory(Roles::class)->create(['auditions_id'=>$audition->id]);
+        $appoinments = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
+        $slot = factory(Slots::class)->create(['appointment_id'=>$appoinments->id]);
+        $audition2 = factory(Auditions::class)->create(['user_id'=>$user->id]);
+        $roles2 = factory(Roles::class)->create(['auditions_id'=>$audition2->id]);
+        $appoinments2 = factory(Appointments::class)->create(['auditions_id'=>$audition2->id]);
+        $slot2 = factory(Slots::class)->create(['appointment_id'=>$appoinments2->id]);
+
+        $response = $this->json('POST',
+            'api/auditions/show?token='. $this->token);
+        $response->assertStatus(200);
+    }
+
+    public function test_show_all_audition_404(){
+        $response = $this->json('POST',
+            'api/auditions/show?token='. $this->token);
+        $response->assertStatus(404);
     }
 
     public function test_show_audition_404(){

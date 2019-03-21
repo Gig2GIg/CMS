@@ -20,6 +20,7 @@ use App\Models\Roles;
 use App\Models\Slots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AuditionsController extends Controller
 {
@@ -27,7 +28,7 @@ class AuditionsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['get']]);
+        $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
     }
 
@@ -38,6 +39,7 @@ class AuditionsController extends Controller
     public function store(AuditionRequest $request)
     {
         try {
+            DB::beginTransaction();
             if ($request->isJson()) {
                 $auditionData = $this->dataAuditionToProcess($request);
                 foreach ($request['media'] as $file) {
@@ -80,38 +82,19 @@ class AuditionsController extends Controller
                     $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                     $contributorRepo->create($auditionContributorsData);
                 }
-                return response()->json(['data' => ['message' => 'Auditions create']], 201);
+                DB::commit();
+                $responseData =['data' => ['message' => 'Auditions create']];
+                $code= 201;
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
+            return response()->json(['error' => 'Unauthorized'], 401);
         } catch (\Exception $exception) {
+            DB::rollBack();
             $this->log->error($exception->getMessage());
             return response()->json(['error' => 'Unprocessable '], 406);
         }
     }
-
-    public function get(Request $request){
-        try{
-            $audition =  new AuditionRepository(new Auditions());
-            $data = $audition->find($request->id);
-
-            if(isset($data->id)){
-                $responseData = new AuditionResponse($data);
-                $dataResponse =['data' => $responseData];
-                $code = 200;
-            }else{
-                $dataResponse =['error' => 'Not Found'];
-                $code = 404;
-            }
-            return response()->json( $dataResponse,$code);
-
-        }catch (NotFoundException $exception){
-            return response()->json(['error' => 'Not Found'], 404);
-
-        }
-
-    }
-
 
     /**
      * @param AuditionRequest $request
@@ -119,7 +102,7 @@ class AuditionsController extends Controller
      */
     public function dataAuditionToProcess(AuditionRequest $request): array
     {
-        return[
+        return [
             'title' => $request->title,
             'date' => $request->date,
             'time' => $request->time,
@@ -159,7 +142,7 @@ class AuditionsController extends Controller
      */
     public function dataRolesToProcess($audition, $roles): array
     {
-       return [
+        return [
             'auditions_id' => $audition->id,
             'name' => $roles['name'],
             'description' => $roles['description'],
@@ -174,7 +157,7 @@ class AuditionsController extends Controller
      */
     public function dataToAppointmentProcess(AuditionRequest $request, $audition): array
     {
-      return [
+        return [
             'auditions_id' => $audition->id,
             'slots' => $request['appointment']['spaces'],
             'type' => $request['appointment']['type'],
@@ -192,7 +175,7 @@ class AuditionsController extends Controller
      */
     public function dataToSlotsProcess(Appointments $appointment, $slot): array
     {
-       return [
+        return [
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
             'status' => $slot['status'],
@@ -207,11 +190,53 @@ class AuditionsController extends Controller
      */
     public function dataToContributorsProcess($contrib, $audition): array
     {
-       return [
+        return [
             'user_id' => $contrib['user_id'],
             'auditions_id' => $audition->id,
             'status' => false
         ];
+
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getall()
+    {
+        $data = new AuditionRepository(new Auditions());
+        $count = count($data->all());
+        if ($count !== 0) {
+            $responseData = AuditionResponse::collection($data->all());
+            $dataResponse = ['data' => $responseData];
+            $code = 200;
+
+        } else {
+            $dataResponse = ['data' => "Not found Data"];
+            $code = 404;
+        }
+        return response()->json($dataResponse, $code);
+    }
+
+    public function get(Request $request)
+    {
+        try {
+            $audition = new AuditionRepository(new Auditions());
+            $data = $audition->find($request->id);
+
+            if (isset($data->id)) {
+                $responseData = new AuditionResponse($data);
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+            } else {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+
+        } catch (NotFoundException $exception) {
+            return response()->json(['error' => 'Not Found'], 404);
+
+        }
 
     }
 }
