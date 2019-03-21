@@ -8,6 +8,7 @@ use App\Http\Repositories\UserRepository;
 use App\Models\Slots;
 use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class AuditionResponse extends JsonResource
 {
@@ -26,10 +27,15 @@ class AuditionResponse extends JsonResource
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
         });
+        $this->roles->each(function($item,$key){
+            $item->image;
+        });
+
 
         $appoinment = $this->appointment;
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
+
         $appoinmentResponse[] =  ['general' => $this->appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
@@ -39,6 +45,7 @@ class AuditionResponse extends JsonResource
             "location" => $this->location,
             "description" => $this->description,
             "url" => $this->url,
+            "dates"=>$this->dates,
             "union" => $this->union,
             "contract" => $this->contract,
             "production" => $this->production,

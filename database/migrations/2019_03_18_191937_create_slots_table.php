@@ -16,6 +16,7 @@ class CreateSlotsTable extends Migration
         Schema::create('slots', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('time');
+            $table->integer('number')->nullable()->unsigned();
             $table->boolean('status');
             $table->integer('appointment_id')->unsigned();
             $table->timestamps();

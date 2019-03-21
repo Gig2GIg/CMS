@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 
 class AuditionsController extends Controller
 {
+    public const DESCRIPTION = 'description';
     protected $log;
 
     public function __construct()
@@ -86,9 +87,10 @@ class AuditionsController extends Controller
                 $responseData =['data' => ['message' => 'Auditions create']];
                 $code= 201;
             } else {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                $responseData =['error' => 'Unauthorized'];
+                $code= 404;
             }
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json($responseData,$code);
         } catch (\Exception $exception) {
             DB::rollBack();
             $this->log->error($exception->getMessage());
@@ -107,7 +109,7 @@ class AuditionsController extends Controller
             'date' => $request->date,
             'time' => $request->time,
             'location' => $request->location,
-            'description' => $request->description,
+            self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,
             'contract' => $request->contract,
@@ -145,7 +147,7 @@ class AuditionsController extends Controller
         return [
             'auditions_id' => $audition->id,
             'name' => $roles['name'],
-            'description' => $roles['description'],
+            self::DESCRIPTION => $roles[self::DESCRIPTION],
         ];
 
     }
@@ -178,6 +180,7 @@ class AuditionsController extends Controller
         return [
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
+            'number'=> $slot['number'] ?? null,
             'status' => $slot['status'],
         ];
 
@@ -237,6 +240,10 @@ class AuditionsController extends Controller
             return response()->json(['error' => 'Not Found'], 404);
 
         }
+
+    }
+
+    public function update(RequesEdit $request){
 
     }
 }

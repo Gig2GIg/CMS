@@ -9,6 +9,7 @@ class Slots extends Model
     protected $fillable =[
         'time',
         'status',
+        'number',
         'appointment_id'
     ];
 
