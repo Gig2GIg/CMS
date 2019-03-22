@@ -16,7 +16,7 @@ use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
-use App\Models\AuditionsDate;
+use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
 use Illuminate\Http\Request;
@@ -61,9 +61,7 @@ class AuditionsController extends Controller
                     $audition->media()->create(['url' => $file['url'], 'type' => $file['type']]);
                 }
                 foreach ($request['dates'] as $date) {
-                    $auditionDatesData = $this->dataDatesToProcess($date, $audition);
-                    $datesRepo = new AuditionsDatesRepository(new AuditionsDate());
-                    $datesRepo->create($auditionDatesData);
+                    $audition->dates()->create($this->dataDatesToProcess($date));
                 }
                 foreach ($request->roles as $roles) {
                     $roldata = $this->dataRolesToProcess($audition, $roles);
@@ -127,13 +125,13 @@ class AuditionsController extends Controller
      * @param $audition
      * @return array
      */
-    public function dataDatesToProcess($date, $audition): array
+    public function dataDatesToProcess($date): array
     {
         return [
             'to' => $date['to'],
             'from' => $date['from'],
             'type' => $date['type'],
-            'auditions_id' => $audition->id
+
         ];
 
     }
@@ -246,5 +244,8 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request){
 
+        $dataResponse = ['data'=>'Data Not Found'];
+        $code = 404;
+        return response()->json($dataResponse,$code);
     }
 }

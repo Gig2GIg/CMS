@@ -14,7 +14,7 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\IAuditionsDatesRespository;
-use App\Models\AuditionsDate;
+use App\Models\Dates;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
@@ -23,7 +23,7 @@ class AuditionsDatesRepository implements IAuditionsDatesRespository
     protected $model;
     protected $log;
 
-    public function __construct(AuditionsDate $auditionsDate)
+    public function __construct(Dates $auditionsDate)
     {
         $this->model = $auditionsDate;
         $this->log = new LogManger();
@@ -45,7 +45,7 @@ class AuditionsDatesRepository implements IAuditionsDatesRespository
         }
     }
 
-    public function find($id):AuditionsDate
+    public function find($id):Dates
     {
         try{
             return $this->model->findOrFail($id);

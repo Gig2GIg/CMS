@@ -18,4 +18,5 @@ class AuditionContributors extends Model
     public function user(){
         $this->hasOne(User::class);
     }
+
 }

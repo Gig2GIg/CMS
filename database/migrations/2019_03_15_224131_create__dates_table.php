@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAuditionsDatesTable extends Migration
+class CreateDatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateAuditionsDatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('auditions_dates', function (Blueprint $table) {
+        Schema::create('dates', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('type',['contract','rehearsal']);
+            $table->enum('type',['contract','rehearsal','event']);
             $table->date('to');
             $table->date('from');
-            $table->integer('auditions_id')->unsigned();
+            $table->morphs('date');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateAuditionsDatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('auditions_dates');
+        Schema::dropIfExists('dates');
     }
 }

@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\Appointments;
 use App\Models\Auditions;
-use App\Models\AuditionsDate;
+use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -161,8 +161,8 @@ class AuditionControllerTest extends TestCase
     {
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-        $date1 = factory(AuditionsDate::class)->create(['auditions_id' => $audition->id,'type'=>1]);
-        $date2 = factory(AuditionsDate::class)->create(['auditions_id' => $audition->id,'type'=>2]);
+        $date1 = factory(Dates::class)->create();
+        $date2 = factory(Dates::class)->create(['auditions_id' => $audition->id,'type'=>2]);
         $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
         $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);

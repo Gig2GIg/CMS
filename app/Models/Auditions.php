@@ -37,7 +37,11 @@ class Auditions extends Model
     }
 
     public function dates(){
-        return $this->hasMany(AuditionsDate::class);
+        return $this->morphOne(Dates::class,'date');
+    }
+
+    public function datesall(){
+        return $this->hasMany(Dates::class,'date_id');
     }
 
     public function contributors(){

@@ -21,13 +21,13 @@ class AuditionResponse extends JsonResource
      */
     public function toArray($request)
     {
-        $this->contributors->each(function ($item, $key) {
+        $this->contributors->each(function ($item) {
             $user = new UserRepository(new User());
             $userData = $user->find($item->user_id);
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
         });
-        $this->roles->each(function($item,$key){
+        $this->roles->each(function($item){
             $item->image;
         });
 
@@ -45,7 +45,7 @@ class AuditionResponse extends JsonResource
             "location" => $this->location,
             "description" => $this->description,
             "url" => $this->url,
-            "dates"=>$this->dates,
+            "dates"=>$this->datesall,
             "union" => $this->union,
             "contract" => $this->contract,
             "production" => $this->production,
