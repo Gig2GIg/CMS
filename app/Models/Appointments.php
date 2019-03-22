@@ -13,7 +13,7 @@ class Appointments extends Model
         'length',
         'start',
         'end',
-        'audition_id'
+        'auditions_id'
     ];
 
     public function slots(){

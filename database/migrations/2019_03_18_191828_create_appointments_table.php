@@ -20,7 +20,7 @@ class CreateAppointmentsTable extends Migration
             $table->string('length');
             $table->string('start');
             $table->string('end');
-            $table->integer('audition_id')->unsigned();
+            $table->integer('auditions_id')->unsigned();
             $table->timestamps();
         });
     }

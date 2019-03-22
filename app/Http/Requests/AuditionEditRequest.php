@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AuditionRequest extends ApiRequest
+class AuditionEditRequest extends ApiRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class AuditionRequest extends ApiRequest
             'location'=>'required',
             'description'=>'required',
             'url'=>'required',
-            'cover'=>'required',
+
             'union',
             'contract',
             'production',
@@ -38,7 +38,6 @@ class AuditionRequest extends ApiRequest
             'dates',
             'roles'=>'required|array',
             'appointment'=>'required',
-            'contributors'=>'required|array',
             'media'=>'required|array'
         ];
     }

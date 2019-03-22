@@ -163,4 +163,24 @@ class UserControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_send_email_200(){
+        $user = factory(User::class)->create([
+            'email'=>'alphyon21@gmail.com'
+        ]);
+
+        $response = $this->json('POST','api/remember',[
+            'email'=>$user->email
+        ])->assertStatus(200);
+    }
+
+    public function test_send_email_404(){
+        $response = $this->json('POST','api/remember',[
+            'email'=>"asdashsgdhs@abc.com"
+        ])->assertStatus(404);
+    }
+
+
+
+
+
 }

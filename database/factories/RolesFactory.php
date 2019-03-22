@@ -6,6 +6,7 @@ $factory->define(App\Models\Roles::class, function (Faker $faker) {
     return [
         'name'=>$faker->title,
         'description'=>$faker->paragraph(),
-        'audition_id'=>$faker->numberBetween(1,3)
+        'auditions_id'=>$faker->numberBetween(1,3),
+
     ];
 });

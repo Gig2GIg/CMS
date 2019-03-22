@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddForeingKeyAuditionAppointments extends Migration
+class AddForeingKeyAuditionUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class AddForeingKeyAuditionAppointments extends Migration
      */
     public function up()
     {
-        Schema::table('appointments', function (Blueprint $table) {
-            $table->foreign('auditions_id')
+        Schema::table('auditions', function (Blueprint $table) {
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('auditions')
+                ->on('users')
                 ->onDelete('cascade');
         });
     }
@@ -28,9 +28,8 @@ class AddForeingKeyAuditionAppointments extends Migration
      */
     public function down()
     {
-
-          Schema::table('appointments', function (Blueprint $table) {
-              $table->dropForeign('appointments_auditions_id_foreign');
-          });
+        Schema::table('auditions', function (Blueprint $table) {
+            $table->dropForeign('auditions_user_id_foreign');
+        });
     }
 }

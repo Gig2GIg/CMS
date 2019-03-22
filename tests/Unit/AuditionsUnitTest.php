@@ -7,6 +7,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AuditionRepository;
 use App\Models\Auditions;
+use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -15,15 +16,18 @@ class AuditionsUnitTest extends TestCase
 {
     use RefreshDatabase;
     use WithFaker;
+    protected $user_id;
 
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
+    public function setUp(): void
+    {
+        parent::setUp();
+        $user = factory(User::class)->create();
+        $this->user_id = $user->id;
+    }
+
     public function test_create_auditions()
     {
-        $data = factory(Auditions::class)->create();
+        $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
 
         $auditionsRepo = new AuditionRepository(new Auditions());
         $audition = $auditionsRepo->create($data->toArray());
@@ -34,7 +38,7 @@ class AuditionsUnitTest extends TestCase
 
     public function test_edit_auditions()
     {
-        $data = factory(Auditions::class)->create();
+        $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $dataUpdate = [
             'title' => $this->faker->sentence(4),
             'location' => $this->faker->address(),
@@ -50,7 +54,7 @@ class AuditionsUnitTest extends TestCase
 
     public function test_delete_auditions()
     {
-        $data = factory(Auditions::class)->create();
+        $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $auditionsRepo = new AuditionRepository($data);
         $delete = $auditionsRepo->delete();
         $this->assertTrue($delete);
@@ -58,17 +62,17 @@ class AuditionsUnitTest extends TestCase
 
     public function test_find_audition()
     {
-        $data = factory(Auditions::class)->create();
+        $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $auditionRepo = new AuditionRepository(new Auditions());
         $found = $auditionRepo->find($data->id);
-        $this->assertInstanceOf(Auditions::class,$found);
-        $this->assertEquals($found->union,$data->union);
-        $this->assertEquals($found->date,$data->date);
+        $this->assertInstanceOf(Auditions::class, $found);
+        $this->assertEquals($found->union, $data->union);
+        $this->assertEquals($found->date, $data->date);
     }
 
     public function test_all_auditions()
     {
-        factory(Auditions::class,5)->create();
+        factory(Auditions::class, 5)->create(['user_id'=>$this->user_id]);
         $auditions = new AuditionRepository(new Auditions());
         $data = $auditions->all();
         $this->assertIsArray($data->toArray());
@@ -91,11 +95,11 @@ class AuditionsUnitTest extends TestCase
 
     public function test_update_audition_exception()
     {
-            $this->expectException(UpdateException::class);
-            $audition = factory(Auditions::class)->create();
-            $auditionRepo = new AuditionRepository($audition);
-            $data = ['title'=>null];
-            $auditionRepo->update($data);
+        $this->expectException(UpdateException::class);
+        $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+        $auditionRepo = new AuditionRepository($audition);
+        $data = ['title' => null];
+        $auditionRepo->update($data);
     }
 
     public function test_delete_audition_null_exception()

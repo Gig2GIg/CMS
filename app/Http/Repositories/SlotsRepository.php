@@ -34,7 +34,7 @@ class SlotsRepository implements ISlotsRepository
     }
 
 
-    public function create(array $data): User
+    public function create(array $data): Slots
     {
 
 
@@ -48,7 +48,7 @@ class SlotsRepository implements ISlotsRepository
     }
 
 
-    public function find($id): User
+    public function find($id): Slots
     {
         try{
             return $this->model->findOrFail($id);
@@ -60,11 +60,11 @@ class SlotsRepository implements ISlotsRepository
     }
 
 
-    public function findbyparam($colum, $value): Slots
+    public function findbyparam($colum, $value)
     {
         try{
 
-            return $this->model->where($colum,'=',$value)->first();
+            return $this->model->where($colum,'=',$value);
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");

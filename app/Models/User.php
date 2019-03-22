@@ -17,7 +17,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'type', 'first_name','last_name'
+        'email', 'password'
     ];
 
     /**
@@ -68,5 +68,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function image(){
         return $this->morphOne(Resources::class,'resource');
+    }
+
+    public function contributors(){
+        return $this->belongsTo(AuditionContributors::class);
     }
 }

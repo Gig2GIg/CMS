@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class AuditionContributors extends Model
 {
     protected $fillable =[
-        'email',
-        'audition_id'
+        'user_id',
+        'auditions_id',
+        'status'
     ];
     public function auditions(){
         $this->belongsTo(Auditions::class);
     }
+
+    public function user(){
+        $this->hasOne(User::class);
+    }
+
 }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Exceptions\User\UserNotFoundException;
-use App\Http\Exceptions\User\UserUpdateException;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
@@ -20,30 +19,35 @@ use App\Models\UserUnionMembers;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+    const NOT_FOUND_DATA = "Not found Data";
+    protected $log;
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['createUser', 'sendPassword']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword']]);
+        $this->log = new LogManger();
     }
 
 
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAll()
+    public function getAll(): \Illuminate\Http\JsonResponse
     {
         $data = new UserRepository(new User());
         $count = count($data->all());
         if ($count !== 0) {
-            $responseData = UserResource::collection($data->all());
-            return response()->json(['data' => $responseData], 200);
+            $responseData = ['data' => UserResource::collection($data->all())];
+            $code = 200;
         } else {
-            return response()->json(['data' => "Not found Data"], 404);
+            $responseData = ['data' => self::NOT_FOUND_DATA];
+            $code = 404;
         }
+        return response()->json($responseData, $code);
+
 
     }
 
@@ -53,7 +57,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Http\Exceptions\CreateException
      */
-    public function createUser(UserRequest $request)
+    public function store(UserRequest $request)
     {
 
 
@@ -89,20 +93,23 @@ class UserController extends Controller
                 $userUnion->create(['name' => $iValue['name'], 'user_id' => $usert->id]);
             }
 
-
-            return response()->json(['data' => 'User Created'], 201);
+            $responseData = ['data' => 'User Created'];
+            $code = 201;
 
 
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            $responseData = ['error' => 'Unauthorized'];
+            $code = 401;
+
         }
+        return response()->json($responseData, $code);
     }
 
 
     /**
      * @return \Illuminate\Http\JsonResponse|null
      */
-    public function getUser(): ?\Illuminate\Http\JsonResponse
+    public function show(): ?\Illuminate\Http\JsonResponse
     {
         try {
             $user = new UserRepository(new User());
@@ -110,23 +117,26 @@ class UserController extends Controller
             $data = $user->find(request('id'));
 
             if (!empty($data->email)) {
-                $responseData = new UserResource($data);
-                return response()->json(['data' => $responseData], 200);
+                $data = new UserResource($data);
+                $responseData = ['data' => $data];
+                $code = 200;
             } else {
-                return response()->json(['data' => "Not found Data"], 404);
+                $responseData = ['data' => self::NOT_FOUND_DATA];
+                $code = 404;
             }
+            return response()->json($responseData, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         }
 
     }
 
+
     /**
      * @param UserEditRequest $request
      * @return \Illuminate\Http\JsonResponse
-     * @throws \App\Http\Exceptions\UserDetails\UserDetailsNotFoundException
      */
-    public function updateUser(UserEditRequest $request)
+    public function update(UserEditRequest $request)
     {
         if ($request->json()) {
             try {
@@ -163,16 +173,14 @@ class UserController extends Controller
 
                 return response()->json(['data' => 'User updated'], 200);
             } catch (NotFoundException $e) {
-                return response()->json(['data' => "Not found Data"], 404);
-            } catch (UpdateException $e) {
-                return response()->json(['data' => "Unprocesable"], 406);
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
             }
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
 
-    public function deleteUser(Request $request)
+    public function delete(Request $request)
     {
         try {
             $user = new UserRepository(new User());
@@ -185,31 +193,50 @@ class UserController extends Controller
             $dataUser->delete();
             return response()->json(['data' => 'User deleted'], 200);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         } catch (QueryException $e) {
             return response()->json(['data' => "Unprocesable"], 406);
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws UpdateException
+     */
     public function sendPassword(Request $request)
     {
+        $dataResponse = null;
+        $code = null;
         try {
+
             $response = new SendMail();
             $user = new UserRepository(new User());
             $data = $user->findbyparam('email', $request->email);
             $userUpdate = new UserRepository(new User());
-            $userUpdate->find($data->id);
-            $faker = \Faker\Factory::create();
-            $password = $faker->word . "" . $faker->numberBetween(2345, 4565);
-            if ($data->update(['password' => Hash::make($password)])) {
-                $response->send($password, $data->email);
-                return response()->json(['data' => "email send"], 200);
+            if (isset($data->id)) {
+                $userUpdate->find($data->id);
+                $faker = \Faker\Factory::create();
+                $password = $faker->word . '' . $faker->numberBetween(2345, 4565);
+                if ($data->update(['password' => Hash::make($password)])) {
+                    $response->send($password, $data->email);
+                    $dataResponse = ['data' => "email send"];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => "email not send"];
+                    $code = 406;
+                }
             } else {
-                return response()->json(['data' => "email not send"], 406);
+                $dataResponse = ['data' => "email not found"];
+                $code = 404;
             }
+            return response()->json($dataResponse, $code);
         } catch (QueryException $e) {
+            $this->log->error($e);
             throw new UpdateException($e);
-            Log::error($e);
+
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "email not found"], 404);
         }
 
 

@@ -4,11 +4,15 @@ namespace Tests;
 
 use App\Models\User;
 use App\Models\UserDetails;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
+    use RefreshDatabase;
+    use WithFaker;
     protected $token;
     protected $testId;
     public function setUp(): void

@@ -9,13 +9,13 @@ class Roles extends Model
     protected $fillable = [
         'name',
         'description',
-        'audition_id'
+        'auditions_id',
     ];
     public function image(){
         return $this->morphOne(Resources::class,'resource');
     }
 
-    public function auditon(){
+    public function auditons(){
         return $this->belongsTo(Auditions::class);
     }
 }
