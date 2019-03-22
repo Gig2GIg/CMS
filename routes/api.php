@@ -35,7 +35,17 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     //auditions routes
     $router->post('auditions/create',['uses'=>'AuditionsController@create']);
 
+    /*
+    |--------------------------------------------------------------------------
+    | CMS Routes
+    |--------------------------------------------------------------------------
+    */
 
+    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
+        $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
+        $router->post('/marketplace_categories/create', 'MarketplaceCategoriesController@store');
+        $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
+        $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
+        $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
+    });
 });
-
-

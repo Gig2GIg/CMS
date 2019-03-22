@@ -11,4 +11,7 @@ class MarketplaceCategory extends Model
         'description',
     ];
 
+    public function marketplaces(){
+        return $this->hasMany(Marketplace::class);
+    }
 }

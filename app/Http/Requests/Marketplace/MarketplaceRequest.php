@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Http\Requests\Marketplace;
-use App\Http\Requests\ApiRequest;
-class MarketplaceCategoryRequest extends ApiRequest
-{
 
+use Illuminate\Foundation\Http\FormRequest;
+
+class MarketplaceRequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -12,7 +13,7 @@ class MarketplaceCategoryRequest extends ApiRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,10 +24,9 @@ class MarketplaceCategoryRequest extends ApiRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50',
-            'description' => 'required|string|max:50',
+            'address' => 'required|string|max:50',
+            'email' => 'required|string|email',
+            'phone_number' => 'required|integer|max:12'
         ];
     }
-
-
 }
