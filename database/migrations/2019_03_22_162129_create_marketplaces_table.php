@@ -17,8 +17,9 @@ class CreateMarketplacesTable extends Migration
             $table->bigIncrements('id');
             $table->timestamps();
             $table->string('address');
-            $table->integer('phone_number');
+            $table->string('phone_number');
             $table->string('email');
+            $table->string('title');
             $table->text('services');
         });
     }

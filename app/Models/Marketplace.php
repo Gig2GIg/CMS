@@ -10,9 +10,16 @@ class Marketplace extends Model
         'address',
         'email',
         'services',
+        'title',
         'phone_number'
     ];
+
     public function category(){
         return $this->belongsTo(MarketplaceCategory::class);
     }
+
+    public function image(){
+        return $this->morphOne(Resources::class,'resource');
+    }
+
 }

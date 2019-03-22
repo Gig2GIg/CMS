@@ -14,7 +14,7 @@ use App\Models\MarketplaceCategory;
 
 use App\Http\Repositories\Marketplace\MarketplaceCategoryRepository;
 
-class MarketplaceCategoryTest extends TestCase
+class MarketplaceCategoryUnitTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
