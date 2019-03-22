@@ -16,7 +16,7 @@ class Appointments extends Model
         'auditions_id'
     ];
 
-    public function slots(){
-        return $this->hasMany(SlotTest::class);
+    public function slot(){
+        return $this->hasMany(Slots::class,'appointment_id');
     }
 }

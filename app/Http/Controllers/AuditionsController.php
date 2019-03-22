@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
+use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
@@ -97,11 +98,12 @@ class AuditionsController extends Controller
         }
     }
 
+
     /**
-     * @param AuditionRequest $request
+     * @param $request
      * @return array
      */
-    public function dataAuditionToProcess(AuditionRequest $request): array
+    public function dataAuditionToProcess($request): array
     {
         return [
             'title' => $request->title,
@@ -156,7 +158,7 @@ class AuditionsController extends Controller
      * @param $audition
      * @return array
      */
-    public function dataToAppointmentProcess(AuditionRequest $request, $audition): array
+    public function dataToAppointmentProcess($request, $audition): array
     {
         return [
             'auditions_id' => $audition->id,
@@ -174,10 +176,10 @@ class AuditionsController extends Controller
      * @param $slot
      * @return array
      */
-    public function dataToSlotsProcess(Appointments $appointment, $slot): array
+    public function dataToSlotsProcess($appointment, $slot): array
     {
         return [
-            'appointment_id' => $appointment->id,
+            'appointment_id' => $appointment->id ,
             'time' => $slot['time'],
             'number'=> $slot['number'] ?? null,
             'status' => $slot['status'],
@@ -243,9 +245,70 @@ class AuditionsController extends Controller
     }
 
     public function update(AuditionEditRequest $request){
+        try {
+            foreach ($request['media'] as $file) {
+                $auditionFilesData[] = [
+                    'url' => $file['url'],
+                    'type' => $file['type'],
+                ];
+            }
 
-        $dataResponse = ['data'=>'Data Not Found'];
-        $code = 404;
-        return response()->json($dataResponse,$code);
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audition = $auditionRepo->find($request->id);
+
+            if (isset($audition->id)) {
+                DB::beginTransaction();
+                $updateRepo = new AuditionRepository($audition);
+                $auditionData = $this->dataAuditionToProcess($request);
+                $updateRepo->update($auditionData);
+                $audition->media->update(['url'=>$request->url]);
+                foreach ($auditionFilesData as $file) {
+                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type']]);
+                }
+                foreach ($request['dates'] as $date) {
+                    $audition->dates()->update($this->dataDatesToProcess($date));
+                }
+                foreach ($request->roles as $roles) {
+                    $roldata = $this->dataRolesToProcess($audition, $roles);
+                    $rolesRepo = new RolesRepository(new Roles());
+                    $rol = $rolesRepo->find($roles['id']);
+                    $rol->image()->update(['url' => $roles['image']['url']]);
+                    $rol->update($roldata);
+                }
+
+                foreach ($request->appointment[0]['slots'] as $slot) {
+
+                    $dataSlots = [
+                        'time' => $slot['time'],
+                        'number'=> $slot['number'] ?? null,
+                        'status' => $slot['status'],
+                    ];
+                    $slotsRepo = new SlotsRepository(new Slots());
+                    $slotsRepo->find($slot['id'])->update($dataSlots);
+                }
+                DB::commit();
+
+                    $dataResponse = ['data' => 'Data Updated'];
+                    $code = 200;
+
+
+            } else {
+                $dataResponse = ['data' => 'Data Not Found'];
+                $code = 404;
+            }
+
+            return response()->json($dataResponse, $code);
+        }catch (NotFoundException $exception){
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }catch (UpdateException $exception){
+            $this->log->error($exception->getMessage());
+            DB::rollBack();
+            return response()->json(['data' => 'Data Not Update'], 406);
+        } catch (\Exception $exception){
+
+            $this->log->error($exception->getMessage());
+            DB::rollBack();
+            return response()->json(['data' => 'Data Not Update'], 406);
+        }
     }
 }
