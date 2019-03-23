@@ -47,10 +47,15 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     */
 
     Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
+        //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
         $router->post('/marketplace_categories/create', 'MarketplaceCategoriesController@store');
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
+        
+        //marketplace
+        $router->get('marketplaces', 'MarketplaceController@getAll');
+        $router->post('marketplaces/create', 'MarketplaceController@store');
     });
 });

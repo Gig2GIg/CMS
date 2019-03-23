@@ -13,7 +13,7 @@ class MarketplaceRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,8 +25,11 @@ class MarketplaceRequest extends FormRequest
     {
         return [
             'address' => 'required|string|max:50',
+            'title' => 'required|string|max:50',
             'email' => 'required|string|email',
-            'phone_number' => 'required|integer|max:12'
+            'services' => 'required|string|max:100',
+            'phone_number' => 'required|string|max:20',
+            'image_url' => 'required|string',
         ];
     }
 }

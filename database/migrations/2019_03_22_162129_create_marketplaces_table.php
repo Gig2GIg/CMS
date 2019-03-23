@@ -21,6 +21,8 @@ class CreateMarketplacesTable extends Migration
             $table->string('email');
             $table->string('title');
             $table->text('services');
+            $table->bigInteger('marketplace_category_id')->unsigned();
+        
         });
     }
 
