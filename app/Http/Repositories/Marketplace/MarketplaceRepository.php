@@ -27,8 +27,6 @@ class MarketplaceRepository implements IMarketplaceRepository
     public function create(array $data): Marketplace
     {
 
-        
-
         try {
             return $this->model->create($data);
             $this->log->info($this->model);

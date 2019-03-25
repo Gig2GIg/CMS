@@ -31,7 +31,6 @@ class MarketplaceCategoriesController extends Controller
         }   
      }
 
-
     public function store(MarketplaceCategoryRequest $request)
     {
         if ($request->json()) {

@@ -11,7 +11,8 @@ class Marketplace extends Model
         'email',
         'services',
         'title',
-        'phone_number'
+        'phone_number',
+        'marketplace_category_id'
     ];
 
     public function category(){

@@ -11,7 +11,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 
 use App\Models\Marketplace;
-
+use App\Models\MarketplaceCategory;
 use App\Http\Repositories\Marketplace\MarketplaceRepository;
 
 class MarketplaceUnitTest extends TestCase
@@ -19,6 +19,14 @@ class MarketplaceUnitTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
+    protected $marketplace_category_id;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        $category = factory(MarketplaceCategory::class)->create();
+        $this->marketplace_category_id = $category->id;
+    }
 
     public function test_all_market_place(){
         factory(Marketplace::class,5)->create();
@@ -36,6 +44,7 @@ class MarketplaceUnitTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->realText($maxNbChars = 200, $indexSize = 2),
+            'marketplace_category_id' => $this->marketplace_category_id
         ];
         $marketplace_repo = new MarketplaceRepository(new Marketplace());
         $marketplace = $marketplace_repo->create($data);
@@ -78,6 +87,7 @@ class MarketplaceUnitTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->realText($maxNbChars = 200, $indexSize = 2),
+            'marketplace_category_id' => $this->marketplace_category_id
         ];
 
         $marketplace_repo = new MarketplaceRepository($marketplace);

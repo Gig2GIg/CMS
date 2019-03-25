@@ -87,4 +87,9 @@ class MarketplaceCategoryRepository implements IMarketplaceCategoryRepository
     {
       return $this->model->all();
     }
+
+    public function allMarketplace()
+    {
+      return $this->model->marketplaces;
+    }
 }

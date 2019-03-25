@@ -4,7 +4,7 @@ namespace App\Http\Requests\Marketplace;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class MarketplaceRequest extends FormRequest
+class MarketplaceEditRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +24,12 @@ class MarketplaceRequest extends FormRequest
     public function rules()
     {
         return [
-            'address' => 'required|string|max:50',
-            'title' => 'required|string|max:50',
-            'email' => 'required|string|email',
-            'services' => 'required|string|max:100',
-            'phone_number' => 'required|string|max:20',
-            'image_url' => 'required|string'
+            'address' => 'string|max:50',
+            'title' => 'string|max:50',
+            'email' => 'string|email',
+            'services' => 'string|max:100',
+            'phone_number' => 'string|max:20',
+            'image_url' => 'string'
         ];
     }
 }

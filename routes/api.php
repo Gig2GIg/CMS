@@ -54,8 +54,16 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
         
+        //marketplace by category
+        Route::prefix('marketplace_categories')->group(function () use ($router) {
+            $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
+            $router->post('/{marketplaceCategory}/marketplaces/create', 'MarketplaceController@store')->where('id', '[0-9]+');  
+        });  
         //marketplace
-        $router->get('marketplaces', 'MarketplaceController@getAll');
-        $router->post('marketplaces/create', 'MarketplaceController@store');
+        $router->get('/marketplaces', 'MarketplaceController@getAll')->where('id', '[0-9]+'); 
+        $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
+        $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
+        $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+
     });
 });
