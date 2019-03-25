@@ -69,4 +69,16 @@ class AuditionRepository implements IAuditionsRepository
     {
         return $this->model->delete();
     }
+
+    public function findbyparam($colum, $value)
+    {
+        try{
+
+            return $this->model->where($colum,'=',$value)->get();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
+    }
 }

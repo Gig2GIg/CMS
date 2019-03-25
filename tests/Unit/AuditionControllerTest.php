@@ -252,4 +252,17 @@ class AuditionControllerTest extends TestCase
         $response->assertStatus(200);
 
     }
+
+    public function test_find_by_filter(){
+        $user = factory(User::class)->create();
+
+        $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
+        $response = $this->json('POST',
+            'api/auditions/findby?token=' . $this->token,[
+                'union'=>'notunion',
+                'contract'=>'paid',
+                'production'=>'theater'
+            ]);
+        $response->assertStatus(200);
+    }
 }

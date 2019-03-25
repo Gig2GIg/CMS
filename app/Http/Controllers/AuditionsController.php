@@ -21,7 +21,9 @@ use App\Models\Auditions;
 use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
+use DemeterChain\A;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -329,5 +331,35 @@ class AuditionsController extends Controller
             DB::rollBack();
             return response()->json(['data' => 'Data Not Update'], 406);
         }
+    }
+
+    public function findBy(Request $request){
+        $elementResponse = new Collection();
+        $repository = new AuditionRepository(new Auditions());
+
+        if(isset($request->union)){
+            $preData = $repository->findbyparam('union',$request->union);
+            $elementResponse->concat($preData);
+
+        }
+
+        if(isset($request->contract)){
+            $preData = $repository->findbyparam('contract',$request->contract);
+            $elementResponse->concat($preData);
+        }
+
+
+        if(count($elementResponse) > 0 ){
+            $dataResponse = ['error' => 'Not Found'];
+            $code = 404;
+        }else{
+            $dataResponse = ['data' => $elementResponse];
+            $code = 200;
+        }
+
+
+
+        return response()->json($dataResponse, $code);
+
     }
 }
