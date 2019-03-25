@@ -26,7 +26,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 
 });
-$router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+$router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->post('/users',['uses'=>'UserController@getAll']);
@@ -38,14 +38,17 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
     $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->post('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | CMS Routes
-    |--------------------------------------------------------------------------
-    */
+});
 
+/*
+|--------------------------------------------------------------------------
+| CMS Routes
+|--------------------------------------------------------------------------
+*/
+$router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {
     Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
@@ -64,6 +67,5 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
-
     });
 });

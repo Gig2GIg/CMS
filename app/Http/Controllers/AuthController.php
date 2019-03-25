@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Repositories\UserRepository;
+use App\Models\User;
 use Carbon\Carbon;
 
 
@@ -24,13 +27,23 @@ class AuthController extends Controller
      */
     public function login()
     {
-        $credentials = request(['email', 'password']);
-        $expiration =Carbon::now()->addDays(7)->timestamp;
-        if (! $token = auth()->attempt($credentials, ['exp' => $expiration])) {
+        try {
+            $credentials = request(['email', 'password']);
+            $expiration = Carbon::now()->addDays(7)->timestamp;
+            $userData = new UserRepository(new User());
+            $user = $userData->findbyparam('email', request('email'));
+            $details = isset($user->details) ? $user->details:null;
+            $payload = [
+                'type' => $details['type']
+            ];
+            if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            return $this->respondWithToken($token, $expiration);
+        }catch (NotFoundException $exception){
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        return $this->respondWithToken($token, $expiration);
     }
 
     /**
