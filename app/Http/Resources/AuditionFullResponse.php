@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
-class AuditionResponse extends JsonResource
+class AuditionFullResponse extends JsonResource
 {
 
     /**
@@ -21,7 +21,22 @@ class AuditionResponse extends JsonResource
      */
     public function toArray($request)
     {
-        $count = count($this->roles);
+        $this->contributors->each(function ($item) {
+            $user = new UserRepository(new User());
+            $userData = $user->find($item->user_id);
+            $userData->push($userData->details);
+            $item['contributor_info'] = $userData;
+        });
+        $this->roles->each(function($item){
+            $item->image;
+        });
+
+
+        $appoinment = $this->appointment;
+        $slotsData = new SlotsRepository(new Slots());
+        $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
+
+        $appoinmentResponse[] =  ['general' => $this->appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
             "title" => $this->title,
@@ -36,8 +51,10 @@ class AuditionResponse extends JsonResource
             "production" => $this->production,
             "status" => $this->status,
             "user_id" => $this->user_id,
-            "number_roles" => $count,
-
+            "roles" => $this->roles,
+            "media" => $this->resources,
+            "apointment" => $appoinmentResponse,
+            "contributors" => $this->contributors
         ];
     }
 }

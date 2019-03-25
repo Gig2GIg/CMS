@@ -161,17 +161,26 @@ class AuditionControllerTest extends TestCase
     {
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-        $date1 = factory(Dates::class)->create();
-        $date2 = factory(Dates::class)->create(['auditions_id' => $audition->id,'type'=>2]);
+        $audition->media()->create(['type'=>4,'url'=>$audition->url]);
+        $date1 = $audition->dates()->create([
+            'type'=>1,
+            'to'=>$this->faker()->date(),
+            'from'=>$this->faker()->date(),
+        ]);
+        $date2 = $audition->dates()->create([
+            'type'=>2,
+            'to'=>$this->faker()->date(),
+            'from'=>$this->faker()->date(),
+        ]);
         $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
         $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
 
         $data = [
-            "title" => "Mrs.",
-            "date" => "1978-01-20",
+            "title" => "aladin",
+            "date" => "2019-01-20",
             "time" => "08:35:08",
-            "location" => "889 Whitney Canyon\nConsidineton, WY 13935-0177",
+            "location" => "san salvador",
             "description" => "Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.",
             "url" => "http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html",
             "dates" => [
@@ -200,7 +209,7 @@ class AuditionControllerTest extends TestCase
                     "description" => "Ipsum in minima unde veniam eos ut unde. Hic error fugit in consequatur necessitatibus vel reprehenderit. Voluptatem laboriosam non quos praesentium ducimus id et.",
                     "image" => [
                         "id" => 16,
-                        "url" => "https://lorempixel.com/640/480/?86366",
+                        "url" => "https://dfsdfsf.com/640/480/?86366",
                         "type" => "4"
                     ],
                 ],
@@ -209,13 +218,13 @@ class AuditionControllerTest extends TestCase
             "media" => [
                 [
                     "id" => 12,
-                    "url" => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius",
+                    "url" => "http://el audosdfshw om/repellat-dfsdfsdfsdfsdf-excepturi-quam-et-dolores-officiis-eius",
                     "type" => "audio"
 
                 ],
 
             ],
-            "appointment" => [
+            "appointment" => [[
 
                 "general" => [
                     "id" => $appoinments->id,
@@ -230,15 +239,15 @@ class AuditionControllerTest extends TestCase
                         "id" => $slot->id,
                         "number" => null,
                         "time" => "34",
-                        "status" => 0
+                        "status" => 1
 
                     ],
 
                 ]
             ]
-        ];
+        ]];
         $response = $this->json('PUT',
-            'api/auditions/update/'.$user->id.'?token=' . $this->token,
+            'api/auditions/update/'.$audition->id.'?token=' . $this->token,
             $data);
         $response->assertStatus(200);
 

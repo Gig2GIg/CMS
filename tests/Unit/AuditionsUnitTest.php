@@ -14,8 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuditionsUnitTest extends TestCase
 {
-    use RefreshDatabase;
-    use WithFaker;
+
     protected $user_id;
 
     public function setUp(): void
@@ -40,8 +39,8 @@ class AuditionsUnitTest extends TestCase
     {
         $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $dataUpdate = [
-            'title' => $this->faker->sentence(4),
-            'location' => $this->faker->address(),
+            'title' => 'Aladino',
+            'location' => 'SAN SALVADOR',
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
         ];
