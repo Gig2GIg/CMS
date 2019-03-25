@@ -40,6 +40,7 @@ $router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router)
     $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->post('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
+    $router->post('/auditions/findby',['uses'=>'AuditionsController@findBy']);
 
 });
 

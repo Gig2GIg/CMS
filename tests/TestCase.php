@@ -25,6 +25,7 @@ abstract class TestCase extends BaseTestCase
         $this->testId = $user->id;
         $user->image()->create(['url' => $this->faker->url]);
         $userDetails = factory(UserDetails::class)->create([
+            'type'=>1,
             'user_id' => $user->id,
         ]);
         $response = $this->post('api/login', [
