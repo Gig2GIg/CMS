@@ -26,7 +26,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 
 });
-$router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+$router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->post('/users',['uses'=>'UserController@getAll']);
@@ -38,8 +38,17 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
     $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->post('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
 
+
+});
+
+$router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router) {
+
+    $router->post('/test',function (){
+        return "OK";
+    });
 
 });
 

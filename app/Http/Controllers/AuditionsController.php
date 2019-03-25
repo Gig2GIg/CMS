@@ -13,6 +13,7 @@ use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
+use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
@@ -221,6 +222,29 @@ class AuditionsController extends Controller
         return response()->json($dataResponse, $code);
     }
 
+    public function getFullData(Request $request)
+    {
+        try {
+            $data = new AuditionRepository(new Auditions());
+            $count = count($data->all());
+            if ($count !== 0) {
+                $responseData = AuditionFullResponse::collection($data->all());
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+
+            } else {
+                $dataResponse = ['data' => "Not found Data"];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+
+        } catch (NotFoundException $exception) {
+            return response()->json(['error' => 'Not Found'], 404);
+
+        }
+
+    }
+
     public function get(Request $request)
     {
         try {
@@ -228,7 +252,7 @@ class AuditionsController extends Controller
             $data = $audition->find($request->id);
 
             if (isset($data->id)) {
-                $responseData = new AuditionResponse($data);
+                $responseData = new AuditionFullResponse($data);
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
             } else {
@@ -300,12 +324,7 @@ class AuditionsController extends Controller
             return response()->json($dataResponse, $code);
         }catch (NotFoundException $exception){
             return response()->json(['data' => 'Data Not Found'], 404);
-        }catch (UpdateException $exception){
-            $this->log->error($exception->getMessage());
-            DB::rollBack();
-            return response()->json(['data' => 'Data Not Update'], 406);
         } catch (\Exception $exception){
-
             $this->log->error($exception->getMessage());
             DB::rollBack();
             return response()->json(['data' => 'Data Not Update'], 406);
