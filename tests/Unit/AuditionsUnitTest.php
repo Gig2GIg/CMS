@@ -109,4 +109,31 @@ class AuditionsUnitTest extends TestCase
         $this->assertNull($delete);
     }
 
+    public function test_all_media_by_image()
+    {
+        $audition =  factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'audio']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'video']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'doc']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'image']);
+
+        $audition_repo = new AuditionRepository($audition);
+        $data = $audition_repo->findMediaByParams('image');
+        $this->assertIsArray($data->toArray());
+        $this->assertTrue($data->count() > 0);
+
+        $data = $audition_repo->findMediaByParams('video');
+        $this->assertIsArray($data->toArray());
+        $this->assertTrue($data->count() > 0);
+
+        $data = $audition_repo->findMediaByParams('doc');
+        $this->assertIsArray($data->toArray());
+        $this->assertTrue($data->count() > 0);
+
+        $data = $audition_repo->findMediaByParams('audio');
+        $this->assertIsArray($data->toArray());
+        $this->assertTrue($data->count() > 0);
+    }
+
 }

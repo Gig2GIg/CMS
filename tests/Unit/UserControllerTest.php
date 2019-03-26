@@ -56,15 +56,15 @@ class UserControllerTest extends TestCase
 
     }
 
-//    public function test_get_all_user_api_404()
-//    {
-//
-//        $response = $this->json('POST', 'api/users?token='.$this->token);
-//        $response->assertStatus(200)->assertJson([
-//            "data"=>'Not found Data'
-//        ]);
-//
-//    }
+    public function test_get_all_user_api_401()
+    {
+        User::query()->delete();
+        $response = $this->json('POST', 'api/users?token='.$this->token);
+        $response->assertStatus(401)->assertJson([
+            "status"=> "token_error"
+        ]);
+
+    }
 
     public function test_create_user_api_422()
     {
