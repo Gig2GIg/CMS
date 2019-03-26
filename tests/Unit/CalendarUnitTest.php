@@ -20,9 +20,6 @@ class CalendarUnitTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    /**
-     * @test
-     */
 
     protected $user_id;
 
@@ -44,6 +41,8 @@ class CalendarUnitTest extends TestCase
             'end_date' => $dt->toDateString(),
             'user_id' => $this->user_id,
         ];
+
+        
 
         $calendarRepo = new CalendarRepository(new Calendar());
         $calendar = $calendarRepo->create($data);
