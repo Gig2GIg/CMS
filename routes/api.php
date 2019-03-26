@@ -44,6 +44,12 @@ $router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router)
 
 });
 
+$router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router) {
+    //auditions routes
+    $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | CMS Routes
