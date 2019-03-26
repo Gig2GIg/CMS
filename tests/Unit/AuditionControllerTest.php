@@ -253,16 +253,47 @@ class AuditionControllerTest extends TestCase
 
     }
 
-    public function test_find_by_filter(){
+    public function test_find_by_filter_all_params(){
         $user = factory(User::class)->create();
 
         $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
         $response = $this->json('POST',
             'api/auditions/findby?token=' . $this->token,[
-                'union'=>'notunion',
-                'contract'=>'paid',
-                'production'=>'modeling,film'
+                'base'=>'or',
+                'union'=>'any',
+                'contract'=>'unpaid',
+                'production'=>'film'
             ]);
-        $response->assertStatus(200)->assertJson( ["data"=>['auditions']]);
+        $count = $this->count($response);
+        $response->assertStatus(200);
+        $this->assertTrue($count > 0);
+    }
+
+    public function test_find_by_filter_all_params_only_base(){
+        $user = factory(User::class)->create();
+
+        $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
+        $response = $this->json('POST',
+            'api/auditions/findby?token=' . $this->token,[
+                'base'=>'or'
+            ]);
+        $count = $this->count($response);
+        $response->assertStatus(200);
+        $this->assertTrue($count > 0);
+    }
+
+    public function test_find_by_filter_multiple_tags(){
+        $user = factory(User::class)->create();
+
+        $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
+        $response = $this->json('POST',
+            'api/auditions/findby?token=' . $this->token,[
+                'union'=>'any',
+                'contract'=>'unpaid',
+                'production'=>'film,modeling'
+            ]);
+        $count = $this->count($response);
+        $response->assertStatus(200);
+        $this->assertTrue($count > 0);
     }
 }
