@@ -261,8 +261,8 @@ class AuditionControllerTest extends TestCase
             'api/auditions/findby?token=' . $this->token,[
                 'union'=>'notunion',
                 'contract'=>'paid',
-                'production'=>'theater'
+                'production'=>'modeling,film'
             ]);
-        $response->assertStatus(200);
+        $response->assertStatus(200)->assertJson( ["data"=>['auditions']]);
     }
 }
