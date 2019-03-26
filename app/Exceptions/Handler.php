@@ -6,6 +6,9 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -60,6 +63,14 @@ class Handler extends ExceptionHandler
             }else{
                 return response()->json(['status' => 'token_error'], $exception->getStatusCode());
             }
+        }
+
+        switch(true) {
+            case $exception instanceof ModelNotFoundException:
+                return response()->json([
+                    'message' => 'Record not found',
+                ], 404);
+                break;
         }
         return parent::render($request, $exception);
     }
