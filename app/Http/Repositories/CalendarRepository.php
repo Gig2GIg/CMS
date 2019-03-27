@@ -38,6 +38,15 @@ class CalendarRepository implements ICalendarRepository
         }
     }
 
+    public function betweenFrom($start_date,$end_date)
+    {
+        // return $this->model->whereRaw('? between start_date and end_date', $start_date)
+        return $this->model->where('start_date', '>=', $start_date)
+                           ->where('end_date', '<=', $end_date)
+                           ->get();
+
+    }
+
     public function find($id): Marketplace
     {
         
@@ -59,7 +68,12 @@ class CalendarRepository implements ICalendarRepository
 
     public function all()
     {
-        
+        return $this->model->all();
+    }
+
+    public function orderBy($column,$value)
+    {
+        return $this->model->orderBy($column,$value)->get();
     }
 
 }

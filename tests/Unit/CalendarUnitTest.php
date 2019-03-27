@@ -30,6 +30,14 @@ class CalendarUnitTest extends TestCase
         $this->user_id = $user->id;
     }
 
+    public function test_all_events(){
+        factory(Calendar::class,5)->create();
+        $dataAll = new CalendarRepository(new Calendar());
+        $dataTest = $dataAll->all();
+        $this->assertIsArray($dataTest->toArray());
+        $this->assertTrue($dataTest->count() > 2);
+    } 
+
     public function test_create_event()
     {
         $dt = Carbon::now();
@@ -41,8 +49,6 @@ class CalendarUnitTest extends TestCase
             'end_date' => $dt->toDateString(),
             'user_id' => $this->user_id,
         ];
-
-        
 
         $calendarRepo = new CalendarRepository(new Calendar());
         $calendar = $calendarRepo->create($data);

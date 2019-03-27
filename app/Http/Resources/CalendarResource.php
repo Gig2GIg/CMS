@@ -19,8 +19,7 @@ class CalendarResource extends JsonResource
             'production_type' => $this->production_type,
             'project_name' => $this->project_name,
             'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
-            "user_id" => $this->user_id,
+            'end_date' => $this->end_date
         ];
     }
 }
