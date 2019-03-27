@@ -92,4 +92,13 @@ class MarketplaceCategoryRepository implements IMarketplaceCategoryRepository
     {
       return $this->model->marketplaces;
     }
+
+    public function search_marketplaces_by_category_by_title($search)
+    {
+       $result =  $this->model->marketplaces()->where('title', 'LIKE', "%{$search}%")
+                    ->orderBy('title', 'desc')->get();
+
+      return  $result;
+    }
 }
+

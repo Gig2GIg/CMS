@@ -11,8 +11,9 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 
 use App\Models\MarketplaceCategory;
-
+use App\Models\Marketplace;
 use App\Http\Repositories\Marketplace\MarketplaceCategoryRepository;
+use App\Http\Repositories\Marketplace\MarketplaceRepository;
 
 class MarketplaceCategoryUnitTest extends TestCase
 {
@@ -108,4 +109,27 @@ class MarketplaceCategoryUnitTest extends TestCase
 
     }
 
+    public function test_search_marketplace_by_category_by_title()
+    {
+        $marketplace_category = factory(MarketplaceCategory::class)->create();
+        
+        $data = [
+            'address' => $this->faker->address,
+            'title' => $this->faker->name,
+            'phone_number' => $this->faker->phoneNumber(),
+            'email' => $this->faker->safeEmail(),
+            'services' => $this->faker->realText($maxNbChars = 200, $indexSize = 2),
+            'marketplace_category_id' => $marketplace_category->id
+        ];
+
+        $marketplace_repo = new MarketplaceRepository(new Marketplace());
+        $marketplace = $marketplace_repo->create($data);
+        $value = $marketplace->title;
+        $marketplace_category_repo = new MarketplaceCategoryRepository($marketplace_category);
+
+        $result = $marketplace_category_repo->search_marketplaces_by_category_by_title($value);
+
+        $this->assertEquals($value, $result[0]->title);
+
+    }
 }
