@@ -30,7 +30,7 @@ class AuditionFullResponse extends JsonResource
         $this->roles->each(function($item){
             $item->image;
         });
-
+        $dataProduction = explode(',',$this->production);
 
         $appoinment = $this->appointment;
         $slotsData = new SlotsRepository(new Slots());
@@ -48,7 +48,7 @@ class AuditionFullResponse extends JsonResource
             "dates"=>$this->datesall,
             "union" => $this->union,
             "contract" => $this->contract,
-            "production" => $this->production,
+            "production" => $dataProduction,
             "status" => $this->status,
             "user_id" => $this->user_id,
             "roles" => $this->roles,

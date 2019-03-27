@@ -18,7 +18,8 @@ class UserDetails extends Model
         'user_id',
         'profesion',
         'stage_name',
-        'zip'
+        'zip',
+        'agency_name'
     ];
 
     public function users(){

@@ -48,7 +48,6 @@ class MarketplaceRepository implements IMarketplaceRepository
 
     }
 
-    
 
     public function findbyparam($colum, $value) : Marketplace
     {
@@ -84,5 +83,13 @@ class MarketplaceRepository implements IMarketplaceRepository
     public function all()
     {
       return $this->model->all();
+    }
+
+    public function search_by_title($search)
+    {
+       $result =  $this->model->where('title', 'LIKE', "%{$search}%")
+                    ->orderBy('title', 'desc')->get();
+
+      return  $result;
     }
 }

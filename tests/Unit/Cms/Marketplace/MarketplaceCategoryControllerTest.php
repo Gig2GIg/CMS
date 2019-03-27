@@ -1,6 +1,5 @@
 <?php
-
-namespace Tests\Unit;
+namespace Tests\Unit\Cms\Marketplace;
 
 use App\Models\MarketplaceCategory;
 use Tests\TestCase;

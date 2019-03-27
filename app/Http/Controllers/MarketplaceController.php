@@ -11,6 +11,9 @@ use App\Models\MarketplaceCategory;
 use App\Http\Resources\Cms\MarketplaceResource;
 use App\Http\Requests\Marketplace\MarketplaceRequest;
 use App\Http\Requests\Marketplace\MarketplaceEditRequest;
+
+use App\Http\Requests\Marketplace\MarketplaceSearchRequest;
+
 use App\Http\Exceptions\NotFoundException;
 
 use Illuminate\Database\QueryException;
@@ -35,4 +38,33 @@ class MarketplaceController extends Controller
            return response()->json(['data' => "Not found Data"], 404);
        }   
     }
+
+    public function search_by_title(MarketplaceSearchRequest $request)
+    {
+       $data = new MarketplaceRepo(new Marketplace());
+       $count = count($data->search_by_title($request->value));
+
+
+       if ($count !== 0) {
+           $responseData = MarketplaceResource::collection($data->search_by_title($request->value));
+           return response()->json(['data' => $responseData], 200);
+       } else {
+           return response()->json(['data' => "Not found Data"], 404);
+       }   
+    }
+
+    public function search_by_category_by_title(MarketplaceCategory $marketplaceCategory, MarketplaceSearchRequest $request)
+    {
+       $data = new MarketplaceCategoryRepo($marketplaceCategory);
+       $count = count($data->search_marketplaces_by_category_by_title($request->value));
+
+
+       if ($count !== 0) {
+           $responseData = MarketplaceResource::collection($data->search_marketplaces_by_category_by_title($request->value));
+           return response()->json(['data' => $responseData], 200);
+       } else {
+           return response()->json(['data' => "Not found Data"], 404);
+       }   
+    }
+   
 }

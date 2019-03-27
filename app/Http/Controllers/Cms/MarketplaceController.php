@@ -97,7 +97,6 @@ class MarketplaceController extends Controller
                         'url' => $request->image_url
                     ]);
                 };
-
                 return response()->json(['data' => 'Marketplace  Updated'], 204);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
@@ -139,8 +138,5 @@ class MarketplaceController extends Controller
             return response()->json(['data' => "Unprocesable"], 422);
         }
     }
-
-
-
 
 }
