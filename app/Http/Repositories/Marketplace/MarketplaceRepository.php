@@ -48,9 +48,9 @@ class MarketplaceRepository implements IMarketplaceRepository
 
     }
 
-    
 
-    public function findbyparam($colum, $value): User
+    public function findbyparam($colum, $value) : Marketplace
+
     {
         try{
 

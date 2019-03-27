@@ -13,6 +13,7 @@ use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
+use App\Http\Requests\MediaRequest;
 use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
@@ -360,6 +361,14 @@ class AuditionsController extends Controller
 
 
         return response()->json($dataResponse, $code);
+
+    }
+
+    public function media(MediaRequest $request, Auditions $auditions){
+        $repository = new AuditionRepository($auditions);
+        $data = $repository->findMediaByParams($request->type);
+        
+        return response()->json(['data' => $data]);
 
     }
 }
