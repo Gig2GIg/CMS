@@ -12,6 +12,7 @@ use App\Http\Resources\Cms\MarketplaceResource;
 use App\Http\Requests\Marketplace\MarketplaceRequest;
 use App\Http\Requests\Marketplace\MarketplaceEditRequest;
 use App\Http\Requests\Marketplace\MarketplaceSearchRequest;
+
 use App\Http\Exceptions\NotFoundException;
 
 use Illuminate\Database\QueryException;

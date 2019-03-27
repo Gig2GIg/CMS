@@ -43,7 +43,7 @@ class MarketplaceUnitTest extends TestCase
             'title' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
-            'services' => $this->faker->text($maxNbChars = 100),
+            'services' => $this->faker->paragraph(),
             'marketplace_category_id' => $this->marketplace_category_id
         ];
         $marketplace_repo = new MarketplaceRepository(new Marketplace());
@@ -86,7 +86,7 @@ class MarketplaceUnitTest extends TestCase
             'title' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
-            'services' => $this->faker->text($maxNbChars = 100),
+            'services' => $this->faker->paragraph(),
             'marketplace_category_id' => $this->marketplace_category_id
         ];
 

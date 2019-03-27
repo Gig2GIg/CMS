@@ -97,9 +97,7 @@ class MarketplaceController extends Controller
                         'url' => $request->image_url
                     ]);
                 };
-
-
-                return response()->json(['data' => 'Marketplace  Updated'], 204);
+              return response()->json(['data' => 'Marketplace  Updated'], 204);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }

@@ -119,6 +119,7 @@ class MarketplaceCategoryUnitTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->text($maxNbChars = 100),
+
             'marketplace_category_id' => $marketplace_category->id
         ];
 

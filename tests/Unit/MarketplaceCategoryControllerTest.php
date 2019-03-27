@@ -4,9 +4,9 @@ namespace Tests\Unit;
 
 use App\Models\MarketplaceCategory;
 use Tests\TestCase;
+
 use App\Models\User;
 use App\Models\UserDetails;
-
 
 class MarketplaceCategoryControllerTest extends TestCase
 {
@@ -40,6 +40,7 @@ class MarketplaceCategoryControllerTest extends TestCase
 
         $response = $this->json('GET',
             'api/a/marketplace_categories'. '?token=' . $this->token);
+
         $response->assertStatus(200);
 
     }

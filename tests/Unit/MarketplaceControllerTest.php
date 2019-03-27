@@ -6,13 +6,13 @@ use App\Models\MarketplaceCategory;
 use App\Models\Marketplace;
 use App\Models\User;
 use App\Models\UserDetails;
+
 use Tests\TestCase;
 
 use App\Http\Repositories\Marketplace\MarketplaceRepository;
 
 class MarketplaceControllerTest extends TestCase
 {
-
     protected $token;
 
     public function setUp(): void
@@ -61,6 +61,7 @@ class MarketplaceControllerTest extends TestCase
 
         $response = $this->json('GET',
             'api/a/marketplace_categories/'. $marketplaceCategory->id.'/marketplaces/search?value='. $value.'&token=' . $this->token,
+
             $data);
        
         $response->assertStatus(200);
