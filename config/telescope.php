@@ -50,6 +50,12 @@ return [
         ],
     ],
 
+    'storage' => [
+        'database' => [
+            'connection' => env('DB_CONNECTION_TEST', 'test'),
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Telescope Master Switch
