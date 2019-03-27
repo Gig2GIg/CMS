@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Controllers\Utils\SendMail;
+use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\UserDetailsRepository;
@@ -11,24 +13,29 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserRequestTablet;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
 
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     const NOT_FOUND_DATA = "Not found Data";
     protected $log;
+    protected $date;
 
     public function __construct()
     {
         $this->middleware('jwt', ['except' => ['store', 'sendPassword']]);
         $this->log = new LogManger();
+        $this->date = new ManageDates();
     }
 
 
@@ -51,60 +58,105 @@ class UserController extends Controller
 
     }
 
+    public function store(UserRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+            $userData = [
+                'email' => request('email'),
+                'password' => bcrypt(request('password')),
+            ];
+            $user = new UserRepository(new User());
+            $usert = $user->create($userData);
+            $usert->image()->create(['url' => request('image'), 'type' => 'image']);
+            if ($request->type === '1') {
+                $this->storeTablet($request, $usert->id);
+            } else {
+                $this->storeApp($request, $usert->id);
+            }
+
+            $responseData = ['data' => 'User created'];
+            $code = 201;
+
+            DB::commit();
+            return response()->json($responseData, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            DB::rollback();
+            return response()->json(['error' => 'ERROR'], 500);
+        }
+
+
+    }
+
+    public function storeTablet(UserRequest $request, $id)
+    {
+        $dataName = explode(" ", $request->name);
+
+        $userDataDetails = [
+            'type' => $request->type,
+            'first_name' => $dataName[0] ?? "null",
+            'last_name' => $dataName[1] ?? "null",
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'birth' => $this->date->transformDate($request->birth),
+            'agency_name' => $request->agency_name,
+            'image' => $request->image,
+            'profesion' => $request->profesion,
+            'location' => $request->location,
+            'zip' => $request->zip,
+            'user_id' => $id,
+        ];
+        $userDetails = new UserDetailsRepository(new UserDetails());
+        try {
+            $userDetails->create($userDataDetails);
+            return true;
+        } catch (CreateException $e) {
+            $this->log->error($e->getMessage());
+            return false;
+
+        }
+
+    }
 
     /**
      * @param UserRequest $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \App\Http\Exceptions\CreateException
      */
-    public function store(UserRequest $request)
+    public function storeApp(UserRequest $request, $id)
     {
 
-
-        if ($request->json()) {
-            $userData = [
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-            ];
-            $user = new UserRepository(new User());
-            $usert = $user->create($userData);
-            $userDataDetails = [
-                'type' => $request->type,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'address' => $request->address,
-                'city' => $request->city,
-                'state' => $request->state,
-                'birth' => $request->birth,
-                'stage_name' => $request->stage_name,
-                'image' => $request->image,
-                'profesion' => $request->profesion,
-                'location' => $request->location,
-                'zip' => $request->zip,
-                'user_id' => $usert->id,
-            ];
-            $usert->image()->create(['url' => $request->image, 'type' => 'image']);
+        $userDataDetails = [
+            'type' => $request->type,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'address' => $request->address,
+            'city' => $request->city,
+            'state' => $request->state,
+            'birth' => $this->date->transformDate($request->birth),
+            'stage_name' => $request->stage_name,
+            'image' => $request->image,
+            'profesion' => $request->profesion,
+            'location' => $request->location,
+            'zip' => $request->zip,
+            'user_id' => $id,
+        ];
+        try {
             $userDetails = new UserDetailsRepository(new UserDetails());
             $userDetails->create($userDataDetails);
 
             foreach ($request->union_member as $iValue) {
-
                 $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
-                $userUnion->create(['name' => $iValue['name'], 'user_id' => $usert->id]);
+                $userUnion->create(['name' => $iValue['name'], 'user_id' => $id]);
             }
-
-            $responseData = ['data' => 'User Created'];
-            $code = 201;
-
-
-        } else {
-            $responseData = ['error' => 'Unauthorized'];
-            $code = 401;
-
+            return true;
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            return false;
         }
-        return response()->json($responseData, $code);
     }
-
 
     /**
      * @return \Illuminate\Http\JsonResponse|null
@@ -241,6 +293,10 @@ class UserController extends Controller
 
 
     }
+
+    /**
+     * @param UserRequest $request
+     */
 
 
 }

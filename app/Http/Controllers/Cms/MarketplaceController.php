@@ -88,10 +88,16 @@ class MarketplaceController extends Controller
                 ];
     
                 $marketplace = new MarketplaceRepo(new Marketplace());
-                $result =  $marketplace->find(request('id'));
-                $result->update($marketplaceData);
 
-                return response()->json(['data' => 'Marketplace  Updated'], 204);
+                $marketplace_result =  $marketplace->find(request('id'));
+                $marketplace_result->update($marketplaceData);
+
+                if (! $request->image_url){
+                    $marketplace_result->image()->update([
+                        'url' => $request->image_url
+                    ]);
+                };
+              return response()->json(['data' => 'Marketplace  Updated'], 204);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
@@ -132,8 +138,5 @@ class MarketplaceController extends Controller
             return response()->json(['data' => "Unprocesable"], 422);
         }
     }
-
-
-
 
 }

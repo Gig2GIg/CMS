@@ -19,10 +19,8 @@ use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
-use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
-use DemeterChain\A;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -32,11 +30,13 @@ class AuditionsController extends Controller
 {
     public const DESCRIPTION = 'description';
     protected $log;
+    protected $find;
 
     public function __construct()
     {
         $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
+        $this->find = new AuditionsFindController();
     }
 
     /**
@@ -88,13 +88,13 @@ class AuditionsController extends Controller
                     $contributorRepo->create($auditionContributorsData);
                 }
                 DB::commit();
-                $responseData =['data' => ['message' => 'Auditions create']];
-                $code= 201;
+                $responseData = ['data' => ['message' => 'Auditions create']];
+                $code = 201;
             } else {
-                $responseData =['error' => 'Unauthorized'];
-                $code= 404;
+                $responseData = ['error' => 'Unauthorized'];
+                $code = 404;
             }
-            return response()->json($responseData,$code);
+            return response()->json($responseData, $code);
         } catch (\Exception $exception) {
             DB::rollBack();
             $this->log->error($exception->getMessage());
@@ -183,9 +183,9 @@ class AuditionsController extends Controller
     public function dataToSlotsProcess($appointment, $slot): array
     {
         return [
-            'appointment_id' => $appointment->id ,
+            'appointment_id' => $appointment->id,
             'time' => $slot['time'],
-            'number'=> $slot['number'] ?? null,
+            'number' => $slot['number'] ?? null,
             'status' => $slot['status'],
         ];
 
@@ -271,7 +271,8 @@ class AuditionsController extends Controller
 
     }
 
-    public function update(AuditionEditRequest $request){
+    public function update(AuditionEditRequest $request)
+    {
         try {
             foreach ($request['media'] as $file) {
                 $auditionFilesData[] = [
@@ -288,7 +289,7 @@ class AuditionsController extends Controller
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
-                $audition->media->update(['url'=>$request->url]);
+                $audition->media->update(['url' => $request->url]);
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->update(['url' => $file['url'], 'type' => $file['type']]);
                 }
@@ -307,7 +308,7 @@ class AuditionsController extends Controller
 
                     $dataSlots = [
                         'time' => $slot['time'],
-                        'number'=> $slot['number'] ?? null,
+                        'number' => $slot['number'] ?? null,
                         'status' => $slot['status'],
                     ];
                     $slotsRepo = new SlotsRepository(new Slots());
@@ -315,8 +316,8 @@ class AuditionsController extends Controller
                 }
                 DB::commit();
 
-                    $dataResponse = ['data' => 'Data Updated'];
-                    $code = 200;
+                $dataResponse = ['data' => 'Data Updated'];
+                $code = 200;
 
 
             } else {
@@ -325,49 +326,31 @@ class AuditionsController extends Controller
             }
 
             return response()->json($dataResponse, $code);
-        }catch (NotFoundException $exception){
+        } catch (NotFoundException $exception) {
             return response()->json(['data' => 'Data Not Found'], 404);
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             DB::rollBack();
             return response()->json(['data' => 'Data Not Update'], 406);
         }
     }
 
-    public function findBy(Request $request){
-        $elementResponse = new Collection();
-        $repository = new AuditionRepository(new Auditions());
-
-        if(isset($request->union)){
-            $preData = $repository->findbyparam('union',$request->union);
-            $elementResponse->concat($preData);
-
+    public function findby(Request $request)
+    {
+        if (isset($request->base)) {
+            return $this->find->findByTitleAndMulti($request);
+        } else {
+            return $this->find->findByProductionAndMulty($request);
         }
-
-        if(isset($request->contract)){
-            $preData = $repository->findbyparam('contract',$request->contract);
-            $elementResponse->concat($preData);
-        }
-
-
-        if(count($elementResponse) > 0 ){
-            $dataResponse = ['error' => 'Not Found'];
-            $code = 404;
-        }else{
-            $dataResponse = ['data' => $elementResponse];
-            $code = 200;
-        }
-
-
-
-        return response()->json($dataResponse, $code);
-
     }
 
-    public function media(MediaRequest $request, Auditions $auditions){
+
+
+    public function media(MediaRequest $request, Auditions $auditions)
+    {
         $repository = new AuditionRepository($auditions);
         $data = $repository->findMediaByParams($request->type);
-        
+
         return response()->json(['data' => $data]);
 
     }

@@ -22,22 +22,41 @@ class UserRequest extends ApiRequest
      */
     public function rules()
     {
-        return [
-            'email' => 'required|email|unique:users',
-            'password' => 'required',
-            'type' => 'required',
-            'first_name' => 'required|string|max:50',
-            'address' => 'required|max:150',
-            'city' => 'required|string|max:50',
-            'state' => 'required|integer',
-            'birth' => 'required|date',
-            'location' => 'required',
-            'zip' => 'required',
-            'union_member' => 'required',
-            'stage_name' => 'required',
-            'image' => 'required|url',
-            'profesion' => 'required'
-        ];
+        if(request('type') === '1'){
+            return [
+                'email' => 'required|email|unique:users',
+                'password' => 'required',
+                'type' => 'required',
+                'name' => 'required|string|max:150',
+                'address' => 'required|max:150',
+                'city' => 'required|string|max:50',
+                'state' => 'required|integer',
+                'birth' => 'required',
+                'location' => 'required',
+                'zip' => 'required',
+                'agency_name' => 'required',
+                'image' => 'required|url',
+                'profesion' => 'required'
+            ];
+        }else{
+            return [
+                'email' => 'required|email|unique:users',
+                'password' => 'required',
+                'type' => 'required',
+                'first_name' => 'required|string|max:50',
+                'address' => 'required|max:150',
+                'city' => 'required|string|max:50',
+                'state' => 'required|integer',
+                'birth' => 'required',
+                'location' => 'required',
+                'zip' => 'required',
+                'union_member' => 'required',
+                'stage_name' => 'required',
+                'image' => 'required|url',
+                'profesion' => 'required'
+            ];
+        }
+
     }
 
 
