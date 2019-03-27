@@ -47,6 +47,13 @@ $router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router)
 $router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+
+     //marketplace by category
+     $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
+      Route::prefix('marketplace_categories')->group(function () use ($router) {
+        $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
+    });  
+
 });
 
 
