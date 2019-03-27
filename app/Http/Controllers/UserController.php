@@ -74,8 +74,8 @@ class UserController extends Controller
             } else {
                 $this->storeApp($request, $usert->id);
             }
-            $response = new UserResource($usert);
-            $responseData = ['data' => $response];
+
+            $responseData = ['data' => 'User created'];
             $code = 201;
 
             DB::commit();
