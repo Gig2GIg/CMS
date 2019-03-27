@@ -51,8 +51,12 @@ $router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router)
 
      //marketplace by category
      $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
+
+     $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
+
       Route::prefix('marketplace_categories')->group(function () use ($router) {
         $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
+        $router->get('/{marketplaceCategory}/marketplaces/search', 'MarketplaceController@search_by_category_by_title')->where('id', '[0-9]+'); 
     });  
 
 });
@@ -68,7 +72,9 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
     Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
+
         $router->post('/marketplace_categories/create', 'MarketplaceCategoriesController@store');
+        
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');

@@ -141,4 +141,14 @@ class MarketplaceUnitTest extends TestCase
 
     }
 
+    public function test_search_by_title()
+    {
+        $marketplace = factory(Marketplace::class)->create();
+        $value = $marketplace->title;
+        $marketplace_repo = new MarketplaceRepository(new Marketplace());
+        $result = $marketplace_repo->search_by_title($value );
+        
+        $this->assertEquals($value, $result[0]->title);
+
+    }
 }

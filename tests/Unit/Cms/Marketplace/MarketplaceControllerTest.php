@@ -1,31 +1,34 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Marketplace;
 
 use App\Models\MarketplaceCategory;
 use App\Models\Marketplace;
 use Tests\TestCase;
-
+use App\Http\Repositories\Marketplace\MarketplaceRepository;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketplaceControllerTest extends TestCase
 {
-
-    protected $marketplace_category_id;
+    use WithFaker;
+    use RefreshDatabase;
 
     public function test_create_marketplace_201()
     {
+        $marketplace_category = factory(MarketplaceCategory::class)->create();
+
         $data = [
-            'address' => 'addres adress adress',
+            'address' => $this->faker->address,
             'title' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->text($maxNbChars = 100),
-            'image_url' => "https://stackoverflow.com/questions/30878105/laravel-5-form-request-validation-returning-forbidden-error"
+            'image_url'=>  'https://stackoverflow.com/questions/30878105/laravel-5-form-request-validation-returning-forbidden-error'
         ];
 
-        $marketplaceCategory = factory(MarketplaceCategory::class)->create();
         $response = $this->json('POST',
-            'api/cms/marketplace_categories/'. $marketplaceCategory->id.'/marketplaces/create?token=' . $this->token3,
+            'api/cms/marketplace_categories/'. $marketplace_category->id.'/marketplaces/create?token=' . $this->token3,
             $data);
         
         $response->assertStatus(201);
@@ -81,7 +84,7 @@ class MarketplaceControllerTest extends TestCase
             'title' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
-            'services' => $this->faker->realText($maxNbChars = 200, $indexSize = 2)
+            'services' => $this->faker->text($maxNbChars = 100)
         ];
 
         $marketplace = factory(Marketplace::class)->create();

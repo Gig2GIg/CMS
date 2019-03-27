@@ -85,4 +85,12 @@ class MarketplaceRepository implements IMarketplaceRepository
     {
       return $this->model->all();
     }
+
+    public function search_by_title($search)
+    {
+       $result =  $this->model->where('title', 'LIKE', "%{$search}%")
+                    ->orderBy('title', 'desc')->get();
+
+      return  $result;
+    }
 }
