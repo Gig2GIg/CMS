@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Marketplace;
+namespace Tests\Unit\Cms\Marketplace;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -118,7 +118,8 @@ class MarketplaceCategoryUnitTest extends TestCase
             'title' => $this->faker->name,
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
-            'services' => $this->faker->realText($maxNbChars = 200, $indexSize = 2),
+            'services' => $this->faker->text($maxNbChars = 100),
+
             'marketplace_category_id' => $marketplace_category->id
         ];
 
