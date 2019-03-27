@@ -1,30 +1,26 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: alphyon
+ * Date: 2019-03-27
+ * Time: 11:48
+ */
 
 namespace App\Http\Resources;
 
-use App\Http\Controllers\Utils\LogManger;
-use App\Http\Repositories\SlotsRepository;
-use App\Http\Repositories\UserRepository;
-use App\Models\Auditions;
-use App\Models\Slots;
-use App\Models\User;
+
+use App\Models\Resources;
+use App\Models\Roles;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 
-class AuditionResponse extends JsonResource
+class AuditionResourceFind extends JsonResource
 {
-
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return array
-     */
     public function toArray($request)
     {
-        $count = count($this->roles);
-        $dataProduction = explode(',',$this->production);
-        $url_media=$this->resources
+$roles = new Roles();
+$countRoles = $roles->where('auditions_id',$this->id)->count();
+$media = new Resources();
+        $url_media=$media
             ->where('type','image')
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
@@ -38,12 +34,12 @@ class AuditionResponse extends JsonResource
             "url" => $this->url,
             "union" => $this->union,
             "contract" => $this->contract,
-            "production" => $dataProduction,
+            "production" => explode(',',$this->production),
             "status" => $this->status,
             "user_id" => $this->user_id,
             "media" => $url_media[0] ??null,
-            "number_roles" => $count,
-
+            "number_roles" => $countRoles,
         ];
     }
+
 }

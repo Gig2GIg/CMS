@@ -70,18 +70,20 @@ class UserController extends Controller
             $usert = $user->create($userData);
             $usert->image()->create(['url' => request('image'), 'type' => 'image']);
             if ($request->type === '1') {
-                $this->storeTablet($request,$usert->id);
+                $this->storeTablet($request, $usert->id);
             } else {
-                $this->storeApp($request,$usert->id);
+                $this->storeApp($request, $usert->id);
             }
-
-            $responseData = ['data' => 'User Created'];
+            $response = new UserResource($usert);
+            $responseData = ['data' => $response];
             $code = 201;
 
             DB::commit();
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
             DB::rollback();
+            return response()->json(['error' => 'ERROR'], 500);
         }
 
 
@@ -89,7 +91,7 @@ class UserController extends Controller
 
     public function storeTablet(UserRequest $request, $id)
     {
-        $dataName = explode(" ",$request->name);
+        $dataName = explode(" ", $request->name);
 
         $userDataDetails = [
             'type' => $request->type,

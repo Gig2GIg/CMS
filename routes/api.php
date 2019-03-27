@@ -21,32 +21,39 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
-     $router->post('/users/create',['uses'=>'UserController@store']);
+    $router->post('/users/create',['uses'=>'UserController@store']);
 
 
 
 });
-$router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router) {
+$router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+    $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+});
+$router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
-    $router->post('/users',['uses'=>'UserController@getAll']);
-    $router->post('/users/show/{id}',['uses'=>'UserController@show']);
+    $router->get('/users',['uses'=>'UserController@getAll']);
+    $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->delete('/users/delete/{id}',['uses'=>'UserController@delete']);
 
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
-    $router->post('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
-    $router->post('/auditions/show',['uses'=>'AuditionsController@getAll']);
-    $router->post('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
-    $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
 
 });
 
-$router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router) {
+$router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
 });
 
 
