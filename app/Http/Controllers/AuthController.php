@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\UserRepository;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
 
@@ -39,8 +40,9 @@ class AuthController extends Controller
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
+          $dataResponse = new UserResource($user);
 
-            return $this->respondWithToken($token, $expiration);
+            return $this->respondWithToken($token, $expiration,$dataResponse);
         }catch (NotFoundException $exception){
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -85,12 +87,13 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token, $expiration)
+    protected function respondWithToken($token, $expiration,$data)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => $expiration
+            'expires_in' => $expiration,
+            'data'=> $data
         ]);
     }
 }
