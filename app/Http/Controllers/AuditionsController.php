@@ -30,11 +30,13 @@ class AuditionsController extends Controller
 {
     public const DESCRIPTION = 'description';
     protected $log;
+    protected $find;
 
     public function __construct()
     {
         $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
+        $this->find = new AuditionsFindController();
     }
 
     /**
@@ -336,94 +338,13 @@ class AuditionsController extends Controller
     public function findby(Request $request)
     {
         if (isset($request->base)) {
-            return $this->findByTitleAndMulti($request);
+            return $this->find->findByTitleAndMulti($request);
         } else {
-            return $this->findByMulty($request);
+            return $this->find->findByProductionAndMulty($request);
         }
     }
 
-    public function findByTitleAndMulti(Request $request)
-    {
 
-        $data = new Auditions();
-        $elementResponse = new Collection();
-
-        if (isset($request->base)) {
-            $elementResponse = $data->where('title', 'like', "%{$request->base}%");
-        }
-
-
-        if (isset($request->union)) {
-            $elementResponse->where('union', '=', $request->union);
-        }
-
-        if (isset($request->contract)) {
-            $elementResponse->where('contract', '=', $request->contract);
-
-        }
-
-        if (isset($request->production)) {
-
-            $elementResponse->where('production', 'like', "%{$request->production}%");
-
-        }
-
-
-        $data2 = $elementResponse->get();
-
-        if (count($data2) === 0) {
-            $dataResponse = ['error' => 'Not Found'];
-            $code = 404;
-        } else {
-            $dataResponse = ['data' => $data2];
-            $code = 200;
-        }
-
-
-        return response()->json($dataResponse, $code);
-
-    }
-
-    public function findByMulty(Request $request)
-    {
-        $elementResponse = new Collection();
-
-
-        if (isset($request->production)) {
-
-            $split_elements = explode(',', $request->production);
-            foreach ($split_elements as $item) {
-                $query = DB::table('auditions')
-                    ->whereRaw('FIND_IN_SET(?,production)', [$item])
-                    ->get();
-                foreach ($query as $items) {
-                    $elementResponse->push($items);
-                }
-
-            }
-
-        }
-        if (isset($request->union)) {
-            $elementResponse = $elementResponse->where('union', '=', $request->union);
-        }
-
-        if (isset($request->contract)) {
-            $elementResponse = $elementResponse->where('contract', '=', $request->contract);
-        }
-
-
-        if (count($elementResponse) === 0) {
-            $dataResponse = ['error' => 'Not Found'];
-            $code = 404;
-        } else {
-            $dataResponse = ['data' => $elementResponse];
-            $code = 200;
-        }
-
-
-        return response()->json($dataResponse, $code);
-
-    }
 
     public function media(MediaRequest $request, Auditions $auditions)
     {
