@@ -129,7 +129,7 @@ class UserController extends Controller
             return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         }
 
-    }
+    } 
 
 
     /**

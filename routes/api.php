@@ -51,6 +51,7 @@ $router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router)
     // calendar routes
     $router->post('/calendar/create_event',['uses'=>'CalendarController@store']);
     $router->get('/calendar/show',['uses'=>'CalendarController@index']);
+    $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
 });
 
 

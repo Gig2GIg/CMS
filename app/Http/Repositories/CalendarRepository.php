@@ -38,18 +38,43 @@ class CalendarRepository implements ICalendarRepository
         }
     }
 
-    public function betweenFrom($start_date,$end_date)
+    public function betweenDates($start_date,$end_date,$user_id)
     {
-        // return $this->model->whereRaw('? between start_date and end_date', $start_date)
-        return $this->model->where('start_date', '>=', $start_date)
-                           ->where('end_date', '<=', $end_date)
-                           ->get();
+        return $this->model->where(function ($query) use ($start_date, $end_date,$user_id) {
+
+            $query->where(function ($q) use ($start_date, $end_date,$user_id) {
+                $q->where('start_date', '>=', $start_date)
+                   ->where('start_date', '<', $end_date)
+                   ->where('user_id', '=', $user_id);
+        
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+                $q->where('start_date', '<=', $start_date)
+                   ->where('end_date', '>', $end_date)
+                   ->where('user_id', '=', $user_id);
+        
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+                $q->where('end_date', '>=', $start_date)
+                   ->where('end_date', '<=', $end_date)
+                   ->where('user_id', '=', $user_id);
+        
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+                $q->where('start_date', '>=', $start_date)
+                   ->where('end_date', '<=', $end_date)
+                   ->where('user_id', '=', $user_id);
+            });
+        
+        })->count();
 
     }
 
-    public function find($id): Marketplace
+    public function find($id): Calendar
     {
-        
+        try{
+            return $this->model->findOrFail($id);
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
 
     }
 
