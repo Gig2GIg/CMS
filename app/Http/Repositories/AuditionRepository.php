@@ -82,6 +82,18 @@ class AuditionRepository implements IAuditionsRepository
 
     }
 
+    public function findbyPattern($colum, $value)
+    {
+        try{
+
+            return $this->model->where($colum,'like',"%{$value}%")->get();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
+    }
+
     public function findMediaByParams($value)
     {
         try{

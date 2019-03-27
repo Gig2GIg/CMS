@@ -22,7 +22,8 @@ class CreateUserDetailsTable extends Migration
             $table->integer('state');
             $table->date('birth');
             $table->string('profesion');
-            $table->string('stage_name');
+            $table->string('stage_name')->default("n/a");
+            $table->string('agency_name')->default("n/a");
             $table->enum('type',[1,2,3]);
             $table->integer('user_id')->unsigned();
             $table->string('location');
