@@ -19,10 +19,8 @@ use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
-use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
-use DemeterChain\A;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -335,6 +333,15 @@ class AuditionsController extends Controller
         }
     }
 
+    public function findby(Request $request)
+    {
+        if (isset($request->base)) {
+            return $this->findByTitleAndMulti($request);
+        } else {
+            return $this->findByMulty($request);
+        }
+    }
+
     public function findByTitleAndMulti(Request $request)
     {
 
@@ -384,29 +391,25 @@ class AuditionsController extends Controller
 
         if (isset($request->production)) {
 
-            $split_elements = explode(',',$request->production);
-            foreach ($split_elements as $item){
+            $split_elements = explode(',', $request->production);
+            foreach ($split_elements as $item) {
                 $query = DB::table('auditions')
-
                     ->whereRaw('FIND_IN_SET(?,production)', [$item])
                     ->get();
-                foreach ($query as $items){
+                foreach ($query as $items) {
                     $elementResponse->push($items);
                 }
 
             }
 
         }
-if(isset($request->union)){
-    $elementResponse = $elementResponse->where('union','=', $request->union);
-}
-
-        if(isset($request->contract)){
-            $elementResponse = $elementResponse->where('contract','=', $request->contract);
+        if (isset($request->union)) {
+            $elementResponse = $elementResponse->where('union', '=', $request->union);
         }
 
-
-
+        if (isset($request->contract)) {
+            $elementResponse = $elementResponse->where('contract', '=', $request->contract);
+        }
 
 
         if (count($elementResponse) === 0) {
@@ -420,15 +423,6 @@ if(isset($request->union)){
 
         return response()->json($dataResponse, $code);
 
-    }
-
-
-    public function findby(Request $request){
-        if(isset($request->base)){
-         return   $this->findByTitleAndMulti($request);
-        }else{
-           return  $this->findByMulty($request);
-        }
     }
 
     public function media(MediaRequest $request, Auditions $auditions)

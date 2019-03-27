@@ -26,7 +26,10 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 
 });
-$router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router) {
+$router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+    $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+});
+$router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->get('/users',['uses'=>'UserController@getAll']);
@@ -40,17 +43,18 @@ $router->group(['middleware' => ['jwt.auth','acl:1']], function () use ($router)
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
-    $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
 
 });
 
-$router->group(['middleware' => ['jwt.auth','acl:2']], function () use ($router) {
+$router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
     $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
-    $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);});
+   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+});
 
 
 /*
