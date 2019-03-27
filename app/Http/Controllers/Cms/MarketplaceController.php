@@ -65,7 +65,6 @@ class MarketplaceController extends Controller
 
             $marketplace = new MarketplaceRepo(new Marketplace);
             $marketplace_result = $marketplace->create($marketplaceData);
-
             $marketplace_result->image()->create([
                 'url' => $request->image_url,
                 'type' => '3'
@@ -89,6 +88,7 @@ class MarketplaceController extends Controller
                 ];
     
                 $marketplace = new MarketplaceRepo(new Marketplace());
+
                 $marketplace_result =  $marketplace->find(request('id'));
                 $marketplace_result->update($marketplaceData);
 
@@ -97,7 +97,7 @@ class MarketplaceController extends Controller
                         'url' => $request->image_url
                     ]);
                 };
-                return response()->json(['data' => 'Marketplace  Updated'], 204);
+              return response()->json(['data' => 'Marketplace  Updated'], 204);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
