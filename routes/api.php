@@ -64,6 +64,12 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
         $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
         $router->get('/{marketplaceCategory}/marketplaces/search', 'MarketplaceController@search_by_category_by_title')->where('id', '[0-9]+'); 
     });  
+
+    // calendar routes
+    $router->post('/calendar/create_event',['uses'=>'CalendarController@store']);
+    $router->get('/calendar/show',['uses'=>'CalendarController@index']);
+    $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
+
 });
 
 
