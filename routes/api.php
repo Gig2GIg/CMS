@@ -61,6 +61,14 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/credits/update/{id}',['uses'=>'CreditsController@update']);
     $router->delete('/credits/delete/{id}',['uses'=>'CreditsController@delete']);
 
+
+    //Education routes
+    $router->post('/educations/create',['uses'=>'EducationsController@store']);
+    $router->get('/educations/show',['uses'=>'EducationsController@getAll']);
+    $router->get('/educations/show/{id}',['uses'=>'EducationsController@show']);
+    $router->put('/educations/update/{id}',['uses'=>'EducationsController@update']);
+    $router->delete('/educations/delete/{id}',['uses'=>'EducationsController@delete']);
+
     //marketplace by category
     $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
 
