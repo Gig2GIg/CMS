@@ -15,6 +15,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\ICreditsRepository;
 use App\Models\Credits;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
 class CreditsRepository implements ICreditsRepository

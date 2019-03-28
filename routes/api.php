@@ -53,7 +53,13 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
-   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+
+    //credits routes
+    $router->post('/credits/create',['uses'=>'CreditsController@store']);
+    $router->get('/credits/show',['uses'=>'CreditsController@getAll']);
+    $router->get('/credits/show/{id}',['uses'=>'CreditsController@show']);
+    $router->put('/credits/update/{id}',['uses'=>'CreditsController@update']);
+    $router->delete('/credits/delete/{id}',['uses'=>'CreditsController@delete']);
 
     //marketplace by category
     $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');

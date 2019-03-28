@@ -13,13 +13,10 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
-use App\Http\Requests\UserRequestTablet;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
-
-use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
