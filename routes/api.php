@@ -69,6 +69,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->post('/calendar/create_event',['uses'=>'CalendarController@store']);
     $router->get('/calendar/show',['uses'=>'CalendarController@index']);
     $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
+    $router->put('/calendar/update/{id}',['uses'=>'CalendarController@update']);
 
 });
 

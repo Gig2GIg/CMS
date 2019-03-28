@@ -11,6 +11,8 @@ use App\Http\Exceptions\NotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class CalendarController extends Controller
 {
@@ -65,7 +67,7 @@ class CalendarController extends Controller
             // Verify if the range of dates is available
             $count = $calendarRepo->betweenDates($start_date,$end_date,$user_id);
             if ($count > 0) {
-                return response()->json(['error' => "Start date is already occupied"], 422);
+                return response()->json(['error' => "Date range is occupied"], 422);
             }
 
             $data = [
@@ -115,26 +117,81 @@ class CalendarController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CalendarRequest $request)
     {
-        //
+        try {
+            if ($request->json()) {
+
+                $calendarRepo = new CalendarRepository(new Calendar());
+                $calendar = $calendarRepo->find(request('id'));
+                $calendar_new = $calendarRepo->find(request('id'));
+
+
+                // obtain year
+                $now = Carbon::now();
+                $year = $now->year;
+                $dt = $now->toDateString();
+
+                $start_date = $year . "-" . $request->start_date;
+                $end_date = $year . "-" . $request->end_date;
+                $user_id = Auth::user()->id;
+
+                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
+                    if($start_date < $dt ||  $end_date < $dt){
+                        return response()->json(['error' => "Can't use past dates"], 422);
+                    }
+                }
+                
+                // End date must be greater than start date
+                if($end_date < $start_date){
+                    return response()->json(['error' => "End date must be greater than start date"], 422);
+                }
+
+                $data = [
+                    'production_type' => $request->production_type,
+                    'project_name' => $request->project_name,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date
+                ];
+
+                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
+                    try{
+                        $trans = DB::transaction(function () use ($calendar,$start_date,$end_date,$data,$calendarRepo,$user_id) {
+                            // $result =  DB::table('calendars')->where('user_id',$user_id)->update($data);
+                            $result =  $calendar_new->update($data);
+
+                            $count = $calendarRepo->betweenDates($calendar->$start_date,$calendar->$end_date,$user_id);
+                            if ($count > 0) {
+                                throw new \Exception;
+                            }
+                                
+                        });
+    
+                    }catch (Exception $e){
+                        return response()->json(['error' => "Date range is occupied"], 422);
+                    }
+                    
+                }
+                
+        
+                // Update data
+                $calendar->update($data);
+
+                $responseData = ['data' => 'Data Updated'];
+                $code = 200;
+
+            } else {
+                $responseData = ['error' => 'Unauthorized'];
+                $code = 401;
+            }
+
+            return response()->json($responseData, $code);
+
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Data Not Found"], 404);
+        }
     }
 
     /**

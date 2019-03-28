@@ -80,7 +80,12 @@ class CalendarRepository implements ICalendarRepository
 
     public function update(array $data) : bool
     {
-        
+        try{
+            return $this->model->update($data);
+        }catch (QueryException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new UpdateException($e);
+        }
     }
 
     /**
