@@ -95,4 +95,9 @@ class UserRepository implements IUserRepository
     {
       return $this->model->all();
     }
+
+    public function calendars()
+    {
+        return $this->model->calendars;
+    }
 }

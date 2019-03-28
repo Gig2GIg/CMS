@@ -73,6 +73,38 @@ class CalendarUnitTest extends TestCase
         $this->assertEquals($found->end_date,$calendar->end_date);
     }
 
+    public function test_update_event()
+    {
+        $dt = Carbon::now();
+        
+        $calendar =factory(Calendar::class)->create();
+        $data = [
+            'production_type' => $this->faker->name,
+            'project_name' => $this->faker->name,
+            'start_date' => $dt->toDateString(),
+            'end_date' => $dt->toDateString(),
+            'user_id' => $this->user_id,
+        ];
+
+        $calendarRepo = new CalendarRepository($calendar);
+        $update = $calendarRepo->update($data);
+
+        $this->assertTrue($update);
+        $this->assertEquals($data['production_type'], $calendar->production_type);
+        $this->assertEquals($data['project_name'], $calendar->project_name);
+        $this->assertEquals($data['start_date'], $calendar->start_date);
+        $this->assertEquals($data['end_date'], $calendar->end_date);
+        $this->assertEquals($data['user_id'], $calendar->user_id);
+    }
+
+    public function test_delete_event()
+    {
+        $calendar = factory(Calendar::class)->create();
+        $calendar_repo = new CalendarRepository($calendar);
+        $delete = $calendar_repo->delete();
+        $this->assertTrue($delete);
+    }
+
     public function test_create_event_exception()
     {
         $this->expectException(CreateException::class);

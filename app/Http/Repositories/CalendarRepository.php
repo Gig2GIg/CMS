@@ -38,28 +38,32 @@ class CalendarRepository implements ICalendarRepository
         }
     }
 
-    public function betweenDates($start_date,$end_date,$user_id)
+    public function betweenDates($start_date,$end_date,$user_id,$event_id = null)
     {
-        return $this->model->where(function ($query) use ($start_date, $end_date,$user_id) {
+        return $this->model->where(function ($query) use ($start_date, $end_date,$user_id,$event_id) {
 
-            $query->where(function ($q) use ($start_date, $end_date,$user_id) {
+            $query->where(function ($q) use ($start_date, $end_date,$user_id,$event_id) {
                 $q->where('start_date', '>=', $start_date)
-                   ->where('start_date', '<', $end_date)
+                   ->where('start_date', '<=', $end_date)
+                   ->where('id', '!=', $event_id)
                    ->where('user_id', '=', $user_id);
         
-            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id,$event_id) {
                 $q->where('start_date', '<=', $start_date)
-                   ->where('end_date', '>', $end_date)
+                   ->where('end_date', '>=', $end_date)
+                   ->where('id', '!=', $event_id)
                    ->where('user_id', '=', $user_id);
         
-            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id,$event_id) {
                 $q->where('end_date', '>=', $start_date)
                    ->where('end_date', '<=', $end_date)
+                   ->where('id', '!=', $event_id)
                    ->where('user_id', '=', $user_id);
         
-            })->orWhere(function ($q) use ($start_date, $end_date,$user_id) {
+            })->orWhere(function ($q) use ($start_date, $end_date,$user_id,$event_id) {
                 $q->where('start_date', '>=', $start_date)
                    ->where('end_date', '<=', $end_date)
+                   ->where('id', '!=', $event_id)
                    ->where('user_id', '=', $user_id);
             });
         
@@ -80,7 +84,12 @@ class CalendarRepository implements ICalendarRepository
 
     public function update(array $data) : bool
     {
-        
+        try{
+            return $this->model->update($data);
+        }catch (QueryException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new UpdateException($e);
+        }
     }
 
     /**
@@ -88,12 +97,18 @@ class CalendarRepository implements ICalendarRepository
      */
     public function delete(): ?bool
     {
-        
+        return $this->model->delete();
     }
 
     public function all()
     {
         return $this->model->all();
+    }
+
+    public function findbyuser($user_id)
+    {
+        return $this->model->where('user_id', $user_id)
+                            ->get();
     }
 
     public function orderBy($column,$value)
