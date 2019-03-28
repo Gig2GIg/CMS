@@ -28,6 +28,8 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+    $router->get('/skills/show',['uses'=>'SkillsController@list']);
+    $router->get('/skills/byuser',['uses'=>'SkillsController@byUser']);
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
