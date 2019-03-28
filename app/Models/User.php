@@ -66,6 +66,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserUnionMembers::class);
     }
 
+    public function calendars(){
+        return $this->hasMany(Calendar::class);
+    }
+
     public function image(){
         return $this->morphOne(Resources::class,'resource');
     }

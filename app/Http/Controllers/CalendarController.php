@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Repositories\CalendarRepository;
+use App\Http\Repositories\UserRepository;
 use App\Models\Calendar;
 use App\Http\Resources\CalendarResource;
 use App\Http\Requests\CalendarRequest;
@@ -23,11 +24,38 @@ class CalendarController extends Controller
      */
     public function index()
     {
-        $data = new CalendarRepository(new Calendar());
-        $count = count($data->all());
+        $user_repo = new UserRepository(Auth::user());
+
+        $count = count($user_repo->calendars());
+
         if ($count !== 0) {
-            $responsei = $data->orderBy('start_date','DESC');
-            $responseData = CalendarResource::collection($responsei);
+            $data =$user_repo->calendars();
+            $responseData = CalendarResource::collection($data);
+            
+            $dataResponse = ['data' => $responseData];
+            $code = 200;
+
+        } else {
+            $dataResponse = ['data' => "Not found Data"];
+            $code = 404;
+        }
+        return response()->json($dataResponse, $code);
+    }
+
+    /**
+     * Display a listing of events by user id
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAll(Request $request)
+    {
+        $calendar_repo = new CalendarRepository(new Calendar());
+        $user_id = $request->id;
+        $count = count($calendar_repo->findbyuser($user_id));
+
+        if ($count !== 0) {
+            $data = $calendar_repo->findbyuser($user_id);
+            $responseData = CalendarResource::collection($data);
             
             $dataResponse = ['data' => $responseData];
             $code = 200;
@@ -124,10 +152,10 @@ class CalendarController extends Controller
         try {
             if ($request->json()) {
 
-                $calendarRepo = new CalendarRepository(new Calendar());
-                $calendar = $calendarRepo->find(request('id'));
-                $calendar_new = $calendarRepo->find(request('id'));
+                $event_id = request('id');
 
+                $calendarRepo = new CalendarRepository(new Calendar());
+                $calendar = $calendarRepo->find($event_id);
 
                 // obtain year
                 $now = Carbon::now();
@@ -149,33 +177,20 @@ class CalendarController extends Controller
                     return response()->json(['error' => "End date must be greater than start date"], 422);
                 }
 
+                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
+                    $count = $calendarRepo->betweenDates($start_date,$end_date,$user_id,$event_id);
+                    if ($count > 0) {
+                        return response()->json(['error' => "Date range is occupied"], 422);
+                    }
+                }
+
                 $data = [
                     'production_type' => $request->production_type,
                     'project_name' => $request->project_name,
                     'start_date' => $start_date,
                     'end_date' => $end_date
                 ];
-
-                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
-                    try{
-                        $trans = DB::transaction(function () use ($calendar,$start_date,$end_date,$data,$calendarRepo,$user_id) {
-                            // $result =  DB::table('calendars')->where('user_id',$user_id)->update($data);
-                            $result =  $calendar_new->update($data);
-
-                            $count = $calendarRepo->betweenDates($calendar->$start_date,$calendar->$end_date,$user_id);
-                            if ($count > 0) {
-                                throw new \Exception;
-                            }
-                                
-                        });
-    
-                    }catch (Exception $e){
-                        return response()->json(['error' => "Date range is occupied"], 422);
-                    }
-                    
-                }
                 
-        
                 // Update data
                 $calendar->update($data);
 
@@ -196,12 +211,19 @@ class CalendarController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        try {
+            $calendar = new CalendarRepository(new Calendar());
+            $datac = $calendar->find($request->id);
+            $datac->delete();
+
+            return response()->json(['data' => 'Event  deleted'], 200);
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Not found Data"], 404);
+        } catch (QueryException $e) {
+            return response()->json(['data' => "Unprocesable"], 406);
+        }
     }
 }

@@ -97,6 +97,14 @@ class CalendarUnitTest extends TestCase
         $this->assertEquals($data['user_id'], $calendar->user_id);
     }
 
+    public function test_delete_event()
+    {
+        $calendar = factory(Calendar::class)->create();
+        $calendar_repo = new CalendarRepository($calendar);
+        $delete = $calendar_repo->delete();
+        $this->assertTrue($delete);
+    }
+
     public function test_create_event_exception()
     {
         $this->expectException(CreateException::class);

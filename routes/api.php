@@ -45,6 +45,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
    // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
 
+   //calendar routes
+   $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -70,6 +73,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/calendar/show',['uses'=>'CalendarController@index']);
     $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
     $router->put('/calendar/update/{id}',['uses'=>'CalendarController@update']);
+    $router->delete('/calendar/delete/{id}',['uses'=>'CalendarController@destroy']);
 
 });
 
