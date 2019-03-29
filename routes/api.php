@@ -67,6 +67,10 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/skills/byuser',['uses'=>'SkillsController@byUser']);
     $router->post('/skills/add',['uses'=>'SkillsController@addToUser']);
     $router->delete('/skills/delete/{id}',['uses'=>'SkillsController@deleteToUser']);
+    //managers
+    $router->get('/managers/byuser',['uses'=>'ManagersController@byUser']);
+    $router->post('/managers',['uses'=>'ManagersController@store']);
+    $router->put('/managers/update/{id}',['uses'=>'ManagersController@update']);
     //Education routes
     $router->post('/educations/create',['uses'=>'EducationsController@store']);
     $router->get('/educations/show',['uses'=>'EducationsController@getAll']);
