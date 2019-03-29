@@ -11,7 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\UserDetails;
 
-class MarketplaceControllerTest extends TestCase
+class MarketplaceControllerUnitTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
