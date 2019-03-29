@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class SkillsResource extends JsonResource
 {
@@ -14,9 +15,19 @@ class SkillsResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id'=>$this->id,
-            'name'=>$this->name,
-        ];
+        if(isset($this->skills)){
+            Log::info($this->skills);
+            return [
+                'id'=>$this->id,
+                'name'=>$this->skills->name,
+            ];
+        }else{
+            return [
+                'id'=>$this->id,
+                'name'=>$this->name,
+            ];
+        }
+
+
     }
 }

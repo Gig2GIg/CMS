@@ -30,7 +30,7 @@ class EducationsController extends Controller
                 'instructor'=>$request->instructor,
                 'location'=>$request->location,
                 'year'=>$request->year,
-                'user_id' => Auth::user()->getAuthIdentifier(),
+                'user_id' => $this->getUserLogging(),
             ];
             $repo = new EducationsRepository(new Educations());
             $repo->create($data);

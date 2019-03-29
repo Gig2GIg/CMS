@@ -6,6 +6,7 @@ use App\Models\Skills;
 use App\Models\User;
 use App\Models\UserDetails;
 
+use App\Models\UserSkills;
 use Tests\TestCase;
 
 
@@ -13,7 +14,7 @@ class SkillControllerTest extends TestCase
 {
     protected $token;
     protected $testId;
-
+    protected $skillId;
 
     public function setUp(): void
     {
@@ -32,16 +33,19 @@ class SkillControllerTest extends TestCase
             'email' => 'token@test.com',
             'password' => '123456',
         ]);
-
+        $skill = factory(Skills::class)->create();
+        $this->skillId = $skill->id;
         $this->token = $response->json('access_token');
 
     }
-    public function test_all_skill_200(){
-        factory(Skills::class,20)->create();
-        $response = $this->json('GET','api/skills/show?token='.$this->token);
+
+    public function test_all_skill_200()
+    {
+        factory(Skills::class, 20)->create();
+        $response = $this->json('GET', 'api/skills/show?token=' . $this->token);
 
         $response->assertStatus(200);
-        $dataj = json_decode($response->content(),true);
+        $dataj = json_decode($response->content(), true);
         $count = count($dataj['data']);
         $this->assertTrue($count > 5);
         $response->assertJsonStructure(['data' => [[
@@ -50,17 +54,42 @@ class SkillControllerTest extends TestCase
         ]]]);
     }
 
-    public function test_all_skill_by_user_200(){
-        factory(Skills::class,20)->create();
-        $response = $this->json('GET','api/skills/byuser?token='.$this->token);
+    public function test_all_skill_by_user_200()
+    {
+        $skill = factory(Skills::class)->create();
+        factory(UserSkills::class, 10)->create([
+            'user_id' => $this->testId,
+            'skills_id' => $this->skillId
+        ]);
+        $response = $this->json('GET', 'api/skills/byuser?token=' . $this->token);
 
         $response->assertStatus(200);
-        $dataj = json_decode($response->content(),true);
+        $dataj = json_decode($response->content(), true);
         $count = count($dataj['data']);
         $this->assertTrue($count > 5);
         $response->assertJsonStructure(['data' => [[
             "id",
             "name",
         ]]]);
+    }
+
+    public function test_add_skill_user_200()
+    {
+        $response = $this->json('POST','api/a/skills/add?token=' . $this->token,[
+            'skills_id'=>$this->skillId
+        ]);
+        $response->assertStatus(201);
+
+    }
+
+    public function test_delete_skill_user_200()
+    {
+       $skill = factory(UserSkills::class)->create([
+            'user_id' => $this->testId,
+            'skills_id' => $this->skillId
+        ]);
+        $response = $this->json('DELETE','api/a/skills/delete/'.$skill->id.'?token='.$this->token);
+        $response->assertStatus(200);
+
     }
 }
