@@ -6,8 +6,6 @@ use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserManager;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserManagerControllerTest extends TestCase
 {

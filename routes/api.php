@@ -30,6 +30,11 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
     $router->get('/skills/show',['uses'=>'SkillsController@list']);
 
+    //auditions
+    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
@@ -41,20 +46,16 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
-    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
-    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
-    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
-   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+
 
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
-    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
-    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
-    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+
 
     //credits routes
     $router->post('/credits/create',['uses'=>'CreditsController@store']);
@@ -71,6 +72,11 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/managers/byuser',['uses'=>'ManagersController@byUser']);
     $router->post('/managers',['uses'=>'ManagersController@store']);
     $router->put('/managers/update/{id}',['uses'=>'ManagersController@update']);
+
+    //aparences
+    $router->get('/aparences/byuser',['uses'=>'AparencesController@byUser']);
+    $router->post('/aparences',['uses'=>'AparencesController@store']);
+    $router->put('/aparences/update/{id}',['uses'=>'AparencesController@update']);
     //Education routes
     $router->post('/educations/create',['uses'=>'EducationsController@store']);
     $router->get('/educations/show',['uses'=>'EducationsController@getAll']);

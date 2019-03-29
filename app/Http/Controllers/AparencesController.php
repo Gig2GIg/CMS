@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
-use App\Http\Repositories\UserManagerRepository;
-use App\Http\Requests\ManagersRequest;
-use App\Http\Resources\ManagerResource;
-use App\Models\UserManager;
+use App\Http\Repositories\UserAparenceRepository;
+use App\Http\Requests\AparencesRequest;
+use App\Http\Resources\AparenceResource;
+use App\Models\UserAparence;
 use Illuminate\Http\Request;
 
-class ManagersController extends Controller
+class AparencesController extends Controller
 {
     protected $log;
 
@@ -20,21 +20,21 @@ class ManagersController extends Controller
         $this->log = new LogManger();
     }
 
-    public function store(ManagersRequest $request)
+    public function store(AparencesRequest $request)
     {
         try {
             $data = [
-                'name' => $request->name,
-                'company' => $request->company,
-                'type' => $request->type,
-                'notifications' => $request->notifications,
-                'email' => $request->email,
+                'weight'=> $request->weight,
+                'height'=>  $request->height,
+                'hair'=>     $request->hair,
+                'eyes'=>  $request->eyes,
+                'race'=>         $request->race,
                 'user_id' => $this->getUserLogging(),
             ];
-            $repo = new UserManagerRepository(new UserManager());
+            $repo = new UserAparenceRepository(new UserAparence());
             $repo->create($data);
 
-            $dataResponse = ['data' => 'Manager created'];
+            $dataResponse = ['data' => 'Aparence created'];
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
@@ -49,40 +49,41 @@ class ManagersController extends Controller
     public function byUser()
     {
         try {
-            $repo = new UserManagerRepository(new UserManager());
-            $data = $repo->findbyparam('user_id', $this->getUserLogging());
-            if ($data !== null) {
-                $dataResponse = ['data' => new ManagerResource($data)];
+            $repo = new UserAparenceRepository(new UserAparence());
+            $data = $repo->findbyparam('user_id',$this->getUserLogging());
+            if($data!==null){
+                $dataResponse = ['data' => new AparenceResource($data)];
+
                 $code = 200;
-            } else {
+            }else{
                 $dataResponse = ['data' => 'Not Found Data'];
                 $code = 404;
             }
+
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
-    public function update(ManagersRequest $request)
+    public function update(AparencesRequest $request)
     {
         try {
             $data = [
-                'name' => $request->name,
-                'company' => $request->company,
-                'type' => $request->type,
-                'notifications' => $request->notifications,
-                'email' => $request->email,
-
+                'weight'=> $request->weight,
+                'height'=>  $request->height,
+                'hair'=>     $request->hair,
+                'eyes'=>  $request->eyes,
+                'race'=>         $request->race,
             ];
-            $repo = new UserManagerRepository(new UserManager());
+            $repo = new UserAparenceRepository(new UserAparence());
             $dataManager = $repo->find(request('id'));
             $result = $dataManager->update($data);
             if ($result) {
-                $dataResponse = ['data' => 'Manager updated'];
+                $dataResponse = ['data' => 'Aparence updated'];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Manager not updated'];
+                $dataResponse = ['data' => 'Aparence not updated'];
                 $code = 406;
             }
             return response()->json($dataResponse, $code);
@@ -90,5 +91,4 @@ class ManagersController extends Controller
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
-
 }

@@ -13,7 +13,7 @@ use Tests\TestCase;
 class UserManagerTest extends TestCase
 {
     protected $userId;
-    protected $skillId;
+
 
     protected function setUp(): void
     {
