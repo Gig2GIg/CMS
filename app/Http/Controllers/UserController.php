@@ -291,9 +291,21 @@ class UserController extends Controller
 
     }
 
-    /**
-     * @param UserRequest $request
-     */
+    public function updateMemberships(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $mebersUnion = new UserUnionMembers();
+            $mebersUnion->where('user_id', $this->getUserLogging())->delete();
+            foreach ($request->union_member as $iValue) {
+                $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
+                $userUnion->create(['name' => $iValue['name'], 'user_id' => $this->getUserLogging()]);
+            }
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+        }
+    }
 
 
 }

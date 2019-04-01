@@ -54,8 +54,11 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
+    $router->get('/users/show/{id}',['uses'=>'UserController@show']);
+    $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
-
+    $router->get('/users',['uses'=>'UserController@getAll']);
+    $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
 
     //credits routes
     $router->post('/credits/create',['uses'=>'CreditsController@store']);

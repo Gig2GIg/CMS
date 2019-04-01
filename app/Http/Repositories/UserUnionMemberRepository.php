@@ -17,6 +17,7 @@ use App\Http\Repositories\Interfaces\IUnionMember;
 use App\Models\UserUnionMembers;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 
 class UserUnionMemberRepository implements IUnionMember
 {
@@ -55,6 +56,17 @@ class UserUnionMemberRepository implements IUnionMember
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException($e);
         }
+    }
+    public function findbyparam($colum, $value): Collection
+    {
+        try{
+
+            return $this->model->where($colum,'=',$value)->get();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
     }
 
     public function update(array $data):bool
