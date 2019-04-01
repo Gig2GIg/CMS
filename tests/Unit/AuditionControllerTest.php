@@ -51,7 +51,7 @@ class AuditionControllerTest extends TestCase
             'title' => $this->faker->words(3, 3),
             'date' => $this->faker->date(),
             'time' => $this->faker->time(),
-            'location' => $this->faker->address(),
+            'location' => [$this->faker->latitude,$this->faker->longitude],
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
             'cover' => $this->faker->imageUrl(),
@@ -105,8 +105,9 @@ class AuditionControllerTest extends TestCase
                 ]
             ],
             'contributors' => [
-                ['user_id' => $cont1->id],
-                ['user_id' => $cont2->id],
+                ['email' => $cont1->email],
+                ['email' => $cont2->email],
+                ['email' => 'g2g@test.com'],
 
             ],
             'media' => [

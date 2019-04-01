@@ -61,7 +61,7 @@ class SkillControllerTest extends TestCase
             'user_id' => $this->testId,
             'skills_id' => $this->skillId
         ]);
-        $response = $this->json('GET', 'api/skills/byuser?token=' . $this->token);
+        $response = $this->json('GET', 'api/a/skills/byuser?token=' . $this->token);
 
         $response->assertStatus(200);
         $dataj = json_decode($response->content(), true);

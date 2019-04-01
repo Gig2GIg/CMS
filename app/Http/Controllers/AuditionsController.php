@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AppointmentRepository;
@@ -11,6 +12,7 @@ use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Repositories\UserRepository;
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
 use App\Http\Requests\MediaRequest;
@@ -21,6 +23,7 @@ use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Roles;
 use App\Models\Slots;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -31,12 +34,14 @@ class AuditionsController extends Controller
     public const DESCRIPTION = 'description';
     protected $log;
     protected $find;
+    protected $toDate;
 
     public function __construct()
     {
         $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
+        $this->toDate = new ManageDates();
     }
 
     /**
@@ -83,9 +88,8 @@ class AuditionsController extends Controller
                     $slotsRepo->create($dataSlots);
                 }
                 foreach ($request['contributors'] as $contrib) {
-                    $auditionContributorsData = $this->dataToContributorsProcess($contrib, $audition);
-                    $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
-                    $contributorRepo->create($auditionContributorsData);
+                    $this->saveContributor($contrib, $audition);
+
                 }
                 DB::commit();
                 $responseData = ['data' => ['message' => 'Auditions create']];
@@ -111,9 +115,9 @@ class AuditionsController extends Controller
     {
         return [
             'title' => $request->title,
-            'date' => $request->date,
+            'date' => $this->toDate->transformDate($request->date),
             'time' => $request->time,
-            'location' => $request->location,
+            'location' => implode(',',$request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,
@@ -134,8 +138,8 @@ class AuditionsController extends Controller
     public function dataDatesToProcess($date): array
     {
         return [
-            'to' => $date['to'],
-            'from' => $date['from'],
+            'to' => $this->toDate->transformDate($date['to']),
+            'from' => $this->toDate->transformDate($date['from']),
             'type' => $date['type'],
 
         ];
@@ -199,7 +203,7 @@ class AuditionsController extends Controller
     public function dataToContributorsProcess($contrib, $audition): array
     {
         return [
-            'user_id' => $contrib['user_id'],
+            'user_id' => $contrib->id,
             'auditions_id' => $audition->id,
             'status' => false
         ];
@@ -354,4 +358,32 @@ class AuditionsController extends Controller
         return response()->json(['data' => $data]);
 
     }
+
+    public function sendPushNotification($user_id,$puskey){
+        $this->log->info("ENVIAR PUSH A USER".$user_id);
+    }
+
+    /**
+     * @param $contrib
+     * @param $audition
+     * @throws NotFoundException
+     * @throws \App\Http\Exceptions\CreateException
+     */
+    public function saveContributor($contrib, $audition): void
+    {
+        try {
+            $user = new UserRepository(new User());
+            $dataUser = $user->findbyparam('email', $contrib['email']);
+            if ($dataUser !== null) {
+                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
+                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
+                $contributorRepo->create($auditionContributorsData);
+                $this->sendPushNotification($dataUser->id, $dataUser->puskey);
+            }
+        }catch (NotFoundException $exception){
+                $this->log->error($exception->getMessage());
+            }
+
+        }
+
 }

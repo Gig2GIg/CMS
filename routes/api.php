@@ -60,6 +60,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+    $router->post('/auditions',['uses'=>'AuditionManagementController@saveAudition']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
 
