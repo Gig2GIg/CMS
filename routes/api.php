@@ -59,8 +59,10 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
-    $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+   // $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
     $router->post('/auditions',['uses'=>'AuditionManagementController@saveAudition']);
+    $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
+    $router->get('/auditions/requested',['uses'=>'AuditionManagementController@getRequested']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
 
