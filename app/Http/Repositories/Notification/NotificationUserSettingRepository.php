@@ -78,8 +78,14 @@ class NotificationUserSettingRepository implements INotificationUserSettingRepos
      */
     public function delete(): ?bool
     {
-            return $this->model->delete();
+        return $this->model->delete();
     }
+
+    public function detach(): ?bool
+    {
+        return $this->model->detach();
+    }
+
 
     public function all()
     {

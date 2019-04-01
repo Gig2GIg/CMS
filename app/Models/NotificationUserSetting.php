@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Database\Eloquent\Relations\Pivot;
-
-class NotificationUserSetting extends Pivot
+class NotificationUserSetting extends Model
 {
     protected $table = 'notification_user';
 
@@ -24,3 +23,4 @@ class NotificationUserSetting extends Pivot
         return $this->belongsTo(Notification::class);
     }
 }
+

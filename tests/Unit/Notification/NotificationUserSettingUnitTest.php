@@ -22,7 +22,6 @@ class NotificationUserSettingUnitTest extends TestCase
 
     protected $user_id;
     protected $notification_id;
-    protected $data;
 
     public function setUp(): void
     {
@@ -33,13 +32,6 @@ class NotificationUserSettingUnitTest extends TestCase
         $notification = factory(Notification::class)->create(['type' => $type]);
         $this->notification_id = $notification->id;
 
-        $data = [
-            'notification_id'=>$notification->id,
-            'user_id'=>$user->id,
-            'status' => 'on'
-        ];
-        $this->data = $data;
-      
     }
 
     public function test_create_notificationUserSetting()
@@ -50,66 +42,83 @@ class NotificationUserSettingUnitTest extends TestCase
             'status' => 'on'
         ];
       
+
         $notificationUserSettingRepo = new NotificationUserSettingRepository(new NotificationUserSetting());
         $notificationUserSetting = $notificationUserSettingRepo->create($data_);
 
+        $type = 'app';
+        $notification = factory(Notification::class)->create(['type' => $type]);
+
         $this->assertInstanceOf(NotificationUserSetting::class, $notificationUserSetting);
-        $this->assertEquals($data['status'], $notificationUserSetting->status);
+        $this->assertEquals($data_['status'], $notificationUserSetting->status);
      
     }
 
 
-    public function test_delete_notificationUserSetting()
+    public function test_change_status_notificationUserSetting()
     {  
-        $data = factory(NotificationUserSetting::class)->create();
-        dd($data);
-        $notificationUserSettingRepo = new NotificationUserSettingRepository($data);
-        $delete = $notificationUserSettingRepo->delete();
-        $this->assertTrue($delete);
+        $data = [
+            'notification_id'=>$this->notification_id,
+            'user_id'=>$this->user_id,
+            'status' => 'on'
+        ];
+      
+        $notification_user_settingRepo = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $notificationUserSetting = $notification_user_settingRepo->create($data);
+        $notificationUserSetting->update(['status' => 2]);
+        
+        $this->assertEquals(2, $notificationUserSetting->status);
+    
     }
 
-    public function test_find_auditionsContributors()
+    public function test_find_notificationUserSetting()
     {
-        $user = factory(User::class)->create();
-        $data = factory(AuditionContributors::class)->create(['auditions_id'=>$this->auditions_id,'user_id'=>$user->id]);
-        $auditionsContributorsRepo = new AuditionContributorsRepository(new AuditionContributors());
-        $found = $auditionsContributorsRepo->find($data->id);
-        $this->assertInstanceOf(AuditionContributors::class,$found);
-        $this->assertEquals($found->email,$data->email);
+        $data = [
+            'notification_id'=>$this->notification_id,
+            'user_id'=>$this->user_id,
+            'status' => 'on'
+        ];
+      
+        $notification_user_settingRepo = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $notificationUserSetting = $notification_user_settingRepo->create($data);
+
+        $found = $notification_user_settingRepo->find($notificationUserSetting->id);
+        $this->assertInstanceOf(NotificationUserSetting::class,$found);
+        $this->assertEquals($found->id,$notificationUserSetting->id);
 
     }
 
-    public function test_all_auditionsContributors()
+    public function test_all_NotificationUserSetting()
     {
-        $user = factory(User::class)->create();
-        factory(AuditionContributors::class,5)->create(['auditions_id'=>$this->auditions_id,'user_id'=>$user->id]);
-        $auditionsContributors = new AuditionContributorsRepository(new AuditionContributors());
-        $data = $auditionsContributors->all();
+
+        factory(NotificationUserSetting::class, 5)->create(['notification_id'=>$this->notification_id, 'user_id'=>$this->user_id]);
+        $notificationUserSetting = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $data = $notificationUserSetting->all();
+
         $this->assertIsArray($data->toArray());
         $this->assertTrue($data->count() > 2);
     }
 
-    public function test_create_auditionsContributors_exception()
+    public function test_create_NotificationUserSetting_exception()
     {
         $this->expectException(CreateException::class);
-        $userRepo = new AuditionContributorsRepository(new AuditionContributors());
-        $userRepo->create([]);
+        $notificationUserSetting = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $notificationUserSetting->create([]);
     }
 
     public function test_show_user_exception()
     {
         $this->expectException(NotFoundException::class);
-        $auditionsContributors = new AuditionContributorsRepository(new AuditionContributors());
-        $auditionsContributors->find(2345);
+        $notificationUserSetting = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $notificationUserSetting->find(2345);
     }
 
 
 
     public function test_delete_auditionsContributors_null_exception()
     {
-
-        $auditionsContributorsRepo = new AuditionContributorsRepository(new AuditionContributors());
-        $delete = $auditionsContributorsRepo->delete();
+        $notificationUserSetting = new NotificationUserSettingRepository(new NotificationUserSetting());
+        $delete = $notificationUserSetting->delete();
         $this->assertNull($delete);
     }
 }

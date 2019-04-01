@@ -78,7 +78,7 @@ class NotificationRepository implements INotificationRepository
      */
     public function delete(): ?bool
     {
-            return $this->model->delete();
+        return $this->model->delete();
     }
 
     public function all()

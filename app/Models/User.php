@@ -74,9 +74,24 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(AuditionContributors::class);
     }
 
+//NOTIFICATIONS RELATIONSHIPS
     public function notification_settings()
     {
-        return $this->belongsToMany(Notification::class)->using(UserNotificationSetting::class);
-        
+        return $this->hasManyThrough(
+            Notification::class,
+            NotificationUserSetting::class,
+            'notification_id', 
+            'id'
+        );
     }
+    public function notification_settings_on()
+    {
+        return $this->hasManyThrough(
+            Notification::class,
+            NotificationUserSetting::class,
+            'notification_id', 
+            'id'
+        )->where('status', 1);     
+    }
+//
 }
