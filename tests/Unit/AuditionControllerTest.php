@@ -143,7 +143,7 @@ class AuditionControllerTest extends TestCase
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
 
         $response = $this->json('GET',
-            'api/t/auditions/show/' . $audition->id . '?token=' . $this->token);
+            'api/auditions/show/' . $audition->id . '?token=' . $this->token);
         $response->assertStatus(200);
     }
 
@@ -160,14 +160,14 @@ class AuditionControllerTest extends TestCase
         $slot2 = factory(Slots::class)->create(['appointment_id' => $appoinments2->id]);
 
         $response = $this->json('GET',
-            'api/t/auditions/show?token=' . $this->token);
+            'api/auditions/show?token=' . $this->token);
         $response->assertStatus(200);
     }
 
     public function test_show_all_audition_404()
     {
         $response = $this->json('GET',
-            'api/t/auditions/show?token=' . $this->token);
+            'api/auditions/show?token=' . $this->token);
         $response->assertStatus(404);
     }
 
@@ -176,7 +176,7 @@ class AuditionControllerTest extends TestCase
         $id = 20239;
 
         $response = $this->json('GET',
-            'api/t/auditions/show/' . $id . '?token=' . $this->token);
+            'api/auditions/show/' . $id . '?token=' . $this->token);
         $response->assertStatus(404);
     }
 

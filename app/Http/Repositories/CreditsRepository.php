@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: alphyon
- * Date: 2019-03-11
- * Time: 14:51
+ * Date: 2019-03-27
+ * Time: 17:24
  */
 
 namespace App\Http\Repositories;
@@ -13,55 +13,45 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\IUnionMember;
-use App\Models\UserUnionMembers;
+use App\Http\Repositories\Interfaces\ICreditsRepository;
+use App\Models\Credits;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Collection;
 
-class UserUnionMemberRepository implements IUnionMember
+class CreditsRepository implements ICreditsRepository
 {
     protected $model;
     protected $log;
 
     /**
-     * UnionMemberRepositor constructor.
+     * UserRepository constructor.
+     * @param User $user
      */
-    public function __construct(UserUnionMembers $unionMember)
+    public function __construct(Credits $credits)
     {
-        $this->model = $unionMember;
+        $this->model = $credits;
         $this->log = new LogManger();
     }
 
-    public function all()
-    {
-       return $this->model->all();
-    }
 
-    public function create(array $data) : UserUnionMembers
+    public function create(array $data): Credits
     {
-        try{
+
+
+        try {
             return $this->model->create($data);
-        }catch (QueryException $e){
+            $this->log->info($this->model);
+        } catch (QueryException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new CreateException($e);
         }
     }
 
-    public function find($id): UserUnionMembers
+
+    public function find($id): Credits
     {
         try{
             return $this->model->findOrFail($id);
-        }catch (ModelNotFoundException $e){
-            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new NotFoundException($e);
-        }
-    }
-    public function findbyparam($colum, $value): Collection
-    {
-        try{
-
-            return $this->model->where($colum,'=',$value)->get();
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
@@ -69,7 +59,11 @@ class UserUnionMemberRepository implements IUnionMember
 
     }
 
-    public function update(array $data):bool
+
+
+
+
+    public function update(array $data) : bool
     {
         try{
             return $this->model->update($data);
@@ -79,8 +73,16 @@ class UserUnionMemberRepository implements IUnionMember
         }
     }
 
-    public function delete():?bool
+    /**
+     * @return bool
+     */
+    public function delete(): ?bool
     {
         return $this->model->delete();
+    }
+
+    public function all()
+    {
+        return $this->model->all();
     }
 }

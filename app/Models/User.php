@@ -77,4 +77,8 @@ class User extends Authenticatable implements JWTSubject
     public function contributors(){
         return $this->belongsTo(AuditionContributors::class);
     }
+
+    public function skills(){
+        return $this->hasMany(UserSkills::class);
+    }
 }
