@@ -30,6 +30,7 @@ class AuditionResponse extends JsonResource
             ->pluck('url');
         return [
             'id' => $this->id,
+            'id_user'=>$this->user_id,
             "title" => $this->title,
             "date" => $this->date,
             "time" => $this->time,

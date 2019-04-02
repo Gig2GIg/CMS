@@ -31,12 +31,13 @@ class AuditionManagementTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure(['data']);
     }
+
     public function test_save_requested()
     {
         factory(UserManager::class)->create([
-            'user_id'=>$this->userId,
-            'notifications'=>true,
-            'email'=>'alphyon21@gamial.com'
+            'user_id' => $this->userId,
+            'notifications' => true,
+            'email' => 'alphyon21@gamial.com'
         ]);
 
         $response = $this->json('POST',
@@ -76,7 +77,7 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('GET',
             'api/a/auditions/upcoming?token=' . $this->token);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data'=>[[
+        $response->assertJsonStructure(['data' => [[
             'id',
             'title',
             'date',
@@ -100,7 +101,7 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('GET',
             'api/a/auditions/requested?token=' . $this->token);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data'=>[[
+        $response->assertJsonStructure(['data' => [[
             'id',
             'title',
             'date',
@@ -135,7 +136,7 @@ class AuditionManagementTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url'=>$this->faker->url,'type'=>4]);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 4]);
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id
         ]);

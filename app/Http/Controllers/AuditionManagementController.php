@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
+use App\Http\Repositories\AuditionContributorsRepository;
+use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\UserAuditionsResource;
+use App\Models\AuditionContributors;
+use App\Models\Auditions;
 use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
@@ -68,6 +73,26 @@ class AuditionManagementController extends Controller
             $dataResponse = $data->where('type','=','1');
 
             return response()->json(['data'=>UserAuditionsResource::collection($dataResponse)],200);
+
+        }catch (Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
+
+ public function getUpcomingMangement(){
+        try{
+
+            $dataAuditions = new AuditionRepository(new Auditions());
+            $data = $dataAuditions->findbyparam('user_id',$this->getUserLogging());
+
+            $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
+            $dataContri = $dataContributors->all();
+            
+
+
+            $dataResponse = $data->where('status','=','1');
+            return response()->json(['data'=>AuditionResponse::collection($dataResponse)],200);
 
         }catch (Exception $exception){
             $this->log->error($exception->getMessage());

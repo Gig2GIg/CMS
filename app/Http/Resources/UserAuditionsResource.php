@@ -22,13 +22,14 @@ class UserAuditionsResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'id_user'=> $this->auditions->id_user,
             'title' => $this->auditions->title,
            'date' => $this->auditions->date,
             'union' => $this->auditions->union,
            'contract' => $this->auditions->contract,
             'production' => $dataProduction,
             'media' =>$url_media[0] ?? null,
-            'roles_count'=>count($this->auditions->roles),
+            'number_roles'=>count($this->auditions->roles),
 
 
         ];
