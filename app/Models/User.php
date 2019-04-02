@@ -93,5 +93,10 @@ class User extends Authenticatable implements JWTSubject
             'id'
         )->where('status', 1);     
     }
+
+    public function notification_history()
+    {
+        return $this->hasMany(NotificationHistory::class);
+    }
 //
 }
