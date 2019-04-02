@@ -28,6 +28,13 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+    $router->get('/skills/show',['uses'=>'SkillsController@list']);
+
+    //auditions
+    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
+    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
@@ -39,21 +46,50 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
-    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
-    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
-    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
+
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
-   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+
+
+   //calendar routes
+   $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
 
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
+    $router->get('/users/show/{id}',['uses'=>'UserController@show']);
+    $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
-    $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
-    $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
-    $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
-   // $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
+    $router->post('/auditions',['uses'=>'AuditionManagementController@saveAudition']);
+    $router->get('/users',['uses'=>'UserController@getAll']);
+    $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
+
+    //credits routes
+    $router->post('/credits/create',['uses'=>'CreditsController@store']);
+    $router->get('/credits/show',['uses'=>'CreditsController@getAll']);
+    $router->get('/credits/show/{id}',['uses'=>'CreditsController@show']);
+    $router->put('/credits/update/{id}',['uses'=>'CreditsController@update']);
+    $router->delete('/credits/delete/{id}',['uses'=>'CreditsController@delete']);
+
+    //skills
+    $router->get('/skills/byuser',['uses'=>'SkillsController@byUser']);
+    $router->post('/skills/add',['uses'=>'SkillsController@addToUser']);
+    $router->delete('/skills/delete/{id}',['uses'=>'SkillsController@deleteToUser']);
+    //managers
+    $router->get('/managers/byuser',['uses'=>'ManagersController@byUser']);
+    $router->post('/managers',['uses'=>'ManagersController@store']);
+    $router->put('/managers/update/{id}',['uses'=>'ManagersController@update']);
+
+    //aparences
+    $router->get('/aparences/byuser',['uses'=>'AparencesController@byUser']);
+    $router->post('/aparences',['uses'=>'AparencesController@store']);
+    $router->put('/aparences/update/{id}',['uses'=>'AparencesController@update']);
+    //Education routes
+    $router->post('/educations/create',['uses'=>'EducationsController@store']);
+    $router->get('/educations/show',['uses'=>'EducationsController@getAll']);
+    $router->get('/educations/show/{id}',['uses'=>'EducationsController@show']);
+    $router->put('/educations/update/{id}',['uses'=>'EducationsController@update']);
+    $router->delete('/educations/delete/{id}',['uses'=>'EducationsController@delete']);
 
     //marketplace by category
     $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
@@ -64,6 +100,14 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
         $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
         $router->get('/{marketplaceCategory}/marketplaces/search', 'MarketplaceController@search_by_category_by_title')->where('id', '[0-9]+'); 
     });  
+
+    // calendar routes
+    $router->post('/calendar/create_event',['uses'=>'CalendarController@store']);
+    $router->get('/calendar/show',['uses'=>'CalendarController@index']);
+    $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
+    $router->put('/calendar/update/{id}',['uses'=>'CalendarController@update']);
+    $router->delete('/calendar/delete/{id}',['uses'=>'CalendarController@destroy']);
+
 });
 
 

@@ -66,6 +66,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserUnionMembers::class);
     }
 
+    public function calendars(){
+        return $this->hasMany(Calendar::class);
+    }
+
     public function image(){
         return $this->morphOne(Resources::class,'resource');
     }
@@ -74,7 +78,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(AuditionContributors::class);
     }
 
-//NOTIFICATIONS RELATIONSHIPS
+    public function skills(){
+        return $this->hasMany(UserSkills::class);
+    }
+
+    //NOTIFICATIONS RELATIONSHIPS
     public function notification_settings()
     {
         return $this->hasManyThrough(
@@ -84,6 +92,7 @@ class User extends Authenticatable implements JWTSubject
             'id'
         );
     }
+    
     public function notification_settings_on()
     {
         return $this->hasManyThrough(
@@ -98,5 +107,5 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(NotificationHistory::class);
     }
-//
+    
 }
