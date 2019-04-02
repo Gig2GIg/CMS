@@ -197,7 +197,7 @@ class UserController extends Controller
                     ->with('memberunions')
                     ->with('image')
                     ->get();
-
+$this->log->info($result);
                 if ($dataUser->password !== bcrypt($request->password)) {
                     $data = [
                         'password' => Hash::make($request->password),
