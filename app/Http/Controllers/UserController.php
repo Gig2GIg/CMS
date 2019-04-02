@@ -193,11 +193,7 @@ class UserController extends Controller
                 $user = new UserRepository(new User());
                 $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
-                $result = $dataUser->with('details')
-                    ->with('memberunions')
-                    ->with('image')
-                    ->get();
-$this->log->info($result);
+
                 if ($dataUser->password !== bcrypt($request->password)) {
                     $data = [
                         'password' => Hash::make($request->password),
@@ -219,7 +215,7 @@ $this->log->info($result);
                 ];
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->find($result[0]['details']['id']);
+                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
                 $dat = $dataUserDetails->update($userDataDetails);
 $this->log->info($dat,"USER UPDATE");
                 return response()->json(['data' => 'User updated'], 200);

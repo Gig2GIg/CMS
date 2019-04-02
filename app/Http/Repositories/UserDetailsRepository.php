@@ -93,4 +93,16 @@ class UserDetailsRepository implements IDetailsUserRepository
     {
         return $this->model->delete();
     }
+
+    public function findbyparam($colum, $value):?UserDetails
+    {
+        try{
+
+            return $this->model->where($colum,'=',$value)->first();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
+    }
 }
