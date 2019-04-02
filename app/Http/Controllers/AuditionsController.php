@@ -54,6 +54,7 @@ class AuditionsController extends Controller
         try {
             DB::beginTransaction();
             if ($request->isJson()) {
+                $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
                 foreach ($request['media'] as $file) {
                     $auditionFilesData[] = [

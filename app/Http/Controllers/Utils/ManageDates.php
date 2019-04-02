@@ -13,9 +13,7 @@ class ManageDates
 {
     public function transformDate($date)
     {
-        $date_explode = explode(" ",$date);
-        $expire_time = $date_explode[1]." ".$date_explode[2]." ".$date_explode[3];
-        return  date('Y-m-d', strtotime($expire_time));
+        return (date('Y-m-d', strtotime($date)));
 
     }
 }
