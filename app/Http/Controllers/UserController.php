@@ -191,6 +191,7 @@ class UserController extends Controller
         if ($request->json()) {
             try {
                 $user = new UserRepository(new User());
+                $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
                 $result = $dataUser->with('details')
                     ->with('memberunions')
