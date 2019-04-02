@@ -219,6 +219,7 @@ class UserController extends Controller
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
                 $dataUserDetails = $userDetails->find($result[0]['details']['id']);
+                $this->log->info($dataUserDetails,"USER UPDATE");
                 $updateRepoDetails = new UserDetailsRepository($dataUserDetails);
                 $updateRepoDetails->update($userDataDetails);
 
