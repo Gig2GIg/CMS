@@ -42,6 +42,7 @@ class AuditionsController extends Controller
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
+        $this->getDataToken();
     }
 
     /**
@@ -117,7 +118,7 @@ class AuditionsController extends Controller
             'title' => $request->title,
             'date' => $this->toDate->transformDate($request->date),
             'time' => $request->time,
-            'location' => implode(',',$request->location),
+            'location' => implode(',', $request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,
@@ -198,6 +199,29 @@ class AuditionsController extends Controller
     /**
      * @param $contrib
      * @param $audition
+     * @throws NotFoundException
+     * @throws \App\Http\Exceptions\CreateException
+     */
+    public function saveContributor($contrib, $audition): void
+    {
+        try {
+            $user = new UserRepository(new User());
+            $dataUser = $user->findbyparam('email', $contrib['email']);
+            if ($dataUser !== null) {
+                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
+                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
+                $contributorRepo->create($auditionContributorsData);
+                $this->sendPushNotification($dataUser->id, $dataUser->puskey);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
+    }
+
+    /**
+     * @param $contrib
+     * @param $audition
      * @return array
      */
     public function dataToContributorsProcess($contrib, $audition): array
@@ -208,6 +232,11 @@ class AuditionsController extends Controller
             'status' => false
         ];
 
+    }
+
+    public function sendPushNotification($user_id, $puskey)
+    {
+        $this->log->info("ENVIAR PUSH A USER" . $user_id);
     }
 
     /**
@@ -348,8 +377,6 @@ class AuditionsController extends Controller
         }
     }
 
-
-
     public function media(MediaRequest $request, Auditions $auditions)
     {
         $repository = new AuditionRepository($auditions);
@@ -358,32 +385,5 @@ class AuditionsController extends Controller
         return response()->json(['data' => $data]);
 
     }
-
-    public function sendPushNotification($user_id,$puskey){
-        $this->log->info("ENVIAR PUSH A USER".$user_id);
-    }
-
-    /**
-     * @param $contrib
-     * @param $audition
-     * @throws NotFoundException
-     * @throws \App\Http\Exceptions\CreateException
-     */
-    public function saveContributor($contrib, $audition): void
-    {
-        try {
-            $user = new UserRepository(new User());
-            $dataUser = $user->findbyparam('email', $contrib['email']);
-            if ($dataUser !== null) {
-                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
-                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
-                $contributorRepo->create($auditionContributorsData);
-                $this->sendPushNotification($dataUser->id, $dataUser->puskey);
-            }
-        }catch (NotFoundException $exception){
-                $this->log->error($exception->getMessage());
-            }
-
-        }
 
 }

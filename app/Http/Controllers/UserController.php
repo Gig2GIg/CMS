@@ -33,6 +33,7 @@ class UserController extends Controller
         $this->middleware('jwt', ['except' => ['store', 'sendPassword']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
+
     }
 
 

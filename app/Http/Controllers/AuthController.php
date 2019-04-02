@@ -43,6 +43,7 @@ class AuthController extends Controller
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
+            
           $dataResponse = new UserResource($user);
 
             return $this->respondWithToken($token, $expiration,$dataResponse);
