@@ -7,6 +7,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Carbon\Carbon;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class AuthController extends Controller
@@ -37,6 +38,8 @@ class AuthController extends Controller
             $payload = [
                 'type' => $details['type']
             ];
+
+            JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
