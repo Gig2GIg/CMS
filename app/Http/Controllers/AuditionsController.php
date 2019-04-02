@@ -123,7 +123,7 @@ class AuditionsController extends Controller
             'union' => $request->union,
             'contract' => $request->contract,
             'production' => $request->production,
-            'status' => $request->status,
+            'status' => false,
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];
