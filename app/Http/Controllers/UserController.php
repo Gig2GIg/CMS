@@ -219,10 +219,8 @@ class UserController extends Controller
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
                 $dataUserDetails = $userDetails->find($result[0]['details']['id']);
-                $this->log->info($dataUserDetails,"USER UPDATE");
-                $updateRepoDetails = new UserDetailsRepository($dataUserDetails);
-                $updateRepoDetails->update($userDataDetails);
-
+                $dat = $dataUserDetails->update($userDataDetails);
+$this->log->info($dat,"USER UPDATE");
                 return response()->json(['data' => 'User updated'], 200);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
