@@ -24,7 +24,6 @@ class UserEditRequest extends ApiRequest
     public function rules()
     {
         return [
-            'password'=>'required',
             'first_name'=>'required|string|max:50',
             'address'=>'required|max:150',
             'city'=>'required|string|max:50',
