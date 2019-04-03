@@ -194,13 +194,13 @@ class UserController extends Controller
                 $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
 
-                if ($dataUser->password !== bcrypt($request->password)) {
-                    $data = [
-                        'password' => Hash::make($request->password),
-                    ];
-                    $dataUser->update($data);
-                }
+                    if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                        $data = [
+                            'password' => Hash::make($request->password),
+                        ];
+                        $dataUser->update($data);
 
+                }
                 $userDataDetails = [
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
@@ -217,7 +217,6 @@ class UserController extends Controller
                 $userDetails = new UserDetailsRepository(new UserDetails());
                 $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
                 $dat = $dataUserDetails->update($userDataDetails);
-$this->log->info($dat,"USER UPDATE");
                 return response()->json(['data' => 'User updated'], 200);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
