@@ -14,7 +14,7 @@ class AddDeviceTokenToUsers extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('device_token');
+            $table->string('device_token')->nullable();
         });
     }
 

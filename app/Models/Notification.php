@@ -12,10 +12,22 @@ class Notification extends Model
         'description',
         'type'
     ];
+    
+    public function notifications(){
+        return $this->morphTo();
+    }
+
 
     public function users()
     {
-        return $this->belongsToMany(User::class)->using(UserNotificationSetting::class);
+        return $this->hasManyThrough(
+            Notification::class,
+            NotificationUserSetting::class,
+            'notification_id', 
+            'id'
+        );
     }
     
 }
+
+

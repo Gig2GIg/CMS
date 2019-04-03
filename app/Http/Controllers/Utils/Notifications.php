@@ -15,7 +15,6 @@ class Notifications
 {
     public static function send($type, $user, $data = null, $message = null)
     {
-    
         $notification = $user->notification_history()->create([
             'title'    => $message,
             'code'    => $type,

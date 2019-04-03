@@ -20,6 +20,7 @@ class CreateNotificationsTable extends Migration
             $table->string('code');
             $table->text('description');
             $table->enum('type', ['app', 'audition', 'custom']);
+            $table->morphs('notifications');
         });
     }
 

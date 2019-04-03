@@ -47,4 +47,10 @@ class Auditions extends Model
     public function contributors(){
         return $this->hasMany(AuditionContributors::class);
     }
+
+    //NOTIFICATIONS
+    public function notifis(){
+        return $this->morphToMany(Notification::class,'notification');
+    }
+
 }
