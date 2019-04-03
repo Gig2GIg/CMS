@@ -47,6 +47,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
     $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcomingMangement']);
+    $router->get('/auditions/passed',['uses'=>'AuditionManagementController@getPassedMangement']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
 
 

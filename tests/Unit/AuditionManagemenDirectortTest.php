@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Roles;
 use App\Models\User;
@@ -16,12 +17,39 @@ class AuditionManagemenDirectortTest extends TestCase
     public function test_auditions_upcomming_director()
     {
 
+
         $data = factory(Auditions::class, 10)->create([
             'user_id' => $this->userId,
         ]);
         $dataRol =   factory(Roles::class,10)->create(['auditions_id'=>$data[0]->id]);
+        $dataContrib = factory(AuditionContributors::class,10)->create([ 'user_id' => $this->userId,'auditions_id'=>$data[0]->id]);
         $response = $this->json('GET',
             'api/t/auditions/upcoming?token=' . $this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'id',
+            'id_user',
+            'title',
+            'date',
+            'union',
+            'contract',
+            'production',
+            'media',
+            'number_roles',
+        ]]]);
+    }
+
+    public function test_auditions_passed_director()
+    {
+
+
+        $data = factory(Auditions::class, 10)->create([
+            'user_id' => $this->userId,
+        ]);
+        $dataRol =   factory(Roles::class,10)->create(['auditions_id'=>$data[0]->id]);
+        $dataContrib = factory(AuditionContributors::class,10)->create([ 'user_id' => $this->userId,'auditions_id'=>$data[0]->id]);
+        $response = $this->json('GET',
+            'api/t/auditions/passed?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
             'id',

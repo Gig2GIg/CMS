@@ -14,6 +14,7 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\IAuditionsContributors;
+use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -52,6 +53,18 @@ class AuditionContributorsRepository implements IAuditionsContributors
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException($e);
         }
+    }
+
+    public function findbyparam($colum, $value)
+    {
+        try{
+
+            return $this->model->where($colum,'=',$value)->get();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
     }
 
     public function update(array $data): bool
