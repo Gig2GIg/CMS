@@ -41,7 +41,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
-    $router->put('/users/update/{id}',['uses'=>'UserController@update']);
+    $router->put('/users/update/{id}',['uses'=>'UserController@updateTablet']);
     $router->delete('/users/delete/{id}',['uses'=>'UserController@delete']);
 
     //auditions routes

@@ -10,7 +10,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tymon\JWTAuth\JWTAuth;
 
-class UserControllerTest extends TestCase
+class UserTabletControllerTest extends TestCase
 {
 
 
@@ -29,7 +29,7 @@ class UserControllerTest extends TestCase
         $this->testId = $user->id;
         $user->image()->create(['url' => $this->faker->url]);
         $userDetails = factory(UserDetails::class)->create([
-            'type'=>2,
+            'type'=>1,
             'user_id' => $user->id,
         ]);
         $response = $this->post('api/login', [
@@ -50,15 +50,14 @@ class UserControllerTest extends TestCase
         $response = $this->json('POST', 'api/users/create', [
             'email' => 'test@test.com',
             'password' => '123456',
-            'type' => '2',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
+            'type' => '1',
+            'name' => 'John Doe',
             'address' => 'First Street #123',
             'city' => 'New York',
             'state' => '1',
             'birth' => '1980-05-24',
-            'location' => '12,33334 - 23,00000',
-            'stage_name'=>'test',
+            'location' => '12,33334,23,00000',
+            'agency_name'=>'test',
             'profesion'=>'lawyer',
             'zip'=>'12345',
             'image'=>'http://test.com/image.jpg',
@@ -72,7 +71,7 @@ class UserControllerTest extends TestCase
     {
 
         factory(User::class,10)->create();
-        $response = $this->json('GET', 'api/a/users?token='.$this->token);
+        $response = $this->json('GET', 'api/t/users?token='.$this->token);
         $response->assertStatus(200)->assertJson([
             "data"=>[]
         ]);
@@ -82,7 +81,7 @@ class UserControllerTest extends TestCase
     public function test_get_all_user_api_401()
     {
         User::query()->delete();
-        $response = $this->json('GET', 'api/a/users?token='.$this->token);
+        $response = $this->json('GET', 'api/t/users?token='.$this->token);
         $response->assertStatus(401)->assertJson([
             "status"=> "token_error"
         ]);
@@ -103,12 +102,12 @@ class UserControllerTest extends TestCase
 
     public function test_user_get_show_200(){
        $user =  factory(User::class)->create();
-        $response = $this->json('GET', 'api/a/users/show/'.$user->id."?token=".$this->token);
+        $response = $this->json('GET', 'api/t/users/show/'.$user->id."?token=".$this->token);
         $response->assertStatus(200)->assertJsonStructure(['data'=> ['email']]);
     }
 
     public function test_user_get_show_404(){
-        $response = $this->json('GET', 'api/a/users/show/99999'."?token=".$this->token);
+        $response = $this->json('GET', 'api/t/users/show/99999'."?token=".$this->token);
         $response->assertStatus(404)->assertJson([
             "data"=>"Not found Data"
         ]);
@@ -117,17 +116,17 @@ class UserControllerTest extends TestCase
     public function test_edit_user_api_200()
     {
 
-        $response = $this->json('PUT', 'api/a/users/update/'.$this->testId."?token=".$this->token, [
+        $response = $this->json('PUT', 'api/t/users/update/'.$this->testId."?token=".$this->token, [
             'password' => '123456o',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
+            'email'=>'test1234@test.com',
+            'name' => 'Pedro Perz',
             'address' => 'First Street #123',
             'city' => 'New York',
             'state' => '1',
             'birth' => '1980-05-24',
             'location' => '12,33334 - 23,00000',
             'zip'=>'00000',
-            'stage_name'=>'test',
+            'agency_name'=>'test',
             'profesion'=>'test',
             'image'=>$this->faker->url
         ]);
@@ -137,7 +136,7 @@ class UserControllerTest extends TestCase
 
     public function test_edit_user_api_404()
     {
-        $response = $this->json('PUT', 'api/a/users/update/9999?token='.$this->token, [
+        $response = $this->json('PUT', 'api/t/users/update/9999?token='.$this->token, [
             'password' => '123456',
             'first_name' => 'John',
             'last_name' => 'Doe',
@@ -154,18 +153,18 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-//    public function test_delete_user_api_200(){
-//        $user = factory(User::class)->create();
-//        $userDetails = factory(UserDetails::class)->create([
-//            'user_id'=>$user->id,
-//        ]);
-//        $userMebership = factory(UserUnionMembers::class,2)->create([
-//            'user_id'=>$user->id,
-//        ]);
-//        $user->image()->create(['url' => $this->faker->url]);
-//        $response = $this->json('DELETE','api/a/users/delete/'.$user->id."?token=".$this->token);
-//        $response->assertStatus(200);
-//    }
+    public function test_delete_user_api_200(){
+        $user = factory(User::class)->create();
+        $userDetails = factory(UserDetails::class)->create([
+            'user_id'=>$user->id,
+        ]);
+        $userMebership = factory(UserUnionMembers::class,2)->create([
+            'user_id'=>$user->id,
+        ]);
+        $user->image()->create(['url' => $this->faker->url]);
+        $response = $this->json('DELETE','api/t/users/delete/'.$user->id."?token=".$this->token);
+        $response->assertStatus(200);
+    }
     public function test_delete_user_api_400(){
         $user = factory(User::class)->create();
         $userDetails = factory(UserDetails::class)->create([
@@ -175,16 +174,16 @@ class UserControllerTest extends TestCase
             'user_id'=>$user->id,
         ]);
         $user->image()->create(['url' => $this->faker->url]);
-        $response = $this->json('DELETE','api/a/users/delete/9999?token='.$this->token);
+        $response = $this->json('DELETE','api/t/users/delete/9999?token='.$this->token);
         $response->assertStatus(404);
     }
 
-//    public function test_delete_user_api(){
-//        $user = factory(User::class)->create();
-//
-//        $response = $this->json('DELETE','api/a/users/delete/'.$user->id."?token=".$this->token);
-//        $response->assertStatus(200);
-//    }
+    public function test_delete_user_api(){
+        $user = factory(User::class)->create();
+
+        $response = $this->json('DELETE','api/t/users/delete/'.$user->id."?token=".$this->token);
+        $response->assertStatus(200);
+    }
 
     public function test_send_email_200(){
         $user = factory(User::class)->create([
