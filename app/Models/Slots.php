@@ -16,4 +16,8 @@ class Slots extends Model
     public function appointment(){
         return $this->belongsTo(Appointments::class);
     }
+
+    public function userSlots(){
+        return $this->hasMany(UserSlots::class);
+    }
 }

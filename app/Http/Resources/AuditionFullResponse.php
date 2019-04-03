@@ -27,6 +27,7 @@ class AuditionFullResponse extends JsonResource
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
         });
+        Log::info( $this->contributors);
         $this->roles->each(function($item){
             $item->image;
         });
