@@ -36,7 +36,7 @@ class AuditionFullResponse extends JsonResource
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
 
-        $appoinmentResponse[] =  ['general' => $this->appointment, 'slots' => $slots];
+        $appoinmentResponse =  ['general' => $this->appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
             "title" => $this->title,

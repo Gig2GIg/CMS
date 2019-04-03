@@ -13,7 +13,7 @@ class ManageDates
 {
     public function transformDate($date)
     {
-        return (date('Y-m-d', strtotime($date)));
+        return date('Y-m-d', strtotime($date));
 
     }
 }

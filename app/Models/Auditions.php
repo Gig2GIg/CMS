@@ -47,4 +47,8 @@ class Auditions extends Model
     public function contributors(){
         return $this->hasMany(AuditionContributors::class);
     }
+
+    public function userauditions(){
+        return $this->hasMany(UserAuditions::class);
+    }
 }

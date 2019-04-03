@@ -13,6 +13,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserDetails;
@@ -217,7 +218,64 @@ class UserController extends Controller
                 $userDetails = new UserDetailsRepository(new UserDetails());
                 $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
                 $dat = $dataUserDetails->update($userDataDetails);
-                return response()->json(['data' => 'User updated'], 200);
+                if($dat){
+                    $responseUserRepo = new UserRepository(new User());
+                    $dataResponseUser = $responseUserRepo->find($request->id);
+                    $responseOut = ['data' => new UserResource($dataResponseUser)];
+                    $code =200;
+                }else{
+                    $responseOut = ['data' => 'Not updated'];
+                    $code =406;
+                }
+
+                return response()->json($responseOut,$code);
+            } catch (NotFoundException $e) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            }
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+
+    public function updateTablet(UserTabletEdit $request)
+    {
+        if ($request->json()) {
+            try {
+                $user = new UserRepository(new User());
+                $this->log->info($request->id);
+                $dataUser = $user->find($request->id);
+                $data['email']= $request->email;
+                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                    $data['password'] = Hash::make($request->password);
+                }
+                $dataUser->update($data);
+                $name = explode(' ',$request->name);
+                $dataUser->image->update(['url' => $request->image]);
+                $userDetails = new UserDetailsRepository(new UserDetails());
+                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
+                $userDataDetails = [
+                    'first_name' => $name[0]?? $dataUserDetails->first_name,
+                    'last_name' => $name[1]?? $dataUserDetails->last_name,
+                    'address' => $request->address,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'birth' => $request->birth,
+                    'agency_name' => $request->agency_name,
+                    'profesion' => $request->profesion,
+                    'location' => $request->location,
+                    'zip' => $request->zip,
+                ];
+                $dat = $dataUserDetails->update($userDataDetails);
+                if($dat){
+                    $responseUserRepo = new UserRepository(new User());
+                    $dataResponseUser = $responseUserRepo->find($request->id);
+                    $responseOut = ['data' => new UserResource($dataResponseUser)];
+                    $code =200;
+                }else{
+                    $responseOut = ['data' => 'Not updated'];
+                    $code =406;
+                }
+                return response()->json($responseOut,$code);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
             }
