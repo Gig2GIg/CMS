@@ -229,6 +229,8 @@ class UserController extends Controller
                 return response()->json($responseOut,$code);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            }catch (\Exception $e){
+                return response()->json(['data' => 'Unprocessable'], 406);
             }
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
@@ -276,6 +278,8 @@ class UserController extends Controller
                 return response()->json($responseOut,$code);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            }catch (\Exception $e){
+                return response()->json(['data' => 'Unprocessable'], 406);
             }
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
