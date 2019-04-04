@@ -86,9 +86,9 @@ class User extends Authenticatable implements JWTSubject
     public function notification_settings()
     {
         return $this->hasManyThrough(
-            Notification::class,
-            NotificationUserSetting::class,
-            'notification_id', 
+            NotificationSetting::class,
+            NotificationSettingUser::class,
+            'notification_setting_id', 
             'id'
         );
     }
@@ -96,9 +96,9 @@ class User extends Authenticatable implements JWTSubject
     public function notification_settings_on()
     {
         return $this->hasManyThrough(
-            Notification::class,
-            NotificationUserSetting::class,
-            'notification_id', 
+            NotificationSetting::class,
+            NotificationSettingUser::class,
+            'notification_setting_id', 
             'id'
         )->where('status', 1);     
     }

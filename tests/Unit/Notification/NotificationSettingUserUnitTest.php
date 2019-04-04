@@ -15,7 +15,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Http\Repositories\Notification\NotificationUserSettingRepository;
 
-class NotificationUserSettingUnitTest extends TestCase
+class NotificationSettingUserUnitTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;

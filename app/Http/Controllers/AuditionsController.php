@@ -10,6 +10,7 @@ use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionsDatesRepository;
+use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserRepository;
@@ -21,6 +22,7 @@ use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\Notifications\Notification;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -28,6 +30,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AuditionsController extends Controller
 {
@@ -89,9 +92,10 @@ class AuditionsController extends Controller
                 }
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
-
                 }
                 DB::commit();
+                $this->createNotification($audition);
+
                 $responseData = ['data' => ['message' => 'Auditions create']];
                 $code = 201;
             } else {
@@ -386,4 +390,24 @@ class AuditionsController extends Controller
 
         }
 
+    public function createNotification($audition): void
+    {
+        try {    
+            $notificationData = [
+                'title' => $audition->title,
+                'code' => Str::random(12),
+                'type' =>  'audition',
+                'notificationable_type' =>  'auditions',
+                'notificationable_id' => $audition->id
+            ];
+
+            if ($audition !== null) {
+                $notificationRepo = new NotificationRepository(new Notification()); 
+                $notificationRepo->create($notificationData);
+            }
+        }catch (NotFoundException $exception){
+                $this->log->error($exception->getMessage());
+            }
+
+        }
 }

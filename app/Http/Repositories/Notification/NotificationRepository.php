@@ -7,7 +7,7 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\Interfaces\Notification\INotificationRepository;
-use App\Models\Notification;
+use App\Models\Notifications\Notification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 

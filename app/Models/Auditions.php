@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Notifications\Notification;
 class Auditions extends Model
 {
     protected $fillable = [
@@ -49,8 +49,8 @@ class Auditions extends Model
     }
 
     //NOTIFICATIONS
-    public function notifis(){
-        return $this->morphToMany(Notification::class,'notification');
+    public function notifications(){
+        return $this->hasMany(Notification::class,'notificationable_id');
     }
 
 }

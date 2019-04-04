@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Models;
+namespace App\Models\Notifications;
 use Illuminate\Database\Eloquent\Model;
 
 class NotificationHistory extends Model

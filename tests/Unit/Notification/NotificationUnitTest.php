@@ -10,7 +10,7 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 
-use App\Models\Notification;
+use App\Models\Notifications\Notification;
 use App\Http\Repositories\Notification\NotificationRepository;
 
 class NotificationUnitTest extends TestCase
@@ -18,18 +18,13 @@ class NotificationUnitTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    public function test_all_notification_app(){
-        $type = 'app';
-        factory(Notification::class,5)->create(['type' => $type]);
-        $dataAll = new NotificationRepository(new Notification());
-        $dataTest = $dataAll->all();
-        $this->assertIsArray($dataTest->toArray());
-        $this->assertTrue($dataTest->count() > 2);
-    } 
-
     public function test_all_notification_custom(){
         $type = 'custom';
-        factory(Notification::class,5)->create(['type' => $type]);
+        $notificationable_type = 'auditions';  
+
+        $data = ['type' => $type, 'notificationable_type' => $notificationable_type];
+        factory(Notification::class,5)->create( $data);
+
         $dataAll = new NotificationRepository(new Notification());
         $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
@@ -38,7 +33,11 @@ class NotificationUnitTest extends TestCase
 
     public function test_all_notification_audition(){
         $type = 'audition';
-        factory(Notification::class,5)->create(['type' => $type]);
+        $notificationable_type = 'auditions';  
+
+        $data = ['type' => $type, 'notificationable_type' => $notificationable_type];
+        factory(Notification::class,5)->create( $data);
+
         $dataAll = new NotificationRepository(new Notification());
         $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
@@ -48,11 +47,14 @@ class NotificationUnitTest extends TestCase
 
     public function test_create_notification_type_app()
     {
+    
+        $notificationable_type = 'auditions';  
         $data = [
             'title' => $this->faker->name,
-            'code' => $this->faker->text(),
-            'description' => $this->faker->paragraph(),
-            'type' => 'app'
+            'code' => 'XOWEWEW',
+            'type' => 'audition',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
         ];
 
         $notification_repo = new NotificationRepository(new Notification());
@@ -61,18 +63,19 @@ class NotificationUnitTest extends TestCase
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertEquals($data['code'], $notification->code);
         $this->assertEquals($data['title'], $notification->title);
-        $this->assertEquals($data['description'], $notification->description);
         $this->assertEquals($data['type'], $notification->type);
 
     }
 
     public function test_create_notification_type_custom()
     {
+        $notificationable_type = 'custom';  
         $data = [
             'title' => $this->faker->name,
-            'code' => $this->faker->text(),
-            'description' => $this->faker->paragraph(),
-            'type' => 'custom'
+            'code' => 'XOWEWEW',
+            'type' => 'custom',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
         ];
 
         $notification_repo = new NotificationRepository(new Notification());
@@ -81,19 +84,21 @@ class NotificationUnitTest extends TestCase
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertEquals($data['code'], $notification->code);
         $this->assertEquals($data['title'], $notification->title);
-        $this->assertEquals($data['description'], $notification->description);
         $this->assertEquals($data['type'], $notification->type);
 
     }
 
     public function test_create_notification_type_audition()
     {
+        $notificationable_type = 'auditions';  
         $data = [
             'title' => $this->faker->name,
-            'code' => $this->faker->text(),
-            'description' => $this->faker->paragraph(),
-            'type' => 'audition'
+            'code' => 'XOWEWEW',
+            'type' => 'audition',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
         ];
+
 
         $notification_repo = new NotificationRepository(new Notification());
         $notification = $notification_repo->create($data);
@@ -101,15 +106,18 @@ class NotificationUnitTest extends TestCase
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertEquals($data['code'], $notification->code);
         $this->assertEquals($data['title'], $notification->title);
-        $this->assertEquals($data['description'], $notification->description);
         $this->assertEquals($data['type'], $notification->type);
 
     }
 
     public function test_show_notification()
     {
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
+        $type = 'custom';
+        $notificationable_type = 'auditions';  
+
+        $data = ['type' => $type, 'notificationable_type' => $notificationable_type];
+        $notification = factory(Notification::class)->create( $data);
+
         $notification_repo = new NotificationRepository(new Notification());
         $found =  $notification_repo->find($notification->id);
 
@@ -120,14 +128,21 @@ class NotificationUnitTest extends TestCase
 
     public function test_update_notification()
     {
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
+        $notificationable_type = 'auditions';  
+        $data_old = [
+            'title' => $this->faker->name,
+            'code' => 'XOWEWEW',
+            'type' => 'audition',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
+        ];
+
+        $notification = factory(Notification::class)->create($data_old);
 
         $data = [
             'title' => $this->faker->name,
             'code' => $this->faker->text(),
-            'description' => $this->faker->paragraph(),
-            'type' => 'custom'
+            'description' => $this->faker->paragraph()
         ];
 
         $notification_repo = new NotificationRepository($notification);
@@ -135,16 +150,23 @@ class NotificationUnitTest extends TestCase
         $this->assertTrue($update);
         $this->assertInstanceOf(Notification::class, $notification);
         $this->assertEquals($data['code'], $notification->code);
-        $this->assertEquals($data['title'], $notification->title);
-        $this->assertEquals($data['description'], $notification->description);
-        $this->assertEquals($data['type'], $notification->type);
+        $this->assertEquals($data['title'], $notification->title);    
     }
 
 
     public function test_delete_notification()
     {
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
+        $notificationable_type = 'auditions';  
+        $data = [
+            'title' => $this->faker->name,
+            'code' => 'XOWEWEW',
+            'type' => 'audition',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
+        ];
+
+        $notification = factory(Notification::class)->create($data);
+
         $notification_repo = new NotificationRepository($notification);
         $delete = $notification_repo->delete();
         $this->assertTrue($delete);
@@ -168,8 +190,17 @@ class NotificationUnitTest extends TestCase
     public function test_update_notification_place_exception()
     {
         $this->expectException(UpdateException::class);
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
+        $notificationable_type = 'auditions';  
+        $data_old = [
+            'title' => $this->faker->name,
+            'code' => 'XOWEWEW',
+            'type' => 'audition',
+            'notificationable_type' =>  $notificationable_type,
+            'notificationable_id' => $this->faker->numberBetween(1,2)
+        ];
+
+        $notification = factory(Notification::class)->create($data_old);
+
         $notification_repo =  new NotificationRepository($notification);
         $data = ['title'=>null];
         $notification_repo->update($data);

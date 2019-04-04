@@ -13,8 +13,9 @@ namespace App\Http\Controllers\Utils;
 
 class Notifications
 {
-    public static function send($type, $user, $data = null, $message = null)
+    public static function send($object, $type, $user = null, $data = null, $message = null)
     {
+        
         $notification = $user->notification_history()->create([
             'title'    => $message,
             'code'    => $type,

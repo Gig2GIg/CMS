@@ -18,9 +18,10 @@ class CreateNotificationsTable extends Migration
             $table->timestamps();
             $table->string('title');
             $table->string('code');
-            $table->text('description');
             $table->enum('type', ['app', 'audition', 'custom']);
-            $table->morphs('notifications');
+          
+            $table->integer('notificationable_id');
+            $table->string("notificationable_type");
         });
     }
 

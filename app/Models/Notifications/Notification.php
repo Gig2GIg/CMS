@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Notifications;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,11 +9,12 @@ class Notification extends Model
     protected $fillable = [
         'title',
         'code',
-        'description',
-        'type'
+        'type',
+        'notificationable_type',
+        'notificationable_id'
     ];
     
-    public function notifications(){
+    public function notificationable(){
         return $this->morphTo();
     }
 
