@@ -40,6 +40,11 @@ class ManageAppointmentControllerTest extends TestCase
         ]]);
     }
 
+    public function test_get_slots_by_audition(){
+        $response = $this->json('GET','api/appointments');
+        $response->assertStatus(200);
+    }
+
     public function test_set_appoinment_audition_list()
     {
         $user = factory(User::class)->create();

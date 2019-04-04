@@ -37,6 +37,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
     $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
 
+    $router->get('/appointments/show/{id}',['uses'=>'AppoinmentAuditionsController@showlist']);
+
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes

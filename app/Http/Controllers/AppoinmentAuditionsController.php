@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AppointmentResource;
+use App\Models\Appointments;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
 
@@ -41,6 +43,19 @@ class AppoinmentAuditionsController extends Controller
     public function show(Request $request){
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
+            $data = $dataRepo->findbyparam('auditions_id',$request->audition);
+
+
+            $dataResponse = AppointmentResource::collection($data);
+            return response()->json(['data'=>$dataResponse],200);
+        }catch (\Exception $exception){
+            return response()->json(['data'=>'Data Not Found'],404);
+        }
+    }
+
+    public function showlist(Request $request){
+        try {
+            $dataRepo = new AppointmentRepository(new Appointments());
             $data = $dataRepo->findbyparam('auditions_id',$request->audition);
 
 

@@ -17,6 +17,7 @@ class CreateResourcesTable extends Migration
             $table->bigIncrements('id');
             $table->string('url',700);
             $table->enum('type',['audio','video','doc','image']);
+            $table->string('name');
             $table->morphs('resource');
             $table->timestamps();
         });
