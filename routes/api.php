@@ -34,6 +34,10 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+    $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
+    $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
+
+    $router->get('/appointments/show/{id}',['uses'=>'AppoinmentAuditionsController@showlist']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {

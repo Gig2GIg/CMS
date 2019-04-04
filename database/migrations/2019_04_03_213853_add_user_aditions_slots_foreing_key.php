@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddUserAuditionsForeingKey extends Migration
+class AddUserAditionsSlotsForeingKey extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,20 @@ class AddUserAuditionsForeingKey extends Migration
      */
     public function up()
     {
-        Schema::table('user_auditions',function (Blueprint $table){
+        Schema::table('user_slots',function (Blueprint $table){
             $table->foreign('user_id') ->references('id')
                 ->on('users')
                 ->onDelete('cascade');
         });
 
-        Schema::table('user_auditions',function (Blueprint $table){
+        Schema::table('user_slots',function (Blueprint $table){
             $table->foreign('auditions_id') ->references('id')
                 ->on('auditions')
                 ->onDelete('cascade');
         });
 
-        Schema::table('user_auditions',function (Blueprint $table){
-            $table->foreign('rol_id') ->references('id')
+        Schema::table('user_slots',function (Blueprint $table){
+            $table->foreign('slots_id') ->references('id')
                 ->on('roles')
                 ->onDelete('cascade');
         });
@@ -39,10 +39,11 @@ class AddUserAuditionsForeingKey extends Migration
      */
     public function down()
     {
-        Schema::table('user_auditions', function (Blueprint $table) {
-            $table->dropForeign('user_auditions_user_id_foreign');
-            $table->dropForeign('user_auditions_auditions_id_foreign');
-            $table->dropForeign('user_auditions_rol_id_foreign');
+        Schema::table('user_slots', function (Blueprint $table) {
+            $table->dropForeign('user_slots_user_id_foreign');
+            $table->dropForeign('user_slots_auditions_id_foreign');
+            $table->dropForeign('user_slots_slots_id_foreign');
+
 
         });
     }

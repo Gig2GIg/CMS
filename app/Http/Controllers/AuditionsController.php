@@ -60,17 +60,19 @@ class AuditionsController extends Controller
                     $auditionFilesData[] = [
                         'url' => $file['url'],
                         'type' => $file['type'],
+                        'name'=>$file['name'],
                     ];
                 }
                 $auditionFilesData[] = [
                     'url' => $request->cover,
                     'type' => 4,
+                    'name'=>$request->cover_name,
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type']]);
+                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'],'name'=>$file['name']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->create($this->dataDatesToProcess($date));
@@ -79,7 +81,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $rol->image()->create(['type' => 4, 'url' => $roles['cover']]);
+                    $rol->image()->create(['type' => 4, 'url' => $roles['cover'],'name'=>$roles['name_cover']]);
                 }
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
@@ -312,6 +314,7 @@ class AuditionsController extends Controller
                 $auditionFilesData[] = [
                     'url' => $file['url'],
                     'type' => $file['type'],
+                    'name'=>$file['name'],
                 ];
             }
 
@@ -323,9 +326,9 @@ class AuditionsController extends Controller
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
-                $audition->media->update(['url' => $request->url]);
+                $audition->media->update(['url' => $request->url,'name'=>$request->cover_name]);
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type']]);
+                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name'=>$file['name']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->update($this->dataDatesToProcess($date));

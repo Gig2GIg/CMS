@@ -27,7 +27,7 @@ class UserControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>$this->faker->word()]);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>2,
             'user_id' => $user->id,
@@ -62,6 +62,7 @@ class UserControllerTest extends TestCase
             'profesion'=>'lawyer',
             'zip'=>'12345',
             'image'=>'http://test.com/image.jpg',
+            'resource_name'=>'test',
             'union_member' => [['name'=>'test1'], ['name'=>'test2']]
         ]);
 
@@ -118,6 +119,7 @@ class UserControllerTest extends TestCase
     {
 
         $response = $this->json('PUT', 'api/a/users/update/'.$this->testId."?token=".$this->token, [
+            'email'=>'test12345@test.com',
             'password' => '123456o',
             'first_name' => 'John',
             'last_name' => 'Doe',

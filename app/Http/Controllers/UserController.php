@@ -67,7 +67,7 @@ class UserController extends Controller
             ];
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
-            $usert->image()->create(['url' => request('image'), 'type' => 'image']);
+            $usert->image()->create(['url' => request('image'), 'type' => 'image', 'name'=>request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
             } else {
@@ -206,7 +206,7 @@ class UserController extends Controller
                     'address' => $request->address,
                     'city' => $request->city,
                     'state' => $request->state,
-                    'birth' => $request->birth,
+                    'birth' => $this->date->transformDate($request->birth),
                     'stage_name' => $request->stage_name,
                     'profesion' => $request->profesion,
                     'location' => $request->location,
@@ -259,7 +259,7 @@ class UserController extends Controller
                     'address' => $request->address,
                     'city' => $request->city,
                     'state' => $request->state,
-                    'birth' => $request->birth,
+                    'birth' => $this->date->transformDate($request->birth),
                     'agency_name' => $request->agency_name,
                     'profesion' => $request->profesion,
                     'location' => $request->location,
