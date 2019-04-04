@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AppointmentRepository;
@@ -363,8 +364,13 @@ class AuditionsController extends Controller
 
     }
 
-    public function sendPushNotification($user_id,$puskey){
+    public function sendPushNotification($user_id,$puskey, $audition){
         $this->log->info("ENVIAR PUSH A USER".$user_id);
+
+        SendNotifications::send(
+            $audition,
+            $type
+        );
     }
 
     /**

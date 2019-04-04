@@ -48,6 +48,11 @@ class Auditions extends Model
         return $this->hasMany(AuditionContributors::class);
     }
 
+    //PERFORMANCE
+    public function performances(){
+        return $this->hasMany(Notification::class,'notificationable_id');
+    }
+
     //NOTIFICATIONS
     public function notifications(){
         return $this->hasMany(Notification::class,'notificationable_id');
