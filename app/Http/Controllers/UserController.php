@@ -195,13 +195,11 @@ class UserController extends Controller
                 $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
 
-                    if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
-                        $data = [
-                            'password' => Hash::make($request->password),
-                        ];
-                        $dataUser->update($data);
-
+                $data['email']= $request->email;
+                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                    $data['password'] = Hash::make($request->password);
                 }
+                $dataUser->update($data);
                 $userDataDetails = [
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
