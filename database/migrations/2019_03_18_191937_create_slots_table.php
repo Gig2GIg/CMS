@@ -14,10 +14,11 @@ class CreateSlotsTable extends Migration
     public function up()
     {
         Schema::create('slots', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('time');
             $table->integer('number')->nullable()->unsigned();
             $table->boolean('status');
+            $table->boolean('is_walk')->default(false);
             $table->integer('appointment_id')->unsigned();
             $table->timestamps();
         });

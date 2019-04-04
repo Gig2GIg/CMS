@@ -113,10 +113,10 @@ class AuditionsUnitTest extends TestCase
     {
         $audition =  factory(Auditions::class)->create(['user_id'=>$this->user_id]);
 
-        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'audio']);
-        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'video']);
-        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'doc']);
-        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'image']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'audio','name'=>'test']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'video','name'=>'test']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'doc','name'=>'test']);
+        $audition->media()->create(['url' => "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius", 'type' => 'image','name'=>'test']);
 
         $audition_repo = new AuditionRepository($audition);
         $data = $audition_repo->findMediaByParams('image');
