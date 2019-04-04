@@ -46,6 +46,7 @@ class AuditionsController extends Controller
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
+        $this->getDataToken();
     }
 
     /**
@@ -57,22 +58,25 @@ class AuditionsController extends Controller
         try {
             DB::beginTransaction();
             if ($request->isJson()) {
+                $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
                 foreach ($request['media'] as $file) {
                     $auditionFilesData[] = [
                         'url' => $file['url'],
                         'type' => $file['type'],
+                        'name'=>$file['name'],
                     ];
                 }
                 $auditionFilesData[] = [
                     'url' => $request->cover,
                     'type' => 4,
+                    'name'=>$request->cover_name,
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type']]);
+                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'],'name'=>$file['name']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->create($this->dataDatesToProcess($date));
@@ -81,7 +85,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $rol->image()->create(['type' => 4, 'url' => $roles['cover']]);
+                    $rol->image()->create(['type' => 4, 'url' => $roles['cover'],'name'=>$roles['name_cover']]);
                 }
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
@@ -122,7 +126,7 @@ class AuditionsController extends Controller
             'title' => $request->title,
             'date' => $this->toDate->transformDate($request->date),
             'time' => $request->time,
-            'location' => implode(',',$request->location),
+            'location' => implode(',', $request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,
@@ -199,7 +203,6 @@ class AuditionsController extends Controller
         ];
 
     }
-
     /**
      * @param $contrib
      * @param $audition
@@ -214,7 +217,6 @@ class AuditionsController extends Controller
         ];
 
     }
-
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -287,6 +289,7 @@ class AuditionsController extends Controller
                 $auditionFilesData[] = [
                     'url' => $file['url'],
                     'type' => $file['type'],
+                    'name'=>$file['name'],
                 ];
             }
 
@@ -298,9 +301,9 @@ class AuditionsController extends Controller
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
-                $audition->media->update(['url' => $request->url]);
+                $audition->media->update(['url' => $request->url,'name'=>$request->cover_name]);
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type']]);
+                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name'=>$file['name']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->update($this->dataDatesToProcess($date));
@@ -353,8 +356,6 @@ class AuditionsController extends Controller
         }
     }
 
-
-
     public function media(MediaRequest $request, Auditions $auditions)
     {
         $repository = new AuditionRepository($auditions);
@@ -364,14 +365,16 @@ class AuditionsController extends Controller
 
     }
 
-    public function sendPushNotification($user_id,$puskey, $audition){
-        $this->log->info("ENVIAR PUSH A USER".$user_id);
+    public function sendPushNotification($user_id, $puskey, $auditions, $type)
+    {
+        $this->log->info("ENVIAR PUSH A USER" . $user_id);
 
         SendNotifications::send(
-            $audition,
+            $auditions,
             $type
         );
     }
+
 
     /**
      * @param $contrib

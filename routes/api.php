@@ -34,6 +34,10 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
+    $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
+    $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
+
+    $router->get('/appointments/show/{id}',['uses'=>'AppoinmentAuditionsController@showlist']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
@@ -41,12 +45,13 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
-    $router->put('/users/update/{id}',['uses'=>'UserController@update']);
+    $router->put('/users/update/{id}',['uses'=>'UserController@updateTablet']);
     $router->delete('/users/delete/{id}',['uses'=>'UserController@delete']);
 
     //auditions routes
     $router->post('/auditions/create',['uses'=>'AuditionsController@store']);
-
+    $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcomingMangement']);
+    $router->get('/auditions/passed',['uses'=>'AuditionManagementController@getPassedMangement']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
 
 
@@ -59,8 +64,10 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
-    $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
+   // $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
     $router->post('/auditions',['uses'=>'AuditionManagementController@saveAudition']);
+    $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
+    $router->get('/auditions/requested',['uses'=>'AuditionManagementController@getRequested']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
 

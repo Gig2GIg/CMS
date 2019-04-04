@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UserEditRequest extends ApiRequest
+class UserTabletEdit extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,14 @@ class UserEditRequest extends ApiRequest
     public function rules()
     {
         return [
-            'email'=>'required|email',
-            'first_name'=>'required|string|max:50',
+            'email' => 'required|email',
+            'name'=>'required|string|max:50',
             'address'=>'required|max:150',
             'city'=>'required|string|max:50',
             'state'=>'required|integer',
             'birth'=>'required|date',
             'location'=>'required',
-            'stage_name'=>'required',
+            'agency_name'=>'required',
             'profesion'=>'required',
             'zip'=>'required'
         ];

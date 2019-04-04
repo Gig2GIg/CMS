@@ -13,6 +13,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserDetails;
@@ -33,6 +34,7 @@ class UserController extends Controller
         $this->middleware('jwt', ['except' => ['store', 'sendPassword']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
+
     }
 
 
@@ -65,7 +67,7 @@ class UserController extends Controller
             ];
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
-            $usert->image()->create(['url' => request('image'), 'type' => 'image']);
+            $usert->image()->create(['url' => request('image'), 'type' => 'image', 'name'=>request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
             } else {
@@ -190,26 +192,21 @@ class UserController extends Controller
         if ($request->json()) {
             try {
                 $user = new UserRepository(new User());
+                $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
-                $result = $dataUser->with('details')
-                    ->with('memberunions')
-                    ->with('image')
-                    ->get();
 
-                if ($dataUser->password !== bcrypt($request->password)) {
-                    $data = [
-                        'password' => Hash::make($request->password),
-                    ];
-                    $dataUser->update($data);
+                $data['email']= $request->email;
+                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                    $data['password'] = Hash::make($request->password);
                 }
-
+                $dataUser->update($data);
                 $userDataDetails = [
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name,
                     'address' => $request->address,
                     'city' => $request->city,
                     'state' => $request->state,
-                    'birth' => $request->birth,
+                    'birth' => $this->date->transformDate($request->birth),
                     'stage_name' => $request->stage_name,
                     'profesion' => $request->profesion,
                     'location' => $request->location,
@@ -217,12 +214,72 @@ class UserController extends Controller
                 ];
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->find($result[0]['details']['id']);
-                $dataUserDetails->update($userDataDetails);
+                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
+                $dat = $dataUserDetails->update($userDataDetails);
+                if($dat){
+                    $responseUserRepo = new UserRepository(new User());
+                    $dataResponseUser = $responseUserRepo->find($request->id);
+                    $responseOut = ['data' => new UserResource($dataResponseUser)];
+                    $code =200;
+                }else{
+                    $responseOut = ['data' => 'Not updated'];
+                    $code =406;
+                }
 
-                return response()->json(['data' => 'User updated'], 200);
+                return response()->json($responseOut,$code);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            }catch (\Exception $e){
+                return response()->json(['data' => 'Unprocessable'], 406);
+            }
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+
+    public function updateTablet(UserTabletEdit $request)
+    {
+        if ($request->json()) {
+            try {
+                $user = new UserRepository(new User());
+                $this->log->info($request->id);
+                $dataUser = $user->find($request->id);
+                $data['email']= $request->email;
+                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                    $data['password'] = Hash::make($request->password);
+                }
+                $dataUser->update($data);
+                $name = explode(' ',$request->name);
+                $dataUser->image->update(['url' => $request->image]);
+                $userDetails = new UserDetailsRepository(new UserDetails());
+                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
+                $userDataDetails = [
+                    'first_name' => $name[0]?? $dataUserDetails->first_name,
+                    'last_name' => $name[1]?? $dataUserDetails->last_name,
+                    'address' => $request->address,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'birth' => $this->date->transformDate($request->birth),
+                    'agency_name' => $request->agency_name,
+                    'profesion' => $request->profesion,
+                    'location' => $request->location,
+                    'zip' => $request->zip,
+                ];
+                $dat = $dataUserDetails->update($userDataDetails);
+                if($dat){
+                    $responseUserRepo = new UserRepository(new User());
+                    $dataResponseUser = $responseUserRepo->find($request->id);
+                    $responseOut = ['data' => new UserResource($dataResponseUser)];
+                    $code =200;
+                }else{
+                    $responseOut = ['data' => 'Not updated'];
+                    $code =406;
+                }
+                return response()->json($responseOut,$code);
+            } catch (NotFoundException $e) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            }catch (\Exception $e){
+                return response()->json(['data' => 'Unprocessable'], 406);
             }
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);

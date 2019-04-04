@@ -24,7 +24,7 @@ class AuditionControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>$this->faker->word()]);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>1,
             'user_id' => $user->id,
@@ -55,6 +55,7 @@ class AuditionControllerTest extends TestCase
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
             'cover' => $this->faker->imageUrl(),
+            'cover_name'=>$this->faker->word(),
             'union' => $this->faker->word(),
             'contract' => $this->faker->word(),
             'production' => $this->faker->word . ", " . $this->faker->word(),
@@ -79,12 +80,14 @@ class AuditionControllerTest extends TestCase
                 [
                     'name' => $this->faker->firstName(),
                     'description' => $this->faker->paragraph(),
-                    'cover' => $this->faker->imageUrl()
+                    'cover' => $this->faker->imageUrl(),
+                    'name_cover'=>$this->faker->word(),
                 ],
                 [
                     'name' => $this->faker->firstName(),
                     'description' => $this->faker->paragraph(),
-                    'cover' => $this->faker->imageUrl()
+                    'cover' => $this->faker->imageUrl(),
+                    'name_cover'=>$this->faker->word(),
                 ],
             ],
             'appointment' => [
@@ -111,9 +114,9 @@ class AuditionControllerTest extends TestCase
 
             ],
             'media' => [
-                ['type' => 1, 'url' => $this->faker->url()],
-                ['type' => 2, 'url' => $this->faker->url()],
-                ['type' => 3, 'url' => $this->faker->url()],
+                ['type' => 1, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
+                ['type' => 2, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
+                ['type' => 3, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
             ]
         ];
 
@@ -185,7 +188,7 @@ class AuditionControllerTest extends TestCase
     {
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-        $audition->media()->create(['type'=>4,'url'=>$audition->url]);
+        $audition->media()->create(['type'=>4,'url'=>$audition->url,'name'=>'test']);
         $date1 = $audition->dates()->create([
             'type'=>1,
             'to'=>$this->faker()->date(),
@@ -201,69 +204,72 @@ class AuditionControllerTest extends TestCase
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
 
         $data = [
-            "title" => "aladin",
-            "date" => "2019-01-20",
-            "time" => "4",
-            "location" => "san salvador",
-            "description" => "Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.",
-            "url" => "http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html",
-            "dates" => [
+            'title' => 'aladin',
+            'date' => '2019-01-20',
+            'time' => '4',
+            'location' => [$this->faker->latitude,$this->faker->longitude],
+            'description' => 'Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.',
+            'url' => 'http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html',
+            'cover_name'=>'covername',
+            'dates' => [
                 [
-                    "id" => $date1->id,
-                    "type" => "contract",
-                    "to" => "2006-09-23",
-                    "from" => "1970-10-11"
+                    'id' => $date1->id,
+                    'type' => 'contract',
+                    'to' => '2006-09-23',
+                    'from' => '1970-10-11'
                 ],
                 [
-                    "id" => $date2->id,
-                    "type" => "rehearsal",
-                    "to" => "1994-09-03",
-                    "from" => "2007-02-04"
+                    'id' => $date2->id,
+                    'type' => 'rehearsal',
+                    'to' => '1994-09-03',
+                    'from' => '2007-02-04'
                 ],
             ],
-            "union" => "quia",
-            "contract" => "possimus",
-            "production" => "est, animi",
-            "status" => 0,
-            "user_id" => 3,
-            "roles" => [
+            'union' => 'quia',
+            'contract' => 'possimus',
+            'production' => 'est, animi',
+            'status' => 0,
+            'user_id' => 3,
+            'roles' => [
                 [
-                    "id" => $roles->id,
-                    "name" => "Micaela",
-                    "description" => "Ipsum in minima unde veniam eos ut unde. Hic error fugit in consequatur necessitatibus vel reprehenderit. Voluptatem laboriosam non quos praesentium ducimus id et.",
-                    "image" => [
-                        "id" => 16,
-                        "url" => "https://dfsdfsf.com/640/480/?86366",
-                        "type" => "4"
+                    'id' => $roles->id,
+                    'name' => 'Micaela',
+                    'description' => 'Ipsum in minima unde veniam eos ut unde. Hic error fugit in consequatur necessitatibus vel reprehenderit. Voluptatem laboriosam non quos praesentium ducimus id et.',
+                    'image' => [
+                        'id' => 16,
+                        'url' => 'https://dfsdfsf.com/640/480/?86366',
+                        'type' => '4',
+                        'name'=>'test1'
                     ],
                 ],
 
             ],
-            "media" => [
+            'media' => [
                 [
-                    "id" => 12,
-                    "url" => "http://el audosdfshw om/repellat-dfsdfsdfsdfsdf-excepturi-quam-et-dolores-officiis-eius",
-                    "type" => "audio"
+                    'id' => 12,
+                    'url' => 'http://el audosdfshw om/repellat-dfsdfsdfsdfsdf-excepturi-quam-et-dolores-officiis-eius',
+                    'type' => 'audio',
+                    'name'=>'testaudio'
 
                 ],
 
             ],
-            "appointment" => [[
+            'appointment' => [[
 
-                "general" => [
-                    "id" => $appoinments->id,
-                    "slots" => 10,
-                    "type" => "time",
-                    "length" => "41",
-                    "start" => "07",
-                    "end" => "10"
+                'general' => [
+                    'id' => $appoinments->id,
+                    'slots' => 10,
+                    'type' => 'time',
+                    'length' => '41',
+                    'start' => '07',
+                    'end' => '10'
                 ],
-                "slots" => [
+                'slots' => [
                     [
-                        "id" => $slot->id,
-                        "number" => null,
-                        "time" => "34",
-                        "status" => 1
+                        'id' => $slot->id,
+                        'number' => null,
+                        'time' => '34',
+                        'status' => 1
 
                     ],
 

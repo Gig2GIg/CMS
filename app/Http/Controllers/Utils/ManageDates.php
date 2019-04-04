@@ -13,8 +13,7 @@ class ManageDates
 {
     public function transformDate($date)
     {
-        $expire_time = substr($date, 0, strpos($date, '('));
-        return  date('Y-m-d', strtotime($expire_time));
+        return date('Y-m-d', strtotime($date));
 
     }
 }
