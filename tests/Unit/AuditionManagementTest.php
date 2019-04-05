@@ -2,9 +2,11 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Resources;
 use App\Models\Roles;
+use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
@@ -22,7 +24,7 @@ class AuditionManagementTest extends TestCase
     {
 
         $response = $this->json('POST',
-            'api/a/auditions?token=' . $this->token,
+            'api/a/auditions/user?token=' . $this->token,
             [
                 'auditions' => $this->auditionId,
                 'rol' => $this->rolId,
@@ -41,7 +43,7 @@ class AuditionManagementTest extends TestCase
         ]);
 
         $response = $this->json('POST',
-            'api/a/auditions?token=' . $this->token,
+            'api/a/auditions/user?token=' . $this->token,
             [
                 'auditions' => $this->auditionId,
                 'rol' => $this->rolId,
@@ -51,11 +53,51 @@ class AuditionManagementTest extends TestCase
         $response->assertJsonStructure(['data']);
     }
 
+    public function test_update_requested_to_upcommig()
+    {
+
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId]);
+        $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
+        $data =  factory(UserAuditions::class)->create([
+            'user_id' => $this->userId,
+            'rol_id' => $this->rolId,
+            'auditions_id' => $this->auditionId,
+            'type' => 2,
+        ]);
+        $response = $this->json('PUT',
+            'api/a/auditions/user/update/'.$data->id.'?token=' . $this->token,
+            [
+                'slot'=>[
+                    'slot' => $slot->id,
+                    'auditions' => $this->auditionId
+                ]
+            ]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+    }
+
+    public function test_update_requested_to_upcommig_not_slot()
+    {
+
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId]);
+        $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
+        $data =  factory(UserAuditions::class)->create([
+            'user_id' => $this->userId,
+            'rol_id' => $this->rolId,
+            'auditions_id' => $this->auditionId,
+            'type' => 2,
+        ]);
+        $response = $this->json('PUT',
+            'api/a/auditions/user/update/'.$data->id.'?token=' . $this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+    }
+
     public function test_save_upcoming_audition_error()
     {
 
         $response = $this->json('POST',
-            'api/a/auditions?token=' . $this->token,
+            'api/a/auditions/user?token=' . $this->token,
             [
                 'auditions' => 20,
                 'rol' => 34,
@@ -75,7 +117,7 @@ class AuditionManagementTest extends TestCase
             'type' => 1,
         ]);
         $response = $this->json('GET',
-            'api/a/auditions/upcoming?token=' . $this->token);
+            'api/a/auditions/user/upcoming?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
             'id',
@@ -99,7 +141,7 @@ class AuditionManagementTest extends TestCase
             'type' => 2,
         ]);
         $response = $this->json('GET',
-            'api/a/auditions/requested?token=' . $this->token);
+            'api/a/auditions/user/requested?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
             'id',

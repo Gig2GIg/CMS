@@ -10,6 +10,7 @@ use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\UserAuditionsResource;
 use App\Models\AuditionContributors;
@@ -18,9 +19,11 @@ use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use App\Models\UserManager;
+use App\Models\UserSlots;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AuditionManagementController extends Controller
 {
@@ -33,7 +36,7 @@ class AuditionManagementController extends Controller
         $this->log = new LogManger();
     }
 
-    public function saveAudition(Request $request)
+    public function saveUserAudition(Request $request)
     {
 
         try {
@@ -53,7 +56,7 @@ class AuditionManagementController extends Controller
                 $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
                 $userManager = $user->findbyparam('user_id', $this->getUserLogging());
 
-                if ($userManager->email !== null && $userManager->notifications) {
+                if (isset($userManager->email) !== null && isset($userManager->notifications)) {
                     $mail = new SendMail();
                     $mail->sendManager($userManager->email, $userDetailname);
                 }
@@ -65,6 +68,36 @@ class AuditionManagementController extends Controller
         }
 
     }
+
+public function updateAudition(Request $request){
+    try {
+        DB::beginTransaction();
+        if(isset($request->slot)){
+            $dataRepo = new UserSlotsRepository(new UserSlots());
+            $dataRepo->create([
+                'user_id' =>$this->getUserLogging(),
+                'auditions_id'=>$request->slot['auditions'],
+                'slots_id' => $request->slot['slot'],
+            ]);
+        }
+        $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+        $updateAudi = $dataRepoAuditionUser->find($request->id)->update(['type'=>'1']);
+       if($updateAudi) {
+           $code = 200;
+           $responseData = 'Audition update';
+           DB::commit();
+       }else {
+           $responseData = 'Audition not update';
+           $code = 400;
+           DB::rollBack();
+       }
+        return response()->json(['data' => $responseData], $code);
+    } catch (Exception $exception) {
+        DB::rollBack();
+        $this->log->error($exception->getMessage());
+        return response()->json(['error' => 'Audition not update'], 406);
+    }  
+}
 
     public function getUpcoming()
     {
