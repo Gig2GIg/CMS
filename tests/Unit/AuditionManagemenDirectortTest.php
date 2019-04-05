@@ -72,7 +72,7 @@ class AuditionManagemenDirectortTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 1,
             'user_id' => $user->id,
@@ -87,7 +87,7 @@ class AuditionManagemenDirectortTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url' => $this->faker->url, 'type' => 4]);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 4,'name'=>'test']);
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id
         ]);

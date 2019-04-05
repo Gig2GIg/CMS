@@ -22,7 +22,7 @@ class UserAuditionsResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'id_user'=> $this->auditions->id_user,
+            'id_user'=> $this->auditions->user_id,
             'title' => $this->auditions->title,
            'date' => $this->auditions->date,
             'union' => $this->auditions->union,

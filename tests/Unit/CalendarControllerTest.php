@@ -25,7 +25,7 @@ class CalendarControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->user_id = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>2,
             'user_id' => $user->id,
@@ -146,8 +146,8 @@ class CalendarControllerTest extends TestCase
         $data = [
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
-            'start_date' => '04-03',
-            'end_date' => '04-05'
+            'start_date' => '04-10',
+            'end_date' => '04-27',
         ];
 
         $calendar = factory(Calendar::class)->create();

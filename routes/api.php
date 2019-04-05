@@ -37,7 +37,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
     $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
 
-    $router->get('/appointments/show/{id}',['uses'=>'AppoinmentAuditionsController@showlist']);
+    $router->get('/appointments/show/{id}/walk',['uses'=>'AppoinmentAuditionsController@showListWalk']);
+    $router->get('/appointments/show/{id}/notwalk',['uses'=>'AppoinmentAuditionsController@showListNotWalk']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
@@ -65,9 +66,11 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
    // $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
-    $router->post('/auditions',['uses'=>'AuditionManagementController@saveAudition']);
-    $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
-    $router->get('/auditions/requested',['uses'=>'AuditionManagementController@getRequested']);
+    $router->post('/auditions/user',['uses'=>'AuditionManagementController@saveUserAudition']);
+    $router->get('/auditions/user/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
+    $router->get('/auditions/user/upcoming/det/{id}',['uses'=>'AuditionManagementController@getUpcomingDet']);
+    $router->get('/auditions/user/requested',['uses'=>'AuditionManagementController@getRequested']);
+    $router->put('/auditions/user/update/{id}',['uses'=>'AuditionManagementController@updateAudition']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
 

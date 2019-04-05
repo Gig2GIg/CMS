@@ -58,7 +58,8 @@ class MarketplaceUnitTest extends TestCase
 
         $image = [
             'url' => $this->faker->imageUrl($width = 640, $height = 480, 'cats'),
-            'type' => '3'
+            'type' => '3',
+            'name'=>'test'
         ];
        
         $image_result = $marketplace->image()->create($image);
