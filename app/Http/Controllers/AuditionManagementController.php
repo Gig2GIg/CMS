@@ -12,6 +12,7 @@ use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AuditionResponse;
+use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\UserAuditionsResource;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -109,6 +110,21 @@ public function updateAudition(Request $request){
             $dataResponse = $data->where('type', '=', '1');
 
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
+
+    public function getUpcomingDet(Request $request)
+    {
+        try {
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+
+            $data = $userAuditions->find($request->id);
+
+            return response()->json(['data' =>new AuditionsDetResponse($data)], 200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());

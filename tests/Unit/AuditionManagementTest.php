@@ -58,16 +58,16 @@ class AuditionManagementTest extends TestCase
 
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
-        $data =  factory(UserAuditions::class)->create([
+        $data = factory(UserAuditions::class)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
             'auditions_id' => $this->auditionId,
             'type' => 2,
         ]);
         $response = $this->json('PUT',
-            'api/a/auditions/user/update/'.$data->id.'?token=' . $this->token,
+            'api/a/auditions/user/update/' . $data->id . '?token=' . $this->token,
             [
-                'slot'=>[
+                'slot' => [
                     'slot' => $slot->id,
                     'auditions' => $this->auditionId
                 ]
@@ -81,14 +81,14 @@ class AuditionManagementTest extends TestCase
 
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
-        $data =  factory(UserAuditions::class)->create([
+        $data = factory(UserAuditions::class)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
             'auditions_id' => $this->auditionId,
             'type' => 2,
         ]);
         $response = $this->json('PUT',
-            'api/a/auditions/user/update/'.$data->id.'?token=' . $this->token);
+            'api/a/auditions/user/update/' . $data->id . '?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data']);
     }
@@ -131,6 +131,27 @@ class AuditionManagementTest extends TestCase
         ]]]);
     }
 
+    public function test_auditions_upcomming_det()
+    {
+
+        $data = factory(UserAuditions::class)->create([
+            'user_id' => $this->userId,
+            'rol_id' => $this->rolId,
+            'auditions_id' => $this->auditionId,
+            'type' => 1,
+        ]);
+        $response = $this->json('GET',
+            'api/a/auditions/user/upcoming/det/' . $data->id . '?token=' . $this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [
+            'user_id',
+            'audition_id',
+            'title',
+            'date',
+            'time',
+        ]]);
+    }
+
     public function test_auditions_request()
     {
 
@@ -163,7 +184,7 @@ class AuditionManagementTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $user->image()->create(['url' => $this->faker->url, 'name' => 'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 2,
             'user_id' => $user->id,
@@ -178,7 +199,7 @@ class AuditionManagementTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url' => $this->faker->url, 'type' => 4,'name'=>'test']);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id
         ]);
