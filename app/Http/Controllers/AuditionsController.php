@@ -95,12 +95,12 @@ class AuditionsController extends Controller
                     $slotsRepo = new SlotsRepository(new Slots());
                     $slotsRepo->create($dataSlots);
                 }
+                $this->createNotification($audition);
+                
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
                 }
                 DB::commit();
-                $this->createNotification($audition);
-
                 $responseData = ['data' => ['message' => 'Auditions create']];
                 $code = 201;
             } else {
@@ -356,7 +356,7 @@ class AuditionsController extends Controller
         }
     }
 
-    public function media(MediaRequest $request, Auditions $auditions)
+    public function media(MediaRequest $request, Auditions $audition)
     {
         $repository = new AuditionRepository($auditions);
         $data = $repository->findMediaByParams($request->type);
@@ -365,12 +365,12 @@ class AuditionsController extends Controller
 
     }
 
-    public function sendPushNotification($user_id, $puskey, $auditions, $type)
+    public function sendPushNotification($audition, $type)
     {
-        $this->log->info("ENVIAR PUSH A USER" . $user_id);
+        $this->log->info("ENVIAR PUSH A" . $audition->title);
 
         SendNotifications::send(
-            $auditions,
+            $audition,
             $type
         );
     }
@@ -390,8 +390,14 @@ class AuditionsController extends Controller
             if ($dataUser !== null) {
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
-                $contributorRepo->create($auditionContributorsData);
-                $this->sendPushNotification($dataUser->id, $dataUser->puskey);
+               $contributors  = $contributorRepo->create($auditionContributorsData);
+
+                $this->log->info("Contributors" .  $contributors);
+
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                );
             }
         }catch (NotFoundException $exception){
                 $this->log->error($exception->getMessage());
@@ -402,6 +408,7 @@ class AuditionsController extends Controller
     public function createNotification($audition): void
     {
         try {    
+           
             $notificationData = [
                 'title' => $audition->title,
                 'code' => Str::random(12),

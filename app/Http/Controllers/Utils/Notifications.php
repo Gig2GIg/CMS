@@ -1,20 +1,27 @@
 <?php
 namespace App\Http\Controllers\Utils;
+use App\Http\Repositories\UserRepository;
+use App\Models\User;
 
 
 class Notifications
 {
-    const AUTIDION_UPDATE         = 'autidion_update';
-    const REPRESENTATION_EMAIL    = 'representation_email';
-    const DOCUMENT_UPLOAD         = 'document_upload';
-    const CHECK_IN                = 'check_in';
-    const AUTIDION_REQUEST        = 'autidion_request';
-    const CUSTOM                  = 'custom';
+    const AUTIDION_UPDATE           = 'autidion_update';
+    const AUTIDION_ADD_CONTRIBUIDOR = 'autidion_add_contribuidor';
+    const REPRESENTATION_EMAIL      = 'representation_email';
+    const DOCUMENT_UPLOAD           = 'document_upload';
+    const CHECK_IN                  = 'check_in';
+    const AUTIDION_REQUEST          = 'autidion_request';
+    const CUSTOM                    = 'custom';
 
     public static function send($object, $type , $user = null, $data = null, $message = null)
     {
         
         switch ($type) {
+            case self::AUTIDION_ADD_CONTRIBUIDOR:
+                $title = 'Audition Created';
+                $message = 'you have been added to the audition'. $object->title;
+                break;
             case self::AUTIDION_UPDATE:
                 $title = 'Audition Update';
                 $message = 'A new update has been added'. $object->title;
@@ -37,15 +44,17 @@ class Notifications
                 break;
             default:
         }
+        $notification = $object->notifications->first();
 
-        $notification = $audtion->notifications->first();
-
-        if ($audtion->contributors){
-            foreach ($audtion->contributors as $contributor) {
-                $this->notification_history->create([
+        if (!! $object->contributors){
+            foreach ($object->contributors as $contributor) {
+                $user_repo = new UserRepository(new User);   
+                $user = $user_repo->find($contributor->user_id);
+                $user->notification_history()->create([
                     'title' => $notification->title,
                     'code' => $notification->code,
-                    'status' => 'unread'
+                    'status' => 'unread',
+                    'message'=> $title
                 ]);
 
                 fcm()
@@ -60,34 +69,11 @@ class Notifications
                     ->send();
             }
         }
-
-        if ($audtion->contributors){
-            foreach ($audtion->contributors as $contributor) {
-                $this->notification_history->create([
-                    'title' => $notification->title,
-                    'code' => $notification->code,
-                    'status' => 'unread'
-                ]);
-
-                fcm()
-                    ->to([$contributor->pushkey])
-                    ->data([
-                        'notification_id' => $notification->id,
-                    ])
-                    ->notification([
-                        'title' => $title,
-                        'body'  => $message,
-                    ])
-                    ->send();
-            }
-        }
-     
     }
 }
 
-
+//EXAMPLE TO SEND NOTIFICATION
 // SendNotifications::send(
-//     Notification::ORDER_RECEIVED_NOTIFICATION,
-//     $rental->client->user,
-//     $rental->product
+//     $auditions,
+//     $type
 // );
