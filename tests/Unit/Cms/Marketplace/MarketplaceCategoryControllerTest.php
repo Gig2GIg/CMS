@@ -20,7 +20,7 @@ class MarketplaceCategoryControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>3,
             'user_id' => $user->id,

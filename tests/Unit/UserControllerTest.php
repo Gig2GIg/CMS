@@ -141,6 +141,7 @@ class UserControllerTest extends TestCase
     {
         $response = $this->json('PUT', 'api/a/users/update/9999?token='.$this->token, [
             'password' => '123456',
+            'email'=>'test1234567@test.com',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'address' => 'First Street #123',
@@ -176,7 +177,7 @@ class UserControllerTest extends TestCase
         $userMebership = factory(UserUnionMembers::class,2)->create([
             'user_id'=>$user->id,
         ]);
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $response = $this->json('DELETE','api/a/users/delete/9999?token='.$this->token);
         $response->assertStatus(404);
     }

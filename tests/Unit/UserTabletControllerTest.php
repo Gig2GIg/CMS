@@ -27,7 +27,7 @@ class UserTabletControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>1,
             'user_id' => $user->id,
@@ -61,6 +61,7 @@ class UserTabletControllerTest extends TestCase
             'profesion'=>'lawyer',
             'zip'=>'12345',
             'image'=>'http://test.com/image.jpg',
+            'resource_name'=>'test',
             'union_member' => [['name'=>'test1'], ['name'=>'test2']]
         ]);
 
@@ -138,15 +139,15 @@ class UserTabletControllerTest extends TestCase
     {
         $response = $this->json('PUT', 'api/t/users/update/9999?token='.$this->token, [
             'password' => '123456',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
+            'email'=>'test@test12.com',
+            'name' => 'John, Dow',
             'address' => 'First Street #123',
             'city' => 'New York',
             'state' => '1',
             'birth' => '1980-05-24',
             'location' => '12,33334 - 23,00000',
             'zip'=>'00000',
-            'stage_name'=>'test',
+            'agency_name'=>'test',
             'profesion'=>'test'
         ]);
 
@@ -161,7 +162,7 @@ class UserTabletControllerTest extends TestCase
         $userMebership = factory(UserUnionMembers::class,2)->create([
             'user_id'=>$user->id,
         ]);
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $response = $this->json('DELETE','api/t/users/delete/'.$user->id."?token=".$this->token);
         $response->assertStatus(200);
     }
@@ -173,7 +174,7 @@ class UserTabletControllerTest extends TestCase
         $userMebership = factory(UserUnionMembers::class,2)->create([
             'user_id'=>$user->id,
         ]);
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $response = $this->json('DELETE','api/t/users/delete/9999?token='.$this->token);
         $response->assertStatus(404);
     }
