@@ -22,7 +22,10 @@ class NotificationUnitTest extends TestCase
         $type = 'custom';
         $notificationable_type = 'auditions';  
 
-        $data = ['type' => $type, 'notificationable_type' => $notificationable_type];
+        $data = [
+            'type' => $type,
+            'notificationable_type' => $notificationable_type
+        ];
         factory(Notification::class,5)->create( $data);
 
         $dataAll = new NotificationRepository(new Notification());

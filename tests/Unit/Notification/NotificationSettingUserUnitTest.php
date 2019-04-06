@@ -10,10 +10,10 @@ use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 
-use App\Models\NotificationUserSetting;
-use App\Models\Notification;
+use App\Models\Notifications\NotificationSettingUser;
+use App\Models\Notifications\Notification;
 use App\Models\User;
-use App\Http\Repositories\Notification\NotificationUserSettingRepository;
+use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 
 class NotificationSettingUserUnitTest extends TestCase
 {
@@ -28,29 +28,30 @@ class NotificationSettingUserUnitTest extends TestCase
         parent::setUp();
         $user = factory(User::class)->create();
         $this->user_id = $user->id;
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
-        $this->notification_id = $notification->id;
+        $type = 'audition';
+        $notificationable_type = 'auditions';  
 
+        $data = [
+            'type' => $type,
+            'notificationable_type' => $notificationable_type
+        ];
+        $notification = factory(Notification::class)->create( $data);
+        $this->notification_id = $notification->id;
     }
 
     public function test_create_notificationUserSetting()
     {
-        $data_ = [
-            'notification_id'=>$this->notification_id,
-            'user_id'=>$this->user_id,
+        $data = [
+            'notification_setting_id' => $this->notification_id,
+            'user_id' => $this->user_id,
             'status' => 'on'
         ];
-      
+  
+        $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
+        $notificationSettingUser = $notificationSettingUserRepo->create($data);
 
-        $notificationUserSettingRepo = new NotificationUserSettingRepository(new NotificationUserSetting());
-        $notificationUserSetting = $notificationUserSettingRepo->create($data_);
-
-        $type = 'app';
-        $notification = factory(Notification::class)->create(['type' => $type]);
-
-        $this->assertInstanceOf(NotificationUserSetting::class, $notificationUserSetting);
-        $this->assertEquals($data_['status'], $notificationUserSetting->status);
+        $this->assertInstanceOf(NotificationSettingUser::class, $notificationSettingUser);
+        $this->assertEquals($data['status'], $notificationSettingUser->status);
      
     }
 

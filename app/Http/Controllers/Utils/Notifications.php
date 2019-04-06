@@ -8,6 +8,7 @@ class Notifications
 {
     const AUTIDION_UPDATE           = 'autidion_update';
     const AUTIDION_ADD_CONTRIBUIDOR = 'autidion_add_contribuidor';
+    const UPCOMING_AUDITION         = 'upcoming_audition'; 
     const REPRESENTATION_EMAIL      = 'representation_email';
     const DOCUMENT_UPLOAD           = 'document_upload';
     const CHECK_IN                  = 'check_in';
@@ -74,6 +75,6 @@ class Notifications
 
 //EXAMPLE TO SEND NOTIFICATION
 // SendNotifications::send(
-//     $auditions,
+//     $object,
 //     $type
 // );

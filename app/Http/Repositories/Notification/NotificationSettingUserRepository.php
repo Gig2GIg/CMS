@@ -6,25 +6,25 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\Notification\INotificationUserSettingRepository;
-use App\Models\NotificationUserSetting;
+use App\Http\Repositories\Interfaces\Notification\INotificationSettingUserRepository;
+use App\Models\Notifications\NotificationSettingUser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class NotificationUserSettingRepository implements INotificationUserSettingRepository
+class NotificationSettingUserRepository implements INotificationSettingUserRepository
 {
     protected $model;
     protected $log;
 
 
-    public function __construct(NotificationUserSetting $notification_user_setting)
+    public function __construct(NotificationSettingUser $notification_user_setting)
     {
         $this->model = $notification_user_setting;
         $this->log = new LogManger();
     }
 
 
-    public function create(array $data): NotificationUserSetting
+    public function create(array $data): NotificationSettingUser
     {
 
         try {
@@ -37,7 +37,7 @@ class NotificationUserSettingRepository implements INotificationUserSettingRepos
     }
 
 
-    public function find($id): NotificationUserSetting
+    public function find($id): NotificationSettingUser
     {
         try{
             return $this->model->findOrFail($id);
@@ -49,7 +49,7 @@ class NotificationUserSettingRepository implements INotificationUserSettingRepos
     }
 
 
-    public function findbyparam($colum, $value) : NotificationUserSetting
+    public function findbyparam($colum, $value) : NotificationSettingUser
 
     {
         try{

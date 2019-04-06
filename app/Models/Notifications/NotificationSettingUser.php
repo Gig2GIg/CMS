@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class NotificationSettingUser extends Model
 {
+    protected $table = 'notification_setting_user';
+
     protected $fillable = [
         'status',
         'user_id',

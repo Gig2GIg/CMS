@@ -100,7 +100,13 @@ class AuditionsController extends Controller
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
                 }
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                );
+
                 DB::commit();
+                
                 $responseData = ['data' => ['message' => 'Auditions create']];
                 $code = 201;
             } else {
@@ -365,17 +371,6 @@ class AuditionsController extends Controller
 
     }
 
-    public function sendPushNotification($audition, $type)
-    {
-        $this->log->info("ENVIAR PUSH A" . $audition->title);
-
-        SendNotifications::send(
-            $audition,
-            $type
-        );
-    }
-
-
     /**
      * @param $contrib
      * @param $audition
@@ -393,11 +388,6 @@ class AuditionsController extends Controller
                $contributors  = $contributorRepo->create($auditionContributorsData);
 
                 $this->log->info("Contributors" .  $contributors);
-
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                );
             }
         }catch (NotFoundException $exception){
                 $this->log->error($exception->getMessage());
