@@ -25,7 +25,10 @@ class MarketplaceControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $user->image()->create([
+            'url' => $this->faker->url,
+            'name'=>'test'
+        ]);
         $userDetails = factory(UserDetails::class)->create([
             'type'=>3,
             'user_id' => $user->id,
@@ -48,7 +51,9 @@ class MarketplaceControllerTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->address(),
-            'image_url'=>  'https://stackoverflow.com/questions/30878105/laravel-5-form-request-validation-returning-forbidden-error'
+            'image_name' =>  'Some',
+            'image_url'=>  'https://stackoverflow.com/questions/30878105/laravel-5-form-request-validation-returning-forbidden-error',
+            'url_web' => $this->faker->url
         ];
 
         $response = $this->json('POST',
