@@ -121,6 +121,7 @@ class AuditionsController extends Controller
         }
     }
 
+    
 
     /**
      * @param $request

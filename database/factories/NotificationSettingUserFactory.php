@@ -9,3 +9,4 @@ $factory->define(App\Models\Notifications\NotificationSettingUser::class, functi
         'status' => 'on'
     ];
 });
+

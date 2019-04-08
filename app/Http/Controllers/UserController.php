@@ -11,6 +11,7 @@ use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
+use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserTabletEdit;
@@ -18,6 +19,8 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
+use App\Models\Notifications\NotificationSetting;
+use App\Models\Notifications\NotificationSettingUser;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,12 +147,15 @@ class UserController extends Controller
         ];
         try {
             $userDetails = new UserDetailsRepository(new UserDetails());
-            $userDetails->create($userDataDetails);
+            $user = $userDetails->create($userDataDetails);
 
             foreach ($request->union_member as $iValue) {
                 $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
                 $userUnion->create(['name' => $iValue['name'], 'user_id' => $id]);
             }
+            //CREATED DEFAULT NOTIFICATION SETTING
+            $this->createNotificationSetting($user);
+
             return true;
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
@@ -364,16 +370,16 @@ class UserController extends Controller
         }
     }
 
-    public function createNotificationSetting(Request $request) :void
+    public function createNotificationSetting($user) :void
     {
         try {
             DB::beginTransaction();
-            $mebersUnion = new UserUnionMembers();
-            $mebersUnion->where('user_id', $this->getUserLogging())->delete();
-            foreach ($request->union_member as $iValue) {
-                $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
-                $userUnion->create(['name' => $iValue['name'], 'user_id' => $this->getUserLogging()]);
+            $notificationSetting = NotificationSetting::where('status' ,1)->get();
+            foreach ($notificationSetting as $iValue) {
+                $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
+                $n = $notificationSettingUserRepo->create(['notification_setting_id' => $iValue['id'], 'user_id' => $user->id]);
             }
+
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();

@@ -15,14 +15,18 @@ class Notifications
     const AUTIDION_REQUEST          = 'autidion_request';
     const CUSTOM                    = 'custom';
 
-    public static function send($object, $type , $user = null, $data = null, $message = null)
+    public static function send($object = null, $type , $user = null, $data = null, $message = null)
     {
-        
+     
         switch ($type) {
             case self::AUTIDION_ADD_CONTRIBUIDOR:
-                $title = 'Audition Created';
-                $message = 'you have been added to the audition'. $object->title;
+                $title = 'Audition Save';
+                $message = 'you have been save Upcomming audition'. $object->title;
                 break;
+            case self::UPCOMING_AUDITION:
+                $title = 'Audition Upcomming';
+                $message = ' you have been added to the audition'. $object->title;
+                break;  
             case self::AUTIDION_UPDATE:
                 $title = 'Audition Update';
                 $message = 'A new update has been added'. $object->title;
@@ -45,29 +49,44 @@ class Notifications
                 break;
             default:
         }
-        $notification = $object->notifications->first();
-
+     
         if (!! $object->contributors){
             foreach ($object->contributors as $contributor) {
                 $user_repo = new UserRepository(new User);   
                 $user = $user_repo->find($contributor->user_id);
                 $user->notification_history()->create([
-                    'title' => $notification->title,
-                    'code' => $notification->code,
+                    'title' => $title,
+                    'code' => $type,
                     'status' => 'unread',
-                    'message'=> $title
+                    'message'=> $message
                 ]);
 
                 fcm()
                     ->to([$contributor->pushkey])
-                    ->data([
-                        'notification_id' => $notification->id,
-                    ])
                     ->notification([
                         'title' => $title,
                         'body'  => $message,
                     ])
                     ->send();
+            }
+        }elseif (!! $user){
+
+            foreach ($user->notification_settings as $notification_setting) {  
+                if (!! $notification_setting->code == $type)
+                    $user->notification_history()->create([
+                        'title' => $title,
+                        'code' => $type,
+                        'status' => 'unread',
+                        'message'=> $message
+                    ]);
+
+                    fcm()
+                        ->to([$user->pushkey])
+                        ->notification([
+                            'title' => $title,
+                            'body'  => $message,
+                        ])
+                        ->send();
             }
         }
     }
