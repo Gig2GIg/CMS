@@ -232,4 +232,52 @@ public function updateAudition(Request $request){
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
+
+    public function openAudition(Request $request){
+        try {
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $result = $auditionRepo->find($request->id)->update([
+                'status'=>1,
+            ]);
+
+            if($result){
+                $dataResponse = ['data'=>['status'=>1]];
+                $code = 200;
+            }else{
+                $dataResponse = ['data'=>'error to open audition'];
+                $code = 406;
+            }
+
+
+            return response()->json($dataResponse, $code);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'error to open audition'],406);
+        }
+    }
+
+    public function closeAudition(Request $request){
+        try {
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $result = $auditionRepo->find($request->id)->update([
+                'status'=>2,
+            ]);
+
+            if($result){
+                $dataResponse = ['data'=>['status'=>2]];
+                $code = 200;
+            }else{
+                $dataResponse = ['data'=>'error to close audition'];
+                $code = 406;
+            }
+
+
+            return response()->json($dataResponse, $code);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'error to close audition'],406);
+        }
+    }
 }
