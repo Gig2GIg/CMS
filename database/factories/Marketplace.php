@@ -10,6 +10,7 @@ $factory->define(App\Models\Marketplace::class, function (Faker $faker) {
         'phone_number' => $faker->phoneNumber(),
         'email' => $faker->safeEmail(),
         'services' => $faker->realText($maxNbChars = 200, $indexSize = 2),
+        'url_web' => $faker->url,
         'marketplace_category_id' => $faker->numberBetween(1, 4),
         'marketplace_category_id' =>  factory(MarketplaceCategory::class)->create()->first()->id
     ];
