@@ -64,6 +64,21 @@ class AuditionManagemenDirectortTest extends TestCase
         ]]]);
     }
 
+    public function test_auditions_passed_director_404()
+    {
+        $user = factory(User::class)->create();
+
+        $data = factory(Auditions::class, 10)->create([
+            'user_id' => $user->id,
+        ]);
+        $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
+        $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $user->id, 'auditions_id' => $data[0]->id]);
+        $response = $this->json('GET',
+            'api/t/auditions/passed?token=' . $this->token);
+        $response->assertStatus(404);
+        $response->assertJson(['data' => 'Not Found Data']);
+    }
+
     public function test_update_status_open_audition()
     {
         $response = $this->json('PUT', 'api/t/auditions/open/' . $this->auditionId . '?token=' . $this->token);

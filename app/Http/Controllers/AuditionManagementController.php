@@ -89,7 +89,7 @@ public function updateAudition(Request $request){
            DB::commit();
        }else {
            $responseData = 'Audition not update';
-           $code = 400;
+           $code = 406;
            DB::rollBack();
        }
         return response()->json(['data' => $responseData], $code);
@@ -140,29 +140,29 @@ public function updateAudition(Request $request){
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging());
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status === 1) {
+                if ($audiData->status !== 3 ) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] == 1) {
+                if ($item['status'] != 3 && $item['user_id']===$this->getUserLogging()) {
                     $this->collection->push($item);
                 }
             });
 
             if($this->collection->count() > 0){
-               $dataResponse =  ['data' => AuditionResponse::collection($this->collection)];
+               $dataResponse =  ['data' => AuditionResponse::collection($this->collection->unique())];
                $code =200;
             }else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =400;
+                $code =404;
             }
 
 
@@ -204,7 +204,7 @@ public function updateAudition(Request $request){
                 $code =200;
             }else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =400;
+                $code =404;
             }
 
 
