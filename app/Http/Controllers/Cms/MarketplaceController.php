@@ -60,13 +60,15 @@ class MarketplaceController extends Controller
                 'services' => $request->services,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'marketplace_category_id' => $marketplaceCategory->id
+                'marketplace_category_id' => $marketplaceCategory->id,
+                'url_web' => $request->url_web
             ];
 
             $marketplace = new MarketplaceRepo(new Marketplace);
             $marketplace_result = $marketplace->create($marketplaceData);
             $marketplace_result->image()->create([
                 'url' => $request->image_url,
+                'name' => $request->image_name,
                 'type' => '3'
             ]);
             return response()->json(['data' => new MarketplaceResource($marketplace_result)], 201);

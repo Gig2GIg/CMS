@@ -7,6 +7,7 @@ use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AppointmentResource;
+use App\Http\Resources\AppointmentSlotsResource;
 use App\Models\Appointments;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
@@ -53,15 +54,28 @@ class AppoinmentAuditionsController extends Controller
         }
     }
 
-    public function showlist(Request $request){
+    public function showListNotWalk(Request $request){
         try {
             $dataRepo = new AppointmentRepository(new Appointments());
-            $data = $dataRepo->findbyparam('auditions_id',$request->audition);
-
-
-            $dataResponse = AppointmentResource::collection($data);
+            $this->log->info($request->id);
+            $data = $dataRepo->findbyparam('auditions_id',$request->id);
+            $dataResponse = new AppointmentSlotsResource($data,1);
             return response()->json(['data'=>$dataResponse],200);
         }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'Data Not Found'],404);
+        }
+    }
+
+    public function showListWalk(Request $request){
+        try {
+            $dataRepo = new AppointmentRepository(new Appointments());
+            $this->log->info($request->id);
+            $data = $dataRepo->findbyparam('auditions_id',$request->id);
+            $dataResponse = new AppointmentSlotsResource($data,2);
+            return response()->json(['data'=>$dataResponse],200);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
             return response()->json(['data'=>'Data Not Found'],404);
         }
     }

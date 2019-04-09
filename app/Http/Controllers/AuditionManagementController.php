@@ -11,7 +11,9 @@ use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AuditionResponse;
+use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\UserAuditionsResource;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -19,9 +21,11 @@ use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use App\Models\UserManager;
+use App\Models\UserSlots;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AuditionManagementController extends Controller
 {
@@ -34,7 +38,7 @@ class AuditionManagementController extends Controller
         $this->log = new LogManger();
     }
 
-    public function saveAudition(Request $request)
+    public function saveUserAudition(Request $request)
     {
 
         try {
@@ -54,8 +58,8 @@ class AuditionManagementController extends Controller
                 $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
 
                 $userManager = $user->findbyparam('user_id', $this->getUserLogging());
-             
-                if ($userManager->email !== null && $userManager->notifications) {
+
+                if (isset($userManager->email) !== null && isset($userManager->notifications)) {
                     $mail = new SendMail();
                     $mail->sendManager($userManager->email, $userDetailname);
                 }
@@ -79,6 +83,36 @@ class AuditionManagementController extends Controller
 
     }
 
+public function updateAudition(Request $request){
+    try {
+        DB::beginTransaction();
+        if(isset($request->slot)){
+            $dataRepo = new UserSlotsRepository(new UserSlots());
+            $dataRepo->create([
+                'user_id' =>$this->getUserLogging(),
+                'auditions_id'=>$request->slot['auditions'],
+                'slots_id' => $request->slot['slot'],
+            ]);
+        }
+        $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+        $updateAudi = $dataRepoAuditionUser->find($request->id)->update(['type'=>'1']);
+       if($updateAudi) {
+           $code = 200;
+           $responseData = 'Audition update';
+           DB::commit();
+       }else {
+           $responseData = 'Audition not update';
+           $code = 406;
+           DB::rollBack();
+       }
+        return response()->json(['data' => $responseData], $code);
+    } catch (Exception $exception) {
+        DB::rollBack();
+        $this->log->error($exception->getMessage());
+        return response()->json(['error' => 'Audition not update'], 406);
+    }  
+}
+
     public function getUpcoming()
     {
         try {
@@ -96,6 +130,21 @@ class AuditionManagementController extends Controller
         }
     }
 
+    public function getUpcomingDet(Request $request)
+    {
+        try {
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+
+            $data = $userAuditions->find($request->id);
+
+            return response()->json(['data' =>new AuditionsDetResponse($data)], 200);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
+
     public function getUpcomingMangement()
     {
         try {
@@ -104,29 +153,29 @@ class AuditionManagementController extends Controller
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging());
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status === 1) {
+                if ($audiData->status != 2 ) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] == 1) {
+                if ($item['status'] != 2 && $item['user_id']===$this->getUserLogging()) {
                     $this->collection->push($item);
                 }
             });
 
             if($this->collection->count() > 0){
-               $dataResponse =  ['data' => AuditionResponse::collection($this->collection)];
+               $dataResponse =  ['data' => AuditionResponse::collection($this->collection->unique())];
                $code =200;
             }else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =400;
+                $code =404;
             }
 
 
@@ -146,19 +195,19 @@ class AuditionManagementController extends Controller
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging());
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status === 0) {
+                if ($audiData->status == 2) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] == 0) {
+                if ($item['status'] == 2) {
                     $this->collection->push($item);
                 }
             });
@@ -168,7 +217,7 @@ class AuditionManagementController extends Controller
                 $code =200;
             }else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =400;
+                $code =404;
             }
 
 
@@ -194,6 +243,54 @@ class AuditionManagementController extends Controller
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
+
+    public function openAudition(Request $request){
+        try {
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $result = $auditionRepo->find($request->id)->update([
+                'status'=>1,
+            ]);
+
+            if($result){
+                $dataResponse = ['data'=>['status'=>1]];
+                $code = 200;
+            }else{
+                $dataResponse = ['data'=>'error to open audition'];
+                $code = 406;
+            }
+
+
+            return response()->json($dataResponse, $code);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'error to open audition'],406);
+        }
+    }
+
+    public function closeAudition(Request $request){
+        try {
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $result = $auditionRepo->find($request->id)->update([
+                'status'=>2,
+            ]);
+
+            if($result){
+                $dataResponse = ['data'=>['status'=>2]];
+                $code = 200;
+            }else{
+                $dataResponse = ['data'=>'error to close audition'];
+                $code = 406;
+            }
+
+
+            return response()->json($dataResponse, $code);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'error to close audition'],406);
         }
     }
 }

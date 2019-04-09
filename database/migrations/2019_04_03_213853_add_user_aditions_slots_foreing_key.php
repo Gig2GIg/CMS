@@ -27,7 +27,7 @@ class AddUserAditionsSlotsForeingKey extends Migration
 
         Schema::table('user_slots',function (Blueprint $table){
             $table->foreign('slots_id') ->references('id')
-                ->on('roles')
+                ->on('slots')
                 ->onDelete('cascade');
         });
     }

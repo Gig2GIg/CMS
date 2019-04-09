@@ -44,6 +44,7 @@ class MarketplaceUnitTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->paragraph(),
+            'url_web' => $this->faker->url,
             'marketplace_category_id' => $this->marketplace_category_id
         ];
         $marketplace_repo = new MarketplaceRepository(new Marketplace());
@@ -55,10 +56,13 @@ class MarketplaceUnitTest extends TestCase
         $this->assertEquals($data['phone_number'], $marketplace->phone_number);
         $this->assertEquals($data['email'], $marketplace->email);
         $this->assertEquals($data['services'], $marketplace->services);
+        $this->assertEquals($data['url_web'], $marketplace->url_web);
+
 
         $image = [
             'url' => $this->faker->imageUrl($width = 640, $height = 480, 'cats'),
-            'type' => '3'
+            'type' => '3',
+            'name'=>'test'
         ];
        
         $image_result = $marketplace->image()->create($image);

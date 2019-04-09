@@ -22,7 +22,7 @@ class ManageAppointmentControllerTest extends TestCase
         $user = factory(User::class)->create();
         $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
 
@@ -34,14 +34,30 @@ class ManageAppointmentControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [
-            "image",
-            "name",
-            "time"
+            'image',
+            'name',
+            'time'
         ]]);
     }
 
-    public function test_get_slots_by_audition(){
-        $response = $this->json('GET','api/appointments');
+    public function test_get_slots_by_audition_type_not_walk(){
+        $user = factory(User::class)->create();
+        $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
+        $slot = factory(Slots::class,10)->create(['appointment_id' => $appoinment->id]);
+        $response = $this->json('GET','api/appointments/show/'.$audition->id.'/notwalk?token='.$this->token);
+        $response->assertStatus(200);
+    }
+    public function test_get_slots_by_audition_type_walk(){
+        $user = factory(User::class)->create();
+        $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
+        $slot = factory(Slots::class,10)->create(['appointment_id' => $appoinment->id]);
+        $response = $this->json('GET','api/appointments/show/'.$audition->id.'/walk?token='.$this->token);
         $response->assertStatus(200);
     }
 
@@ -50,7 +66,7 @@ class ManageAppointmentControllerTest extends TestCase
         $user = factory(User::class)->create();
         $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
 
@@ -78,7 +94,7 @@ class ManageAppointmentControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 2,
             'user_id' => $user->id,
@@ -93,7 +109,7 @@ class ManageAppointmentControllerTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url' => $this->faker->url, 'type' => 4]);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 4,'name'=>'test']);
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id
         ]);

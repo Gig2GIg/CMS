@@ -60,7 +60,7 @@ class AppointmentRepository implements IAppointmentRepository
     }
 
 
-    public function findbyparam($colum, $value): Appointments
+    public function findbyparam($colum, $value):?Appointments
     {
         try{
 

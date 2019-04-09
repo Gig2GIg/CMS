@@ -99,11 +99,23 @@ class AuditionControllerTest extends TestCase
                 'slots' => [
                     [
                         'time' => $this->faker->time('i'),
-                        'status' => $this->faker->boolean()
+                        'status' => $this->faker->boolean(),
+                        'is_walk' => $this->faker->boolean()
                     ],
                     [
                         'time' => $this->faker->time('i'),
-                        'status' => $this->faker->boolean()
+                        'status' => $this->faker->boolean(),
+                        'is_walk' => $this->faker->boolean()
+                    ],
+                    [
+                        'time' => $this->faker->time('i'),
+                        'status' => $this->faker->boolean(),
+                        'is_walk' => $this->faker->boolean()
+                    ],
+                    [
+                        'time' => $this->faker->time('i'),
+                        'status' => $this->faker->boolean(),
+                        'is_walk' => $this->faker->boolean()
                     ]
                 ]
             ],

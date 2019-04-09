@@ -207,6 +207,7 @@ class AuditionsController extends Controller
             'time' => $slot['time'],
             'number' => $slot['number'] ?? null,
             'status' => $slot['status'],
+            'is_walk' => $slot['is_walk'],
         ];
 
     }

@@ -40,22 +40,22 @@ class AuditionFullResponse extends JsonResource
         $appoinmentResponse =  ['general' => $this->appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
-            "title" => $this->title,
-            "date" => $this->date,
-            "time" => $this->time,
-            "location" => explode(',',$this->location),
-            "description" => $this->description,
-            "url" => $this->url,
-            "dates"=>$this->datesall,
-            "union" => $this->union,
-            "contract" => $this->contract,
-            "production" => $dataProduction,
-            "status" => $this->status,
-            "user_id" => $this->user_id,
-            "roles" => $this->roles,
-            "media" => $this->resources,
-            "apointment" => $appoinmentResponse,
-            "contributors" => $this->contributors
+            'title' => $this->title,
+            'date' => $this->date,
+            'time' => $this->time,
+            'location' => explode(',',$this->location),
+            'description' => $this->description,
+            'url' => $this->url,
+            'dates'=>$this->datesall,
+            'union' => $this->union,
+            'contract' => $this->contract,
+            'production' => $dataProduction,
+            'status' => $this->status,
+            'user_id' => $this->user_id,
+            'roles' => $this->roles,
+            'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->get(),
+            'apointment' => $appoinmentResponse,
+            'contributors' => $this->contributors
         ];
     }
 }

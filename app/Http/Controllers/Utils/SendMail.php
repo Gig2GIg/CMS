@@ -10,8 +10,7 @@ namespace  App\Http\Controllers\Utils;
 
 
 use App\Http\Exceptions\SendEmailException;
-use Illuminate\Support\Facades\Log;
-use mysql_xdevapi\Exception;
+
 use SendGrid\Mail\Mail;
 
 class SendMail
