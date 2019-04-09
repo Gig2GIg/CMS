@@ -29,7 +29,9 @@ class MarketplaceRequest extends FormRequest
             'email' => 'required|string|email',
             'services' => 'required|string|max:100',
             'phone_number' => 'required|string|max:20',
-            'image_url' => 'required|string'
+            'image_url' => 'required|string',
+            'image_name' => 'required|string',
+            'url_web' => 'required|string'
         ];
     }
 }
