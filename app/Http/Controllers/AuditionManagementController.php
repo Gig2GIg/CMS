@@ -182,19 +182,19 @@ public function updateAudition(Request $request){
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging());
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status === 0) {
+                if ($audiData->status == 2) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] == 0) {
+                if ($item['status'] == 2) {
                     $this->collection->push($item);
                 }
             });
