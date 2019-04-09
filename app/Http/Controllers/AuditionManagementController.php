@@ -145,14 +145,14 @@ public function updateAudition(Request $request){
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status != 3 ) {
+                if ($audiData->status != 2 ) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] != 3 && $item['user_id']===$this->getUserLogging()) {
+                if ($item['status'] != 2 && $item['user_id']===$this->getUserLogging()) {
                     $this->collection->push($item);
                 }
             });
