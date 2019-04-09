@@ -10,7 +10,8 @@ class NotificationSettingUser extends Model
     protected $fillable = [
         'status',
         'user_id',
-        'notification_setting_id'
+        'notification_setting_id',
+        'code'
     ];
 
     public function user()

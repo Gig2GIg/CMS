@@ -53,18 +53,19 @@ class AuditionManagementController extends Controller
                 $detailData = $userData->find($this->getUserLogging());
                 $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
 
-                // $userManager = $user->findbyparam('user_id', $this->getUserLogging());
+                $userManager = $user->findbyparam('user_id', $this->getUserLogging());
              
                 // if ($userManager->email !== null && $userManager->notifications) {
                 //     $mail = new SendMail();
                 //     $mail->sendManager($userManager->email, $userDetailname);
                 // }
-                $auditionRepo = NEW AuditionRepository(new Auditions());
+
+                $auditionRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionRepo->find($request->auditions);
-                dd($audution);
+                
                 $this->sendPushNotification(
-                    $object = null,
-                    SendNotifications::UPCOMING_AUDITION,
+                    $audition =  $audition,
+                    'upcoming_audition',
                     $user = $detailData
                 );
             }

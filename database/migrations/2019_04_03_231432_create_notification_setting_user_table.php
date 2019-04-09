@@ -16,6 +16,7 @@ class CreateNotificationSettingUserTable extends Migration
         Schema::create('notification_setting_user', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->enum('status', ['on', 'off']);
+            $table->string('code');
 
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id') ->references('id')

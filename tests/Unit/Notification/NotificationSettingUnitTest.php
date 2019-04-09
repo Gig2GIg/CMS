@@ -22,12 +22,22 @@ class NotificationSettingUnitTest extends TestCase
 
     public function test_all_notification_setting(){
 
-        factory(NotificationSetting::class,5)->create();
+        $data = [
+            'status' => 'on',
+            'code' => 'autidion_update',
+        ];
 
+        $data2 = [
+            'status' => 'on',
+            'code' => 'upcoming_audition',
+        ];
+
+        factory(NotificationSetting::class)->create( $data);
+        factory(NotificationSetting::class)->create( $data2);
         $dataAll = new NotificationSettingRepository(new NotificationSetting());
         $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
-        $this->assertTrue($dataTest->count() > 2);
+        $this->assertTrue($dataTest->count() > 1);
     } 
 
     public function test_create_notification_setting()

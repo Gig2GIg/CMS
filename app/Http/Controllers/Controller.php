@@ -33,12 +33,15 @@ class Controller extends BaseController
     }
 
 //use to send notifications
-    public function sendPushNotification($object, $type)
+    public function sendPushNotification($object, $type, $user = null, $data = null, $message = null)
     {
         $this->log->info("Send Notificatio by" . $object->title);
         SendNotifications::send(
             $object,
-            $type
+            $type,
+            $user,
+            $data,
+            $message
         );
     }
 

@@ -375,9 +375,14 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
             $notificationSetting = NotificationSetting::where('status' ,1)->get();
+     
             foreach ($notificationSetting as $iValue) {
                 $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-                $n = $notificationSettingUserRepo->create(['notification_setting_id' => $iValue['id'], 'user_id' => $user->id]);
+                $notificationSettingUserRepo->create([
+                    'notification_setting_id' => $iValue['id'],
+                     'user_id' => $user->id,
+                     'code' =>  $iValue['code']
+                     ]);
             }
 
             DB::commit();

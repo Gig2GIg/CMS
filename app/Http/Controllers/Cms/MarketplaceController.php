@@ -89,7 +89,7 @@ class MarketplaceController extends Controller
     
                 $marketplace = new MarketplaceRepo(new Marketplace());
 
-                $marketplace_result =  $marketplace->find(request('id'));
+                $marketplace_result =  $marketplace->find($request('id'));
                 $marketplace_result->update($marketplaceData);
 
                 if (! $request->image_url){

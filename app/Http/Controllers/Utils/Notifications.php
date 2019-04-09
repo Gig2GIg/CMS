@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Utils;
+use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\UserRepository;
 use App\Models\User;
 
@@ -15,21 +16,99 @@ class Notifications
     const AUTIDION_REQUEST          = 'autidion_request';
     const CUSTOM                    = 'custom';
 
-    public static function send($object = null, $type , $user = null, $data = null, $message = null)
+    public static function send($audition = null, $type , $user = null, $data = null, $message = null)
     {
-     
+        $log = new LogManger();
         switch ($type) {
             case self::AUTIDION_ADD_CONTRIBUIDOR:
                 $title = 'Audition Save';
-                $message = 'you have been save Upcomming audition'. $object->title;
+                $message = 'you have been add to  audition '. $audition->title;
+               // SEND NOTIFICATION PUSH ALL CONTRIBUIDORS
+                foreach ($audition->contributors as $contributor) {
+                    $user_repo = new UserRepository(new User);   
+                    $user = $user_repo->find($contributor->user_id);
+                    $user->notification_history()->create([
+                        'title' => $title,
+                        'code' => $type,
+                        'status' => 'unread',
+                        'message'=> $message
+                    ]);
+                    fcm()
+                        ->to([$user->pushkey])
+                        ->notification([
+                            'title' => $title,
+                            'body'  => $message,
+                        ])
+                        ->send();
+                }
                 break;
             case self::UPCOMING_AUDITION:
+                $log->info("UPCOMMING " . $audition->title);
                 $title = 'Audition Upcomming';
-                $message = ' you have been added to the audition'. $object->title;
+                $message = ' you have been upcoming to audition '. $audition->title;
+                // SEND NOTIFICATION PUSH TO USER_AUDITION
+                foreach ($user->notification_settings_on as $notification_setting) {  
+                  
+                    if ($notification_setting->code == $type && $notification_setting->status == 'on' )
+                        $user->notification_history()->create([
+                            'title' => $title,
+                            'code' => $type,
+                            'status' => 'unread',
+                            'message'=> $message
+                        ]);
+                        
+                        fcm()
+                            ->to([$user->pushkey])
+                            ->notification([
+                                'title' => $title,
+                                'body'  => $message,
+                            ])
+                            ->send();
+                } 
                 break;  
             case self::AUTIDION_UPDATE:
                 $title = 'Audition Update';
-                $message = 'A new update has been added'. $object->title;
+                $message = 'A new update has been added '. $audition->title;
+                // SEND NOTIFICATION PUSH ALL CONTRIBUIDORS
+                foreach ($audition->contributors as $contributor) {
+                    $user_repo = new UserRepository(new User);   
+                    $user = $user_repo->find($contributor->user_id);
+                    $user->notification_history()->create([
+                        'title' => $title,
+                        'code' => $type,
+                        'status' => 'unread',
+                        'message'=> $message
+                    ]);
+                    fcm()
+                        ->to([$contributor->pushkey])
+                        ->notification([
+                            'title' => $title,
+                            'body'  => $message,
+                        ])
+                        ->send();
+                }
+                // SEND NOTIFICATION PUSH TO USER_AUDITION
+                foreach ($audition->userauditions as $userauditions) {
+                    $user_repo = new UserRepository(new User);
+                    $user = $user_repo->find($userauditions->user_id);
+                    foreach ($user->notification_settings_on as $notification_setting) {  
+                        if ($notification_setting->code == $type && $notification_setting->status == 'on' )
+                            $user->notification_history()->create([
+                                'title' => $title,
+                                'code' => $type,
+                                'status' => 'unread',
+                                'message'=> $message
+                            ]);
+                            
+                            fcm()
+                                ->to([$user->pushkey])
+                                ->notification([
+                                    'title' => $title,
+                                    'body'  => $message,
+                                ])
+                                ->send();
+                    } 
+                }
                 break;
             case self::REPRESENTATION_EMAIL:
                 $title = 'Representation Email';
@@ -44,56 +123,16 @@ class Notifications
                 $message = "Some message";
                 break;
             case self::CUSTOM:
-                $title =  $object;
+                $title =  $audition;
                 $message = "Some message";
                 break;
             default:
-        }
-     
-        if (!! $object->contributors){
-            foreach ($object->contributors as $contributor) {
-                $user_repo = new UserRepository(new User);   
-                $user = $user_repo->find($contributor->user_id);
-                $user->notification_history()->create([
-                    'title' => $title,
-                    'code' => $type,
-                    'status' => 'unread',
-                    'message'=> $message
-                ]);
-
-                fcm()
-                    ->to([$contributor->pushkey])
-                    ->notification([
-                        'title' => $title,
-                        'body'  => $message,
-                    ])
-                    ->send();
-            }
-        }elseif (!! $user){
-
-            foreach ($user->notification_settings as $notification_setting) {  
-                if (!! $notification_setting->code == $type)
-                    $user->notification_history()->create([
-                        'title' => $title,
-                        'code' => $type,
-                        'status' => 'unread',
-                        'message'=> $message
-                    ]);
-
-                    fcm()
-                        ->to([$user->pushkey])
-                        ->notification([
-                            'title' => $title,
-                            'body'  => $message,
-                        ])
-                        ->send();
-            }
-        }
+        }    
     }
 }
 
 //EXAMPLE TO SEND NOTIFICATION
 // SendNotifications::send(
-//     $object,
+//     $audition,
 //     $type
 // );

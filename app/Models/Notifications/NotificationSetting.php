@@ -8,5 +8,6 @@ class NotificationSetting extends Model
         'status',
         'code',
     ];
+    
 }
 
