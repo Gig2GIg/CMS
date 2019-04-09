@@ -145,7 +145,7 @@ public function updateAudition(Request $request){
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status !== 3 ) {
+                if ($audiData->status != 3 ) {
                     $this->collection->push($audiData);
                 }
             });
