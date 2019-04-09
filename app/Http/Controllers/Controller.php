@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
+
 use App\Http\Controllers\Utils\LogManger;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
@@ -29,4 +31,18 @@ class Controller extends BaseController
     {
         return Auth::user()->getAuthIdentifier();
     }
+
+//use to send notifications
+    public function sendPushNotification($object, $type, $user = null, $data = null, $message = null)
+    {
+        $this->log->info("Send Notificatio by" . $object->title);
+        SendNotifications::send(
+            $object,
+            $type,
+            $user,
+            $data,
+            $message
+        );
+    }
+
 }

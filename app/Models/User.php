@@ -6,7 +6,9 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
+use App\Models\Notifications\NotificationHistory;
+use App\Models\Notifications\NotificationSettingUser;
+use App\Models\Notifications\NotificationSetting;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
@@ -81,4 +83,25 @@ class User extends Authenticatable implements JWTSubject
     public function skills(){
         return $this->hasMany(UserSkills::class);
     }
+
+    //NOTIFICATIONS RELATIONSHIPS
+    public function notification_settings()
+    {
+        return $this->belongsToMany(
+            NotificationSetting::class
+        );
+    }
+
+    public function notification_settings_on()
+    {
+        return $this->hasMany(
+            NotificationSettingUser::class
+        )->where('status', 'on');
+    }
+
+    public function notification_history()
+    {
+        return $this->hasMany(NotificationHistory::class);
+    }
+    
 }

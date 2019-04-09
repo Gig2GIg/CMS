@@ -124,6 +124,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
     $router->put('/calendar/update/{id}',['uses'=>'CalendarController@update']);
     $router->delete('/calendar/delete/{id}',['uses'=>'CalendarController@destroy']);
+    
+    // NOTIFICATION SETTING
+    $router->put('/notification_setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
 
 });
 
