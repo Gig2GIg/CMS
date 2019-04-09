@@ -39,6 +39,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
     $router->get('/appointments/show/{id}/walk',['uses'=>'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk',['uses'=>'AppoinmentAuditionsController@showListNotWalk']);
+//monitor update
+    $router->get('/monitor/show/{id}',['uses'=>'MonitorManagerController@list']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
@@ -54,10 +56,16 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/upcoming',['uses'=>'AuditionManagementController@getUpcomingMangement']);
     $router->get('/auditions/passed',['uses'=>'AuditionManagementController@getPassedMangement']);
     $router->put('/auditions/update/{id}',['uses'=>'AuditionsController@update']);
+    $router->put('/auditions/open/{id}',['uses'=>'AuditionManagementController@openAudition']);
+    $router->put('/auditions/close/{id}',['uses'=>'AuditionManagementController@closeAudition']);
 
 
    //calendar routes
    $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
+
+   //monitor updates
+    $router->post('/monitor/updates',['uses'=>'MonitorManagerController@create']);
+
 
 });
 
@@ -65,7 +73,6 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
-   // $router->get('/auditions/{auditions}/media',['uses'=>'AuditionsController@media']);
     $router->post('/auditions/user',['uses'=>'AuditionManagementController@saveUserAudition']);
     $router->get('/auditions/user/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
     $router->get('/auditions/user/upcoming/det/{id}',['uses'=>'AuditionManagementController@getUpcomingDet']);
