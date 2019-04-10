@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Models\Notifications\NotificationSettingUser;
 use App\Http\Requests\Notification\NotificationSettingUserRequest;
+use App\Http\Resources\NoficationSettingUserResource;
 use Illuminate\Http\Request;
 
 
@@ -24,6 +25,22 @@ class NotificationManagementController extends Controller
         $this->middleware('jwt');
     }
     
+
+    public function getAll(Request $request)
+    {
+        $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
+        $notificationSettingUserResult = $notificationSettingUserRepo->all();
+
+       $count = count($notificationSettingUserResult);
+       if ($count > 0) {
+           $responseData = NoficationSettingUserResource::collection($notificationSettingUserResult);
+           return response()->json(['data' => $responseData], 200);
+       } else {
+           return response()->json(['data' => "Not found Data"], 404);
+       }   
+    }
+
+
     public function update(NotificationSettingUserRequest $request)
     {
         try {

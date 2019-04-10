@@ -16,10 +16,10 @@ class CreateContentSettingsTable extends Migration
         Schema::create('content_settings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
-            $table->string('term_of_use');
-            $table->string('privacy_policy');
-            $table->string('app_info');
-            $table->string('contact_us');
+            $table->text('term_of_use');
+            $table->text('privacy_policy');
+            $table->text('app_info');
+            $table->text('contact_us');
         });
     }
 

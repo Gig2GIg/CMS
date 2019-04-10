@@ -17,9 +17,9 @@ class ContentSettingRepository implements IContentSettingRepository
     protected $log;
 
 
-    public function __construct(ContentSetting $makerplace)
+    public function __construct(ContentSetting $contentSetting)
     {
-        $this->model = $makerplace;
+        $this->model = $contentSetting;
         $this->log = new LogManger();
     }
 
@@ -84,13 +84,5 @@ class ContentSettingRepository implements IContentSettingRepository
     public function all()
     {
       return $this->model->all();
-    }
-
-    public function search_by_title($search)
-    {
-       $result =  $this->model->where('title', 'LIKE', "%{$search}%")
-                    ->orderBy('title', 'desc')->get();
-
-      return  $result;
     }
 }
