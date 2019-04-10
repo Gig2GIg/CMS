@@ -49,6 +49,7 @@ class MarketplaceControllerTest extends TestCase
             'phone_number' => $this->faker->phoneNumber(),
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->paragraph(),
+            'url_web'=> 'www.profesional.com',
             'marketplace_category_id' => $marketplaceCategory->id
         ];
 

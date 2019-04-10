@@ -4,9 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NoficationSettingUserResource extends JsonResource
+class ContentSettingResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -17,10 +16,10 @@ class NoficationSettingUserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'status' => $this->status,
-            'code' => $this->code
-           
-
+            'term_of_use' => $this->term_of_use,
+            'privacy_policy' => $this->privacy_policy,
+            'app_info' => $this->app_info,
+            'contact_us' => $this->contact_us
         ];
     }
 }
