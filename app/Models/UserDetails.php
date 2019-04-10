@@ -22,6 +22,10 @@ class UserDetails extends Model
         'agency_name'
     ];
 
+    protected $casts =[
+        'location'=>'json'
+    ];
+
     public function users(){
         $this->belongsTo(User::class);
     }

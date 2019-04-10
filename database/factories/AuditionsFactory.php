@@ -24,10 +24,15 @@ $factory->define(App\Models\Auditions::class, function (Faker $faker) {
     $randNumber = rand(0,2);
     $randNumber1 = rand(0,3);
     return [
-        'title' => $faker->sentence(4),
+        'title' => $faker->colorName." ".$faker->domainWord,
         'date' => $faker->date(),
         'time' => $faker->time(),
-        'location' => $faker->address(),
+        'location' => json_encode([
+            "latitude"=> $faker->latitude,
+            "latitudeDelta"=> $faker->latitude,
+            "longitude"=>$faker->longitude,
+            "longitudeDelta"=>$faker->longitude,
+        ]),
         'description' => $faker->paragraph(),
         'url' => $faker->url(),
         'union' => $data[$randNumber],

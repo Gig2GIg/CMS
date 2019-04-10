@@ -18,7 +18,7 @@ class CreateAuditionsTable extends Migration
             $table->string('title');
             $table->date('date');
             $table->time('time');
-            $table->string('location');
+            $table->json('location');
             $table->text('description');
             $table->string('url');
             $table->string('union');

@@ -4,10 +4,12 @@ namespace App\Http\Resources;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
@@ -28,13 +30,16 @@ class AuditionResponse extends JsonResource
             ->where('type','image')
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
+        $userDataRepo = new UserDetailsRepository(new UserDetails());
+        $data = $userDataRepo->findbyparam('user_id',$this->user_id);
         return [
             'id' => $this->id,
             'id_user'=>$this->user_id,
+            'agency'=>$data->agency_name ?? null,
             "title" => $this->title,
             "date" => $this->date,
             "time" => $this->time,
-            "location" => explode(',',$this->location),
+            "location" => json_decode($this->location),
             "description" => $this->description,
             "url" => $this->url,
             "union" => $this->union,
@@ -42,7 +47,7 @@ class AuditionResponse extends JsonResource
             "production" => $dataProduction,
             "status" => $this->status,
             "user_id" => $this->user_id,
-            "media" => $url_media[0] ??null,
+            "cover" => $url_media[0] ??null,
             "number_roles" => $count,
 
         ];

@@ -4,9 +4,11 @@ namespace App\Http\Resources;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +29,8 @@ class AuditionFullResponse extends JsonResource
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
         });
-        Log::info( $this->contributors);
+        $userDataRepo = new UserDetailsRepository(new UserDetails());
+        $dataUserDet = $userDataRepo->findbyparam('user_id',$this->user_id);
         $this->roles->each(function($item){
             $item->image;
         });
@@ -43,17 +46,19 @@ class AuditionFullResponse extends JsonResource
             'title' => $this->title,
             'date' => $this->date,
             'time' => $this->time,
-            'location' => explode(',',$this->location),
+            'location' => json_decode($this->location),
             'description' => $this->description,
             'url' => $this->url,
             'dates'=>$this->datesall,
             'union' => $this->union,
             'contract' => $this->contract,
             'production' => $dataProduction,
+            'cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=',4)->get()[0]['url'] ?? null,
             'status' => $this->status,
             'user_id' => $this->user_id,
+            'agency'=>$dataUserDet->agency_name ?? null,
             'roles' => $this->roles,
-            'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->get(),
+            'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','!=',4)->get(),
             'apointment' => $appoinmentResponse,
             'contributors' => $this->contributors
         ];

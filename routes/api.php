@@ -66,6 +66,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
    //monitor updates
     $router->post('/monitor/updates',['uses'=>'MonitorManagerController@create']);
 
+    //feedback
+    $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
+    $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
 
 });
 

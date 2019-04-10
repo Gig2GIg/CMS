@@ -27,8 +27,8 @@ class AddMonitoAuditiosForeingKey extends Migration
      */
     public function down()
     {
-        Schema::table('user_slots', function (Blueprint $table) {
-            $table->dropForeign('monitors_auditons_id_foreign');
+        Schema::table('monitors', function (Blueprint $table) {
+            $table->dropForeign('monitors_auditions_id_foreign');
 
         });
     }
