@@ -21,6 +21,7 @@ class AuditionSeeder extends Seeder
         );
 
         $audition->each(function ($item) {
+            $item->media()->create(['url' => $this->faker->imageUrl(), 'type' => 4, 'name' => $this->faker->word()]);
             factory(\App\Models\Dates::class)->create([
                 'date_type' => 'App\Models\\'.class_basename($item),
                 'date_id' => $item->id,

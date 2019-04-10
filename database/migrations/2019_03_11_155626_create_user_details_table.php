@@ -27,7 +27,7 @@ class CreateUserDetailsTable extends Migration
             $table->string('agency_name')->default("n/a");
             $table->enum('type',[1,2,3]);
             $table->integer('user_id')->unsigned();
-            $table->string('location');
+            $table->json('location');
             $table->string('zip',5);
             $table->timestamps();
         });
