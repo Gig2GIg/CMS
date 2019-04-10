@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionsDatesRepository;
+use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserRepository;
@@ -21,6 +23,7 @@ use App\Http\Resources\AuditionResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\Notifications\Notification;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -28,6 +31,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class AuditionsController extends Controller
 {
@@ -91,11 +95,18 @@ class AuditionsController extends Controller
                     $slotsRepo = new SlotsRepository(new Slots());
                     $slotsRepo->create($dataSlots);
                 }
+                $this->createNotification($audition);
+                
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
-
                 }
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                );
+
                 DB::commit();
+                
                 $responseData = ['data' => ['message' => 'Auditions create']];
                 $code = 201;
             } else {
@@ -110,6 +121,7 @@ class AuditionsController extends Controller
         }
     }
 
+    
 
     /**
      * @param $request
@@ -199,30 +211,6 @@ class AuditionsController extends Controller
         ];
 
     }
-
-    /**
-     * @param $contrib
-     * @param $audition
-     * @throws NotFoundException
-     * @throws \App\Http\Exceptions\CreateException
-     */
-    public function saveContributor($contrib, $audition): void
-    {
-        try {
-            $user = new UserRepository(new User());
-            $dataUser = $user->findbyparam('email', $contrib['email']);
-            if ($dataUser !== null) {
-                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
-                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
-                $contributorRepo->create($auditionContributorsData);
-                $this->sendPushNotification($dataUser->id, $dataUser->puskey);
-            }
-        } catch (NotFoundException $exception) {
-            $this->log->error($exception->getMessage());
-        }
-
-    }
-
     /**
      * @param $contrib
      * @param $audition
@@ -237,12 +225,6 @@ class AuditionsController extends Controller
         ];
 
     }
-
-    public function sendPushNotification($user_id, $puskey)
-    {
-        $this->log->info("ENVIAR PUSH A USER" . $user_id);
-    }
-
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -338,7 +320,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->find($roles['id']);
-                    $rol->image()->update(['url' => $roles['image']['url']]);
+                    $rol->image()->update(['url' => $roles['cover']]);
                     $rol->update($roldata);
                 }
 
@@ -382,7 +364,7 @@ class AuditionsController extends Controller
         }
     }
 
-    public function media(MediaRequest $request, Auditions $auditions)
+    public function media(MediaRequest $request, Auditions $audition)
     {
         $repository = new AuditionRepository($auditions);
         $data = $repository->findMediaByParams($request->type);
@@ -391,4 +373,49 @@ class AuditionsController extends Controller
 
     }
 
+    /**
+     * @param $contrib
+     * @param $audition
+     * @throws NotFoundException
+     * @throws \App\Http\Exceptions\CreateException
+     */
+    public function saveContributor($contrib, $audition): void
+    {
+        try {
+            $user = new UserRepository(new User());
+            $dataUser = $user->findbyparam('email', $contrib['email']);
+            if ($dataUser !== null) {
+                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
+                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
+               $contributors  = $contributorRepo->create($auditionContributorsData);
+
+                $this->log->info("Contributors" .  $contributors);
+            }
+        }catch (NotFoundException $exception){
+                $this->log->error($exception->getMessage());
+            }
+
+        }
+
+    public function createNotification($audition): void
+    {
+        try {    
+           
+            $notificationData = [
+                'title' => $audition->title,
+                'code' => Str::random(12),
+                'type' =>  'audition',
+                'notificationable_type' =>  'auditions',
+                'notificationable_id' => $audition->id
+            ];
+
+            if ($audition !== null) {
+                $notificationRepo = new NotificationRepository(new Notification()); 
+                $notificationRepo->create($notificationData);
+            }
+        }catch (NotFoundException $exception){
+                $this->log->error($exception->getMessage());
+            }
+
+        }
 }

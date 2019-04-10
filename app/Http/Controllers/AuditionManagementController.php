@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserAuditionsRepository;
@@ -55,13 +56,25 @@ class AuditionManagementController extends Controller
                 $userData = new UserRepository(new User());
                 $detailData = $userData->find($this->getUserLogging());
                 $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
+
                 $userManager = $user->findbyparam('user_id', $this->getUserLogging());
 
                 if (isset($userManager->email) !== null && isset($userManager->notifications)) {
                     $mail = new SendMail();
                     $mail->sendManager($userManager->email, $userDetailname);
                 }
+
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($request->auditions);
+                
+                $this->sendPushNotification(
+                    $audition =  $audition,
+                    'upcoming_audition',
+                    $user = $detailData
+                );
             }
+
+            
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());

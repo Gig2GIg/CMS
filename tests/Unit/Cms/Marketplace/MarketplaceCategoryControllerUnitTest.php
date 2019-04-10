@@ -7,7 +7,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserDetails;
 
-class MarketplaceCategoryControllerTest extends TestCase
+class MarketplaceCategoryControllerUnitTest extends TestCase
 {
 
     protected $token;
