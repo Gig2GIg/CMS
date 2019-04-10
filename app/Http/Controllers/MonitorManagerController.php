@@ -27,7 +27,7 @@ class MonitorManagerController extends Controller
             ]);
             if ($data->id) {
                 $dataResponse = ['data' => 'Update Publised'];
-                $code = 200;
+                $code = 201;
                 $this->sendNotification();
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
