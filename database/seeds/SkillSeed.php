@@ -11,8 +11,6 @@ class SkillSeed extends Seeder
      */
     public function run(Faker $faker)
     {
-        factory(\App\Models\Skills::class,15)->create([
-            'name'=>$faker->word()
-        ]);
+        factory(\App\Models\Skills::class,15)->create();
     }
 }
