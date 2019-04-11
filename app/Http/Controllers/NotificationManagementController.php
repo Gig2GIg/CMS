@@ -10,10 +10,11 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Models\Notifications\NotificationSettingUser;
+use App\Models\User;
 use App\Http\Requests\Notification\NotificationSettingUserRequest;
 use App\Http\Resources\NoficationSettingUserResource;
 use Illuminate\Http\Request;
-
+use App\Http\Repositories\UserRepository;
 
 class NotificationManagementController extends Controller
 {
@@ -28,16 +29,21 @@ class NotificationManagementController extends Controller
 
     public function getAll(Request $request)
     {
-        $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-        $notificationSettingUserResult = $notificationSettingUserRepo->all();
+        try {
+        
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($this->getUserLogging());
 
-       $count = count($notificationSettingUserResult);
-       if ($count > 0) {
-           $responseData = NoficationSettingUserResource::collection($notificationSettingUserResult);
-           return response()->json(['data' => $responseData], 200);
-       } else {
-           return response()->json(['data' => "Not found Data"], 404);
-       }   
+            $count = count($user->notification_settings);
+            if ($count > 0) {
+                $responseData = NoficationSettingUserResource::collection($user->notification_settings);
+                return response()->json(['data' => $responseData], 200);
+            } else {
+                return response()->json(['data' => "Not found Data"], 404);
+            }   
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Not found Data"], 404);  
+        }
     }
 
 
@@ -47,6 +53,10 @@ class NotificationManagementController extends Controller
             $data = [
                 'status' => $request->status
             ];
+
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($this->getUserLogging());
+
             $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
             $notificationSettingUserResult = $notificationSettingUserRepo->find($request->id);
     

@@ -6,11 +6,16 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\UserSlotsRepository;
+use App\Http\Repositories\AuditionRepository;
+use App\Http\Repositories\UserRepository;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
 use App\Models\Appointments;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
+
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
+
 
 class AppoinmentAuditionsController extends Controller
 {
@@ -32,8 +37,18 @@ class AppoinmentAuditionsController extends Controller
                 'auditions_id'=>$request->auditions,
                 'slots_id' => $request->slot,
             ]);
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($request->user_id);
 
-            $this->sendPushNotification($request->user_id);
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audition = $auditionRepo->find($request->auditions);
+            
+            $this->sendPushNotification(
+                $audition,
+                'check_in',
+                $audition
+            );
+
             $dataResponse = new AppointmentResource($createData);
             return response()->json(['data'=>$dataResponse],200);
         }catch (\Exception $exception){
@@ -82,8 +97,14 @@ class AppoinmentAuditionsController extends Controller
 
 
 
-    public function sendPushNotification($user_id)
+    public function sendPushNotification($audition, $type, $user)
     {
         $this->log->info("ENVIAR PUSH A USER" . $user_id);
+
+        $this->sendPushNotification(
+            $audition,
+            $type,
+            $user
+        );
     }
 }
