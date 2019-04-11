@@ -83,6 +83,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/auditions/user/update/{id}',['uses'=>'AuditionManagementController@updateAudition']);
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
+    $router->get('/users/union/list',['uses'=>'UserController@listMemberships']);
 
     //credits routes
     $router->post('/credits/create',['uses'=>'CreditsController@store']);

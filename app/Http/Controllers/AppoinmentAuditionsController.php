@@ -33,7 +33,7 @@ class AppoinmentAuditionsController extends Controller
                 'slots_id' => $request->slot,
             ]);
 
-            $this->sendPushNotification($request->user_id);
+         //   $this->sendPushNotification($request->user_id);
             $dataResponse = new AppointmentResource($createData);
             return response()->json(['data'=>$dataResponse],200);
         }catch (\Exception $exception){
@@ -81,9 +81,10 @@ class AppoinmentAuditionsController extends Controller
     }
 
 
+//
+//    public function sendPushNotification($user_id)
+//    {
+//        $this->log->info("ENVIAR PUSH A USER" . $user_id);
+//    }:w
 
-    public function sendPushNotification($user_id)
-    {
-        $this->log->info("ENVIAR PUSH A USER" . $user_id);
-    }
 }
