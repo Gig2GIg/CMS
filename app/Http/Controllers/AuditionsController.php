@@ -360,7 +360,7 @@ class AuditionsController extends Controller
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
                 if($request->cover_name) {
-                    $audition->media->update(['url' => $request->url, 'name' => $request->cover_name]);
+                    $audition->media->update(['url' => $request->cover, 'name' => $request->cover_name]);
                 }
 //                foreach ($auditionFilesData as $file) {
 //                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
