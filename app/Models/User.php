@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Cashier\Billable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Notifications\NotificationHistory;
 use App\Models\Notifications\NotificationSettingUser;
@@ -12,6 +13,7 @@ use App\Models\Notifications\NotificationSetting;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use Billable;
 
     /**
      * The attributes that are mass assignable.
