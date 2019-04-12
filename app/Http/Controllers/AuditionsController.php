@@ -358,7 +358,9 @@ class AuditionsController extends Controller
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
-                $audition->media->update(['url' => $request->url, 'name' => $request->cover_name]);
+                if($request->cover_name) {
+                    $audition->media->update(['url' => $request->url, 'name' => $request->cover_name]);
+                }
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
                 }
