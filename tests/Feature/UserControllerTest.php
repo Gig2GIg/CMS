@@ -157,18 +157,37 @@ class UserControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-//    public function test_delete_user_api_200(){
-//        $user = factory(User::class)->create();
-//        $userDetails = factory(UserDetails::class)->create([
-//            'user_id'=>$user->id,
-//        ]);
-//        $userMebership = factory(UserUnionMembers::class,2)->create([
-//            'user_id'=>$user->id,
-//        ]);
-//        $user->image()->create(['url' => $this->faker->url]);
-//        $response = $this->json('DELETE','api/a/users/delete/'.$user->id."?token=".$this->token);
-//        $response->assertStatus(200);
-//    }
+    public function test_update_user_membership_api_200(){
+
+        $userMebership = factory(UserUnionMembers::class,2)->create([
+            'user_id'=>$this->testId,
+        ]);
+        $data = [];
+
+        foreach ($userMebership as $item){
+            $data[]= [
+
+              'name'=>$this->faker->word(),
+
+            ];
+        }
+
+        $response = $this->json('PUT','api/a/users/union/update?token='.$this->token,[
+            'data'=> $data
+        ]);
+        $response->assertStatus(200);
+    }
+
+    public function test_list_user_membership_api_200(){
+
+        $userMebership = factory(UserUnionMembers::class,2)->create([
+            'user_id'=>$this->testId,
+        ]);
+
+        $response = $this->json('GET','api/a/users/union/list?token='.$this->token);
+        $response->assertStatus(200);
+    }
+
     public function test_delete_user_api_400(){
         $user = factory(User::class)->create();
         $userDetails = factory(UserDetails::class)->create([

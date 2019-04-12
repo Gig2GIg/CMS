@@ -95,8 +95,6 @@ class AppoinmentAuditionsController extends Controller
         }
     }
 
-
-
     public function sendPushNotification($audition, $type, $user)
     {
         $this->log->info("ENVIAR PUSH A USER" . $user_id);

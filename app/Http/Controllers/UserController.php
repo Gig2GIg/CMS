@@ -357,17 +357,36 @@ class UserController extends Controller
     public function updateMemberships(Request $request)
     {
         try {
-            DB::beginTransaction();
-            $mebersUnion = new UserUnionMembers();
-            $mebersUnion->where('user_id', $this->getUserLogging())->delete();
-            foreach ($request->union_member as $iValue) {
-                $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
-                $userUnion->create(['name' => $iValue['name'], 'user_id' => $this->getUserLogging()]);
+            $repo = new UserUnionMemberRepository(new UserUnionMembers());
+            $data = $repo->findbyparam('user_id', $this->getUserLogging());
+            $dataDelete = new UserUnionMembers($data->toArray());
+            $dataDelete->delete();
+            foreach ($request->data as $item) {
+                $dataNew = new UserUnionMemberRepository(new UserUnionMembers());
+                $dataNew->create([
+                    'user_id' => $this->getUserLogging(),
+                    'name' => $item['name']
+                ]);
             }
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
+            return response()->json(['data'=>'Unions update'],200);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>'Error to process'],406);
         }
+    }
+
+    public function listMemberships(Request $request)
+    {
+      $repo = new UserUnionMemberRepository(new UserUnionMembers());
+      $data = $repo->findbyparam('user_id',$this->getUserLogging());
+        if ($data->count() > 0) {
+            $responseData = ['data' => $data];
+            $code = 200;
+        } else {
+            $responseData = ['data' => self::NOT_FOUND_DATA];
+            $code = 404;
+        }
+        return response()->json($responseData,$code);
     }
 
     public function createNotificationSetting($user) :void

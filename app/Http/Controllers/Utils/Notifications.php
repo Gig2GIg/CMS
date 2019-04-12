@@ -129,8 +129,24 @@ class Notifications
     }
 }
 
-//EXAMPLE TO SEND NOTIFICATION
+//EXAMPLE TO SEND NOTIFICATION MANY
+// use App\Http\Controllers\Utils\Notifications as SendNotifications;
 // SendNotifications::send(
 //     $audition,
 //     $type
+// );
+//EXAMPLE TO SEND NOTIFICATION ONE
+// use App\Http\Controllers\Utils\Notifications as SendNotifications;
+// SendNotifications::send(
+//     $audition,
+//     $type,
+//     $user
+// );
+//EXAMPLE TO SEND NOTIFICATION ONE CUSTOM
+// use App\Http\Controllers\Utils\Notifications as SendNotifications;
+// SendNotifications::send(
+//     $audition,
+//     $type,
+//     $user,
+//     $title
 // );

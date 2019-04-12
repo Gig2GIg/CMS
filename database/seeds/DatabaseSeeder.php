@@ -16,5 +16,7 @@ class DatabaseSeeder extends Seeder
          $this->call(AuditionSeeder::class);
         $this->call(NotificationSettingSeeder::class);
         $this->call(ContentSettingSeeder::class);
+        $this->call(SkillSeed::class);
+
     }
 }
