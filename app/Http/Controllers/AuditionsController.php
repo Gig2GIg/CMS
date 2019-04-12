@@ -339,6 +339,9 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request)
     {
+        $this->log->info("FROM UPDATE");
+        $this->log->info($request);
+        $this->log->info("=================");
         $auditionFilesData=[];
         try {
             if (isset($request['media'])) {
