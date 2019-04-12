@@ -339,6 +339,7 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request)
     {
+        $auditionFilesData=[];
         try {
             if (isset($request['media'])) {
                 foreach ($request['media'] as $file) {
@@ -361,9 +362,9 @@ class AuditionsController extends Controller
                 if($request->cover_name) {
                     $audition->media->update(['url' => $request->url, 'name' => $request->cover_name]);
                 }
-                foreach ($auditionFilesData as $file) {
-                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
-                }
+//                foreach ($auditionFilesData as $file) {
+//                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
+//                }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->update($this->dataDatesToProcess($date));
                 }
