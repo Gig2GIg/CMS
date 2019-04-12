@@ -89,8 +89,8 @@ class User extends Authenticatable implements JWTSubject
     //NOTIFICATIONS RELATIONSHIPS
     public function notification_settings()
     {
-        return $this->belongsToMany(
-            NotificationSetting::class
+        return $this->hasMany(
+            NotificationSettingUser::class
         );
     }
 

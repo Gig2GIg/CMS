@@ -16,6 +16,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    protected $log;
 
     public function getDataToken()
     {
@@ -33,15 +34,13 @@ class Controller extends BaseController
     }
 
 //use to send notifications
-    public function sendPushNotification($object, $type, $user = null, $data = null, $message = null)
+    public function sendPushNotification($audition, $type , $user = null, $title = null)
     {
-        $this->log->info("Send Notificatio by" . $object->title);
         SendNotifications::send(
-            $object,
+            $audition,
             $type,
             $user,
-            $data,
-            $message
+            $title
         );
     }
 
