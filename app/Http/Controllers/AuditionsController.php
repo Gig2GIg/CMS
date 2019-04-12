@@ -96,7 +96,7 @@ class AuditionsController extends Controller
                     $slotsRepo->create($dataSlots);
                 }
                 $this->createNotification($audition);
-                
+
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
                 }
@@ -106,7 +106,7 @@ class AuditionsController extends Controller
                 );
 
                 DB::commit();
-                
+
                 $responseData = ['data' => ['message' => 'Auditions create']];
                 $code = 201;
             } else {
@@ -121,7 +121,6 @@ class AuditionsController extends Controller
         }
     }
 
-    
 
     /**
      * @param $request
@@ -211,6 +210,53 @@ class AuditionsController extends Controller
         ];
 
     }
+
+    public function createNotification($audition): void
+    {
+        try {
+
+            $notificationData = [
+                'title' => $audition->title,
+                'code' => Str::random(12),
+                'type' => 'audition',
+                'notificationable_type' => 'auditions',
+                'notificationable_id' => $audition->id
+            ];
+
+            if ($audition !== null) {
+                $notificationRepo = new NotificationRepository(new Notification());
+                $notificationRepo->create($notificationData);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
+    }
+
+    /**
+     * @param $contrib
+     * @param $audition
+     * @throws NotFoundException
+     * @throws \App\Http\Exceptions\CreateException
+     */
+    public function saveContributor($contrib, $audition): void
+    {
+        try {
+            $user = new UserRepository(new User());
+            $dataUser = $user->findbyparam('email', $contrib['email']);
+            if ($dataUser !== null) {
+                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
+                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
+                $contributors = $contributorRepo->create($auditionContributorsData);
+
+                $this->log->info("Contributors" . $contributors);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
+    }
+
     /**
      * @param $contrib
      * @param $audition
@@ -225,6 +271,7 @@ class AuditionsController extends Controller
         ];
 
     }
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
@@ -293,12 +340,14 @@ class AuditionsController extends Controller
     public function update(AuditionEditRequest $request)
     {
         try {
-            foreach ($request['media'] as $file) {
-                $auditionFilesData[] = [
-                    'url' => $file['url'],
-                    'type' => $file['type'],
-                    'name' => $file['name'],
-                ];
+            if (isset($request['media'])) {
+                foreach ($request['media'] as $file) {
+                    $auditionFilesData[] = [
+                        'url' => $file['url'],
+                        'type' => $file['type'],
+                        'name' => $file['name'],
+                    ];
+                }
             }
 
             $auditionRepo = new AuditionRepository(new Auditions());
@@ -323,16 +372,17 @@ class AuditionsController extends Controller
                     $rol->image()->update(['url' => $roles['cover']]);
                     $rol->update($roldata);
                 }
+                if (isset($request->appointment)) {
+                    foreach ($request->appointment[0]['slots'] as $slot) {
 
-                foreach ($request->appointment[0]['slots'] as $slot) {
-
-                    $dataSlots = [
-                        'time' => $slot['time'],
-                        'number' => $slot['number'] ?? null,
-                        'status' => $slot['status'],
-                    ];
-                    $slotsRepo = new SlotsRepository(new Slots());
-                    $slotsRepo->find($slot['id'])->update($dataSlots);
+                        $dataSlots = [
+                            'time' => $slot['time'],
+                            'number' => $slot['number'] ?? null,
+                            'status' => $slot['status'],
+                        ];
+                        $slotsRepo = new SlotsRepository(new Slots());
+                        $slotsRepo->find($slot['id'])->update($dataSlots);
+                    }
                 }
                 DB::commit();
 
@@ -372,50 +422,4 @@ class AuditionsController extends Controller
         return response()->json(['data' => $data]);
 
     }
-
-    /**
-     * @param $contrib
-     * @param $audition
-     * @throws NotFoundException
-     * @throws \App\Http\Exceptions\CreateException
-     */
-    public function saveContributor($contrib, $audition): void
-    {
-        try {
-            $user = new UserRepository(new User());
-            $dataUser = $user->findbyparam('email', $contrib['email']);
-            if ($dataUser !== null) {
-                $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
-                $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
-               $contributors  = $contributorRepo->create($auditionContributorsData);
-
-                $this->log->info("Contributors" .  $contributors);
-            }
-        }catch (NotFoundException $exception){
-                $this->log->error($exception->getMessage());
-            }
-
-        }
-
-    public function createNotification($audition): void
-    {
-        try {    
-           
-            $notificationData = [
-                'title' => $audition->title,
-                'code' => Str::random(12),
-                'type' =>  'audition',
-                'notificationable_type' =>  'auditions',
-                'notificationable_id' => $audition->id
-            ];
-
-            if ($audition !== null) {
-                $notificationRepo = new NotificationRepository(new Notification()); 
-                $notificationRepo->create($notificationData);
-            }
-        }catch (NotFoundException $exception){
-                $this->log->error($exception->getMessage());
-            }
-
-        }
 }
