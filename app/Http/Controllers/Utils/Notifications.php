@@ -16,7 +16,7 @@ class Notifications
     const AUTIDION_REQUEST          = 'autidion_request';
     const CUSTOM                    = 'custom';
 
-    public static function send($audition = null, $type , $user = null, $data = null, $message = null)
+    public static function send($audition, $type , $user = null, $title = null)
     {
         $log = new LogManger();
         switch ($type) {
@@ -57,15 +57,35 @@ class Notifications
                 $to = 'ONE';
                 break;
             case self::CUSTOM:
-                $log->info("CUSTOM ");
-                $title =  $audition;
-                $message = "Some message";
+                $log->info("CUSTOM");
+                $title =  $title;
+                $message = $title;
+                $to = 'MANY';
                 break;
             default:
         }    
-
         if ($audition !== null || $user !== null ){
             if ($to == 'MANY'){
+                if ($type == 'custom') {
+                    $audition->userauditions->each(function ($useraudition) use ($title, $message, $type) {
+                        $userRepo = new UserRepository(new User);
+                        $user_result = $userRepo->find($useraudition->user_id);
+                        $user_result->notification_history()->create([
+                            'title' => $title,
+                            'code' => $type,
+                            'status' => 'unread',
+                            'message'=> $message
+                        ]);
+                        
+                        fcm()
+                            ->to([$user_result->pushkey])
+                            ->notification([
+                                'title' => $title,
+                                'body'  => $message,
+                            ])
+                            ->send();  
+                    });  
+                }
                 $audition->contributors->each(function ($contributor) use ($title, $message, $type) {
                     $userRepo = new UserRepository(new User);
                     $user_result = $userRepo->find($contributor->user_id);
