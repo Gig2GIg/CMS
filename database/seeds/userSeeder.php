@@ -52,5 +52,17 @@ class userSeeder extends Seeder
             'user_id'=>$user2->id,
             'type'=>2
         ]);
+
+        $cms = factory(\App\Models\User::class)->create([
+            'email'=>'cms@g2g.com',
+            'password'=>bcrypt('123456'),
+        ]);
+        $cms->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $adminDetail2 = factory(\App\Models\UserDetails::class)->create([
+            'user_id'=>$cms->id,
+            'type'=>3,
+            'agency_name'=>$faker->company()
+        ]);
+
     }
 }

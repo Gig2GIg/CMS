@@ -141,8 +141,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 | CMS Routes
 |--------------------------------------------------------------------------
 */
-$router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {
-    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
+$router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function () use ($router) {
+    Route::namespace('Cms')->group(function () use ($router) {  
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
 
@@ -162,5 +162,11 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+        
     });
+    // AUDITIONS
+    $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
+    $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+    $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+
 });
