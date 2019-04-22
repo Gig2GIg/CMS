@@ -162,11 +162,21 @@ $router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+
+        //TYPE PRODUCTS
+        $router->get('/type-products', 'TypeProductsController@getAll');
+        $router->post('/type-products/create', 'TypeProductsController@store');
+        $router->get('/type-products/show/{id}','TypeProductsController@show');
+        $router->delete('/type-products/delete/{id}','TypeProductsController@delete');
+        $router->put('/type-products/update/{id}','TypeProductsController@update');
+
         
     });
     // AUDITIONS
     $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
     $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+
+    
 
 });

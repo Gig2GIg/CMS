@@ -86,10 +86,10 @@ class TypeProductsRepository implements ITypeProductsRepository
       return $this->model->all();
     }
 
-    public function search_by_title($search)
+    public function search_by_name($search)
     {
-       $result =  $this->model->where('title', 'LIKE', "%{$search}%")
-                    ->orderBy('title', 'desc')->get();
+       $result =  $this->model->where('name', 'LIKE', "%{$search}%")
+                    ->orderBy('name', 'desc')->get();
 
       return  $result;
     }

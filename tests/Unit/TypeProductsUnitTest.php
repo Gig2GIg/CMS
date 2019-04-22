@@ -57,65 +57,61 @@ class TypeProductsUnitTest extends TestCase
             'name' => $this->faker->name,
         ];
 
-        $marketplace_repo = new MarketplaceRepository($marketplace);
-        $update = $marketplace_repo->update($data);
+        $TypeProductRepo = new TypeProductsRepository($typeProduct);
+        $update = $TypeProductRepo->update($data);
         $this->assertTrue($update);
-        $this->assertEquals($data['address'], $marketplace->address);
-        $this->assertEquals($data['title'], $marketplace->title);
-        $this->assertEquals($data['phone_number'], $marketplace->phone_number);
-        $this->assertEquals($data['email'], $marketplace->email);
-        $this->assertEquals($data['services'], $marketplace->services);
+        $this->assertEquals($data['name'], $typeProduct->name);
     }
 
 
-    public function test_delete_market_place()
+    public function testDeleteTypeProduct()
     {
-        $marketplace = factory(Marketplace::class)->create();
-        $marketplace_repo = new MarketplaceRepository($marketplace);
-        $delete = $marketplace_repo->delete();
+        $typeProduct = factory(TypeProduct::class)->create();
+        $TypeProductRepo = new TypeProductsRepository($typeProduct);
+        $delete = $TypeProductRepo->delete();
         $this->assertTrue($delete);
     }
 
 
-    public function test_create_market_place_exception()
+    public function tesCreateException()
     {
         $this->expectException(CreateException::class);
-        $marketplace_repo = new MarketplaceRepository(new Marketplace());
-        $marketplace_repo->create([]);
+        $TypeProductRepo = new TypeProductsRepository(new TypeProduct());
+        $TypeProductRepo->create([]);
     }
 
-    public function test_show_market_place_exception()
+    public function testShowException()
     {
         $this->expectException(NotFoundException::class);
-        $marketplace_repo = new MarketplaceRepository(new Marketplace());
-        $marketplace_repo->find(282374);
+        $TypeProductRepo = new TypeProductsRepository(new TypeProduct());
+        $TypeProductRepo->find(282374);
     }
 
-    public function test_update_market_place_exception()
+    public function testUpdateException()
     {
         $this->expectException(UpdateException::class);
-        $marketplace = factory(Marketplace::class)->create();
-        $marketplace_repo =  new MarketplaceRepository($marketplace);
-        $data = ['title'=>null];
-        $marketplace_repo->update($data);
+        $typeProduct = factory(TypeProduct::class)->create();
+        $TypeProductRepo =  new TypeProductsRepository($typeProduct);
+        $data = ['name'=>null];
+        $TypeProductRepo->update($data);
     }
 
-    public function test_market_place_delete_null()
+    public function testDeleteNull()
     {
-        $marketplace_repo = new MarketplaceRepository(new Marketplace());
-        $delete = $marketplace_repo->delete();
+        $TypeProductRepo = new TypeProductsRepository(new TypeProduct());
+        $delete = $TypeProductRepo->delete();
         $this->assertNull($delete);
 
     }
 
-    public function test_search_by_title()
+    public function testSearchByName()
     {
-        $marketplace = factory(Marketplace::class)->create();
-        $value = $marketplace->title;
-        $marketplace_repo = new MarketplaceRepository(new Marketplace());
-        $result = $marketplace_repo->search_by_title($value );
+        $typeProduct = factory(TypeProduct::class)->create();
+        $value = $typeProduct->name;
+        $TypeProductRepo = new TypeProductsRepository(new TypeProduct());
+        $result = $TypeProductRepo->search_by_name($value);
         
-        $this->assertEquals($value, $result[0]->title);
+        $this->assertEquals($value, $result[0]->name);
 
     }
 }
