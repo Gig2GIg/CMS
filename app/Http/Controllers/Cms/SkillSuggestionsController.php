@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Repositories\TypeProductsRepository;
-use App\Http\Resources\Cms\TypeProductsResource;
+use App\Http\Repositories\SkillSuggestionsRepository;
+use App\Http\Resources\Cms\SkillSuggestionsResource;
 
-use App\Models\TypeProduct;
+use App\Models\SkillSuggestion;
 
-use App\Http\Requests\TypeProductsRequest;
+use App\Http\Requests\SkillSuggestionsRequest;
 
 use App\Http\Exceptions\NotFoundException;
 
@@ -16,7 +16,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 
-class TypeProductsController extends Controller
+class SkillSuggestionsController extends Controller
 {
     public function __construct()
     {
@@ -25,49 +25,49 @@ class TypeProductsController extends Controller
     
     public function getAll()
     {
-        $data = new TypeProductsRepository(new TypeProduct);
+        $data = new SkillSuggestionsRepository(new SkillSuggestion);
         $count = count($data->all());
         if ($count !== 0)
         {
-            $responseData = TypeProductsResource::collection($data->all());
+            $responseData = SkillSuggestionsResource::collection($data->all());
             return response()->json(['data' => $responseData], 200);
         } else {
             return response()->json(['data' => 'Record Not Found'], 404);
         }
     }
 
-    public function store(TypeProductsRequest $request)
+    public function store(SkillSuggestionsRequest $request)
     {
         if ($request->json())
         {
-            $typeProductData = [
+            $skillSuggestionData = [
                 'name' => $request->name,
             ];
 
-            $typeProductRepo = new TypeProductsRepository(new TypeProduct);
+            $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion);
           
-            $typeProductResult = $typeProductRepo->create($typeProductData);
+            $skillSuggestionResult = $skillSuggestionRepo->create($skillSuggestionData);
 
-            return response()->json(['data' => new TypeProductsResource($typeProductResult)], 201);
+            return response()->json(['data' => new SkillSuggestionsResource($skillSuggestionResult)], 201);
         }else {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
 
-    public function update(TypeProductsRequest $request)
+    public function update(SkillSuggestionsRequest $request)
     {
         try {
             if ($request->json()) {
-                $typeProductData = [
+                $skillSuggestionData = [
                     'name' => $request->name
                 ];
     
-                $typeProductRepo= new TypeProductsRepository(new TypeProduct());
+                $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion());
 
-                $typeProductResult =  $typeProductRepo->find($request->id);
-                $typeProductResult->update($typeProductData);
+                $skillSuggestionResult =  $skillSuggestionRepo->find($request->id);
+                $skillSuggestionResult->update($skillSuggestionData);
 
-              return response()->json(['data' => 'Type Product Updated'], 204);
+              return response()->json(['data' => 'Type SkillSuggestion Updated'], 204);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
@@ -79,12 +79,12 @@ class TypeProductsController extends Controller
     public function show(): ?\Illuminate\Http\JsonResponse
     {
         try {
-            $typeProductRepo = new TypeProductsRepository(new TypeProduct());
+            $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion());
 
-            $data = $typeProductRepo->find(request('id'));
+            $data = $skillSuggestionRepo->find(request('id'));
 
             if (! empty($data)) {
-                $responseData = new TypeProductsResource($data);
+                $responseData = new SkillSuggestionsResource($data);
                 return response()->json(['data' => $responseData], 200);
             } else {
                 return response()->json(['data' => "Not found Data"], 404);
@@ -97,11 +97,11 @@ class TypeProductsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $typeProductRepo = new TypeProductsRepository(new TypeProduct());
-            $dataTypeProduct = $typeProductRepo->find($request->id);
-            $dataTypeProduct->delete();
+            $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion());
+            $dataSkillSuggestion = $skillSuggestionRepo->find($request->id);
+            $dataSkillSuggestion->delete();
 
-            return response()->json(['data' => 'Type Product  deleted'], 204);
+            return response()->json(['data' => 'SkillSuggestion  deleted'], 204);
         } catch (NotFoundException $e) {
             return response()->json(['data' => "Not found Data"], 404);
         } catch (QueryException $e) {

@@ -173,6 +173,13 @@ $router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function
         $router->delete('/type-products/delete/{id}','TypeProductsController@delete');
         $router->put('/type-products/update/{id}','TypeProductsController@update');
 
+        //SKILL SUGGESTIONS
+        $router->get('/skill-suggestions', 'SkillSuggestionsController@getAll');
+        $router->post('/skill-suggestions/create', 'SkillSuggestionsController@store');
+        $router->get('/skill-suggestions/show/{id}','SkillSuggestionsController@show');
+        $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
+        $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
+
         
     });
     // AUDITIONS
