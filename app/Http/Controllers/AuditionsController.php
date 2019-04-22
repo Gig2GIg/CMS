@@ -20,6 +20,7 @@ use App\Http\Requests\AuditionRequest;
 use App\Http\Requests\MediaRequest;
 use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionResponse;
+use App\Http\Resources\ContributorsResource;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -322,6 +323,29 @@ class AuditionsController extends Controller
 
             if (isset($data->id)) {
                 $responseData = new AuditionFullResponse($data);
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+            } else {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+
+        } catch (NotFoundException $exception) {
+            return response()->json(['error' => 'Not Found'], 404);
+
+        }
+
+    }
+
+    public function show_contributors(Request $request)
+    {
+        try {
+            $audition = new AuditionRepository(new Auditions());
+            $data = $audition->find($request->id);
+
+            if (isset($data->id)) {
+                $responseData =  ContributorsResource::collection($data->contributors);
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
             } else {
