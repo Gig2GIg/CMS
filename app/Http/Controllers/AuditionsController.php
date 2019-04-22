@@ -25,6 +25,7 @@ use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Notifications\Notification;
+use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -363,6 +364,9 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request)
     {
+        $this->log->info("FROM UPDATE");
+        $this->log->info($request);
+        $this->log->info("=================");
         $auditionFilesData=[];
         try {
             if (isset($request['media'])) {
@@ -384,7 +388,10 @@ class AuditionsController extends Controller
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
                 if($request->cover_name) {
-                    $audition->media->update(['url' => $request->url, 'name' => $request->cover_name]);
+                  $audition->resources()->where('id','=',$request->id_cover)->update([
+                     'url'=>$request->cover,
+                     'name'=>$request->cover_name,
+                  ]);
                 }
 //                foreach ($auditionFilesData as $file) {
 //                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
