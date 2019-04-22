@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Utils;
 
 use App\Http\Repositories\UserRepository;
-use App\Models\User;
-use Illuminate\Http\Request;
+
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Stripe\Stripe;
 
 class StripeManagementController extends Controller
@@ -16,30 +16,83 @@ class StripeManagementController extends Controller
     {
         $this->log = new LogManger();
     }
-    public function connect(){
-        $connect = new Stripe();
-        $res = $connect->setApiKey(env('STRIPE_SECRET'));
-        $this->log->info($res);
-        return $res;
 
-    }
-
-    public function createUser(){
-        $this->connect();
-
-    }
-
-
-    public function setSubscription(Request $request){
-        try{
+    public function setSubscription(Array $data)
+    {
+        $result = false;
+        try {
             $this->connect();
             $userRepo = new UserRepository(new User());
-            $dataUser = $userRepo->find($request->id);
-            $res =$dataUser->newSubscription(env('STRIPE_PLAN_SUBS'),$request->pricing_type)->create($request->stripeToken);
+            $dataUser = $userRepo->find($data['id']);
+            $res = $dataUser->newSubscription(env('STRIPE_PLAN_SUBS'), $this->getPlan($data['pricing_type']))->create($data['stripeToken']);
+            if (isset($res->id)) {
+                $result = true;
+            }
+            return $result;
 
-            $this->log->info($res);
-        }catch (\Exception $ex){
-            return $ex->getMessage();
+
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return $result;
         }
+    }
+
+    public function connect()
+    {
+        $connect = new Stripe();
+        $res = $connect->setApiKey(env('STRIPE_SECRET'));
+        return $res;
+    }
+
+    public function changeSubscription(Array $data)
+    {
+        $result = false;
+        $user = new User();
+        try {
+            $this->connect();
+
+            $dataUser = $user->find($data['id']);
+            $res = $dataUser->subscription(env('STRIPE_PLAN_SUBS'))->swap($this->getPlan($data['pricing_type']));
+            if (isset($res->id)) {
+                $result = true;
+            }
+            return $result;
+
+
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return $result;
+        }
+    }
+
+    public function cancelSubscription(Array $data)
+    {
+        $result = false;
+        $user = new User();
+        try {
+            $this->connect();
+            $dataUser = $user->find($data['id']);
+            $res = $dataUser->subscription(env('STRIPE_PLAN_SUBS'))->cancel();
+            if (isset($res->id)) {
+                $result = true;
+            }
+            return $result;
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return $result;
+        }
+    }
+
+    public function getPlan($data){
+        $element = null;
+        $plans= [
+            'plan2'=>env('STRIPE_PLAN1'),
+            'plan3'=>env('STRIPE_PLAN2'),
+        ];
+
+        if(array_key_exists($data,$plans)){
+            $element = $plans[$data];
+        }
+        return $element;
     }
 }
