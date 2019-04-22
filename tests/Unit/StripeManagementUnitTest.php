@@ -13,7 +13,7 @@ class StripeManagementUnitTest extends TestCase
         $user = factory(User::class)->create();
         $connect = new StripeManagementController();
         $req = [];
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $req['stripeToken'] = 'tok_visa';
         $req['id'] = $user->id;
         $test = $connect->setSubscription($req);
@@ -40,11 +40,11 @@ class StripeManagementUnitTest extends TestCase
         $user = factory(User::class)->create();
         $connect = new StripeManagementController();
         $req = [];
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $req['stripeToken'] = 'tok_visa';
         $req['id'] = $user->id;
         $test = $connect->setSubscription($req);
-        $req['pricing_type'] = 'plan3';
+        $req['pricing_type'] = '3';
         $update = $connect->changeSubscription($req);
 
         $this->assertTrue($update);
@@ -56,11 +56,11 @@ class StripeManagementUnitTest extends TestCase
         $user = factory(User::class)->create();
         $connect = new StripeManagementController();
         $req = [];
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $req['stripeToken'] = 'tok_visa';
         $req['id'] = $user->id;
         $test = $connect->setSubscription($req);
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $update = $connect->changeSubscription($req);
 
         $this->assertTrue($update);
@@ -72,7 +72,7 @@ class StripeManagementUnitTest extends TestCase
         $user = factory(User::class)->create();
         $connect = new StripeManagementController();
         $req = [];
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $req['stripeToken'] = 'tok_visa';
         $req['id'] = $user->id;
         $test = $connect->setSubscription($req);
@@ -86,7 +86,7 @@ class StripeManagementUnitTest extends TestCase
         $user = factory(User::class)->create();
         $connect = new StripeManagementController();
         $req = [];
-        $req['pricing_type'] = 'plan2';
+        $req['pricing_type'] = '2';
         $req['stripeToken'] = 'tok_visa';
         $req['id'] = $user->id;
         $test = $connect->setSubscription($req);
