@@ -68,9 +68,9 @@ class AuditionManagementController extends Controller
                 $audition = $auditionRepo->find($request->auditions);
                 
                 $this->sendPushNotification(
-                    $audition =  $audition,
-                    'upcoming_audition',
-                    $user = $detailData
+                        $audition,
+                        'upcoming_audition',
+                        $detailData
                 );
             }
 
