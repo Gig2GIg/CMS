@@ -22,8 +22,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
     $router->post('/users/create',['uses'=>'UserController@store']);
-
-
+    
+    // CONTENT SETTING
+    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
@@ -129,8 +130,6 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
     $router->get('/notification-settings','NotificationManagementController@getAll');
 
-    // CONTENT SETTING
-    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 });
 
 
