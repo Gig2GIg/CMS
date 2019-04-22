@@ -10,7 +10,8 @@ class ContentSetting extends Model
         'term_of_use',
         'privacy_policy',
         'app_info',
-        'contact_us'
+        'contact_us',
+        'help'
     ];
 
 }
