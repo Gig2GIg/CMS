@@ -15,7 +15,7 @@ class AppointmentResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return array
      */
     public function toArray($request)
@@ -26,9 +26,10 @@ class AppointmentResource extends JsonResource
         $slotData = $slot->find($this->slots_id);
 
         return [
-          'image'=>$userData->image->url,
-          'name'=>$userData->details->first_name." ".$userData->details->last_name,
-          'time'=>$slotData->time,
+            'user_id' => $this->user_id,
+            'image' => $userData->image->url,
+            'name' => $userData->details->first_name . " " . $userData->details->last_name,
+            'time' => $slotData->time,
         ];
     }
 }
