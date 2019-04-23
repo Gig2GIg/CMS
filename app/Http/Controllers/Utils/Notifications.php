@@ -22,52 +22,52 @@ class Notifications
         $log = new LogManger();
         switch ($type) {
             case self::AUTIDION_ADD_CONTRIBUIDOR:
-                $log->info("AUDITION SAVE " . $audition->title);
+                $log->info("PUSH NOTIFICATION AUDITION SAVE " . $audition->title);
                 $title = 'Audition Save';
                 $message = 'you have been add to  audition '. $audition->title;
                 $to = 'MANY';
                 break;
             case self::UPCOMING_AUDITION:
-                $log->info("UPCOMMING " . $audition->title);
+                $log->info("PUSH NOTIFICATION UPCOMMING " . $audition->title);
                 $title = 'Audition Upcomming';
                 $message = ' you have been upcoming to audition '. $audition->title;
                 $to = 'ONE';
                 break;  
             case self::AUTIDION_UPDATE:
-                $log->info("AUDITION UPDATE " . $audition->title);
+                $log->info("PUSH NOTIFICATION AUDITION UPDATE " . $audition->title);
                 $title = 'Audition Update';
                 $message = 'A new update has been added '. $audition->title;    
                 $to = 'MANY';
                 break;
             case self::REPRESENTATION_EMAIL:
-                $log->info("REPRESENTATION EMAIL SEND " . $user->email);
+                $log->info("PUSH NOTIFICATION REPRESENTATION EMAIL SEND " . $user->email);
                 $title = 'Representation Email';
                 $message = "Some message";
                 $to = 'ONE';
                 break;
             case self::DOCUMENT_UPLOAD:
-                $log->info("DOCUMENT_UPLOAD") ;
+                $log->info("PUSH NOTIFICATION DOCUMENT_UPLOAD") ;
                 $title = 'Document Upload';
                 $message = "Some message";
                 $to = 'ONE';
                 break;
             case self::CHECK_IN:
-                $log->info("CHECK_IN " . $audition->title);
+                $log->info("PUSH NOTIFICATION  CHECK_IN " . $audition->title);
                 $title = 'Check-in ';
                 $message = 'you have been registered for the audition '. $audition->title;    
                 $to = 'ONE';
                 break;
             case self::CUSTOM:
-                $log->info("CUSTOM");
+                $log->info("PUSH NOTIFICATION  CUSTOM");
                 $title =  $title;
                 $message = $title;
                 $to = 'MANY';
                 break;
             case self::CMS:
-         
-                $log->info("CMS");
+                $log->info("PUSH NOTIFICATION FROM CMS");
                 $title =  $title;
                 $message = $title;
+                 $to = 'NONE';
                 break;
             default:
         }    
@@ -89,7 +89,6 @@ class Notifications
                     ])
                     ->send();  
             });
-
         }
 
         if ($audition !== null || $user !== null ){

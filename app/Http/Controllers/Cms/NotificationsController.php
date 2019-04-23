@@ -25,9 +25,7 @@ class NotificationsController extends Controller
     {
         if ($request->json())
         {
-        
            $notification =  $this->createNotification($request->title);
-
            $this->sendPushNotification(
                 null,
                 'cms',
