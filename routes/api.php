@@ -135,6 +135,10 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
+
+    //Subscription management
+    $router->post('subscriptions',['uses'=>'SubscriptionController@managementSubscription']);
+    $router->delete('subscriptions',['uses'=>'SubscriptionController@cancelSubscription']);
 });
 
 

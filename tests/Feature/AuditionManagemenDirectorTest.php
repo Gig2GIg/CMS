@@ -12,7 +12,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class AuditionManagemenDirectortTest extends TestCase
+class AuditionManagemenDirectorTest extends TestCase
 {
     public function test_auditions_upcomming_director()
     {
@@ -34,7 +34,6 @@ class AuditionManagemenDirectortTest extends TestCase
             'union',
             'contract',
             'production',
-            'media',
             'number_roles',
         ]]]);
     }
@@ -59,7 +58,6 @@ class AuditionManagemenDirectortTest extends TestCase
             'union',
             'contract',
             'production',
-            'media',
             'number_roles',
         ]]]);
     }
@@ -70,6 +68,7 @@ class AuditionManagemenDirectortTest extends TestCase
 
         $data = factory(Auditions::class, 10)->create([
             'user_id' => $user->id,
+            'status'=>0
         ]);
         $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
         $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $user->id, 'auditions_id' => $data[0]->id]);

@@ -39,7 +39,7 @@ class AuditionResponse extends JsonResource
             "title" => $this->title,
             "date" => $this->date,
             "time" => $this->time,
-            "location" => json_decode($this->location),
+            //"location" => json_decode($this->location),
             "description" => $this->description,
             "url" => $this->url,
             "union" => $this->union,

@@ -51,7 +51,7 @@ class AuditionControllerTest extends TestCase
             'title' => $this->faker->words(3, 3),
             'date' => $this->faker->date(),
             'time' => $this->faker->time(),
-            'location' => [$this->faker->latitude,$this->faker->longitude],
+            //'location' => [$this->faker->latitude,$this->faker->longitude],
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
             'cover' => $this->faker->imageUrl(),
@@ -212,6 +212,7 @@ class AuditionControllerTest extends TestCase
             'from'=>$this->faker()->date(),
         ]);
         $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
+        $roles->image()->create(['type'=>4,'url'=>$this->faker->imageUrl(),'name'=>'test']);
         $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
 
@@ -219,7 +220,7 @@ class AuditionControllerTest extends TestCase
             'title' => 'aladin',
             'date' => '2019-01-20',
             'time' => '4',
-            'location' => [$this->faker->latitude,$this->faker->longitude],
+            //'location' => [$this->faker->latitude,$this->faker->longitude],
             'description' => 'Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.',
             'url' => 'http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html',
             'cover_name'=>'covername',
@@ -247,12 +248,10 @@ class AuditionControllerTest extends TestCase
                     'id' => $roles->id,
                     'name' => 'Micaela',
                     'description' => 'Ipsum in minima unde veniam eos ut unde. Hic error fugit in consequatur necessitatibus vel reprehenderit. Voluptatem laboriosam non quos praesentium ducimus id et.',
-                    'image' => [
-                        'id' => 16,
-                        'url' => 'https://dfsdfsf.com/640/480/?86366',
+
+                        'cover' => 'https://dfsdfsf.com/640/480/?86366',
                         'type' => '4',
                         'name'=>'test1'
-                    ],
                 ],
 
             ],

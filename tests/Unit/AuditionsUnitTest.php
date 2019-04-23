@@ -40,7 +40,6 @@ class AuditionsUnitTest extends TestCase
         $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $dataUpdate = [
             'title' => 'Aladino',
-            'location' => 'SAN SALVADOR',
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
         ];

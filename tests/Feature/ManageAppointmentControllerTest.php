@@ -39,7 +39,28 @@ class ManageAppointmentControllerTest extends TestCase
             'time'
         ]]);
     }
+    public function test_set_appoinment_audition_walk()
+    {
+        $user = factory(User::class)->create();
+        $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
+        $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
 
+        $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
+            'slot' => $slot->id,
+            'email' => $user->email,
+            'auditions' => $audition->id
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [
+            'image',
+            'name',
+            'time'
+        ]]);
+    }
     public function test_get_slots_by_audition_type_not_walk(){
         $user = factory(User::class)->create();
         $userDet = factory(UserDetails::class)->create(['user_id' => $user->id]);
