@@ -15,6 +15,7 @@ class Notifications
     const CHECK_IN                  = 'check_in';
     const AUTIDION_REQUEST          = 'autidion_request';
     const CUSTOM                    = 'custom';
+    const CMS                       = 'cms';
 
     public static function send($audition, $type , $user = null, $title = null)
     {
@@ -62,8 +63,35 @@ class Notifications
                 $message = $title;
                 $to = 'MANY';
                 break;
+            case self::CMS:
+         
+                $log->info("CMS");
+                $title =  $title;
+                $message = $title;
+                break;
             default:
         }    
+        if ($type == 'cms'){
+            $user = User::all();
+            $user->each(function ($user) use ($title, $type) {
+                $user->notification_history()->create([
+                    'title' => $title,
+                    'code' => $type,
+                    'status' => 'unread',
+                    'message'=> $title
+                ]);
+             
+                fcm()
+                    ->to([$user->pushkey])
+                    ->notification([
+                        'title' => $title,
+                        'body'  => $title,
+                    ])
+                    ->send();  
+            });
+
+        }
+
         if ($audition !== null || $user !== null ){
             if ($to == 'MANY'){
                 if ($type == 'custom') {

@@ -73,8 +73,7 @@ class AuditionManagementController extends Controller
                         $detailData
                 );
             }
-
-            
+  
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
