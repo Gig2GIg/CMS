@@ -11,6 +11,7 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -82,6 +83,11 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'message' => 'Not authorized',
                 ], 401);
+                break;
+            case $exception instanceof NotFoundHttpException:
+                return response()->json([
+                    'message' => 'Not Found',
+                ], 404);
                 break;
         }
         return parent::render($request, $exception);

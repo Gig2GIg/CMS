@@ -16,7 +16,8 @@ class ContentSettingSeeder extends Seeder
             'term_of_use' => $faker->randomHtml(2,3),
             'privacy_policy' => $faker->randomHtml(2,3),
             'app_info' => $faker->randomHtml(2,3),
-            'contact_us' => $faker->randomHtml(2,3)
+            'contact_us' => $faker->randomHtml(2,3),
+            'help' => $faker->randomHtml(2,3)
         ]);
     }
 }

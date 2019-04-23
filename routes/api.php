@@ -22,9 +22,8 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
     $router->post('/users/create',['uses'=>'UserController@store']);
-
-
-
+    // CONTENT SETTING
+    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
@@ -69,6 +68,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //feedback
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
+
+    //TYPE PRODUCTS
+    $router->get('/type-products', 'TypeProductsController@getAll');
 
 });
 
@@ -133,8 +135,6 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
     $router->get('/notification-settings','NotificationManagementController@getAll');
 
-    // CONTENT SETTING
-    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 });
 
 
@@ -165,9 +165,28 @@ $router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+
+        //TYPE PRODUCTS
+        $router->get('/type-products', 'TypeProductsController@getAll');
+        $router->post('/type-products/create', 'TypeProductsController@store');
+        $router->get('/type-products/show/{id}','TypeProductsController@show');
+        $router->delete('/type-products/delete/{id}','TypeProductsController@delete');
+        $router->put('/type-products/update/{id}','TypeProductsController@update');
+
+        //SKILL SUGGESTIONS
+        $router->get('/skill-suggestions', 'SkillSuggestionsController@getAll');
+        $router->post('/skill-suggestions/create', 'SkillSuggestionsController@store');
+        $router->get('/skill-suggestions/show/{id}','SkillSuggestionsController@show');
+        $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
+        $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
+
+        
     });
     // AUDITIONS
     $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+    $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+
+    
 
 });

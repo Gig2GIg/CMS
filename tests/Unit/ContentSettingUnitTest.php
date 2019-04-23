@@ -40,7 +40,8 @@ class ContentSettingUnitTest extends TestCase
             'term_of_use' => 'Dolor et sea lorem clita aliquyam.',
             'privacy_policy' => 'Dolor et sea lorem clita ',
             'app_info' => 'At sit et sit dolores, aliquyam',
-            'contact_us' => 'nvidunt consetetur sit accusam et lorem, diam aliquyam'
+            'contact_us' => 'nvidunt consetetur sit accusam et lorem, diam aliquyam',
+            'help' => 'nvidunt consetetur sit accusam et lorem, diam aliquyam'
         ];
 
         $contentSettingRepo = new ContentSettingRepository($contentSetting);
@@ -51,6 +52,7 @@ class ContentSettingUnitTest extends TestCase
         $this->assertEquals($data['privacy_policy'], $contentSetting->privacy_policy);
         $this->assertEquals($data['app_info'], $contentSetting->app_info);
         $this->assertEquals($data['contact_us'], $contentSetting->contact_us);
+        $this->assertEquals($data['help'], $contentSetting->help);
     }
 
 
