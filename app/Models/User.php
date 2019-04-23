@@ -105,5 +105,15 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(NotificationHistory::class);
     }
-    
+
+    public function educations(){
+        return $this->hasMany(Educations::class);
+    }
+    public function credits(){
+        return $this->hasMany(Credits::class);
+    }
+
+    public function aparence(){
+        return $this->hasOne(UserAparence::class);
+    }
 }

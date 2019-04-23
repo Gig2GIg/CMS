@@ -14,6 +14,7 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
+use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -66,15 +67,15 @@ class AuditionManagementController extends Controller
 
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionRepo->find($request->auditions);
-                
+
                 $this->sendPushNotification(
-                    $audition =  $audition,
+                    $audition = $audition,
                     'upcoming_audition',
                     $user = $detailData
                 );
             }
 
-            
+
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -83,35 +84,36 @@ class AuditionManagementController extends Controller
 
     }
 
-public function updateAudition(Request $request){
-    try {
-        DB::beginTransaction();
-        if(isset($request->slot)){
-            $dataRepo = new UserSlotsRepository(new UserSlots());
-            $dataRepo->create([
-                'user_id' =>$this->getUserLogging(),
-                'auditions_id'=>$request->slot['auditions'],
-                'slots_id' => $request->slot['slot'],
-            ]);
+    public function updateAudition(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            if (isset($request->slot)) {
+                $dataRepo = new UserSlotsRepository(new UserSlots());
+                $dataRepo->create([
+                    'user_id' => $this->getUserLogging(),
+                    'auditions_id' => $request->slot['auditions'],
+                    'slots_id' => $request->slot['slot'],
+                ]);
+            }
+            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+            $updateAudi = $dataRepoAuditionUser->find($request->id)->update(['type' => '1']);
+            if ($updateAudi) {
+                $code = 200;
+                $responseData = 'Audition update';
+                DB::commit();
+            } else {
+                $responseData = 'Audition not update';
+                $code = 406;
+                DB::rollBack();
+            }
+            return response()->json(['data' => $responseData], $code);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => 'Audition not update'], 406);
         }
-        $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-        $updateAudi = $dataRepoAuditionUser->find($request->id)->update(['type'=>'1']);
-       if($updateAudi) {
-           $code = 200;
-           $responseData = 'Audition update';
-           DB::commit();
-       }else {
-           $responseData = 'Audition not update';
-           $code = 406;
-           DB::rollBack();
-       }
-        return response()->json(['data' => $responseData], $code);
-    } catch (Exception $exception) {
-        DB::rollBack();
-        $this->log->error($exception->getMessage());
-        return response()->json(['error' => 'Audition not update'], 406);
-    }  
-}
+    }
 
     public function getUpcoming()
     {
@@ -137,7 +139,7 @@ public function updateAudition(Request $request){
 
             $data = $userAuditions->find($request->id);
 
-            return response()->json(['data' =>new AuditionsDetResponse($data)], 200);
+            return response()->json(['data' => new AuditionsDetResponse($data)], 200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -153,29 +155,29 @@ public function updateAudition(Request $request){
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status != 2 ) {
+                if ($audiData->status != 2) {
                     $this->collection->push($audiData);
                 }
             });
 
 
             $data->each(function ($item) {
-                if ($item['status'] != 2 && $item['user_id']===$this->getUserLogging()) {
+                if ($item['status'] != 2 && $item['user_id'] === $this->getUserLogging()) {
                     $this->collection->push($item);
                 }
             });
 
-            if($this->collection->count() > 0){
-               $dataResponse =  ['data' => AuditionResponse::collection($this->collection->unique())];
-               $code =200;
-            }else {
+            if ($this->collection->count() > 0) {
+                $dataResponse = ['data' => AuditionResponse::collection($this->collection->unique())];
+                $code = 200;
+            } else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =404;
+                $code = 404;
             }
 
 
@@ -195,7 +197,7 @@ public function updateAudition(Request $request){
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status','=',1);
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1);
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
@@ -212,12 +214,12 @@ public function updateAudition(Request $request){
                 }
             });
 
-            if($this->collection->count() > 0){
-                $dataResponse =  ['data' => AuditionResponse::collection($this->collection)];
-                $code =200;
-            }else {
+            if ($this->collection->count() > 0) {
+                $dataResponse = ['data' => AuditionResponse::collection($this->collection)];
+                $code = 200;
+            } else {
                 $dataResponse = ['data' => 'Not Found Data'];
-                $code =404;
+                $code = 404;
             }
 
 
@@ -246,18 +248,19 @@ public function updateAudition(Request $request){
         }
     }
 
-    public function openAudition(Request $request){
+    public function openAudition(Request $request)
+    {
         try {
             $auditionRepo = new AuditionRepository(new Auditions());
             $result = $auditionRepo->find($request->id)->update([
-                'status'=>1,
+                'status' => 1,
             ]);
 
-            if($result){
-                $dataResponse = ['data'=>['status'=>1]];
+            if ($result) {
+                $dataResponse = ['data' => ['status' => 1]];
                 $code = 200;
-            }else{
-                $dataResponse = ['data'=>'error to open audition'];
+            } else {
+                $dataResponse = ['data' => 'error to open audition'];
                 $code = 406;
             }
 
@@ -266,22 +269,23 @@ public function updateAudition(Request $request){
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'error to open audition'],406);
+            return response()->json(['data' => 'error to open audition'], 406);
         }
     }
 
-    public function closeAudition(Request $request){
+    public function closeAudition(Request $request)
+    {
         try {
             $auditionRepo = new AuditionRepository(new Auditions());
             $result = $auditionRepo->find($request->id)->update([
-                'status'=>2,
+                'status' => 2,
             ]);
 
-            if($result){
-                $dataResponse = ['data'=>['status'=>2]];
+            if ($result) {
+                $dataResponse = ['data' => ['status' => 2]];
                 $code = 200;
-            }else{
-                $dataResponse = ['data'=>'error to close audition'];
+            } else {
+                $dataResponse = ['data' => 'error to close audition'];
                 $code = 406;
             }
 
@@ -290,7 +294,31 @@ public function updateAudition(Request $request){
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'error to close audition'],406);
+            return response()->json(['data' => 'error to close audition'], 406);
+        }
+    }
+
+    public function getUserProfile(Request $request)
+    {
+        try{
+            $userRepo = new UserRepository(new User());
+            $data=$userRepo->find($request->id);
+            if ($data) {
+
+
+                $dataResponse = ['data' => new ProfileResource($data)];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not Found Data'];
+                $code = 404;
+            }
+
+            return response()->json($dataResponse, $code);
+
+
+        }catch (Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 }

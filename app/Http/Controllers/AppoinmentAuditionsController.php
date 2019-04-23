@@ -60,11 +60,11 @@ class AppoinmentAuditionsController extends Controller
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->auditions);
 
-//            $this->sendPushNotification(
-//                $audition,
-//                'check_in',
-//                $audition
-//            );
+            $this->sendPushNotification(
+                $audition,
+                'check_in',
+                $audition
+            );
 
             $dataResponse = new AppointmentResource($createData);
             return response()->json(['data' => $dataResponse], 200);

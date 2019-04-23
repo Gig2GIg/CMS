@@ -30,7 +30,7 @@ class UserEditRequest extends ApiRequest
             'city'=>'required|string|max:50',
             'state'=>'required|integer',
             'birth'=>'required|date',
-            'location'=>'required',
+//            'location'=>'required',
             'stage_name'=>'required',
             'profesion'=>'required',
             'zip'=>'required'
