@@ -180,6 +180,8 @@ $router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function
         $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
         $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
 
+        //NOTIFICATIONS 
+        $router->post('/send-notifications', 'NotificationsController@sendNotifications');
         
     });
     // AUDITIONS
