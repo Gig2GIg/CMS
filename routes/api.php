@@ -22,8 +22,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
     $router->post('/users/create',['uses'=>'UserController@store']);
-    // CONTENT SETTING
-    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
+
+
+
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
@@ -135,6 +136,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
     $router->get('/notification-settings','NotificationManagementController@getAll');
 
+    // CONTENT SETTING
+    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 });
 
 
@@ -144,8 +147,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 | CMS Routes
 |--------------------------------------------------------------------------
 */
-$router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function () use ($router) {
-    Route::namespace('Cms')->group(function () use ($router) {  
+$router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {
+    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
 
@@ -183,12 +186,10 @@ $router->group(['prefix'=>'cms', 'middleware' => ['jwt.auth','acl:3']], function
         //NOTIFICATIONS 
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
         
+        // AUDITIONS
+        $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
+        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+
     });
-    // AUDITIONS
-    $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
-    $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-    $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
-
-    
-
 });
