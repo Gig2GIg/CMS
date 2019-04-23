@@ -73,6 +73,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
 
+    //SKILL SUGGESTIONS
+    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
