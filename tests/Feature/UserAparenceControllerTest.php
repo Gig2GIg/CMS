@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use App\Models\UserAparence;
 use App\Models\UserDetails;
@@ -23,7 +24,7 @@ class UserAparenceControllerTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $user->image()->create(['url' => $this->faker->url, 'name' => 'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 2,
             'user_id' => $user->id,
@@ -38,10 +39,9 @@ class UserAparenceControllerTest extends TestCase
     }
 
 
-
     public function test_aparence_by_user_200()
     {
-        factory(UserAparence::class)->create(['user_id'=>$this->testId]);
+        factory(UserAparence::class)->create(['user_id' => $this->testId]);
 
         $response = $this->json('GET', 'api/a/aparences/byuser?token=' . $this->token);
 
@@ -59,12 +59,12 @@ class UserAparenceControllerTest extends TestCase
 
     public function test_add_aparences_user_200()
     {
-        $response = $this->json('POST','api/a/aparences?token=' . $this->token,[
-            'height'=>$this->faker->numberBetween(150,210),
-            'weight'=>$this->faker->numberBetween(50,110),
-            'hair'=>$this->faker->colorName(),
-            'eyes'=>$this->faker->colorName(),
-            'race'=>$this->faker->word(),
+        $response = $this->json('POST', 'api/a/aparences?token=' . $this->token, [
+            'height' => $this->faker->numberBetween(150, 210),
+            'weight' => $this->faker->numberBetween(50, 110),
+            'hair' => $this->faker->colorName(),
+            'eyes' => $this->faker->colorName(),
+            'race' => $this->faker->word(),
         ]);
         $response->assertStatus(201);
 
@@ -76,14 +76,64 @@ class UserAparenceControllerTest extends TestCase
             'user_id' => $this->testId,
 
         ]);
-        $response = $this->json('PUT','api/a/aparences/update/'.$manager->id.'?token='. $this->token,[
-            'height'=>$this->faker->numberBetween(150,210),
-            'weight'=>$this->faker->numberBetween(50,110),
-            'hair'=>$this->faker->colorName(),
-            'eyes'=>$this->faker->colorName(),
-            'race'=>$this->faker->word(),
+        $response = $this->json('PUT', 'api/a/aparences/update/' . $manager->id . '?token=' . $this->token, [
+            'height' => $this->faker->numberBetween(150, 210),
+            'weight' => $this->faker->numberBetween(50, 110),
+            'hair' => $this->faker->colorName(),
+            'eyes' => $this->faker->colorName(),
+            'race' => $this->faker->word(),
         ]);
         $response->assertStatus(200);
+
+    }
+
+    public function test_add_aparences_user_500()
+    {
+
+        $response = $this->json('POST', 'api/a/aparences?token=' . $this->token, [
+            'height' => $this->faker->numberBetween(150, 210),
+            'weight' => 'texttooo',
+            'hair' => $this->faker->colorName(),
+            'eyes' => $this->faker->colorName(),
+            'race' => $this->faker->word(),
+        ]);
+        $response->assertStatus(500);
+
+    }
+
+    public function test_aparence_by_user_404()
+    {
+        $response = $this->json('GET', 'api/a/aparences/byuser?token=' . $this->token);
+        $response->assertStatus(404);
+        $response->assertJson(['data' => 'Not Found Data']);
+    }
+    public function test_update_aparences_user_404()
+    {
+
+        $response = $this->json('PUT', 'api/a/aparences/update/3?token=' . $this->token, [
+            'height' => $this->faker->numberBetween(150, 210),
+            'weight' => $this->faker->numberBetween(50, 110),
+            'hair' => $this->faker->colorName(),
+            'eyes' => $this->faker->colorName(),
+            'race' => $this->faker->word(),
+        ]);
+        $response->assertStatus(404);
+
+    }
+    public function test_update_aparences_user_406()
+    {
+        $manager = factory(UserAparence::class)->create([
+            'user_id' => $this->testId,
+
+        ]);
+        $response = $this->json('PUT', 'api/a/aparences/update/' . $manager->id . '?token=' . $this->token, [
+            'height' => $this->faker->numberBetween(150, 210),
+            'weight' => 'test',
+            'hair' => $this->faker->colorName(),
+            'eyes' => $this->faker->colorName(),
+            'race' => $this->faker->word(),
+        ]);
+        $response->assertStatus(406);
 
     }
 }

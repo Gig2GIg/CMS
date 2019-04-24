@@ -8,7 +8,6 @@ use App\Http\Repositories\UserAparenceRepository;
 use App\Http\Requests\AparencesRequest;
 use App\Http\Resources\AparenceResource;
 use App\Models\UserAparence;
-use Illuminate\Http\Request;
 
 class AparencesController extends Controller
 {
@@ -20,6 +19,10 @@ class AparencesController extends Controller
         $this->log = new LogManger();
     }
 
+    /**
+     * @param AparencesRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(AparencesRequest $request)
     {
         try {
@@ -46,6 +49,9 @@ class AparencesController extends Controller
     }
 
 
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function byUser()
     {
         try {
@@ -66,6 +72,10 @@ class AparencesController extends Controller
         }
     }
 
+    /**
+     * @param AparencesRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(AparencesRequest $request)
     {
         try {
@@ -87,8 +97,9 @@ class AparencesController extends Controller
                 $code = 406;
             }
             return response()->json($dataResponse, $code);
-        } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            return response()->json(['data' => 'Error not Processable'], 406);
         }
     }
 }

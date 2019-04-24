@@ -98,10 +98,12 @@ class AuditionManagemenDirectorTest extends TestCase
     }
 
     public function test_list_profile_user_audition(){
-        factory(Educations::class,3)->create(['user_id'=>$this->userId]);
-        factory(Credits::class,4)->create(['user_id'=>$this->userId]);
-        factory(UserAparence::class)->create(['user_id'=>$this->userId]);
-        $response = $this->json('GET','api/t/auditions/profile/user/'.$this->auditionId.'?token='.$this->token);
+        $userprofile = factory(User::class)->create();
+        factory(UserDetails::class)->create(['user_id'=>$userprofile->id]);
+        factory(Educations::class,3)->create(['user_id'=>$userprofile->id]);
+        factory(Credits::class,4)->create(['user_id'=>$userprofile->id]);
+        factory(UserAparence::class)->create(['user_id'=>$userprofile->id]);
+        $response = $this->json('GET','api/t/auditions/profile/user/'.$userprofile->id.'?token='.$this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data'=>[
             'id',

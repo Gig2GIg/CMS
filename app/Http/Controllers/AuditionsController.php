@@ -133,7 +133,7 @@ class AuditionsController extends Controller
             'title' => $request->title,
             'date' => $this->toDate->transformDate($request->date),
             'time' => $request->time,
-            //'location' => json_encode($request->location),
+            'location' => json_encode($request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,

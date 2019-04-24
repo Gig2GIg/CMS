@@ -10,7 +10,7 @@ class Auditions extends Model
         'title',
         'date',
         'time',
-       // 'location',
+        'location',
         'description',
         'url',
         'union',

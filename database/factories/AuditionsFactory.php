@@ -27,12 +27,12 @@ $factory->define(App\Models\Auditions::class, function (Faker $faker) {
         'title' => $faker->colorName." ".$faker->domainWord,
         'date' => $faker->date(),
         'time' => $faker->time(),
-//        'location' => json_encode([
-//            "latitude"=> $faker->latitude,
-//            "latitudeDelta"=> $faker->latitude,
-//            "longitude"=>$faker->longitude,
-//            "longitudeDelta"=>$faker->longitude,
-//        ]),
+        'location' => json_encode([
+            "latitude"=> $faker->latitude,
+            "latitudeDelta"=> $faker->latitude,
+            "longitude"=>$faker->longitude,
+            "longitudeDelta"=>$faker->longitude,
+        ]),
         'description' => $faker->paragraph(),
         'url' => $faker->url(),
         'union' => $data[$randNumber],
