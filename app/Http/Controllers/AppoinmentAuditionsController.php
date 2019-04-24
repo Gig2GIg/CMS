@@ -18,6 +18,8 @@ use App\Models\User;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
 
+use App\Http\Exceptions\NotificationException;
+
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 
 
@@ -60,11 +62,17 @@ class AppoinmentAuditionsController extends Controller
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->auditions);
 
-            $this->sendPushNotification(
-                $audition,
-                'check_in',
-                $audition
-            );
+            try {
+                $this->sendPushNotification(
+                    $audition,
+                    'check_in',
+                    $audition,
+                    null
+                );
+
+            } catch (NotificationException $exception) {
+                $this->log->error($exception->getMessage());
+            }
 
             $dataResponse = new AppointmentResource($createData);
             return response()->json(['data' => $dataResponse], 200);
@@ -117,14 +125,4 @@ class AppoinmentAuditionsController extends Controller
         }
     }
 
-//    public function sendPushNotification($audition, $type, $user)
-//    {
-//        $this->log->info("ENVIAR PUSH A USER" . $user_id);
-//
-//        $this->sendPushNotification(
-//            $audition,
-//            $type,
-//            $user
-//        );
-//    }
 }
