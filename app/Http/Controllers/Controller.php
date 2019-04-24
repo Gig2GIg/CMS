@@ -36,6 +36,7 @@ class Controller extends BaseController
 //use to send notifications
     public function sendPushNotification($audition, $type , $user = null, $title = null)
     {
+        
         SendNotifications::send(
             $audition,
             $type,
