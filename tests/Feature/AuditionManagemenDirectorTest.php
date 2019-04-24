@@ -97,7 +97,7 @@ class AuditionManagemenDirectorTest extends TestCase
 
     }
 
-    public function test_list_profile_user_audition(){
+    public function test_list_profile_user_audition_200(){
         $userprofile = factory(User::class)->create();
         factory(UserDetails::class)->create(['user_id'=>$userprofile->id]);
         factory(Educations::class,3)->create(['user_id'=>$userprofile->id]);
@@ -112,6 +112,13 @@ class AuditionManagemenDirectorTest extends TestCase
             'credits',
             'aparence'
         ]]);
+    }
+
+    public function test_list_profile_user_audition_404(){
+
+        $response = $this->json('GET','api/t/auditions/profile/user/99999?token='.$this->token);
+        $response->assertStatus(404);
+        $response->assertJson(['data'=>'Not found Data']);
     }
 
     protected function setUp(): void
