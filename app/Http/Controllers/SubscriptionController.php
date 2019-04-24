@@ -103,4 +103,30 @@ class SubscriptionController extends Controller
             return response()->json(['error' => 'ERROR'], 406);
         }
     }
+
+    public function setDefaultPlan(Request $request)
+    {
+        try
+        {
+            $stripe = new StripeManagementController();
+            $data = [
+                'id' => $this->getUserLogging(),
+                'pricing_type' => 0,
+                'stripeToken' => $request->token_stripe
+            ];
+            if ($stripe->setSubscription($data)) {
+                $userRepo = new UserRepository(new User());
+                $userData = $userRepo->find($this->getUserLogging());
+                $dataResponse = $userData->defaultCard();
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Add Payment method Error'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 406);
+        }
+    }
 }

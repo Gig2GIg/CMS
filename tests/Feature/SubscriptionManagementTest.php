@@ -39,7 +39,7 @@ class SubscriptionManagementTest extends TestCase
 
     }
   public function test_create_subscription_200(){
-    $response = $this->json('POST','api/a/subscriptions?token='.$this->token,[
+    $response = $this->json('POST','api/a/subscriptions/plan?token='.$this->token,[
         'plan'=> '2',
         'token_stripe'=>'tok_visa'
     ]);
@@ -47,6 +47,15 @@ class SubscriptionManagementTest extends TestCase
     $response->assertStatus(200);
 
   }
+
+    public function test_add_payment_200(){
+        $response = $this->json('POST','api/a/subscriptions/addpayment?token='.$this->token,[
+            'token_stripe'=>'tok_visa'
+        ]);
+
+        $response->assertStatus(200);
+
+    }
 
     public function test_update_subscription_200(){
         $userDeta = new UserDetails();
