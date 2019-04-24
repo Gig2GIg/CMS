@@ -71,6 +71,12 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
 
+    //TYPE PRODUCTS
+    $router->get('/type-products', 'TypeProductsController@getAll');
+
+    //SKILL SUGGESTIONS
+    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -170,5 +176,33 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+
+        //TYPE PRODUCTS
+        $router->get('/type-products', 'TypeProductsController@getAll');
+        $router->post('/type-products/create', 'TypeProductsController@store');
+        $router->get('/type-products/show/{id}','TypeProductsController@show');
+        $router->delete('/type-products/delete/{id}','TypeProductsController@delete');
+        $router->put('/type-products/update/{id}','TypeProductsController@update');
+
+        //SKILL SUGGESTIONS
+        $router->get('/skill-suggestions', 'SkillSuggestionsController@getAll');
+        $router->post('/skill-suggestions/create', 'SkillSuggestionsController@store');
+        $router->get('/skill-suggestions/show/{id}','SkillSuggestionsController@show');
+        $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
+        $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
+
+        //NOTIFICATIONS 
+        $router->post('/send-notifications', 'NotificationsController@sendNotifications');
+        
+        // AUDITIONS
+        $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
+        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+       
+        // SUBCRIBERS
+        $router->get('/subcribers-payments','SubcribersController@payments');
+        
+        //SUBCRIPTIONS
+        $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
     });
 });
