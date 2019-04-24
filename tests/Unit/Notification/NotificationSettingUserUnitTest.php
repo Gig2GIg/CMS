@@ -39,6 +39,7 @@ class NotificationSettingUserUnitTest extends TestCase
         $data = [
             'user_id' => $this->user_id,
             'notification_setting_id' => $this->notification_setting_id,
+            'code' => 'some code',
             'status' => 'on'
         ];
 
@@ -55,6 +56,7 @@ class NotificationSettingUserUnitTest extends TestCase
         $data = [
             'notification_setting_id'=> $this->notification_setting_id,
             'user_id'=>$this->user_id,
+            'code' => 'some code',
             'status' => 'on'
         ];
       
@@ -69,6 +71,7 @@ class NotificationSettingUserUnitTest extends TestCase
         $data = [
             'notification_setting_id'=>$this->notification_setting_id,
             'user_id'=>$this->user_id,
+            'code' => 'some code',
             'status' => 'on'
         ];
       
@@ -85,6 +88,7 @@ class NotificationSettingUserUnitTest extends TestCase
         $data = [
             'notification_setting_id'=>$this->notification_setting_id,
             'user_id'=>$this->user_id,
+            'code' => 'some code',
             'status' => 'on'
         ];
       
