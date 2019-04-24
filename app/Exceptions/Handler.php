@@ -11,7 +11,7 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-
+use Stripe\Error\ApiConnection;
 class Handler extends ExceptionHandler
 {
     /**
@@ -87,6 +87,11 @@ class Handler extends ExceptionHandler
             case $exception instanceof NotFoundHttpException:
                 return response()->json([
                     'message' => 'Not Found',
+                ], 404);
+                break;
+            case $exception instanceof ApiConnection:
+                return response()->json([
+                    'message' => 'Not Connection API stripe',
                 ], 404);
                 break;
         }
