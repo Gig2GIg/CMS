@@ -4,15 +4,18 @@ namespace Tests\Unit;
 
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\Credits;
+use App\Models\Educations;
 use App\Models\Roles;
 use App\Models\User;
+use App\Models\UserAparence;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class AuditionManagemenDirectortTest extends TestCase
+class AuditionManagemenDirectorTest extends TestCase
 {
     public function test_auditions_upcomming_director()
     {
@@ -34,7 +37,6 @@ class AuditionManagemenDirectortTest extends TestCase
             'union',
             'contract',
             'production',
-            'media',
             'number_roles',
         ]]]);
     }
@@ -59,7 +61,6 @@ class AuditionManagemenDirectortTest extends TestCase
             'union',
             'contract',
             'production',
-            'media',
             'number_roles',
         ]]]);
     }
@@ -70,6 +71,7 @@ class AuditionManagemenDirectortTest extends TestCase
 
         $data = factory(Auditions::class, 10)->create([
             'user_id' => $user->id,
+            'status'=>0
         ]);
         $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
         $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $user->id, 'auditions_id' => $data[0]->id]);
@@ -93,6 +95,21 @@ class AuditionManagemenDirectortTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson(['data' => ['status' => 2]]);
 
+    }
+
+    public function test_list_profile_user_audition(){
+        factory(Educations::class,3)->create(['user_id'=>$this->userId]);
+        factory(Credits::class,4)->create(['user_id'=>$this->userId]);
+        factory(UserAparence::class)->create(['user_id'=>$this->userId]);
+        $response = $this->json('GET','api/t/auditions/profile/user/'.$this->auditionId.'?token='.$this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data'=>[
+            'id',
+            'details',
+            'education',
+            'credits',
+            'aparence'
+        ]]);
     }
 
     protected function setUp(): void

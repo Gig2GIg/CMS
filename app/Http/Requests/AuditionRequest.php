@@ -27,7 +27,7 @@ class AuditionRequest extends ApiRequest
             'title'=>'required',
             'date'=>'required',
             'time'=>'required',
-            'location'=>'required',
+            //'location'=>'required',
             'description'=>'required',
             'url'=>'required',
             'cover'=>'required',

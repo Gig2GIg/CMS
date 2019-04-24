@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Credits;
+use App\Models\Educations;
+use App\Models\UserAparence;
 use Illuminate\Database\Seeder;
 Use Faker\Generator as Faker;
 class userSeeder extends Seeder
@@ -52,6 +55,9 @@ class userSeeder extends Seeder
             'user_id'=>$user2->id,
             'type'=>2
         ]);
+        factory(Educations::class,3)->create(['user_id'=>$user2->id]);
+        factory(Credits::class,4)->create(['user_id'=>$user2->id]);
+        factory(UserAparence::class)->create(['user_id'=>$user2->id]);
 
         $cms = factory(\App\Models\User::class)->create([
             'email'=>'cms@g2g.com',

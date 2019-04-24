@@ -106,7 +106,7 @@ class UserController extends Controller
             'agency_name' => $request->agency_name,
             'image' => $request->image,
             'profesion' => $request->profesion,
-            'location' => $request->location,
+//            'location' => $request->location,
             'zip' => $request->zip,
             'user_id' => $id,
         ];
@@ -141,7 +141,7 @@ class UserController extends Controller
             'stage_name' => $request->stage_name,
             'image' => $request->image,
             'profesion' => $request->profesion,
-            'location' => $request->location,
+//            'location' => $request->location,
             'zip' => $request->zip,
             'user_id' => $id,
         ];
@@ -215,7 +215,7 @@ class UserController extends Controller
                     'birth' => $this->date->transformDate($request->birth),
                     'stage_name' => $request->stage_name,
                     'profesion' => $request->profesion,
-                    'location' => $request->location,
+//                    'location' => $request->location,
                     'zip' => $request->zip,
                 ];
                 $dataUser->image->update(['url' => $request->image]);
@@ -268,7 +268,7 @@ class UserController extends Controller
                     'birth' => $this->date->transformDate($request->birth),
                     'agency_name' => $request->agency_name,
                     'profesion' => $request->profesion,
-                    'location' => $request->location,
+//                    'location' => $request->location,
                     'zip' => $request->zip,
                 ];
                 $dat = $dataUserDetails->update($userDataDetails);

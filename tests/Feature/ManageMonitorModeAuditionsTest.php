@@ -21,7 +21,7 @@ class ManageMonitorModeAuditionsTest extends TestCase
          'title'=>'Checking open',
          'time'=>$this->faker->time()
       ]);
-      $response->assertStatus(200);
+      $response->assertStatus(201);
       $response->assertJson(['data'=>'Update Publised']);
   }
 

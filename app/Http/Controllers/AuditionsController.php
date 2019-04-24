@@ -48,7 +48,6 @@ class AuditionsController extends Controller
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
-        $this->getDataToken();
     }
 
     /**
@@ -134,7 +133,7 @@ class AuditionsController extends Controller
             'title' => $request->title,
             'date' => $this->toDate->transformDate($request->date),
             'time' => $request->time,
-            'location' => json_encode($request->location),
+            //'location' => json_encode($request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'union' => $request->union,

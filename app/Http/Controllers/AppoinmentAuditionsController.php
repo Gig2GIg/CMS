@@ -37,8 +37,16 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
+            $iduser = null;
+            if(isset($request->email)){
+                $dataUserRepo = new UserRepository(new User());
+                $dataUser = $dataUserRepo->findbyparam('email',$request->email);
+                $iduser = $dataUser->id;
+            }else{
+                $iduser = $request->user;
+            }
             $createData = $dataRepo->create([
-                'user_id' => $request->user,
+                'user_id' => $iduser,
                 'auditions_id' => $request->auditions,
                 'slots_id' => $request->slot,
             ]);
@@ -47,7 +55,7 @@ class AppoinmentAuditionsController extends Controller
                 'status' => '0'
             ]);
             $userRepo = new UserRepository(new User());
-            $user = $userRepo->find($request->user);
+            $user = $userRepo->find($iduser);
 
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->auditions);
@@ -61,6 +69,7 @@ class AppoinmentAuditionsController extends Controller
             $dataResponse = new AppointmentResource($createData);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Appointment not assigned'], 406);
         }
     }
@@ -75,6 +84,7 @@ class AppoinmentAuditionsController extends Controller
             $dataResponse = AppointmentResource::collection($data);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
