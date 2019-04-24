@@ -14,11 +14,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-      if(isset($this->stripe_id)){
-          $card = $this->defaultCard();
-      }else{
-          $card =[];
-      }
+
 
         return [
             'id' => $this->id,
@@ -27,7 +23,7 @@ class UserResource extends JsonResource
             'details' =>$this->details,
             'union_members' => $this->memberunions,
             'subscription'=>$this->subscriptions,
-            'card'=>$card,
+
         ];
     }
 }
