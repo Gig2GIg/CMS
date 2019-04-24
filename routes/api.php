@@ -193,6 +193,8 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
         $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
         $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
         $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
-
+       
+        // SUBCRIBERS
+        $router->get('/subcribers-payments','SubcribersController@payments');
     });
 });
