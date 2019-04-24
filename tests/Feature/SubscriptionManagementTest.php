@@ -57,6 +57,23 @@ class SubscriptionManagementTest extends TestCase
 
     }
 
+    public function test_get_card_data_200(){
+        $userDeta = new UserDetails();
+        $userDeta->where('user_id',$this->testId)->delete();
+        factory(UserDetails::class)->create([
+            'user_id'=>$this->testId,
+            'subscription'=>2
+        ]);
+        $connect = new StripeManagementController();
+        $req = [];
+        $req['pricing_type'] = '2';
+        $req['stripeToken'] = 'tok_visa';
+        $req['id'] = $this->testId;
+        $connect->setSubscription($req);$response = $this->json('GET','api/a/subscriptions/getcard?token='.$this->token);
+        $response->assertStatus(200);
+
+    }
+
     public function test_update_subscription_200(){
         $userDeta = new UserDetails();
         $userDeta->where('user_id',$this->testId)->delete();

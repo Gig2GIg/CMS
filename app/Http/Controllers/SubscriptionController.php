@@ -106,8 +106,7 @@ class SubscriptionController extends Controller
 
     public function setDefaultPlan(Request $request)
     {
-        try
-        {
+        try {
             $stripe = new StripeManagementController();
             $data = [
                 'id' => $this->getUserLogging(),
@@ -129,4 +128,24 @@ class SubscriptionController extends Controller
             return response()->json(['error' => 'ERROR'], 406);
         }
     }
+
+    public function getCardData()
+    {
+        try {
+            $dataUserRepo = new UserRepository(new User());
+            $dataUser = $dataUserRepo->find($this->getUserLogging());
+            if (isset($dataUser->stripe_id)) {
+                $dataResponse = $dataUser->defaultCard();
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'not card data'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => 'ERROR'], 404);
+        }
+    }
+
 }
