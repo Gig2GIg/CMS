@@ -201,5 +201,8 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
        
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
+        
+        //SUBCRIPTIONS
+        $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
     });
 });
