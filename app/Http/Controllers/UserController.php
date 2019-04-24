@@ -70,7 +70,7 @@ class UserController extends Controller
             ];
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
-            $usert->image()->create(['url' => request('image'), 'type' => 'image', 'name'=>request('resource_name')]);
+            $usert->image()->create(['url' => request('image'), 'type' => 'image', 'name' => request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
             } else {
@@ -163,6 +163,27 @@ class UserController extends Controller
         }
     }
 
+    public function createNotificationSetting($user): void
+    {
+        try {
+            DB::beginTransaction();
+            $notificationSetting = NotificationSetting::where('status', 1)->get();
+
+            foreach ($notificationSetting as $iValue) {
+                $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
+                $notificationSettingUserRepo->create([
+                    'notification_setting_id' => $iValue['id'],
+                    'user_id' => $user->id,
+                    'code' => $iValue['code']
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $exception) {
+            DB::rollBack();
+        }
+    }
+
     /**
      * @return \Illuminate\Http\JsonResponse|null
      */
@@ -186,8 +207,7 @@ class UserController extends Controller
             return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         }
 
-    } 
-
+    }
 
     /**
      * @param UserEditRequest $request
@@ -201,7 +221,7 @@ class UserController extends Controller
                 $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
 
-                $data['email']= $request->email;
+                $data['email'] = $request->email;
                 if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                     $data['password'] = Hash::make($request->password);
                 }
@@ -220,21 +240,21 @@ class UserController extends Controller
                 ];
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
+                $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
                 $dat = $dataUserDetails->update($userDataDetails);
-                if($dat){
+                if ($dat) {
                     $responseUserRepo = new UserRepository(new User());
                     $dataResponseUser = $responseUserRepo->find($request->id);
                     $responseOut = ['data' => new UserResource($dataResponseUser)];
-                    $code =200;
-                }else{
+                    $code = 200;
+                } else {
                     $responseOut = ['data' => 'Not updated'];
-                    $code =406;
+                    $code = 406;
                 }
 
-                return response()->json($responseOut,$code);
+                return response()->json($responseOut, $code);
 
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 $this->log->error($e->getMessage());
                 return response()->json(['data' => 'Unprocessable'], 406);
             }
@@ -250,18 +270,18 @@ class UserController extends Controller
                 $user = new UserRepository(new User());
                 $this->log->info($request->id);
                 $dataUser = $user->find($request->id);
-                $data['email']= $request->email;
+                $data['email'] = $request->email;
                 if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                     $data['password'] = Hash::make($request->password);
                 }
                 $dataUser->update($data);
-                $name = explode(' ',$request->name);
+                $name = explode(' ', $request->name);
                 $dataUser->image->update(['url' => $request->image]);
                 $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id',$request->id);
+                $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
                 $userDataDetails = [
-                    'first_name' => $name[0]?? $dataUserDetails->first_name,
-                    'last_name' => $name[1]?? $dataUserDetails->last_name,
+                    'first_name' => $name[0] ?? $dataUserDetails->first_name,
+                    'last_name' => $name[1] ?? $dataUserDetails->last_name,
                     'address' => $request->address,
                     'city' => $request->city,
                     'state' => $request->state,
@@ -272,19 +292,19 @@ class UserController extends Controller
                     'zip' => $request->zip,
                 ];
                 $dat = $dataUserDetails->update($userDataDetails);
-                if($dat){
+                if ($dat) {
                     $responseUserRepo = new UserRepository(new User());
                     $dataResponseUser = $responseUserRepo->find($request->id);
                     $responseOut = ['data' => new UserResource($dataResponseUser)];
-                    $code =200;
-                }else{
+                    $code = 200;
+                } else {
                     $responseOut = ['data' => 'Not updated'];
-                    $code =406;
+                    $code = 406;
                 }
-                return response()->json($responseOut,$code);
+                return response()->json($responseOut, $code);
             } catch (NotFoundException $e) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
-            }catch (\Exception $e){
+            } catch (\Exception $e) {
                 return response()->json(['data' => 'Unprocessable'], 406);
             }
         } else {
@@ -359,8 +379,10 @@ class UserController extends Controller
         try {
             $repo = new UserUnionMemberRepository(new UserUnionMembers());
             $data = $repo->findbyparam('user_id', $this->getUserLogging());
-            $dataDelete = new UserUnionMembers($data->toArray());
-            $dataDelete->delete();
+            $data->each(function ($element) {
+                $element->delete();
+            });
+
             foreach ($request->data as $item) {
                 $dataNew = new UserUnionMemberRepository(new UserUnionMembers());
                 $dataNew->create([
@@ -368,17 +390,17 @@ class UserController extends Controller
                     'name' => $item['name']
                 ]);
             }
-            return response()->json(['data'=>'Unions update'],200);
-        }catch (\Exception $exception){
+            return response()->json(['data' => 'Unions update'], 200);
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'Error to process'],406);
+            return response()->json(['data' => 'Error to process'], 406);
         }
     }
 
     public function listMemberships(Request $request)
     {
-      $repo = new UserUnionMemberRepository(new UserUnionMembers());
-      $data = $repo->findbyparam('user_id',$this->getUserLogging());
+        $repo = new UserUnionMemberRepository(new UserUnionMembers());
+        $data = $repo->findbyparam('user_id', $this->getUserLogging());
         if ($data->count() > 0) {
             $responseData = ['data' => $data];
             $code = 200;
@@ -386,28 +408,8 @@ class UserController extends Controller
             $responseData = ['data' => self::NOT_FOUND_DATA];
             $code = 404;
         }
-        return response()->json($responseData,$code);
+        return response()->json($responseData, $code);
     }
 
-    public function createNotificationSetting($user) :void
-    {
-        try {
-            DB::beginTransaction();
-            $notificationSetting = NotificationSetting::where('status' ,1)->get();
-     
-            foreach ($notificationSetting as $iValue) {
-                $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-                $notificationSettingUserRepo->create([
-                    'notification_setting_id' => $iValue['id'],
-                     'user_id' => $user->id,
-                     'code' =>  $iValue['code']
-                     ]);
-            }
-
-            DB::commit();
-        } catch (\Exception $exception) {
-            DB::rollBack();
-        }
-    }
 
 }

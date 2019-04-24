@@ -35,16 +35,37 @@ class AppoinmentAuditionsController extends Controller
 
     }
 
+    public function preStore(Request $request)
+    {
+        try {
+            $dataUserRepo = new UserRepository(new User());
+            if (isset($request->email)) {
+                $dataUser = $dataUserRepo->findbyparam('email', $request->email);
+            } else {
+                $dataUser = $dataUserRepo->find($request->user);
+            }
+            $dataResponse = [
+                'id' => $dataUser->id,
+                'image' => $dataUser->image->url,
+                'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+            ];
+            return response()->json(['data' => $dataResponse], 200);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $iduser = null;
-            if(isset($request->email)){
+            if (isset($request->email)) {
                 $dataUserRepo = new UserRepository(new User());
-                $dataUser = $dataUserRepo->findbyparam('email',$request->email);
+                $dataUser = $dataUserRepo->findbyparam('email', $request->email);
                 $iduser = $dataUser->id;
-            }else{
+            } else {
                 $iduser = $request->user;
             }
             $createData = $dataRepo->create([

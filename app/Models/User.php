@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Cashier\Billable;
+use Laravel\Cashier\Subscription;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Notifications\NotificationHistory;
 use App\Models\Notifications\NotificationSettingUser;
@@ -116,4 +117,6 @@ class User extends Authenticatable implements JWTSubject
     public function aparence(){
         return $this->hasOne(UserAparence::class);
     }
+
+
 }

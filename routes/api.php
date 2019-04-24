@@ -35,6 +35,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
     $router->get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
     $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
+    $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
 
     $router->get('/appointments/show/{id}/walk',['uses'=>'AppoinmentAuditionsController@showListWalk']);
@@ -144,8 +145,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
     //Subscription management
-    $router->post('subscriptions',['uses'=>'SubscriptionController@managementSubscription']);
+    $router->post('subscriptions/plan',['uses'=>'SubscriptionController@managementSubscription']);
     $router->delete('subscriptions',['uses'=>'SubscriptionController@cancelSubscription']);
+    $router->post('subscriptions/addpayment',['uses'=>'SubscriptionController@setDefaultPlan']);
 });
 
 
