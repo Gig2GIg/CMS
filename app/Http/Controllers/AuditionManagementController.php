@@ -320,4 +320,27 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
+
+    public function saveVideo(Request $request){
+        try{
+            $userRepo = new UserRepository(new User());
+            $data=$userRepo->find($request->id);
+            if ($data) {
+
+
+                $dataResponse = ['data' => new ProfileResource($data)];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not Found Data'];
+                $code = 404;
+            }
+
+            return response()->json($dataResponse, $code);
+
+
+        }catch (Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
 }

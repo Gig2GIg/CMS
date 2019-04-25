@@ -37,6 +37,7 @@ class AppoinmentAuditionsController extends Controller
 
     public function preStore(Request $request)
     {
+        $this->log->info($request);
         try {
             $dataUserRepo = new UserRepository(new User());
             if (isset($request->email)) {

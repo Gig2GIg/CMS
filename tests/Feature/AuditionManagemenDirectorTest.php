@@ -159,4 +159,29 @@ class AuditionManagemenDirectorTest extends TestCase
         $this->auditionId = $audition->id;
     }
 
+    public function test_audition_save_video_200()
+    {
+        $user = factory(User::class)->create();
+
+        $data = factory(Auditions::class)->create([
+            'user_id' => $user->id,
+            'status' => 1
+        ]);
+
+        $response = $this->json('POST',
+            'api/t/auditions/video/save?token=' . $this->token,[
+                'video'=>$this->faker->imageUrl(),
+                'auditions'=>$data->id,
+                'performer'=>$user->id
+            ]);
+        $response->assertStatus(200);
+        //$response->assertJson(['data' => 'Not Found Data']);
+
+    }
+
+    public function test_audition_list_video_200()
+    {
+
+    }
+
 }
