@@ -99,7 +99,12 @@ class AparencesController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
-            return response()->json(['data' => 'Error not Processable'], 406);
+            if($e instanceof NotFoundException){
+                $code = 404;
+            }else{
+                $code =406;
+            }
+            return response()->json(['data' => 'Error not Processable'], $code);
         }
     }
 }

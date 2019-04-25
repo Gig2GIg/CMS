@@ -13,31 +13,35 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ManageMonitorModeAuditionsTest extends TestCase
 {
- protected  $auditionId;
-  public function test_create_update_monitor_audition(){
+    protected $auditionId;
 
-      $response = $this->json('POST','api/t/monitor/updates?token='.$this->token,[
-         'audition'=>1,
-         'title'=>'Checking open',
-         'time'=>$this->faker->time()
-      ]);
-      $response->assertStatus(201);
-      $response->assertJson(['data'=>'Update Publised']);
-  }
+    public function test_create_update_monitor_audition()
+    {
 
-    public function test_list_by_updates(){
-        factory(Monitor::class,10)->create(['auditions_id'=>$this->auditionId]);
-        $response = $this->json('GET','api/monitor/show/'.$this->auditionId.'?token='.$this->token);
+        $response = $this->json('POST', 'api/t/monitor/updates?token=' . $this->token, [
+            'audition' => $this->auditionId,
+            'title' => 'Checking open',
+            'time' => $this->faker->time()
+        ]);
+        $response->assertStatus(201);
+        $response->assertJson(['data' => 'Update Publised']);
+    }
+
+    public function test_list_by_updates()
+    {
+        factory(Monitor::class, 10)->create(['auditions_id' => $this->auditionId]);
+        $response = $this->json('GET', 'api/monitor/show/' . $this->auditionId . '?token=' . $this->token);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data'=>[[
+        $response->assertJsonStructure(['data' => [[
             'id',
             'time',
             'title',
         ]]]);
     }
 
-    public function test_list_by_updates_404(){
-        $response = $this->json('GET','api/monitor/show/'.$this->auditionId.'?token='.$this->token);
+    public function test_list_by_updates_404()
+    {
+        $response = $this->json('GET', 'api/monitor/show/' . $this->auditionId . '?token=' . $this->token);
         $response->assertStatus(404);
 
     }
@@ -50,7 +54,7 @@ class ManageMonitorModeAuditionsTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $user->image()->create(['url' => $this->faker->url, 'name' => 'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 1,
             'user_id' => $user->id,
@@ -65,7 +69,7 @@ class ManageMonitorModeAuditionsTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url' => $this->faker->url, 'type' => 4,'name'=>'test']);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
 
         $this->userId = $user->id;
         $this->auditionId = $audition->id;

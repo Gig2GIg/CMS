@@ -188,25 +188,7 @@ class UserControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_delete_user_api_400(){
-        $user = factory(User::class)->create();
-        $userDetails = factory(UserDetails::class)->create([
-            'user_id'=>$user->id,
-        ]);
-        $userMebership = factory(UserUnionMembers::class,2)->create([
-            'user_id'=>$user->id,
-        ]);
-        $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
-        $response = $this->json('DELETE','api/a/users/delete/9999?token='.$this->token);
-        $response->assertStatus(404);
-    }
 
-//    public function test_delete_user_api(){
-//        $user = factory(User::class)->create();
-//
-//        $response = $this->json('DELETE','api/a/users/delete/'.$user->id."?token=".$this->token);
-//        $response->assertStatus(200);
-//    }
 
     public function test_send_email_200(){
         $user = factory(User::class)->create([

@@ -77,6 +77,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //SKILL SUGGESTIONS
     $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+    $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 
 });
 
@@ -145,7 +146,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
     //Subscription management
-    $router->post('subscriptions/plan',['uses'=>'SubscriptionController@managementSubscription']);
+    $router->post('subscriptions',['uses'=>'SubscriptionController@managementSubscription']);
     $router->delete('subscriptions',['uses'=>'SubscriptionController@cancelSubscription']);
     $router->post('subscriptions/addpayment',['uses'=>'SubscriptionController@setDefaultPlan']);
     $router->get('subscriptions/getcard',['uses'=>'SubscriptionController@getCardData']);

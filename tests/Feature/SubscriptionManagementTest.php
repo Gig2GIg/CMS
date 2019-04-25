@@ -39,7 +39,7 @@ class SubscriptionManagementTest extends TestCase
 
     }
   public function test_create_subscription_200(){
-    $response = $this->json('POST','api/a/subscriptions/plan?token='.$this->token,[
+    $response = $this->json('POST','api/a/subscriptions?token='.$this->token,[
         'plan'=> '2',
         'token_stripe'=>'tok_visa'
     ]);

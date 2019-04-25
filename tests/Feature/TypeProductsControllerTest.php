@@ -7,7 +7,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserDetails;
 
-class TypeProductsControllerUnitTest extends TestCase
+class TypeProductsControllerTest extends TestCase
 {
 
     protected $token;

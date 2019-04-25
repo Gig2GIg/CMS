@@ -69,12 +69,16 @@ class AuditionManagemenDirectorTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-        $data = factory(Auditions::class, 10)->create([
+        $data = factory(Auditions::class)->create([
             'user_id' => $user->id,
-            'status'=>0
+            'status' => 1
         ]);
-        $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
-        $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $user->id, 'auditions_id' => $data[0]->id]);
+        $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data->id]);
+        $dataContrib = factory(AuditionContributors::class, 10)->create([
+                'user_id' => $user->id,
+                'auditions_id' => $data->id,
+                'status' => true]
+        );
         $response = $this->json('GET',
             'api/t/auditions/passed?token=' . $this->token);
         $response->assertStatus(404);
@@ -97,15 +101,16 @@ class AuditionManagemenDirectorTest extends TestCase
 
     }
 
-    public function test_list_profile_user_audition_200(){
+    public function test_list_profile_user_audition_200()
+    {
         $userprofile = factory(User::class)->create();
-        factory(UserDetails::class)->create(['user_id'=>$userprofile->id]);
-        factory(Educations::class,3)->create(['user_id'=>$userprofile->id]);
-        factory(Credits::class,4)->create(['user_id'=>$userprofile->id]);
-        factory(UserAparence::class)->create(['user_id'=>$userprofile->id]);
-        $response = $this->json('GET','api/t/auditions/profile/user/'.$userprofile->id.'?token='.$this->token);
+        factory(UserDetails::class)->create(['user_id' => $userprofile->id]);
+        factory(Educations::class, 3)->create(['user_id' => $userprofile->id]);
+        factory(Credits::class, 4)->create(['user_id' => $userprofile->id]);
+        factory(UserAparence::class)->create(['user_id' => $userprofile->id]);
+        $response = $this->json('GET', 'api/t/auditions/profile/user/' . $userprofile->id . '?token=' . $this->token);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data'=>[
+        $response->assertJsonStructure(['data' => [
             'id',
             'details',
             'education',
@@ -114,11 +119,12 @@ class AuditionManagemenDirectorTest extends TestCase
         ]]);
     }
 
-    public function test_list_profile_user_audition_404(){
+    public function test_list_profile_user_audition_404()
+    {
 
-        $response = $this->json('GET','api/t/auditions/profile/user/99999?token='.$this->token);
+        $response = $this->json('GET', 'api/t/auditions/profile/user/99999?token=' . $this->token);
         $response->assertStatus(404);
-        $response->assertJson(['data'=>'Not found Data']);
+        $response->assertJson(['data' => 'Not Found Data']);
     }
 
     protected function setUp(): void

@@ -215,57 +215,63 @@ class UserController extends Controller
      */
     public function update(UserEditRequest $request)
     {
-        if ($request->json()) {
-            try {
-                $user = new UserRepository(new User());
-                $this->log->info($request->id);
-                $dataUser = $user->find($request->id);
 
-                $data['email'] = $request->email;
-                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
-                    $data['password'] = Hash::make($request->password);
-                }
-                $dataUser->update($data);
-                $userDataDetails = [
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'address' => $request->address,
-                    'city' => $request->city,
-                    'state' => $request->state,
-                    'birth' => $this->date->transformDate($request->birth),
-                    'stage_name' => $request->stage_name,
-                    'profesion' => $request->profesion,
-//                    'location' => $request->location,
-                    'zip' => $request->zip,
-                ];
-                $dataUser->image->update(['url' => $request->image]);
-                $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
-                $dat = $dataUserDetails->update($userDataDetails);
-                if ($dat) {
-                    $responseUserRepo = new UserRepository(new User());
-                    $dataResponseUser = $responseUserRepo->find($request->id);
-                    $responseOut = ['data' => new UserResource($dataResponseUser)];
-                    $code = 200;
-                } else {
-                    $responseOut = ['data' => 'Not updated'];
-                    $code = 406;
-                }
+        try {
+            $user = new UserRepository(new User());
+            $this->log->info($request->id);
+            $dataUser = $user->find($request->id);
 
-                return response()->json($responseOut, $code);
-
-            } catch (\Exception $e) {
-                $this->log->error($e->getMessage());
-                return response()->json(['data' => 'Unprocessable'], 406);
+            $data['email'] = $request->email;
+            if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                $data['password'] = Hash::make($request->password);
             }
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            $dataUser->update($data);
+            $userDataDetails = [
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'birth' => $this->date->transformDate($request->birth),
+                'stage_name' => $request->stage_name,
+                'profesion' => $request->profesion,
+//                    'location' => $request->location,
+                'zip' => $request->zip,
+            ];
+            $dataUser->image->update(['url' => $request->image]);
+            $userDetails = new UserDetailsRepository(new UserDetails());
+            $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
+            $dat = $dataUserDetails->update($userDataDetails);
+            if ($dat) {
+                $responseUserRepo = new UserRepository(new User());
+                $dataResponseUser = $responseUserRepo->find($request->id);
+                $responseOut = ['data' => new UserResource($dataResponseUser)];
+                $code = 200;
+            } else {
+                $responseOut = ['data' => 'Not updated'];
+                $code = 406;
+            }
+
+            return response()->json($responseOut, $code);
+
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                $code = 404;
+                $message = ['data'=>'Not Found Data'];
+            } else {
+                $code = 406;
+                $message = ['data'=>'Unprocessable'];
+
+            }
+            return response()->json($message, $code);
         }
+
     }
 
     public function updateTablet(UserTabletEdit $request)
     {
-        if ($request->json()) {
+
             try {
                 $user = new UserRepository(new User());
                 $this->log->info($request->id);
@@ -302,14 +308,20 @@ class UserController extends Controller
                     $code = 406;
                 }
                 return response()->json($responseOut, $code);
-            } catch (NotFoundException $e) {
-                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+
             } catch (\Exception $e) {
-                return response()->json(['data' => 'Unprocessable'], 406);
+                $this->log->error($e->getMessage());
+                if ($e instanceof NotFoundException) {
+                    $code = 404;
+                    $message = ['data'=>'Not Found Data'];
+                } else {
+                    $code = 406;
+                    $message = ['data'=>'Unprocessable'];
+
+                }
+                return response()->json($message, $code);
             }
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+
     }
 
     public function delete(Request $request)
