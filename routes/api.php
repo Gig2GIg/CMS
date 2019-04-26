@@ -61,6 +61,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/open/{id}',['uses'=>'AuditionManagementController@openAudition']);
     $router->put('/auditions/close/{id}',['uses'=>'AuditionManagementController@closeAudition']);
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
+    $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
 
 
    //calendar routes

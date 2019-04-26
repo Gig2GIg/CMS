@@ -14,7 +14,11 @@ class CreateAuditionVideosTable extends Migration
     public function up()
     {
         Schema::create('audition_videos', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
+            $table->integer('user_id')->unsigned();
+            $table->integer('auditions_id')->unsigned();
+            $table->string('url');
+            $table->integer('contributors_id')->unsigned();
             $table->timestamps();
         });
     }

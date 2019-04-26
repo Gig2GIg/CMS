@@ -7,6 +7,7 @@ use App\Http\Controllers\Utils\SendMail;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
+use App\Http\Repositories\AuditionVideosRepository;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserManagerRepository;
@@ -14,10 +15,12 @@ use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
+use App\Http\Resources\AuditionVideosResource;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\AuditionVideos;
 use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
@@ -69,12 +72,12 @@ class AuditionManagementController extends Controller
                 $audition = $auditionRepo->find($request->auditions);
 
                 $this->sendPushNotification(
-                        $audition,
-                        'upcoming_audition',
-                        $detailData
+                    $audition,
+                    'upcoming_audition',
+                    $detailData
                 );
             }
-  
+
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -299,9 +302,9 @@ class AuditionManagementController extends Controller
 
     public function getUserProfile(Request $request)
     {
-        try{
+        try {
             $userRepo = new UserRepository(new User());
-            $data=$userRepo->find($request->id);
+            $data = $userRepo->find($request->id);
             if ($data) {
 
 
@@ -315,32 +318,51 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
 
 
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
-    public function saveVideo(Request $request){
-        try{
-            $userRepo = new UserRepository(new User());
-            $data=$userRepo->find($request->id);
-            if ($data) {
+    public function saveVideo(Request $request)
+    {
+        try {
+            $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+           $data =  $videoRepo->create([
+                'user_id' => $request->performer,
+                'auditions_id' => $request->audition,
+                'url' => $request->url,
+                'contributors_id' => $this->getUserLogging(),
+            ]);
+            if (isset($data->id)) {
+                $dataResponse = ['data' => 'Video saved'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Video not saved'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
 
-
-                $dataResponse = ['data' => new ProfileResource($data)];
+    public function listVideos(Request $request){
+        try {
+            $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+            $data =  $videoRepo->findbyparam('auditions_id',$request->id)->get();
+            if ($data->count() > 0) {
+                $dataResponse = ['data' => AuditionVideosResource::collection($data)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not Found Data'];
                 $code = 404;
             }
-
             return response()->json($dataResponse, $code);
-
-
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 }
