@@ -328,7 +328,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-           $data =  $videoRepo->create([
+            $data = $videoRepo->create([
                 'user_id' => $request->performer,
                 'auditions_id' => $request->audition,
                 'url' => $request->url,
@@ -348,10 +348,11 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function listVideos(Request $request){
+    public function listVideos(Request $request)
+    {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-            $data =  $videoRepo->findbyparam('auditions_id',$request->id)->get();
+            $data = $videoRepo->findbyparam('auditions_id', $request->id)->get();
             if ($data->count() > 0) {
                 $dataResponse = ['data' => AuditionVideosResource::collection($data)];
                 $code = 200;
