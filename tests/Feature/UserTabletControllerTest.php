@@ -203,7 +203,4 @@ class UserTabletControllerTest extends TestCase
     }
 
 
-
-
-
 }

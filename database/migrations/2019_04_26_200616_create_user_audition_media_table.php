@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateResourcesTable extends Migration
+class CreateUserAuditionMediaTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,10 @@ class CreateResourcesTable extends Migration
      */
     public function up()
     {
-        Schema::create('resources', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('url',700);
-            $table->enum('type',['audio','video','doc','image','sheet','cover']);
-            $table->string('name');
-            $table->morphs('resource');
+        Schema::create('user_audition_media', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id');
+            $table->integer('auditions_id');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ class CreateResourcesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('resources');
+        Schema::dropIfExists('user_audition_media');
     }
 }
