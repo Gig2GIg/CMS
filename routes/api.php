@@ -79,6 +79,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 
+    // CONTENT SETTING
+    $router->get('/content-settings','ContentSettingController@getAllContentSetting');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
