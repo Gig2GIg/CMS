@@ -19,8 +19,10 @@ class Notifications
     const AUTIDION_REQUEST          = 'autidion_request';
     const CUSTOM                    = 'custom';
     const CMS                       = 'cms';
+    const CMS_TO_USER               = 'cms_to_user';
 
-    public static function send($audition, $type , $user = null, $title = null)
+
+    public static function send($audition= null, $type , $user = null, $title = null)
     {
         try {
 
@@ -74,12 +76,36 @@ class Notifications
                     $message = $title;
                     $to = 'NONE';
                     break;
+                case self::CMS_TO_USER:
+                    $log->info("PUSH NOTIFICATION FROM CMS TO USER");
+                    $title =  $title;
+                    $message = $title;
+                    $to = 'ONE';
+                    break;
                 default:
             }  
 
-            if ($type == 'cms'){
-                $user = User::all();
-                $user->each(function ($user) use ($title, $type) {
+            if ($type == 'cms' || $type == 'cms_to_user')
+            {
+                if ($to == 'ONE')
+                {
+                    $user->notification_history()->create([
+                        'title' => $title,
+                        'code' => $type,
+                        'status' => 'unread',
+                        'message'=> $title
+                    ]);
+                
+                    fcm()
+                        ->to([$user->pushkey])
+                        ->notification([
+                            'title' => $title,
+                            'body'  => $title,
+                        ])
+                        ->send();   
+                }else {
+                    $user = User::all();
+                    $user->each(function ($user) use ($title, $type) {
                     $user->notification_history()->create([
                         'title' => $title,
                         'code' => $type,
@@ -94,7 +120,8 @@ class Notifications
                             'body'  => $title,
                         ])
                         ->send();  
-                });
+                    });
+                }  
             }
 
             if ($audition !== null || $user !== null ){

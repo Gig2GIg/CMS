@@ -197,6 +197,7 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
 
         //NOTIFICATIONS 
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
+        $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+'); 
         
         // AUDITIONS
         $router->get('/auditions',['uses'=>'AuditionsController@getAll']);

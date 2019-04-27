@@ -11,7 +11,9 @@ use App\Models\Notifications\Notification;
 use App\Http\Exceptions\NotFoundException;
 use Illuminate\Database\QueryException;
 use App\Http\Requests\NotificationsRequest;
-
+use App\Http\Repositories\UserRepository;
+use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class NotificationsController extends Controller
@@ -26,10 +28,33 @@ class NotificationsController extends Controller
         if ($request->json())
         {
            $notification =  $this->createNotification($request->title);
+
            $this->sendPushNotification(
                 null,
                 'cms',
                 null,
+                $request->title
+            );
+            return response()->json(['data' => 'Notification send'], 200);
+        }else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }     
+    }
+
+    public function sendNotificationToUser(Request $request)
+    {
+        if ($request->json())
+        {
+    
+            $user = new UserRepository(new User());
+            $dataUser = $user->find($request->id);
+
+           $notification = $this->createNotification($request->title);
+        
+           $this->sendPushNotification(
+                null,
+                'cms_to_user',
+                $dataUser,
                 $request->title
             );
 
@@ -38,7 +63,6 @@ class NotificationsController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }     
     }
-
     public function createNotification($title)
     {
         try {
