@@ -76,7 +76,7 @@ class AppoinmentAuditionsController extends Controller
             ]);
             $slot = new SlotsRepository(new Slots());
             $slot->find($request->slot)->update([
-                'status' => '0'
+                'status' => '1'
             ]);
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($iduser);
