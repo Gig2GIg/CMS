@@ -18,7 +18,7 @@ class userSeeder extends Seeder
             'email'=>'admin@g2g.com',
             'password'=>bcrypt('123456'),
         ]);
-        $admin->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $admin->image()->create(['type'=>'cover','url'=>$faker->imageUrl(),'name'=>$faker->word()]);
         $adminDetail = factory(\App\Models\UserDetails::class)->create([
             'user_id'=>$admin->id,
             'type'=>1,
@@ -29,7 +29,7 @@ class userSeeder extends Seeder
             'email'=>'admin2@g2g.com',
             'password'=>bcrypt('123456'),
         ]);
-        $admin2->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $admin2->image()->create(['type'=>'cover','url'=>$faker->imageUrl(),'name'=>$faker->word()]);
         $adminDetail2 = factory(\App\Models\UserDetails::class)->create([
             'user_id'=>$admin2->id,
             'type'=>1,
@@ -40,7 +40,7 @@ class userSeeder extends Seeder
             'email'=>'user@g2g.com',
             'password'=>bcrypt('123456'),
         ]);
-        $user->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $user->image()->create(['type'=>'cover','url'=>$faker->imageUrl(),'name'=>$faker->word()]);
         $userDetail = factory(\App\Models\UserDetails::class)->create([
             'user_id'=>$user->id,
             'type'=>2
@@ -50,7 +50,7 @@ class userSeeder extends Seeder
             'email'=>'user2@g2g.com',
             'password'=>bcrypt('123456'),
         ]);
-        $user2->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $user2->image()->create(['type'=>'cover','url'=>$faker->imageUrl(),'name'=>$faker->word()]);
         $user2Detail = factory(\App\Models\UserDetails::class)->create([
             'user_id'=>$user2->id,
             'type'=>2
@@ -63,7 +63,7 @@ class userSeeder extends Seeder
             'email'=>'cms@g2g.com',
             'password'=>bcrypt('123456'),
         ]);
-        $cms->image()->create(['type'=>4,'url'=>$faker->imageUrl(),'name'=>$faker->word()]);
+        $cms->image()->create(['type'=>'cover','url'=>$faker->imageUrl(),'name'=>$faker->word()]);
         $adminDetail2 = factory(\App\Models\UserDetails::class)->create([
             'user_id'=>$cms->id,
             'type'=>3,

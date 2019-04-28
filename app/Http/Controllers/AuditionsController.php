@@ -70,7 +70,7 @@ class AuditionsController extends Controller
                 }
                 $auditionFilesData[] = [
                     'url' => $request->cover,
-                    'type' => 4,
+                    'type' => 'cover',
                     'name' => $request->cover_name,
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
