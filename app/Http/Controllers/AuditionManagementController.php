@@ -53,31 +53,38 @@ class AuditionManagementController extends Controller
                 'rol_id' => $request->rol,
                 'type' => $request->type
             ];
+            $userAudi = new UserAuditions();
+            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
+                ->where('auditions_id', '=', $data['auditions_id'])
+                ->where('rol_id', '=', $data['rol_id'])
+                ->get();
+            if ($datacompare->count() > 0) {
+                return response()->json(['data' => 'You already registered'], 406);
+            } else {
+                $data = $userAuditions->create($data);
+                if ($request->type === 2) {
+                    $user = new UserManagerRepository(new UserManager());
+                    $userData = new UserRepository(new User());
+                    $detailData = $userData->find($this->getUserLogging());
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
 
-            $data = $userAuditions->create($data);
-            if ($request->type === 2) {
-                $user = new UserManagerRepository(new UserManager());
-                $userData = new UserRepository(new User());
-                $detailData = $userData->find($this->getUserLogging());
-                $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
+                    $userManager = $user->findbyparam('user_id', $this->getUserLogging());
 
-                $userManager = $user->findbyparam('user_id', $this->getUserLogging());
+                    if (isset($userManager->email) !== null && isset($userManager->notifications)) {
+                        $mail = new SendMail();
+                        $mail->sendManager($userManager->email, $userDetailname);
+                    }
 
-                if (isset($userManager->email) !== null && isset($userManager->notifications)) {
-                    $mail = new SendMail();
-                    $mail->sendManager($userManager->email, $userDetailname);
+                    $auditionRepo = new AuditionRepository(new Auditions());
+                    $audition = $auditionRepo->find($request->auditions);
+
+                    $this->sendPushNotification(
+                        $audition,
+                        'upcoming_audition',
+                        $detailData
+                    );
                 }
-
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($request->auditions);
-
-                $this->sendPushNotification(
-                    $audition,
-                    'upcoming_audition',
-                    $detailData
-                );
             }
-
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -124,7 +131,7 @@ class AuditionManagementController extends Controller
 
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
-            $dataResponse = $data->where('type', '=', '1');
+            $dataResponse = $data->where('type', '=', '1')->sortByDesc('created_at');
 
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
 
@@ -157,7 +164,7 @@ class AuditionManagementController extends Controller
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1);
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
@@ -199,7 +206,7 @@ class AuditionManagementController extends Controller
             $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1);
+            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
 
             $dataContri->each(function ($item) {
                 $auditionRepo = new AuditionRepository(new Auditions());
@@ -240,7 +247,7 @@ class AuditionManagementController extends Controller
 
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
-            $dataResponse = $data->where('type', '=', '2');
+            $dataResponse = $data->where('type', '=', '2')->sortByDesc('created_at');
 
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
 

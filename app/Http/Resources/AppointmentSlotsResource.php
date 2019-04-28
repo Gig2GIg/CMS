@@ -13,25 +13,34 @@ class AppointmentSlotsResource extends JsonResource
      * @return array
      */
     protected $type;
-    public function __construct($resource,$type)
+
+    public function __construct($resource, $type)
     {
         parent::__construct($resource);
-        $this->type=$type;
+        $this->type = $type;
     }
 
     public function toArray($request)
     {
-        if($this->type==1){
-            $slotsData = $this->slot()->where('is_walk','=','0')->where('status','=','0')->get();
-        }else{
-            $slotsData = $this->slot()->where('is_walk','=','1')->where('status','=','0')->get();
+        if ($this->type == 1) {
+            $slotsData = $this->slot()
+                ->where('is_walk', '=', '0')
+                ->where('status', '=', '0')
+                ->get();
+
+
+
+        } else {
+            $slotsData = $this->slot()
+                ->where('is_walk', '=', '1')
+                ->where('status', '=', '0')->get();
         }
         return [
 
             'start' => $this->start,
             'end' => $this->end,
-            'duration'=>$this->length,
-            'slots'=>$slotsData
+            'duration' => $this->length,
+            'slots' => $slotsData->sortBy('time')
         ];
     }
 }

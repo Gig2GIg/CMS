@@ -27,6 +27,7 @@ class AppointmentResource extends JsonResource
 
         return [
             'user_id' => $this->user_id,
+            'rol'=>$this->roles_id,
             'image' => $userData->image->url,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'time' => $slotData->time,

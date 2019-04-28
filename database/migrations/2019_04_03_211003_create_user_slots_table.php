@@ -18,6 +18,7 @@ class CreateUserSlotsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('slots_id')->unsigned();
             $table->integer('auditions_id')->unsigned();
+            $table->integer('roles_id')->unsigned();
             $table->timestamps();
         });
     }

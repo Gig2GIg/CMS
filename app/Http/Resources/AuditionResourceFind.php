@@ -26,8 +26,9 @@ $media = new Resources();
             ->pluck('url');
         return [
             'id' => $this->id,
-            "title" => $this->title,
+            'title' => $this->title,
             "date" => $this->date,
+            'create'=>$this->created_at,
             "time" => $this->time,
             "location" => $this->location,
             "description" => $this->description,

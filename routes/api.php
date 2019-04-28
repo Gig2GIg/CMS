@@ -158,7 +158,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->post('media/manager',['uses'=>'MediaManagerController@store']);
     $router->post('media/user/add',['uses'=>'MediaManagerController@addAuditionMedia']);
     $router->delete('media/manager/{id}',['uses'=>'MediaManagerController@delete']);
-    $router->get('media/manager/{id}',['uses'=>'MediaManagerController@get']);
+    $router->get('media/user/list',['uses'=>'MediaManagerController@get']);
+    $router->get('media/auditon/list',['uses'=>'MediaManagerController@getbyuser']);
 });
 
 

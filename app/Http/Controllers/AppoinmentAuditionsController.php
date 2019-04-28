@@ -73,6 +73,7 @@ class AppoinmentAuditionsController extends Controller
                 'user_id' => $iduser,
                 'auditions_id' => $request->auditions,
                 'slots_id' => $request->slot,
+                'roles_id'=>$request->rol,
             ]);
             $slot = new SlotsRepository(new Slots());
             $slot->find($request->slot)->update([

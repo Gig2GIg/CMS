@@ -28,7 +28,7 @@ class MediaManagerController extends Controller
     {
         try {
             $userRepo = new UserRepository(new User());
-            $data = $userRepo->find($request->user);
+            $data = $userRepo->find($this->getUserLogging());
             $media = $data->image()->create([
                 'url' => $request->url,
                 'name' => $request->name,
@@ -72,13 +72,16 @@ class MediaManagerController extends Controller
     {
         try {
             $media = new Resources();
-            $data = $media->where('resource_id','=',$request->id)->where('resource_type','=','App\Models\User')->get();
+            $data = $media->where('resource_id','=',$this->getUserLogging())
+                ->where('resource_type','=','App\Models\User')
+                ->get();
 
             if ($data->count() > 0) {
                 $filter = $data->filter(function($item){
                     return $item->type !== 'cover';
                 });
-                $dataResponse = ['data' => MediaManagerResource::collection($filter)];
+
+                $dataResponse = ['data' => $filter->groupBy('type')];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
@@ -114,30 +117,28 @@ class MediaManagerController extends Controller
     }
     public function getbyuser(Request $request)
     {
-        $dataArray[]=[];
-
         try {
             $userauditions = new UserAuditionMedia();
             $dataUserAudi = $userauditions->where('user_id','=',$this->getUserLogging())->get();
-            $dataUserAudi->each(function ($element) use ($dataArray){
+            $dataUserAudi->each(function ($element){
                 $auditions = new AuditionRepository(new Auditions());
                 $dataAuditions = $auditions->find($element->id);
 
-                $media = new Resources();
-                $data = $media->where('resource_id','=',$element->id)->where('resource_type','=','App\Models\Auditions')->get();
-                $filter = $data->filter(function($item){
+                $media = $dataAuditions->resources()->where('resource_type','=','App\Models\Auditions')->get();
+
+                $filter = $media->filter(function($item){
                     return $item->type !== 'cover';
                 });
-                $dataArray = [
-                    'name'=>$dataAuditions->name,
+                $this->dataArray[] = [
+                    'name'=>$dataAuditions->title,
                     'files'=>$filter
                     ];
             });
 
 
-            if (count($dataArray) > 0) {
+            if (count($this->dataArray) > 0) {
 
-                $dataResponse = ['data' => $dataArray];
+                $dataResponse = ['data' => $this->dataArray];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
