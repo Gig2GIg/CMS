@@ -103,6 +103,7 @@ class AuditionManagementController extends Controller
                     'user_id' => $this->getUserLogging(),
                     'auditions_id' => $request->slot['auditions'],
                     'slots_id' => $request->slot['slot'],
+                    'roles_id'=>$request->slot['rol']
                 ]);
             }
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());

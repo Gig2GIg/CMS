@@ -69,7 +69,8 @@ class AuditionManagementTest extends TestCase
             [
                 'slot' => [
                     'slot' => $slot->id,
-                    'auditions' => $this->auditionId
+                    'auditions' => $this->auditionId,
+                    'rol'=>$data->rol_id
                 ]
             ]);
         $response->assertStatus(200);

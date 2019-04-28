@@ -21,7 +21,7 @@ $roles = new Roles();
 $countRoles = $roles->where('auditions_id',$this->id)->count();
 $media = new Resources();
         $url_media=$media
-            ->where('type','image')
+            ->where('type','cover')
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
         return [

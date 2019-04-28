@@ -70,7 +70,7 @@ class UserController extends Controller
             ];
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
-            $usert->image()->create(['url' => request('image'), 'type' => 'image', 'name' => request('resource_name')]);
+            $usert->image()->create(['url' => request('image'), 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
             } else {

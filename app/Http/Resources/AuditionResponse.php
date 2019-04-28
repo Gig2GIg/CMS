@@ -27,7 +27,7 @@ class AuditionResponse extends JsonResource
         $count = count($this->roles);
         $dataProduction = explode(',',$this->production);
         $url_media=$this->resources
-            ->where('type','image')
+            ->where('type','cover')
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
         $userDataRepo = new UserDetailsRepository(new UserDetails());
