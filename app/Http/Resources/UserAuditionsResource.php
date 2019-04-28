@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Roles;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserAuditionsResource extends JsonResource
@@ -19,9 +20,11 @@ class UserAuditionsResource extends JsonResource
             ->where('type', 'image')
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
-
+        $rolanme = Roles::where('id','=',$this->rol_id)->get()->pluck('name');
         return [
             'id' => $this->id,
+            'rol'=> $this->rol_id,
+            'rol_name'=>$rolanme[0] ?? null,
             'id_user' => $this->auditions->user_id,
             'title' => $this->auditions->title,
             'date' => $this->auditions->date,

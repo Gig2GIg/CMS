@@ -281,7 +281,7 @@ class AuditionsController extends Controller
         $data = new AuditionRepository(new Auditions());
         $count = count($data->all());
         if ($count !== 0) {
-            $responseData = AuditionResponse::collection($data->all());
+            $responseData = AuditionResponse::collection($data->all()->sortBy('created_at'));
             $dataResponse = ['data' => $responseData];
             $code = 200;
 
@@ -298,7 +298,7 @@ class AuditionsController extends Controller
             $data = new AuditionRepository(new Auditions());
             $count = count($data->all());
             if ($count !== 0) {
-                $responseData = AuditionFullResponse::collection($data->all());
+                $responseData = AuditionFullResponse::collection($data->all()->sortByDesc('created_at'));
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
 

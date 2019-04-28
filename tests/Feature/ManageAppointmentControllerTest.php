@@ -25,11 +25,15 @@ class ManageAppointmentControllerTest extends TestCase
         $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
+        $rol = factory(Roles::class)->create([
+            'auditions_id'=>$audition->id
+        ]);
 
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
             'slot' => $slot->id,
             'user' => $user->id,
-            'auditions' => $audition->id
+            'auditions' => $audition->id,
+            'rol'=>$rol->id
         ]);
 
         $response->assertStatus(200);
@@ -47,11 +51,14 @@ class ManageAppointmentControllerTest extends TestCase
         $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
-
+        $rol = factory(Roles::class)->create([
+            'auditions_id'=>$audition->id
+        ]);
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
             'slot' => $slot->id,
             'email' => $user->email,
-            'auditions' => $audition->id
+            'auditions' => $audition->id,
+            'rol'=>$rol->id
         ]);
 
         $response->assertStatus(200);
@@ -90,11 +97,14 @@ class ManageAppointmentControllerTest extends TestCase
         $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinment->id]);
-
+        $rol = factory(Roles::class)->create([
+            'auditions_id'=>$audition->id
+        ]);
         factory(UserSlots::class,5)->create([
             'user_id'=>$user->id,
             'slots_id'=>$slot->id,
-            'auditions_id'=>$audition->id
+            'auditions_id'=>$audition->id,
+            'roles_id'=>$rol->id,
         ]);
 
         $response = $this->json('GET', 'api/appointments/auditions/'.$audition->id.'?token=' . $this->token);

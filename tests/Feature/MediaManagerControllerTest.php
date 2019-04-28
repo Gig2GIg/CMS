@@ -41,7 +41,6 @@ class MediaManagerControllerTest extends TestCase
             'user_id'=>$user->id
         ]);
         $response = $this->json('POST','api/a/media/manager?token='.$this->token,[
-            'user'=>$user->id,
             'url'=>$this->faker->url(),
             'name'=>$this->faker->word(),
             'type'=>'video'
@@ -74,36 +73,39 @@ class MediaManagerControllerTest extends TestCase
             ]);
         }
 
-        $response = $this->json('GET','api/a/media/manager/'.$user->id.'?token='.$this->token);
+        $response = $this->json('GET','api/a/media/user/list?token='.$this->token);
         $response->assertStatus(200);
     }
 
-//    public function test_get_list_by_user_media(){
-//        $user = factory(User::class)->create();
-//        $audition = factory(Auditions::class,3)->create([
-//            'user'=>$this->testId
-//        ]);
-//
-//        $audition->each(function($element) use ($user, $element)) {
-//            $media = ['audio','video','doc'];
-//            for ($i=0;$i < 3;$i++) {
-//                $element->media()->create([
-//                    'url' => $this->faker->url,
-//                    'name' => $this->faker->word,
-//                    'type' => $media[$i]
-//                ]);
-//            }
-//            factory(UserAuditionMedia::class)->create([
-//                'user_id'=>$user->id,
-//                'auditions_id'=>$element->id
-//            ]);
-//        });
-//
-//
-//
-//        $response = $this->json('GET','api/a/media/manager/'.$user->id.'?token='.$this->token);
-//        $response->assertStatus(200);
-//    }
+    public function test_get_list_by_user_media(){
+        $audition = factory(Auditions::class,3)->create([
+            'user_id'=>$this->testId
+        ]);
+
+        $audition->each(function($element){
+            $media = ['audio','video','doc'];
+            for ($i=0;$i < 3;$i++) {
+                $element->media()->create([
+                    'url' => $this->faker->url,
+                    'name' => $this->faker->word,
+                    'type' => $media[$i]
+                ]);
+            }
+            factory(UserAuditionMedia::class)->create([
+                'user_id'=>$this->testId,
+                'auditions_id'=>$element->id
+            ]);
+        });
+
+
+
+        $response = $this->json('GET','api/a/media/auditon/list?token='.$this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data'=>[[
+            'name',
+            'files'
+        ]]]);
+    }
 
     public function test_add_media_user(){
         $user = factory(User::class)->create();

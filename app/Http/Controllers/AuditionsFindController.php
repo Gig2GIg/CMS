@@ -47,7 +47,7 @@ class AuditionsFindController
         }
 
 
-        $data2 = $elementResponse->get();
+        $data2 = $elementResponse->get()->sortByDesc('created_at');
         $response = AuditionResourceFind::collection($data2);
 
         if (count($data2) === 0) {
@@ -89,7 +89,7 @@ class AuditionsFindController
         if (isset($request->contract)) {
             $elementResponse = $elementResponse->where('contract', '=', $request->contract);
         }
-$response = AuditionResourceFind::collection($elementResponse);
+$response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
 
         if (count($elementResponse) === 0) {
             $dataResponse = ['error' => 'Not Found'];

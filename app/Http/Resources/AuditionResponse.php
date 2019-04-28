@@ -38,6 +38,7 @@ class AuditionResponse extends JsonResource
             'agency'=>$data->agency_name ?? null,
             "title" => $this->title,
             "date" => $this->date,
+            'create'=>$this->created_at,
             "time" => $this->time,
             "location" => json_decode($this->location),
             "description" => $this->description,
