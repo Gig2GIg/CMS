@@ -40,7 +40,7 @@ class AppointmentSlotsResource extends JsonResource
             'start' => $this->start,
             'end' => $this->end,
             'duration' => $this->length,
-            'slots' => $slotsData->sortBy('time')
+            'slots' => $slotsData
         ];
     }
 }
