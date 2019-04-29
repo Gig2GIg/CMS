@@ -153,6 +153,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->post('subscriptions',['uses'=>'SubscriptionController@managementSubscription']);
     $router->delete('subscriptions',['uses'=>'SubscriptionController@cancelSubscription']);
     $router->post('subscriptions/addpayment',['uses'=>'SubscriptionController@setDefaultPlan']);
+    $router->post('subscriptions/updateCard',['uses'=>'SubscriptionController@updateCardData']);
     $router->get('subscriptions/getcard',['uses'=>'SubscriptionController@getCardData']);
 
     //media manager

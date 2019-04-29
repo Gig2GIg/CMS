@@ -148,4 +148,31 @@ class SubscriptionController extends Controller
         }
     }
 
+    public function updateCardData(Request $request)
+    {
+        try {
+            $dataUserRepo = new UserRepository(new User());
+            $dataUser = $dataUserRepo->find($this->getUserLogging());
+            if (isset($dataUser->stripe_id)) {
+                $cardcode_old = $dataUser->card_last_four;
+                $dataUser->updateCard($request->token_card);
+                $cardcode_new = $dataUser->card_last_four;
+                if ($cardcode_new !== $cardcode_old) {
+                    $dataResponse = ['data' => 'card data updated'];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => 'card not data updated'];
+                    $code = 404;
+                }
+            } else {
+                $dataResponse = ['data' => 'not card data updated'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => 'ERROR'], 404);
+        }
+    }
+
 }
