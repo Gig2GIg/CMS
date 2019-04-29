@@ -73,7 +73,7 @@ class AppoinmentAuditionsController extends Controller
             $dataCheckRepo = new UserSlots();
             $dataCheck = $dataCheckRepo->where('user_id','=',$iduser)->where('roles_id','=',$request->rol);
             if($dataCheck->count() > 0){
-                $dataResponse = ['data'=>'You already registered'];
+                $dataResponse = 'You already registered';
                 $code = 406;
             }else {
                 $createData = $dataRepo->create([
