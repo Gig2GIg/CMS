@@ -308,6 +308,13 @@ class AuditionManagementController extends Controller
             ]);
 
             if ($result) {
+                $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                $dataUserAuditions = $repoUserAuditions->getByParam('auditions_id',$request->id);
+                if($dataUserAuditions->count() > 0) {
+                    $dataUserAuditions->each(function ($element) {
+                        $element->update(['type' => 3]);
+                    });
+                }
                 $dataResponse = ['data' => ['status' => 2]];
                 $code = 200;
             } else {
