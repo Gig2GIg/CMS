@@ -40,6 +40,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/appointments/show/{id}/notwalk',['uses'=>'AppoinmentAuditionsController@showListNotWalk']);
 //monitor update
     $router->get('/monitor/show/{id}',['uses'=>'MonitorManagerController@list']);
+    $router->get('/monitor/show/{id}/pre',['uses'=>'MonitorManagerController@listNotificationsCreate']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {

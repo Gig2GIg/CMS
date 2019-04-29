@@ -78,6 +78,25 @@ class MonitorManagerController extends Controller
         }
     }
 
+    public function listNotificationsCreate(Request $request){
+        try{
+            $repo = new MonitorRepository(new Monitor());
+            $data = $repo->findbyparam('auditions_id',$request->id)->get()->unique('title');
+
+            if($data->count() > 0){
+                $dataResponse = ['data'=>$data];
+                $code = 200;
+            }else{
+                $dataResponse = ['data'=>'Data Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse,$code);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json( ['data'=>'Data Not Found'],404);
+        }
+    }
+
 
 
     public function createNotification($audition, $title): void

@@ -60,6 +60,7 @@ class AppoinmentAuditionsController extends Controller
     public function store(Request $request)
     {
         try {
+
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $iduser = null;
             if (isset($request->email)) {
@@ -69,36 +70,44 @@ class AppoinmentAuditionsController extends Controller
             } else {
                 $iduser = $request->user;
             }
-            $createData = $dataRepo->create([
-                'user_id' => $iduser,
-                'auditions_id' => $request->auditions,
-                'slots_id' => $request->slot,
-                'roles_id'=>$request->rol,
-            ]);
-            $slot = new SlotsRepository(new Slots());
-            $slot->find($request->slot)->update([
-                'status' => '1'
-            ]);
-            $userRepo = new UserRepository(new User());
-            $user = $userRepo->find($iduser);
+            $dataCheckRepo = new UserSlots();
+            $dataCheck = $dataCheckRepo->where('user_id','=',$iduser)->where('roles_id','=',$request->rol);
+            if($dataCheck->count() > 0){
+                $dataResponse = ['data'=>'You already registered'];
+                $code = 406;
+            }else {
+                $createData = $dataRepo->create([
+                    'user_id' => $iduser,
+                    'auditions_id' => $request->auditions,
+                    'slots_id' => $request->slot,
+                    'roles_id' => $request->rol,
+                ]);
+                $slot = new SlotsRepository(new Slots());
+                $slot->find($request->slot)->update([
+                    'status' => '1'
+                ]);
+                $userRepo = new UserRepository(new User());
+                $user = $userRepo->find($iduser);
 
-            $auditionRepo = new AuditionRepository(new Auditions());
-            $audition = $auditionRepo->find($request->auditions);
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($request->auditions);
 
-            try {
-                $this->sendPushNotification(
-                    $audition,
-                    'check_in',
-                    $audition,
-                    null
-                );
+                try {
+                    $this->sendPushNotification(
+                        $audition,
+                        'check_in',
+                        $audition,
+                        null
+                    );
 
-            } catch (NotificationException $exception) {
-                $this->log->error($exception->getMessage());
+                } catch (NotificationException $exception) {
+                    $this->log->error($exception->getMessage());
+                }
+
+                $dataResponse = new AppointmentResource($createData);
+                $code = 200;
             }
-
-            $dataResponse = new AppointmentResource($createData);
-            return response()->json(['data' => $dataResponse], 200);
+            return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Appointment not assigned'], 406);
