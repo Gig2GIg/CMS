@@ -86,7 +86,7 @@ class StripeManagementController extends Controller
     public function getPlan($data){
         $element = null;
         $plans= [
-            '0'=>env('STRIPE_PLAN0'),
+            '1'=>env('STRIPE_PLAN0'),
             '2'=>env('STRIPE_PLAN1'),
             '3'=>env('STRIPE_PLAN2'),
         ];

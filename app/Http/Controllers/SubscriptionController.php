@@ -110,7 +110,7 @@ class SubscriptionController extends Controller
             $stripe = new StripeManagementController();
             $data = [
                 'id' => $this->getUserLogging(),
-                'pricing_type' => 0,
+                'pricing_type' => 1,
                 'stripeToken' => $request->token_stripe
             ];
             if ($stripe->setSubscription($data)) {

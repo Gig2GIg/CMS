@@ -17,7 +17,7 @@ class UserAuditionsResource extends JsonResource
     {
         $dataProduction = explode(",", $this->auditions->production);
         $url_media = $this->auditions->resources
-            ->where('type', 'image')
+            ->where('type', 'cover')
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
         $rolanme = Roles::where('id','=',$this->rol_id)->get()->pluck('name');
