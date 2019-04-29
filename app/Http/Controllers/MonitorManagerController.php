@@ -23,7 +23,8 @@ class MonitorManagerController extends Controller
         $this->log = new LogManger();
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         try {
             $repo = new MonitorRepository(new Monitor());
             $data = $repo->create([
@@ -34,12 +35,12 @@ class MonitorManagerController extends Controller
             if ($data->id) {
                 $dataResponse = ['data' => 'Update Publised'];
                 $code = 201;
-                
+
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionRepo->find($request->audition);
-               
+
                 $this->createNotification($audition, $request->title);
-                
+
                 $this->sendPushNotification(
                     $audition,
                     'custom',
@@ -50,75 +51,84 @@ class MonitorManagerController extends Controller
                 $dataResponse = ['data' => 'Update Not Publised'];
                 $code = 406;
             }
-       
+
             return response()->json($dataResponse, $code);
-        }catch (\Exception $exception){
-            
+        } catch (\Exception $exception) {
+
             $this->log->error($exception->getMessage());
-            return response()->json( ['data'=>'Update Not Publised'],406);
+            return response()->json(['data' => 'Update Not Publised'], 406);
         }
     }
-
-    public function list(Request $request){
-        try{
-        $repo = new MonitorRepository(new Monitor());
-        $data = $repo->findbyparam('auditions_id',$request->id)->get();
-
-        if($data->count() > 0){
-            $dataResponse = ['data'=>$data];
-            $code = 200;
-        }else{
-            $dataResponse = ['data'=>'Data Not Found'];
-            $code = 404;
-        }
-        return response()->json($dataResponse,$code);
-        }catch (\Exception $exception){
-            $this->log->error($exception->getMessage());
-            return response()->json( ['data'=>'Data Not Found'],404);
-        }
-    }
-
-    public function listNotificationsCreate(Request $request){
-        try{
-            $repo = new MonitorRepository(new Monitor());
-            $data = $repo->findbyparam('auditions_id',$request->id)->get()->unique('title');
-
-            if($data->count() > 0){
-                $dataResponse = ['data'=>$data];
-                $code = 200;
-            }else{
-                $dataResponse = ['data'=>'Data Not Found'];
-                $code = 404;
-            }
-            return response()->json($dataResponse,$code);
-        }catch (\Exception $exception){
-            $this->log->error($exception->getMessage());
-            return response()->json( ['data'=>'Data Not Found'],404);
-        }
-    }
-
-
 
     public function createNotification($audition, $title): void
     {
-        try {    
+        try {
             $notificationData = [
                 'title' => $title,
                 'code' => Str::random(12),
-                'type' =>  'custom',
-                'notificationable_type' =>  'auditions',
+                'type' => 'custom',
+                'notificationable_type' => 'auditions',
                 'notificationable_id' => $audition->id
             ];
-            
+
             if ($audition !== null) {
 
-                $notificationRepo = new NotificationRepository(new Notification()); 
+                $notificationRepo = new NotificationRepository(new Notification());
                 $m = $notificationRepo->create($notificationData);
-                
-            }
-        }catch (NotFoundException $exception){
-                $this->log->error($exception->getMessage());
-            }
 
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
+
+    }
+
+    public function list(Request $request)
+    {
+        try {
+            $repo = new MonitorRepository(new Monitor());
+            $data = $repo->findbyparam('auditions_id', $request->id)->get();
+
+            if ($data->count() > 0) {
+                $dataResponse = ['data' => $data];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Data Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
+    public function listNotificationsCreate(Request $request)
+    {
+        try {
+            $repo = new MonitorRepository(new Monitor());
+            $data = $repo->findbyparam('auditions_id', $request->id)->get()->unique('title');
+
+            if ($data->count() > 0) {
+                $retu = null;
+                foreach ($data as $datum) {
+                    $retu[] = [
+                        'auditions_id' => $datum->auditions_id,
+                        'title' => $datum->title,
+                        'time' => $datum->time,
+                    ];
+
+                }
+                $dataResponse = ['data' => $retu];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Data Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
 }
