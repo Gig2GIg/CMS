@@ -97,17 +97,24 @@ class MediaManagerController extends Controller
     public function addAuditionMedia(Request $request){
         try{
             $media = new UserAuditionMedia();
-            $create = $media->create([
-               'user_id' =>$this->getUserLogging(),
-                'auditions_id'=>$request->audition
-            ]);
-            if($create->id) {
+            $data = $media->where('user_id','=',$this->getUserLogging())->where('auditions_id','=',$request->audition);
 
-                $dataResponse = ['data' => 'Add media'];
-                $code = 200;
-            } else {
-                $dataResponse = ['data' => 'Not Add media'];
+            if($data->count() >0 ){
+                $dataResponse = ['data' => 'You already add this media'];
                 $code = 406;
+            }else {
+                $create = $media->create([
+                    'user_id' => $this->getUserLogging(),
+                    'auditions_id' => $request->audition
+                ]);
+                if ($create->id) {
+
+                    $dataResponse = ['data' => 'Add media'];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => 'Not Add media'];
+                    $code = 406;
+                }
             }
             return response()->json($dataResponse, $code);
         }catch (\Exception $exception){

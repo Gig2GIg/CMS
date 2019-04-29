@@ -141,6 +141,22 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
+    public function getPassed()
+    {
+        try {
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+
+            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+
+            $dataResponse = $data->where('type', '=', '3')->sortByDesc('created_at');
+
+            return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
 
     public function getUpcomingDet(Request $request)
     {

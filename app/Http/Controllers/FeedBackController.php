@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\UserAuditionsRepository;
 use App\Models\Feedbacks;
+use App\Models\UserAuditions;
 use Illuminate\Http\Request;
 
 class FeedBackController extends Controller
@@ -32,6 +34,7 @@ class FeedBackController extends Controller
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);
             if ($data->id) {
+
                 $dataResponse = ['data' => 'Feedback add'];
                 $code = 201;
 
