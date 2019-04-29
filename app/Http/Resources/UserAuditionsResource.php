@@ -23,6 +23,7 @@ class UserAuditionsResource extends JsonResource
         $rolanme = Roles::where('id','=',$this->rol_id)->get()->pluck('name');
         return [
             'id' => $this->id,
+            'auditions_id'=>$this->auditions_id,
             'rol'=> $this->rol_id,
             'rol_name'=>$rolanme[0] ?? null,
             'id_user' => $this->auditions->user_id,
