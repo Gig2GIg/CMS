@@ -132,7 +132,12 @@ class AuditionManagementController extends Controller
 
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
-            $dataResponse = $data->where('type', '=', '1')->sortByDesc('created_at');
+            $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
+            if($dataAuditions->count() > 0){
+                $dataResponse = $dataAuditions;
+            }else{
+                $dataResponse = [];
+            }
 
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
 
@@ -148,7 +153,12 @@ class AuditionManagementController extends Controller
 
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
-            $dataResponse = $data->where('type', '=', '3')->sortByDesc('created_at');
+            $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
+            if($dataAuditions->count() > 0){
+                $dataResponse = $dataAuditions;
+            }else{
+                $dataResponse = [];
+            }
 
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
 
@@ -202,8 +212,8 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection->unique())];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Not Found Data'];
-                $code = 404;
+                $dataResponse = ['data' => []];
+                $code = 200;
             }
 
 
@@ -244,8 +254,8 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection)];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Not Found Data'];
-                $code = 404;
+                $dataResponse = ['data' => []];
+                $code = 200;
             }
 
 
@@ -264,8 +274,12 @@ class AuditionManagementController extends Controller
 
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
-            $dataResponse = $data->where('type', '=', '2')->sortByDesc('created_at');
-
+            $dataAuditions = $data->where('type', '=', '2')->sortByDesc('created_at');
+            if($dataAuditions->count() > 0){
+                $dataResponse = $dataAuditions;
+            }else{
+                $dataResponse = [];
+            }
             return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
 
         } catch (Exception $exception) {
@@ -388,8 +402,8 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => AuditionVideosResource::collection($data)];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Not Found Data'];
-                $code = 404;
+                $dataResponse = ['data' => []];
+                $code = 200;
             }
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
