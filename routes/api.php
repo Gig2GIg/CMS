@@ -162,6 +162,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->post('media/user/add',['uses'=>'MediaManagerController@addAuditionMedia']);
     $router->delete('media/manager/{id}',['uses'=>'MediaManagerController@delete']);
     $router->get('media/user/list',['uses'=>'MediaManagerController@get']);
+    $router->get('media/user/list/{type}',['uses'=>'MediaManagerController@getByType']);
     $router->get('media/auditon/list',['uses'=>'MediaManagerController@getbyuser']);
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Resources\FeedbackResource;
 use App\Models\Feedbacks;
 use App\Models\UserAuditions;
 use Illuminate\Http\Request;
@@ -58,11 +59,11 @@ class FeedBackController extends Controller
             $dataPre = $data->where('user_id', '=', $request->performer)->get();
 
             if ($dataPre->count() > 0) {
-                $dataResponse = ['data' => $dataPre];
+                $dataResponse = ['data' => FeedbackResource::collection($dataPre)];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Data Not Found'];
-                $code = 404;
+                $dataResponse = ['data' => []];
+                $code = 200;
             }
 
             return response()->json($dataResponse, $code);

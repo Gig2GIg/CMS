@@ -94,6 +94,30 @@ class MediaManagerController extends Controller
         }
     }
 
+
+    public function getByType(Request $request)
+    {
+        try {
+            $media = new Resources();
+            $data = $media->where('resource_id','=',$this->getUserLogging())
+                ->where('resource_type','=','App\Models\User')
+                ->where('type','=',$request->type)
+                ->get();
+
+            if ($data->count() > 0) {
+                $dataResponse = ['data' => $data];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => []];
+                $code = 200;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
     public function addAuditionMedia(Request $request){
         try{
             $media = new UserAuditionMedia();
