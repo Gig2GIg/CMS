@@ -134,12 +134,12 @@ class AuditionManagementController extends Controller
 
             $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
             if($dataAuditions->count() > 0){
-                $dataResponse = $dataAuditions;
+                $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             }else{
-                $dataResponse = [];
+                $dataResponse = ['data'=>[]];
             }
 
-            return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
+            return response()->json( $dataResponse,200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -155,12 +155,12 @@ class AuditionManagementController extends Controller
 
             $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
             if($dataAuditions->count() > 0){
-                $dataResponse = $dataAuditions;
+                $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             }else{
-                $dataResponse = [];
+                $dataResponse = ['data'=>[]];
             }
 
-            return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
+            return response()->json( $dataResponse,200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -276,11 +276,13 @@ class AuditionManagementController extends Controller
 
             $dataAuditions = $data->where('type', '=', '2')->sortByDesc('created_at');
             if($dataAuditions->count() > 0){
-                $dataResponse = $dataAuditions;
+                $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             }else{
-                $dataResponse = [];
+                $dataResponse = ['data'=>[]];
             }
-            return response()->json(['data' => UserAuditionsResource::collection($dataResponse)], 200);
+
+            return response()->json( $dataResponse,200);
+
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
