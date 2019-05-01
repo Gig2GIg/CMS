@@ -83,6 +83,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
+    // NOTIFICATIONS HISTORY
+    $router->get('/notification-history','NotificationsController@getHistory');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -149,6 +152,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
     // NOTIFICATIONS HISTORY
     $router->get('/notification-history','NotificationsController@getHistory');
+     $router->get('/notification-history','NotificationsController@getHistory');
+
 
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
