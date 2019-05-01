@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Models\Notifications\NotificationSettingUser;
 use App\Models\User;
-use App\Http\Requests\Notification\NotificationSettingUserRequest;
+use App\Http\Requests\NotificationPushKeyRequest;
 use App\Http\Resources\NoficationsResource;
 use Illuminate\Http\Request;
 use App\Http\Repositories\UserRepository;
@@ -47,23 +47,20 @@ class NotificationsController extends Controller
     }
 
 
-    public function update(NotificationSettingUserRequest $request)
+    public function update(NotificationPushKeyRequest $request)
     {
         try {
             $data = [
-                'status' => $request->status
+                'pushkey' => $request->pushkey
             ];
 
             $userRepo = new UserRepository(new User());
-            $user = $userRepo->find($this->getUserLogging());
-
-            $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-            $notificationSettingUserResult = $notificationSettingUserRepo->find($request->id);
-    
-            if ($notificationSettingUserResult->update($data)) {
+            $userResult = $userRepo->find($this->getUserLogging());
+            
+            if ($userResult->update($data)) {
                 return response()->json([], 204);
             } else {
-                return response()->json(['data' => "Not found Data"], 422);
+                return response()->json(['data' => "Record not  created"], 422);
             }   
         
         } catch (NotFoundException $e) {
@@ -72,3 +69,4 @@ class NotificationsController extends Controller
     }
 
 }
+
