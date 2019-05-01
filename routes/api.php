@@ -147,6 +147,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
     $router->get('/notification-settings','NotificationManagementController@getAll');
 
+    // NOTIFICATIONS HISTORY
+    $router->get('/notification-history','NotificationsController@getHistory');
+
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
