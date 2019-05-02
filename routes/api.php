@@ -87,6 +87,10 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
+    // NOTIFICATIONS HISTORY
+    $router->get('/notification-history','NotificationsController@getHistory');
+    $router->put('/notification-send-pushkey','NotificationsController@update');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -150,6 +154,11 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     // NOTIFICATION SETTING
     $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
     $router->get('/notification-settings','NotificationManagementController@getAll');
+
+    // NOTIFICATIONS HISTORY
+    $router->get('/notification-history','NotificationsController@getHistory');
+    $router->put('/notification-send-pushkey','NotificationsController@update');
+
 
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
