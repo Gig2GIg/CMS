@@ -103,7 +103,7 @@ class AuditionManagementController extends Controller
                     'user_id' => $this->getUserLogging(),
                     'auditions_id' => $request->slot['auditions'],
                     'slots_id' => $request->slot['slot'],
-                    'roles_id'=>$request->slot['rol']
+                    'roles_id' => $request->slot['rol']
                 ]);
             }
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
@@ -133,19 +133,20 @@ class AuditionManagementController extends Controller
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
             $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
-            if($dataAuditions->count() > 0){
+            if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
-            }else{
-                $dataResponse = ['data'=>[]];
+            } else {
+                $dataResponse = ['data' => []];
             }
 
-            return response()->json( $dataResponse,200);
+            return response()->json($dataResponse, 200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
+
     public function getPassed()
     {
         try {
@@ -154,13 +155,13 @@ class AuditionManagementController extends Controller
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
             $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
-            if($dataAuditions->count() > 0){
+            if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
-            }else{
-                $dataResponse = ['data'=>[]];
+            } else {
+                $dataResponse = ['data' => []];
             }
 
-            return response()->json( $dataResponse,200);
+            return response()->json($dataResponse, 200);
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -275,13 +276,13 @@ class AuditionManagementController extends Controller
             $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
 
             $dataAuditions = $data->where('type', '=', '2')->sortByDesc('created_at');
-            if($dataAuditions->count() > 0){
+            if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
-            }else{
-                $dataResponse = ['data'=>[]];
+            } else {
+                $dataResponse = ['data' => []];
             }
 
-            return response()->json( $dataResponse,200);
+            return response()->json($dataResponse, 200);
 
 
         } catch (Exception $exception) {
@@ -325,8 +326,8 @@ class AuditionManagementController extends Controller
 
             if ($result) {
                 $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
-                $dataUserAuditions = $repoUserAuditions->getByParam('auditions_id',$request->id);
-                if($dataUserAuditions->count() > 0) {
+                $dataUserAuditions = $repoUserAuditions->getByParam('auditions_id', $request->id);
+                if ($dataUserAuditions->count() > 0) {
                     $dataUserAuditions->each(function ($element) {
                         $element->update(['type' => 3]);
                     });
@@ -375,17 +376,45 @@ class AuditionManagementController extends Controller
     {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-            $data = $videoRepo->create([
-                'user_id' => $request->performer,
-                'auditions_id' => $request->audition,
-                'url' => $request->url,
-                'contributors_id' => $this->getUserLogging(),
-            ]);
-            if (isset($data->id)) {
-                $dataResponse = ['data' => 'Video saved'];
+            $element = $videoRepo->findbyparam('user_id', $request->performer);
+            $toData = $element->where('auditions_id', '=', $request->audition);
+            if ($toData->count() > 0) {
+                $dataResponse = ['data' => 'Video already saved'];
+                $code = 406;
+            } else {
+                $data = $videoRepo->create([
+                    'user_id' => $request->performer,
+                    'auditions_id' => $request->audition,
+                    'url' => $request->url,
+                    'contributors_id' => $this->getUserLogging(),
+                ]);
+                if (isset($data->id)) {
+                    $dataResponse = ['data' => 'Video saved'];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => 'Video not saved'];
+                    $code = 406;
+                }
+
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function deleteVideo(Request $request)
+    {
+        try {
+            $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+            $delvideo = $videoRepo->find($request->id);
+            $data = $delvideo->delete();
+            if ($data) {
+                $dataResponse = ['data' => 'Video deleted'];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Video not saved'];
+                $dataResponse = ['data' => 'Video not deleted'];
                 $code = 406;
             }
             return response()->json($dataResponse, $code);

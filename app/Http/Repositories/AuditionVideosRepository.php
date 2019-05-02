@@ -62,7 +62,10 @@ class AuditionVideosRepository implements IAuditionVideosRepository
         }
 
     }
-
+    public function delete(): ?bool
+    {
+        return $this->model->delete();
+    }
 
 
 }

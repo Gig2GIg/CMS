@@ -16,8 +16,10 @@ class FeedbackResource extends JsonResource
      */
     public function toArray($request)
     {
+
         $userRepo = new UserRepository(new User());
         $userData = $userRepo->find($this->evaluator_id);
+
         $name = $userData->details->first_name . " " . $userData->details->last_name;
         return [
             'id'=>$this->id,

@@ -10,7 +10,6 @@ use App\Models\Auditions;
 use App\Models\Resources;
 use App\Models\User;
 use App\Models\UserAuditionMedia;
-use DemeterChain\A;
 use Illuminate\Http\Request;
 
 class MediaManagerController extends Controller
@@ -153,15 +152,19 @@ class MediaManagerController extends Controller
             $dataUserAudi = $userauditions->where('user_id','=',$this->getUserLogging())->get();
             $dataUserAudi->each(function ($element){
                 $auditions = new AuditionRepository(new Auditions());
-                $dataAuditions = $auditions->find($element->id);
+                $dataAuditions = $auditions->find($element->auditions_id);
 
                 $media = $dataAuditions->resources()->where('resource_type','=','App\Models\Auditions')->get();
-
+                $cover = $dataAuditions->resources()
+                    ->where('resource_type','=','App\Models\Auditions')
+                    ->where('type','=','cover')
+                    ->first()['url'];
                 $filter = $media->filter(function($item){
                     return $item->type !== 'cover';
                 });
                 $this->dataArray[] = [
                     'name'=>$dataAuditions->title,
+                    'cover'=>$cover ?? null,
                     'files'=>$filter
                     ];
             });
