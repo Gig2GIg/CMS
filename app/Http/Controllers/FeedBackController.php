@@ -11,6 +11,7 @@ use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\UserAuditions;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class FeedBackController extends Controller
 {
@@ -84,7 +85,7 @@ class FeedBackController extends Controller
 
             $data = $repo->findbyparam('auditions_id', $request->id);
 
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataAudi->user_id)->first();
+            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataAudi->user_id)->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
