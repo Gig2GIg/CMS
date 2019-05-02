@@ -11970,6 +11970,50 @@ label.panel-block:hover {
   border-color: #ff3860;
 }
 
+.b-checkbox.checkbox input[type=checkbox]:focus + .check {
+  box-shadow: 0 0 .5em rgba(122, 122, 122, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-white {
+  box-shadow: 0 0 .5em rgba(255, 255, 255, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-black {
+  box-shadow: 0 0 .5em rgba(10, 10, 10, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-light {
+  box-shadow: 0 0 .5em rgba(245, 245, 245, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-dark {
+  box-shadow: 0 0 .5em rgba(54, 54, 54, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-primary {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-info {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-success {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-warning {
+  box-shadow: 0 0 .5em rgba(255, 221, 87, .8);
+}
+
+.b-checkbox.checkbox input[type=checkbox]:focus:checked + .check.is-danger {
+  box-shadow: 0 0 .5em rgba(255, 56, 96, .8);
+}
+
 .b-checkbox.checkbox .control-label {
   padding-left: .5em;
 }
@@ -12018,50 +12062,6 @@ label.panel-block:hover {
   border-color: #ff3860;
 }
 
-.b-checkbox.checkbox:focus input[type=checkbox] + .check {
-  box-shadow: 0 0 .5em rgba(122, 122, 122, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-white {
-  box-shadow: 0 0 .5em rgba(255, 255, 255, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-black {
-  box-shadow: 0 0 .5em rgba(10, 10, 10, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-light {
-  box-shadow: 0 0 .5em rgba(245, 245, 245, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-dark {
-  box-shadow: 0 0 .5em rgba(54, 54, 54, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-primary {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-info {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-success {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-warning {
-  box-shadow: 0 0 .5em rgba(255, 221, 87, .8);
-}
-
-.b-checkbox.checkbox:focus input[type=checkbox]:checked + .check.is-danger {
-  box-shadow: 0 0 .5em rgba(255, 56, 96, .8);
-}
-
 .b-checkbox.checkbox.is-small {
   border-radius: 2px;
   font-size: .75rem;
@@ -12072,6 +12072,421 @@ label.panel-block:hover {
 }
 
 .b-checkbox.checkbox.is-large {
+  font-size: 1.5rem;
+}
+
+.b-clockpicker .card-header {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker .b-clockpicker-face:after {
+  background-color: #4d2545;
+}
+
+.b-clockpicker .b-clockpicker-face-hand {
+  background-color: #4d2545;
+  border-color: #4d2545;
+}
+
+.b-clockpicker .b-clockpicker-face-number.active {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-white .card-header {
+  background-color: white;
+  color: #0a0a0a;
+}
+
+.b-clockpicker.is-white .b-clockpicker-face:after {
+  background-color: white;
+}
+
+.b-clockpicker.is-white .b-clockpicker-face-hand {
+  background-color: white;
+  border-color: white;
+}
+
+.b-clockpicker.is-white .b-clockpicker-face-number.active {
+  background-color: white;
+  color: #0a0a0a;
+}
+
+.b-clockpicker.is-black .card-header {
+  background-color: #0a0a0a;
+  color: white;
+}
+
+.b-clockpicker.is-black .b-clockpicker-face:after {
+  background-color: #0a0a0a;
+}
+
+.b-clockpicker.is-black .b-clockpicker-face-hand {
+  background-color: #0a0a0a;
+  border-color: #0a0a0a;
+}
+
+.b-clockpicker.is-black .b-clockpicker-face-number.active {
+  background-color: #0a0a0a;
+  color: white;
+}
+
+.b-clockpicker.is-light .card-header {
+  background-color: whitesmoke;
+  color: #363636;
+}
+
+.b-clockpicker.is-light .b-clockpicker-face:after {
+  background-color: whitesmoke;
+}
+
+.b-clockpicker.is-light .b-clockpicker-face-hand {
+  background-color: whitesmoke;
+  border-color: whitesmoke;
+}
+
+.b-clockpicker.is-light .b-clockpicker-face-number.active {
+  background-color: whitesmoke;
+  color: #363636;
+}
+
+.b-clockpicker.is-dark .card-header {
+  background-color: #363636;
+  color: whitesmoke;
+}
+
+.b-clockpicker.is-dark .b-clockpicker-face:after {
+  background-color: #363636;
+}
+
+.b-clockpicker.is-dark .b-clockpicker-face-hand {
+  background-color: #363636;
+  border-color: #363636;
+}
+
+.b-clockpicker.is-dark .b-clockpicker-face-number.active {
+  background-color: #363636;
+  color: whitesmoke;
+}
+
+.b-clockpicker.is-primary .card-header {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-primary .b-clockpicker-face:after {
+  background-color: #4d2545;
+}
+
+.b-clockpicker.is-primary .b-clockpicker-face-hand {
+  background-color: #4d2545;
+  border-color: #4d2545;
+}
+
+.b-clockpicker.is-primary .b-clockpicker-face-number.active {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-info .card-header {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-info .b-clockpicker-face:after {
+  background-color: #4d2545;
+}
+
+.b-clockpicker.is-info .b-clockpicker-face-hand {
+  background-color: #4d2545;
+  border-color: #4d2545;
+}
+
+.b-clockpicker.is-info .b-clockpicker-face-number.active {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-success .card-header {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-success .b-clockpicker-face:after {
+  background-color: #4d2545;
+}
+
+.b-clockpicker.is-success .b-clockpicker-face-hand {
+  background-color: #4d2545;
+  border-color: #4d2545;
+}
+
+.b-clockpicker.is-success .b-clockpicker-face-number.active {
+  background-color: #4d2545;
+  color: #fff;
+}
+
+.b-clockpicker.is-warning .card-header {
+  background-color: #ffdd57;
+  color: rgba(0, 0, 0, .7);
+}
+
+.b-clockpicker.is-warning .b-clockpicker-face:after {
+  background-color: #ffdd57;
+}
+
+.b-clockpicker.is-warning .b-clockpicker-face-hand {
+  background-color: #ffdd57;
+  border-color: #ffdd57;
+}
+
+.b-clockpicker.is-warning .b-clockpicker-face-number.active {
+  background-color: #ffdd57;
+  color: rgba(0, 0, 0, .7);
+}
+
+.b-clockpicker.is-danger .card-header {
+  background-color: #ff3860;
+  color: #fff;
+}
+
+.b-clockpicker.is-danger .b-clockpicker-face:after {
+  background-color: #ff3860;
+}
+
+.b-clockpicker.is-danger .b-clockpicker-face-hand {
+  background-color: #ff3860;
+  border-color: #ff3860;
+}
+
+.b-clockpicker.is-danger .b-clockpicker-face-number.active {
+  background-color: #ff3860;
+  color: #fff;
+}
+
+.b-clockpicker .dropdown-menu {
+  min-width: 0;
+}
+
+.b-clockpicker .dropdown,
+.b-clockpicker .dropdown-trigger {
+  width: 100%;
+}
+
+.b-clockpicker .dropdown-item,
+.b-clockpicker .dropdown .dropdown-menu .has-link a,
+.dropdown .dropdown-menu .has-link .b-clockpicker a {
+  font-size: inherit;
+  padding: 0;
+}
+
+.b-clockpicker .dropdown-content {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.b-clockpicker .card-content {
+  padding: 12px;
+}
+
+.b-clockpicker-btn {
+  cursor: pointer;
+  opacity: .6;
+}
+
+.b-clockpicker-btn:hover,
+.b-clockpicker-btn.active {
+  opacity: 1;
+}
+
+.b-clockpicker-period .b-clockpicker-btn {
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+.b-clockpicker-time span {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.b-clockpicker-header {
+  display: flex;
+  line-height: 1;
+  justify-content: flex-end;
+  color: inherit;
+}
+
+.b-clockpicker-header .b-clockpicker-time {
+  white-space: nowrap;
+}
+
+.b-clockpicker-header .b-clockpicker-time span {
+  height: 60px;
+  font-size: 60px;
+}
+
+.b-clockpicker-header .b-clockpicker-period {
+  align-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0 6px 8px;
+}
+
+.b-clockpicker-body {
+  transition: .9s cubic-bezier(.25, .8, .5, 1);
+}
+
+.b-clockpicker-body .b-clockpicker-btn {
+  padding: 0 8px;
+  border-radius: 290486px;
+  margin-bottom: 2px;
+}
+
+.b-clockpicker-body .b-clockpicker-btn:hover,
+.b-clockpicker-body .b-clockpicker-btn.active {
+  background-color: #4d2545;
+  color: white;
+}
+
+.b-clockpicker-body .b-clockpicker-period {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.b-clockpicker-body .b-clockpicker-time {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: 16px;
+}
+
+.b-clockpicker-body .b-clockpicker-face {
+  border-radius: 50%;
+  position: relative;
+  background-color: #dbdbdb;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.b-clockpicker-body .b-clockpicker-face:after {
+  border-radius: 50%;
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  z-index: 10;
+}
+
+.b-clockpicker-body .b-clockpicker-face-outer-ring {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  height: calc(100% - 50px);
+  width: calc(100% - 50px);
+  position: relative;
+  border-radius: 50%;
+}
+
+.b-clockpicker-body .b-clockpicker-face-number {
+  align-items: center;
+  border-radius: 100%;
+  cursor: default;
+  display: flex;
+  font-size: 18px;
+  text-align: center;
+  justify-content: center;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: calc(50% - 40px / 2);
+  top: calc(50% - 40px / 2);
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.b-clockpicker-body .b-clockpicker-face-number > span {
+  z-index: 1;
+}
+
+.b-clockpicker-body .b-clockpicker-face-number:before,
+.b-clockpicker-body .b-clockpicker-face-number:after {
+  content: "";
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.b-clockpicker-body .b-clockpicker-face-number.active {
+  cursor: default;
+  z-index: 2;
+}
+
+.b-clockpicker-body .b-clockpicker-face-number.disabled {
+  pointer-events: none;
+  opacity: .25;
+}
+
+.b-clockpicker-body .b-clockpicker-face-hand {
+  height: calc(50% - 6px);
+  width: 2px;
+  bottom: 50%;
+  left: calc(50% - 1px);
+  -webkit-transform-origin: center bottom;
+          transform-origin: center bottom;
+  position: absolute;
+  will-change: transform;
+  z-index: 1;
+}
+
+.b-clockpicker-body .b-clockpicker-face-hand:before {
+  background: transparent;
+  border-width: 2px;
+  border-style: solid;
+  border-color: inherit;
+  border-radius: 100%;
+  width: 12px;
+  height: 12px;
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.b-clockpicker-footer {
+  display: block;
+  padding: 12px;
+}
+
+.b-clockpicker.is-small {
+  border-radius: 2px;
+  font-size: .75rem;
+}
+
+.b-clockpicker.is-medium {
+  font-size: 1.25rem;
+}
+
+.b-clockpicker.is-large {
   font-size: 1.5rem;
 }
 
@@ -12699,6 +13114,16 @@ label.panel-block:hover {
 .notices .snackbar .action .button {
   font-weight: 600;
   text-transform: uppercase;
+  background: #363636;
+  border: transparent;
+}
+
+.notices .snackbar .action .button:hover {
+  background: #292929;
+}
+
+.notices .snackbar .action .button:active {
+  background: #292929;
 }
 
 .notices .snackbar .action.is-white .button {
@@ -12753,29 +13178,40 @@ label.panel-block:hover {
   }
 }
 
+.notices .notification {
+  max-width: 600px;
+}
+
 .notices .toast.is-top,
 .notices .toast.is-bottom,
 .notices .snackbar.is-top,
-.notices .snackbar.is-bottom {
+.notices .snackbar.is-bottom,
+.notices .notification.is-top,
+.notices .notification.is-bottom {
   align-self: center;
 }
 
 .notices .toast.is-top-right,
 .notices .toast.is-bottom-right,
 .notices .snackbar.is-top-right,
-.notices .snackbar.is-bottom-right {
+.notices .snackbar.is-bottom-right,
+.notices .notification.is-top-right,
+.notices .notification.is-bottom-right {
   align-self: flex-end;
 }
 
 .notices .toast.is-top-left,
 .notices .toast.is-bottom-left,
 .notices .snackbar.is-top-left,
-.notices .snackbar.is-bottom-left {
+.notices .snackbar.is-bottom-left,
+.notices .notification.is-top-left,
+.notices .notification.is-bottom-left {
   align-self: flex-start;
 }
 
 .notices .toast.is-toast,
-.notices .snackbar.is-toast {
+.notices .snackbar.is-toast,
+.notices .notification.is-toast {
   opacity: .92;
 }
 
@@ -12796,6 +13232,35 @@ label.panel-block:hover {
     padding: 0;
     position: fixed !important;
   }
+}
+
+.b-numberinput.field {
+  margin-bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .b-numberinput.field.is-grouped div.control {
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+}
+
+.b-numberinput input[type=number]::-webkit-inner-spin-button,
+.b-numberinput input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.b-numberinput input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.b-numberinput input[type=number] {
+  text-align: center;
+}
+
+.b-numberinput .button.is-rounded {
+  padding-left: .75em;
+  padding-right: .75em;
 }
 
 .pagination .pagination-next,
@@ -13190,6 +13655,54 @@ label.panel-block:hover {
           transform: translate3d(36.3636363636%, 0, 0);
 }
 
+.switch input[type=checkbox]:focus {
+  outline: none;
+}
+
+.switch input[type=checkbox]:focus + .check {
+  box-shadow: 0 0 .5em rgba(122, 122, 122, .6);
+}
+
+.switch input[type=checkbox]:focus:checked + .check {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-white {
+  box-shadow: 0 0 .5em rgba(255, 255, 255, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-black {
+  box-shadow: 0 0 .5em rgba(10, 10, 10, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-light {
+  box-shadow: 0 0 .5em rgba(245, 245, 245, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-dark {
+  box-shadow: 0 0 .5em rgba(54, 54, 54, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-primary {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-info {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-success {
+  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-warning {
+  box-shadow: 0 0 .5em rgba(255, 221, 87, .8);
+}
+
+.switch input[type=checkbox]:focus:checked + .check.is-danger {
+  box-shadow: 0 0 .5em rgba(255, 56, 96, .8);
+}
+
 .switch .control-label {
   padding-left: .5em;
 }
@@ -13236,54 +13749,6 @@ label.panel-block:hover {
 
 .switch:hover input[type=checkbox]:checked + .check.is-danger {
   background: rgba(255, 56, 96, .9);
-}
-
-.switch:focus {
-  outline: none;
-}
-
-.switch:focus input[type=checkbox] + .check {
-  box-shadow: 0 0 .5em rgba(122, 122, 122, .6);
-}
-
-.switch:focus input[type=checkbox]:checked + .check {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-white {
-  box-shadow: 0 0 .5em rgba(255, 255, 255, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-black {
-  box-shadow: 0 0 .5em rgba(10, 10, 10, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-light {
-  box-shadow: 0 0 .5em rgba(245, 245, 245, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-dark {
-  box-shadow: 0 0 .5em rgba(54, 54, 54, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-primary {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-info {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-success {
-  box-shadow: 0 0 .5em rgba(77, 37, 69, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-warning {
-  box-shadow: 0 0 .5em rgba(255, 221, 87, .8);
-}
-
-.switch:focus input[type=checkbox]:checked + .check.is-danger {
-  box-shadow: 0 0 .5em rgba(255, 56, 96, .8);
 }
 
 .switch.is-small {
@@ -13545,7 +14010,7 @@ label.panel-block:hover {
 
 .b-tabs .tab-content {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   padding: 1rem;
@@ -13554,6 +14019,10 @@ label.panel-block:hover {
 .b-tabs .tab-content .tab-item {
   flex-shrink: 0;
   flex-basis: auto;
+}
+
+.b-tabs .tab-content.is-transitioning {
+  overflow: hidden;
 }
 
 .b-tabs:not(:last-child) {
@@ -14139,8 +14608,12 @@ label.panel-block:hover {
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   opacity: 0;
   outline: none;
+}
+
+.upload input[type=file].file-draggable {
   z-index: -1;
 }
 

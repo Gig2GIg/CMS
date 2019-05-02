@@ -12,7 +12,7 @@ export default {
 
   async fetchUser({ commit }) {
     try {
-      const { data } = await axios.get('/api/v1/admin/me');
+      const { data } = await axios.get('/api/admin/me');
       commit(types.FETCH_USER_SUCCESS, { user: data });
 
       return data;
@@ -26,10 +26,10 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      //const { data } = await axios.post('/api/v1/admin/login', credentials);
+      const { data } = await axios.post('/api/admin/login', credentials);
 
       dispatch('saveToken', {
-        token: data.access_token,
+        token: data.token,
         remember: credentials.remember,
       });
 
@@ -39,7 +39,7 @@ export default {
 
       return true;
     } catch (e) {
-      const error = e.response.data.error;
+      const error = e.response.data.message;
       dispatch('toast/showError', error, { root: true });
 
       return false;
@@ -52,7 +52,7 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      await axios.post('/api/v1/admin/password/email', email);
+      await axios.post('/api/admin/password/email', email);
       dispatch('toast/showMessage', 'Email sent!', { root: true });
 
       return true;
@@ -67,7 +67,7 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      await axios.post('/api/v1/admin/password/reset', credentials);
+      await axios.post('/api/admin/password/reset', credentials);
       dispatch('toast/showMessage', 'Password changed!', { root: true });
 
       return true;
@@ -80,7 +80,7 @@ export default {
 
   async logout({ commit }) {
     try {
-      await axios.post('/logout');
+      await axios.post('/api/admin/logout');
     } catch (e) {
       throw e;
     } finally {

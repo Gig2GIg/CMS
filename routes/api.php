@@ -136,9 +136,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
 
     Route::prefix('marketplace_categories')->group(function () use ($router) {
-        $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
-        $router->get('/{marketplaceCategory}/marketplaces/search', 'MarketplaceController@search_by_category_by_title')->where('id', '[0-9]+'); 
-    });  
+        $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
+        $router->get('/{marketplaceCategory}/marketplaces/search', 'MarketplaceController@search_by_category_by_title')->where('id', '[0-9]+');
+    });
 
     // calendar routes
     $router->post('/calendar/create_event',['uses'=>'CalendarController@store']);
@@ -146,9 +146,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/calendar/show/{id}',['uses'=>'CalendarController@show']);
     $router->put('/calendar/update/{id}',['uses'=>'CalendarController@update']);
     $router->delete('/calendar/delete/{id}',['uses'=>'CalendarController@destroy']);
-    
+
     // NOTIFICATION SETTING
-    $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+'); 
+    $router->put('/notification-setting/update/{id}','NotificationManagementController@update')->where('id', '[0-9]+');
     $router->get('/notification-settings','NotificationManagementController@getAll');
 
     // NOTIFICATIONS HISTORY
@@ -182,27 +182,32 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 | CMS Routes
 |--------------------------------------------------------------------------
 */
+
+Route::prefix('admin')->namespace('Admin')->group(function () {
+    Auth::routes(['register' => false]);
+});
+
 $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {
-    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {  
+    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
 
         $router->post('/marketplace_categories/create', 'MarketplaceCategoriesController@store');
-        
+
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
-        
+
         //marketplace by category
         Route::prefix('marketplace_categories')->group(function () use ($router) {
-            $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+'); 
-            $router->post('/{marketplaceCategory}/marketplaces/create', 'MarketplaceController@store')->where('id', '[0-9]+');  
-        });  
+            $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
+            $router->post('/{marketplaceCategory}/marketplaces/create', 'MarketplaceController@store')->where('id', '[0-9]+');
+        });
         //marketplace
-        $router->get('/marketplaces', 'MarketplaceController@getAll')->where('id', '[0-9]+'); 
-        $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+'); 
-        $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+'); 
-        $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+'); 
+        $router->get('/marketplaces', 'MarketplaceController@getAll')->where('id', '[0-9]+');
+        $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+');
+        $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+');
+        $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+');
 
         //TYPE PRODUCTS
         $router->get('/type-products', 'TypeProductsController@getAll');
@@ -218,18 +223,18 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
         $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
         $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
 
-        //NOTIFICATIONS 
+        //NOTIFICATIONS
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
-        $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+'); 
-        
+        $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+');
+
         // AUDITIONS
         $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
         $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
         $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
-       
+
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
-        
+
         //SUBCRIPTIONS
         $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
     });

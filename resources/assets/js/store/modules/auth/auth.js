@@ -3,9 +3,8 @@ import actions from './actions';
 import getters from './getters';
 import mutations from './mutations';
 
-// user: {name: 'Rigo', last_name: 'Gomez'},
 const state = {
-  user: {name: 'Rigo', last_name: 'Gomez'},
+  user: null,
   token: Cookies.get("token"),
   isLoading: false,
 };
