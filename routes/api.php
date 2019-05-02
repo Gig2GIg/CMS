@@ -185,6 +185,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
 Route::prefix('admin')->namespace('Admin')->group(function () {
     Auth::routes(['register' => false]);
+    Route::get('/me', 'Auth\LoginController@profile');
 });
 
 $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {

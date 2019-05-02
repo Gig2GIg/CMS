@@ -43,6 +43,16 @@ class LoginController extends Controller
     }
 
     /**
+     * Display a resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function profile()
+    {
+        return auth('admin')->user();
+    }
+
+    /**
      * Log the user out (Invalidate the token).
      *
      * @return \Illuminate\Http\JsonResponse
