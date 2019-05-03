@@ -11,5 +11,6 @@ class AuditionVideos extends Model
         'auditions_id',
         'url',
         'contributors_id',
+        'slot_id'
     ];
 }

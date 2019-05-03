@@ -44,6 +44,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
     //delete media
     $router->delete('media/manager/{id}',['uses'=>'MediaManagerController@delete']);
+    $router->get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
+
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
@@ -255,6 +257,9 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('/auditions/{id}',['uses'=>'AuditionsController@get']);
         Route::get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
 
+        //poner aqui endpoint
+        Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
+        Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
     });
 });
