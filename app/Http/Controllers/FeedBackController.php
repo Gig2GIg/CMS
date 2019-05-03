@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\FeedbackResource;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
+use App\Models\Slots;
 use App\Models\UserAuditions;
+use App\Models\UserSlots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -38,7 +42,17 @@ class FeedBackController extends Controller
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);
             if ($data->id) {
-
+                $auditionsRepo = new AuditionRepository(new Auditions());
+                $auditionsData = $auditionsRepo->find($request->auditions);
+                if($auditionsData->user_id === $request->evaluator) {
+                    $slotRepo = new UserSlotsRepository(new UserSlots());
+                    $slotData = $slotRepo->findbyparam('slots_id', $request->slot_id)->first();
+                    if(isset($slotData)) {
+                        $update = $slotData->update([
+                            'favorite' => $request->favorite
+                        ]);
+                    }
+                }
                 $dataResponse = ['data' => 'Feedback add'];
                 $code = 201;
 

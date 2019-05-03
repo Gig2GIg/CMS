@@ -31,6 +31,8 @@ class AppointmentResource extends JsonResource
             'image' => $userData->image->url,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'time' => $slotData->time,
+            'favorite'=>$this->favorite,
+            'slot_id'=>$this->slots_id
         ];
     }
 }
