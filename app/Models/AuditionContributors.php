@@ -12,11 +12,11 @@ class AuditionContributors extends Model
         'status'
     ];
     public function auditions(){
-        $this->belongsTo(Auditions::class);
+        return $this->belongsTo(Auditions::class);
     }
 
     public function user(){
-        $this->hasOne(User::class);
+        return $this->hasOne(User::class);
     }
 
 }
