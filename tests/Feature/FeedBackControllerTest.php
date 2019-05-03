@@ -2,11 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Roles;
+use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserSlots;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,9 +21,21 @@ class FeedBackControllerTest extends TestCase
     protected $rolId;
     protected $token;
 
-    public function test_set_feedback_to_performer()
+    public function test_set_feedback_director_to_performer()
     {
         $user = factory(User::class)->create();
+        $appoinment = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
+
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appoinment->id
+        ]);
+        $slot_user = factory(UserSlots::class)->create([
+            'user_id'=>$this->userId,
+            'auditions_id'=>$this->auditionId,
+            'slots_id'=>$slot->id
+        ]);
         $work = [
             'vocals',
             'acting',
@@ -33,7 +48,45 @@ class FeedBackControllerTest extends TestCase
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
+          'favorite' => $this->faker->boolean(),
+
+            'slot_id'=>$slot->id
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJson(['data' => 'Feedback add']);
+    }
+    public function test_set_feedback_contributor_to_performer()
+    {
+        $user = factory(User::class)->create();
+        $user2 = factory(User::class)->create();
+        $appoinment = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
+
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appoinment->id
+        ]);
+        $slot_user = factory(UserSlots::class)->create([
+            'user_id'=>$this->userId,
+            'auditions_id'=>$this->auditionId,
+            'slots_id'=>$slot->id
+        ]);
+        $work = [
+            'vocals',
+            'acting',
+            'dancing',
+        ];
+        $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
+            'auditions' => $this->auditionId,
+            'user' => $user->id, //id usuario que recibe evaluacion
+            'evaluator' => $user2->id,//id de usuario que da feecback,
+            'evaluation' => $this->faker->numberBetween(1, 5),
+            'callback' => $this->faker->boolean(),
+            'work' => $work[$this->faker->numberBetween(0, 2)],
             'favorite' => $this->faker->boolean(),
+
+            'slot_id'=>$slot->id
         ]);
 
         $response->assertStatus(201);

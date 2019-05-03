@@ -57,7 +57,7 @@ class MediaManagerControllerTest extends TestCase
             'name' => $this->faker->word,
             'type' => 'video'
         ]);
-        $response = $this->json('DELETE','api/a/media/manager/'.$media->id.'?token='.$this->token);
+        $response = $this->json('DELETE','api/media/manager/'.$media->id.'?token='.$this->token);
         $response->assertStatus(200);
 
     }

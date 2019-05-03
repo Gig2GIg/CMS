@@ -18,6 +18,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AuditionManagemenDirectorTest extends TestCase
 {
+    protected $rolId;
+    protected $userId;
+    protected $auditionId;
+
     public function test_auditions_upcomming_director()
     {
 
@@ -142,6 +146,27 @@ class AuditionManagemenDirectorTest extends TestCase
                 'audition' => $data->id,
                 'performer' => $user->id
             ]);
+        $response->assertStatus(200);
+        //$response->assertJson(['data' => 'Not Found Data']);
+
+    }
+
+    public function test_audition_delete_video_200()
+    {
+        $user = factory(User::class)->create();
+
+        $data = factory(Auditions::class)->create([
+            'user_id' => $user->id,
+        ]);
+        $video = factory(AuditionVideos::class)->create([
+            'user_id' => $user->id,
+            'auditions_id' => $data->id,
+            'url' => $this->faker->imageUrl(),
+            'contributors_id' => $this->userId,
+        ]);
+
+        $response = $this->json('DELETE',
+            'api/t/auditions/video/delete/'.$video->id.'?token=' . $this->token);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
 

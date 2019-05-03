@@ -42,6 +42,9 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/monitor/show/{id}',['uses'=>'MonitorManagerController@list']);
     $router->get('/monitor/show/{id}/pre',['uses'=>'MonitorManagerController@listNotificationsCreate']);
 
+    //delete media
+    $router->delete('media/manager/{id}',['uses'=>'MediaManagerController@delete']);
+
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     //user routes
@@ -61,6 +64,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/close/{id}',['uses'=>'AuditionManagementController@closeAudition']);
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
+    $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
 
 
    //calendar routes
@@ -173,6 +177,10 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('media/user/list',['uses'=>'MediaManagerController@get']);
     $router->get('media/user/list/{type}',['uses'=>'MediaManagerController@getByType']);
     $router->get('media/auditon/list',['uses'=>'MediaManagerController@getbyuser']);
+
+    //feedback final user
+    $router->get('feedbacks/final/{id}',['uses'=>'FeedBackController@finalUserFeedback']);
+
 });
 
 
