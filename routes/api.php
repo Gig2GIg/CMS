@@ -188,7 +188,7 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
     Route::get('/me', 'Auth\LoginController@profile');
 });
 
-$router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router) {
+$router->group(['middleware' => ['auth:admin']], function () use ($router) {
     Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
@@ -229,7 +229,7 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
         $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+');
 
         // AUDITIONS
-        $router->get('/auditions',['uses'=>'AuditionsController@getAll']);
+        $router->get('/auditions',['uses'=>'AuditionsController@getall']);
         $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
         $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
 
@@ -238,5 +238,15 @@ $router->group(['middleware' => ['jwt.auth','acl:3']], function () use ($router)
 
         //SUBCRIPTIONS
         $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
+    });
+
+    Route::prefix('cms')->group(function() {
+        // AUDITIONS
+        Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
+        Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
+        Route::get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+        Route::get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+
+        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
     });
 });

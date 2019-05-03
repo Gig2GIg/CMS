@@ -455,4 +455,13 @@ class AuditionsController extends Controller
         return response()->json(['data' => $data]);
 
     }
+
+    public function destroy($audition)
+    {
+        Auditions::find($audition)->delete();
+
+        return response()->json([
+            'status' => 'Success',
+        ]);
+    }
 }
