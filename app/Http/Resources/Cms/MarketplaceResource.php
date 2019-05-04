@@ -17,9 +17,11 @@ class MarketplaceResource extends JsonResource
         return [
             'id' => $this->id,
             'title'=> $this->title,
+            'email'=> $this->email,
+            'marketplace_category_id'=> $this->marketplace_category_id,
             'address'=>$this->address,
             'phone_number'=>$this->phone_number,
-            'services'=>$this->services, 
+            'services'=>$this->services,
             'image' => $this->image,
             'url_web' => $this->url_web
         ];

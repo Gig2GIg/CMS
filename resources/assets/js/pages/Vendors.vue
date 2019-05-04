@@ -14,11 +14,12 @@
           <button
             class="button is-primary shadow"
             :disabled="isLoading"
-            @click="confirmBroadcast"
+            @click="showCreateModal"
           >
-            Broadcast notification
+            Create vendor
           </button>
         </div>
+
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="vendors.length">
@@ -37,10 +38,10 @@
             </div>
 
             <b-table
-              :data="vendors"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!vendors.length"
+              :paginated="!!filter.length"
               :show-detail-icon="true"
               detail-key="id"
               detailed
@@ -54,15 +55,12 @@
                   sortable
                 >{{ props.row.title }}</b-table-column>
 
-                <b-table-column field="contact" label="Contact" sortable>{{ props.row.phoneNumber }}</b-table-column>
+                <b-table-column field="contact" label="Contact" sortable>{{ props.row.phone_number }}</b-table-column>
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
-                    <b-dropdown-item has-link>
-                       <a @click.prevent.stop="confirmNotification(props.row)">Send notification</a>
-                    </b-dropdown-item>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
                     </b-dropdown-item>
@@ -77,20 +75,20 @@
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
                     <div class="mb-4">
-                      <img class="max-w-xs h-24" :src="props.row.url_img">
+                      <img class="max-w-xs h-24" :src="props.row.image.url">
                     </div>
                     <div class="content">
                       <p>
-                        <strong>Location:</strong>
-                        {{ props.row.location }}
+                        <strong>Address:</strong>
+                        {{props.row.address}}
                       </p>
                       <p>
                         <strong>Contact:</strong>
-                        {{props.row.phoneNumber}}
+                        {{props.row.phone_number}}
                       </p>
                       <p>
                         <strong>Website:</strong>
-                        {{ props.row.website_url }}
+                        {{ props.row.url_web }}
                       </p>
                     </div>
                   </div>
@@ -121,7 +119,7 @@
       </section>
     </transition>
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedCategory.id ? updateCategory() : createCategory()">
+      <form @submit.prevent="selectedVendor.id ? updateVendor() : createVendor()">
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{{ modalTitle }} Vendor</p>
@@ -140,17 +138,50 @@
                 autofocus
               />
             </b-field>
+
+            <b-field
+              label="Email"
+              :type="{'is-danger': errors.has('email')}"
+              :message="errors.first('email')"
+            >
+              <b-input
+                v-model="selectedVendor.email"
+                v-validate="'required|email'"
+                name="email"
+              />
+            </b-field>
+
+            <b-field
+              label="Category"
+              :type="{'is-danger': errors.has('category')}"
+              :message="errors.first('category')"
+            >
+              <b-select
+                name="category"
+                v-model="selectedVendor.marketplace_category_id"
+                v-validate="'required'"
+                placeholder="Select a category"
+              >
+                <option
+                  v-for="category in categories"
+                  :value="category.id"
+                  :key="category.id">
+                  {{ category.name }}
+                </option>
+              </b-select>
+            </b-field>
+
             <label class="label">Cover image</label>
             <div class="columns is-vcentered pb-2">
               <p class="image">
                 <img
-                  :src="selectedFile.preview ? selectedFile.preview : (selectedVendor.url_img ? selectedVendor.url_img : 'test.png')"
+                  :src="selectedFile.preview ? selectedFile.preview : (selectedVendor.image ? selectedVendor.image.url : 'images/default.jpg')"
                 >
               </p>
               <b-field
                 class="column file"
-                :type="{'is-danger': errors.has('url_img')}"
-                :message="errors.first('url_img')"
+                :type="{'is-danger': errors.has('image')}"
+                :message="errors.first('image')"
               >
                 <b-upload
                   v-model="selectedFile.file"
@@ -167,43 +198,40 @@
               </b-field>
             </div>
             <b-field
-              label="Location"
-              :type="{'is-danger': errors.has('location')}"
-              :message="errors.first('location')"
+              label="Address"
+              :type="{'is-danger': errors.has('address')}"
+              :message="errors.first('address')"
             >
               <b-input
-                v-model="selectedVendor.location"
+                v-model="selectedVendor.address"
                 v-validate="'required'"
-                name="location"
-                autofocus
+                name="address"
               />
             </b-field>
             <b-field
               label="Contact"
-              :type="{'is-danger': errors.has('phoneNumber')}"
-              :message="errors.first('phoneNumber')"
+              :type="{'is-danger': errors.has('phone')}"
+              :message="errors.first('phone')"
             >
               <b-input
-                v-model="selectedVendor.phoneNumber"
+                v-model="selectedVendor.phone_number"
                 v-validate="'required'"
-                name="phoneNumber"
-                autofocus
+                name="phone"
               />
             </b-field>
             <b-field
               label="Website"
-              :type="{'is-danger': errors.has('website_url')}"
-              :message="errors.first('website_url')"
+              :type="{'is-danger': errors.has('website')}"
+              :message="errors.first('website')"
             >
               <b-input
-                v-model="selectedVendor.website_url"
-                v-validate="'required'"
-                name="website_url"
-                autofocus
+                v-model="selectedVendor.url_web"
+                v-validate="'required|url'"
+                name="website"
               />
             </b-field>
             <div>
-              <strong>Servicios</strong>
+              <strong>Services</strong>
               <ckeditor :editor="editor" v-model="selectedVendor.services" :config="editorConfig"></ckeditor>
             </div>
           </section>
@@ -214,7 +242,7 @@
               :disabled="isLoading"
               @click="isModalActive = false"
             >Close</button>
-            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} category</button>
+            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} vendor</button>
           </footer>
         </div>
       </form>
@@ -236,46 +264,13 @@ export default {
     isModalActive: false,
     selectedFile: {},
     editor: ClassicEditor,
-    editorConfig: {},
-    vendors: [
-      {
-        id: "1",
-        title: "Professional Photography, Inc.",
-        location: "123 Main Street, New York, NY 10018",
-        phoneNumber: "(123) 456-7890",
-        website_url: "professionalphotographyinc.com",
-        services:
-          "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p><br><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>",
-        url_img:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg"
-      },
-      {
-        id: "2",
-        title: "Professional Photography, Inc.",
-        location: "123 Main Street, New York, NY 10018",
-        phoneNumber: "(123) 456-7890",
-        websiteURL: "professionalphotographyinc.com",
-        services:
-          "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p><br><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>",
-        url_img:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg"
-      },
-      {
-        id: "3",
-        title: "Professional Photography, Inc.",
-        location: "123 Main Street, New York, NY 10018",
-        phoneNumber: "(123) 456-7890",
-        websiteURL: "professionalphotographyinc.com",
-        services:
-          "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p><br><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>",
-        url_img:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg"
-      }
-    ]
+    editorConfig: {}
   }),
   computed: {
-    //...mapState('clients', ['clients', 'isLoading']),
-    ...mapGetters("clients", ["search"]),
+    ...mapState('vendors', ['vendors', 'isLoading']),
+    ...mapState('categories', ['categories']),
+    ...mapGetters('vendors', ['search']),
+
     modalTitle: function() {
       return this.selectedVendor.id ? "Update" : "Create";
     },
@@ -285,28 +280,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy']),
+    ...mapActions('toast', ['showError']),
 
-    confirmBroadcast() {
-      this.$dialog.prompt({
-        message: "Type a message",
-        inputAttrs: {
-          placeholder: "Message",
-          maxlenght: 2000
-        },
-        onConfirm: value => this.sendBroadcast(value)
-      });
-    },
-    confirmNotification(client) {
-      this.$dialog.prompt({
-        message: "Type a message",
-        inputAttrs: {
-          placeholder: "Message",
-          maxlenght: 2000
-        },
-        onConfirm: value => this.sendNotification(client, value)
-      });
-    },
     confirmDelete(vendor) {
       this.selectedVendor = vendor;
       this.$dialog.confirm({
@@ -314,14 +290,21 @@ export default {
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
-        onConfirm: this.deleteCategory,
+        onConfirm: this.deleteVendor,
       });
     },
 
-    showUpdateModal(category) {
-      this.selectedVendor = Object.assign({}, category);
+    showCreateModal() {
+      this.selectedFile = {};
+      this.selectedVendor = {};
       this.isModalActive = true;
     },
+
+    showUpdateModal(vendor) {
+      this.selectedVendor = Object.assign({}, vendor);
+      this.isModalActive = true;
+    },
+
     fileChanged(file) {
       if (!file || file.size > 4000000) {
         this.selectedFile = {};
@@ -332,10 +315,51 @@ export default {
       this.selectedFile.preview = URL.createObjectURL(file);
     },
 
+    async createVendor() {
+      try {
+        let valid = await this.$validator.validateAll();
+
+        if (! valid) {
+          this.showError('Please check the fields.');
+          return;
+        }
+
+        await this.store({
+          vendor: this.selectedVendor,
+          imageData: this.selectedFile,
+        });
+
+        this.isModalActive = false;
+      } catch(e) {
+        this.$setErrorsFromResponse(e.response.data);
+      }
+    },
+
+    async updateVendor() {
+      try {
+        let valid = await this.$validator.validateAll();
+
+        if (! valid) {
+          this.showError('Please check the fields.');
+          return;
+        }
+
+        await this.update({
+          vendor: this.selectedVendor,
+          imageData: this.selectedFile,
+        });
+
+        this.isModalActive = false;
+      } catch(e) {
+        this.$setErrorsFromResponse(e.response.data);
+      }
+    },
+
     async deleteVendor() {
       await this.destroy(this.selectedVendor);
     }
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

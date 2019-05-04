@@ -216,6 +216,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         });
         //marketplace
         $router->get('/marketplaces', 'MarketplaceController@getAll')->where('id', '[0-9]+');
+        $router->post('/marketplaces/create', 'MarketplaceController@store');
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+');
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+');
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+');

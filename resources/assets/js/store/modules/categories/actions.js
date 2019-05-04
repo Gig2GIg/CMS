@@ -6,6 +6,10 @@ export default {
     commit(types.TOGGLE_SPINNER);
   },
 
+  async init({ dispatch }) {
+    await dispatch('fetch');
+  },
+
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/marketplace_categories');

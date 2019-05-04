@@ -27,3 +27,10 @@ export const FETCH_CATEGORIES_SUCCESS = 'Fetch Categories successful';
 export const FETCH_CATEGORIES_FAILURE = 'Fetch Categories failed';
 export const UPDATE_CATEGORY = 'Update Category';
 export const DELETE_CATEGORY = 'Delete Category';
+
+export const FETCH_VENDORS_SUCCESS = 'Fetch Vendors successful';
+export const FETCH_VENDORS_FAILURE = 'Fetch Vendors failed';
+export const CREATE_VENDOR = 'Create Vendor';
+export const UPDATE_VENDOR = 'Update Vendor';
+export const DELETE_VENDOR = 'Delete Vendor';
+
