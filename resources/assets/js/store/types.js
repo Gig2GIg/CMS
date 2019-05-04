@@ -22,3 +22,8 @@ export const FETCH_SKILLS_SUCCESS = 'Fetch Skills successful';
 export const FETCH_SKILLS_FAILURE = 'Fetch Skills failed';
 export const UPDATE_SKILL = 'Update Skill';
 export const DELETE_SKILL = 'Delete Skill';
+
+export const FETCH_CATEGORIES_SUCCESS = 'Fetch Categories successful';
+export const FETCH_CATEGORIES_FAILURE = 'Fetch Categories failed';
+export const UPDATE_CATEGORY = 'Update Category';
+export const DELETE_CATEGORY = 'Delete Category';
