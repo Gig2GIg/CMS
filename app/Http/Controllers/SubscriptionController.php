@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\StripeManagementController;
 use App\Http\Repositories\UserRepository;
+use App\Http\Resources\SubsCriptionUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -136,6 +137,28 @@ class SubscriptionController extends Controller
             $dataUser = $dataUserRepo->find($this->getUserLogging());
             if (isset($dataUser->stripe_id)) {
                 $dataResponse = $dataUser->defaultCard();
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'not card data'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => 'ERROR'], 404);
+        }
+    }
+
+    public function getallSubscription()
+    {
+        try {
+            $dataUserRepo = new UserRepository(new User());
+            $dataUser = $dataUserRepo->all();
+            if ($dataUser->count() > 0) {
+                $filter = $dataUser->filter(function($item){
+                    return $item->details->type === '2';
+                });
+                $dataResponse = SubsCriptionUserResource::collection($filter);
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'not card data'];

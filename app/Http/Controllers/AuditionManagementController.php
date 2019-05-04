@@ -376,8 +376,8 @@ class AuditionManagementController extends Controller
     {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-            $element = $videoRepo->findbyparam('user_id', $request->performer);
-            $toData = $element->where('auditions_id', '=', $request->audition);
+            $toData = $videoRepo->findbyparam('slot_id', $request->slot_id);
+
             if ($toData->count() > 0) {
                 $dataResponse = ['data' => 'Video already saved'];
                 $code = 406;
@@ -387,6 +387,7 @@ class AuditionManagementController extends Controller
                     'auditions_id' => $request->audition,
                     'url' => $request->url,
                     'contributors_id' => $this->getUserLogging(),
+                    'slot_id'=>$request->slot_id,
                 ]);
                 if (isset($data->id)) {
                     $dataResponse = ['data' => 'Video saved'];

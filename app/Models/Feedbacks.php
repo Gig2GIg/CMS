@@ -13,6 +13,7 @@ class Feedbacks extends Model
         'evaluation',
         'callback',
         'work',
-        'favorite'
+        'favorite',
+        'slot_id'
     ];
 }

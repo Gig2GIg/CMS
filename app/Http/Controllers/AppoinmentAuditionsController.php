@@ -9,6 +9,7 @@ use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Resources\AppointmentDetailsUserResource;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
 use App\Models\Appointments;
@@ -122,6 +123,21 @@ class AppoinmentAuditionsController extends Controller
 
 
             $dataResponse = AppointmentResource::collection($data);
+            return response()->json(['data' => $dataResponse], 200);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
+    public function showCms(Request $request)
+    {
+        try {
+            $dataRepo = new UserSlotsRepository(new UserSlots());
+            $data = $dataRepo->findbyparam('auditions_id', $request->audition);
+
+
+            $dataResponse = AppointmentDetailsUserResource::collection($data);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
