@@ -22,18 +22,11 @@ class SkillSuggestionsController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
     public function getAll()
     {
         $data = new SkillSuggestionsRepository(new SkillSuggestion);
-        $count = count($data->all());
-        if ($count !== 0)
-        {
-            $responseData = SkillSuggestionsResource::collection($data->all());
-            return response()->json(['data' => $responseData], 200);
-        } else {
-            return response()->json(['data' => 'Record Not Found'], 404);
-        }
+        return SkillSuggestionsResource::collection($data->all());
     }
 
     public function store(SkillSuggestionsRequest $request)
@@ -45,7 +38,7 @@ class SkillSuggestionsController extends Controller
             ];
 
             $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion);
-          
+
             $skillSuggestionResult = $skillSuggestionRepo->create($skillSuggestionData);
 
             return response()->json(['data' => new SkillSuggestionsResource($skillSuggestionResult)], 201);
@@ -61,7 +54,7 @@ class SkillSuggestionsController extends Controller
                 $skillSuggestionData = [
                     'name' => $request->name
                 ];
-    
+
                 $skillSuggestionRepo = new SkillSuggestionsRepository(new SkillSuggestion());
 
                 $skillSuggestionResult =  $skillSuggestionRepo->find($request->id);

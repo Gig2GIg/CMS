@@ -1,5 +1,5 @@
 import * as types from '@/store/types';
-import Vue from 'vue'
+import Vue from 'vue';
 
 export default {
   [types.TOGGLE_SPINNER] (state) {
@@ -12,10 +12,6 @@ export default {
 
   [types.FETCH_PRODUCTION_TYPES_FAILURE] (state) {
     state.productionTypes = [];
-  },
-
-  [types.CREATE_PRODUCTION_TYPE] (state, productionType) {
-    state.productionTypes.push(productionType);
   },
 
   [types.UPDATE_PRODUCTION_TYPE] (state, productionType) {

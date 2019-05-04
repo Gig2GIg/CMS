@@ -15,6 +15,10 @@ export const FETCH_CONTRIBUTORS_FAILURE = 'Fetch Contributors failed';
 
 export const FETCH_PRODUCTION_TYPES_SUCCESS = 'Fetch Production Types successful';
 export const FETCH_PRODUCTION_TYPES_FAILURE = 'Fetch Production Types failed';
-export const CREATE_PRODUCTION_TYPE = 'Create Production Type';
 export const UPDATE_PRODUCTION_TYPE = 'Update Production Type';
 export const DELETE_PRODUCTION_TYPE = 'Delete Production Type';
+
+export const FETCH_SKILLS_SUCCESS = 'Fetch Skills successful';
+export const FETCH_SKILLS_FAILURE = 'Fetch Skills failed';
+export const UPDATE_SKILL = 'Update Skill';
+export const DELETE_SKILL = 'Delete Skill';
