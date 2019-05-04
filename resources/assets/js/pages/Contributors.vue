@@ -72,15 +72,15 @@
               </template>
 
               <!-- <template slot="detail" slot-scope="props">
-                <article class="media is-top">                 
-                  <div class="w-1/2 mx-4">                 
+                <article class="media is-top">
+                  <div class="w-1/2 mx-4">
                     <div class="content">
                       <p>
                         <strong>email:</strong>
                         {{ props.row.email }}
-                      </p>                                       
+                      </p>
                     </div>
-                  </div>                
+                  </div>
                 </article>
               </template>-->
               <template slot="empty">
@@ -134,15 +134,15 @@ export default {
     ]
   }),
   computed: {
-    //...mapState('clients', ['clients', 'isLoading']),
-    ...mapGetters("clients", ["search"]),
+    ...mapState('contributors', ['contributors', 'isLoading']),
+    ...mapGetters("contributors", ["search"]),
 
     filter: function() {
       return this.search(this.searchText);
     }
   },
   methods: {
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions("contributors", ["fetch"]),
 
     confirmSendPassword(contributor) {
       this.selectedContributor = contributor;
@@ -183,7 +183,7 @@ export default {
     // }
   },
   async created() {
-    await this.fetch();
+    await this.fetch(this.$route.params.id);
     this.loaded = true;
   }
 };

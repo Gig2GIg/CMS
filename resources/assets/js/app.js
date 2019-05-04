@@ -24,6 +24,17 @@ firebase.initializeApp({
   storageBucket: 'lending-lavish.appspot.com',
 });
 
+Array.prototype.search = function(needle) {
+  const match = item => Object.values(item).some(value => {
+    if (value && typeof value === 'object') {
+      return match(value);
+    }
+    return String(value).toLowerCase().indexOf(needle.toLowerCase()) !== -1;
+  });
+
+  return this.filter(item => match(item));
+};
+
 new Vue({
   router,
   store,

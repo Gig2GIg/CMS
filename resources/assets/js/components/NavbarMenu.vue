@@ -4,9 +4,9 @@
       <div>
         <button
           class="active:outline-none mr-6 px-3"
-          :disabled="isLoading"
-          @click="confirmBroadcast"
-        >Broadcast notification</button>
+          @click="confirmBroadcast">
+          Broadcast notification
+        </button>
       </div>
       <div class="navbar-item has-dropdown is-hoverable" :class="{ 'is-active': navbar }">
         <a class="navbar-link" @click.prevent="navbar = !navbar" v-text="user.name"/>

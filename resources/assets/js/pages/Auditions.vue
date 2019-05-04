@@ -10,18 +10,9 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>-->
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="clients.length">
+            <div class="columns" v-if="auditions.length">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -37,10 +28,10 @@
             </div>
 
             <b-table
-              :data="clients"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!clients.length"
+              :paginated="!!filter.length"
               :show-detail-icon="true"
               detail-key="id"
               detailed
@@ -77,8 +68,8 @@
               <template slot="detail" slot-scope="props">
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
-                    <div class="mb-4">                      
-                      <img class="w-full" :src="props.row.coverImage">
+                    <div class="mb-4">
+                      <img class="w-full" :src="props.row.cover">
                     </div>
                     <div class="content">
                       <p>
@@ -87,7 +78,7 @@
                       </p>
                       <p>
                         <strong>Location:</strong>
-                        {{ props.row.location }}
+                        {{ props.row.agency }}
                       </p>
                       <p>
                         <strong>Description:</strong>
@@ -99,23 +90,17 @@
                     <div class="content">
                       <p>
                         <strong>Audition Url:</strong>
-                        {{ props.row.auditionURL }}
+                        {{ props.row.url }}
                       </p>
-                      <div>
+                      <div v-if="props.row.dates.find(x => x.type === 'contract')">
                         <strong>Contract dates:</strong>
-                        <span
-                          class="flex mb-2"
-                          v-for="(item, index) in props.row.contractDates"
-                          :key="index"
-                        >{{item}}</span>
+                        <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'contract').from}}</span>
+                        <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'contract').to}}</span>
                       </div>
-                      <div>
+                      <div v-if="props.row.dates.find(x => x.type === 'rehearsal')">
                         <strong>Rehearsal dates:</strong>
-                        <span
-                          class="flex mb-2"
-                          v-for="(item, index) in props.row.contractDates"
-                          :key="index"
-                        >{{item}}</span>
+                        <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'rehearsal').from}}</span>
+                        <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'rehearsal').to}}</span>
                       </div>
                       <p>
                         <strong>Manage appointments:</strong>
@@ -123,17 +108,17 @@
                       </p>
                       <p>
                         <strong>Union status:</strong>
-                        {{ props.row.unionStatus }}
+                        {{ props.row.union.toUpperCase() }}
                       </p>
                       <p>
                         <strong>Contract Type:</strong>
-                        {{ props.row.contractType }}
+                        {{ props.row.contract }}
                       </p>
                       <div>
                         <strong>Production type:</strong>
                         <span
                           class="flex mb-2"
-                          v-for="(item, index) in props.row.productionType"
+                          v-for="(item, index) in props.row.production"
                           :key="index"
                         >{{item}}</span>
                       </div>
@@ -156,7 +141,7 @@
           </div>
         </div>
       </section>
-    </transition>    
+    </transition>
   </div>
 </template>
 
@@ -170,63 +155,20 @@ export default {
     perPage: 10,
     searchText: "",
     selectedAudition: {},
-    clients: [
-      {
-        id: "au-01",
-        title: "Audition test",
-        description:
-          "<p>Now in its third hit year on Broadway, ALADDIN is “Exactly what you wish for!” –NBC-TV</p><br><p>It currently plays 8 times a week at the historic New Amsterdam Theatre on 42nd Street in the heart of Times Square.</p>",
-        auditionURL: "audition.test.co",
-        date: "2019-06-01",
-        time: "4 h",
-        location: "Casting House, Inc.",
-        auditionURL: "auditiontest-gig2gig.co",
-        contractDates: ["2019-06-01", "2019-06-02"],
-        rehearsalDates: ["2019-06-01", "2019-06-02"],
-        unionStatus: "UNION",
-        contractType: "paid",
-        productionType: ["theater", "tv & video", "film"],
-        manageAppointments: "Lorem ipsum",
-        coverImage:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg"
-      }
-    ]
   }),
   computed: {
-    //...mapState('clients', ['clients', 'isLoading']),
-    ...mapGetters("clients", ["search"]),
+    ...mapState('auditions', ['auditions', 'isLoading']),
+    ...mapGetters('auditions', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     }
   },
   methods: {
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('auditions', ['fetch', 'destroy']),
 
-    confirmBroadcast() {
-      this.$dialog.prompt({
-        message: "Type a message",
-        inputAttrs: {
-          placeholder: "Message",
-          maxlenght: 2000
-        },
-        onConfirm: value => this.sendBroadcast(value)
-      });
-    },
-
-    confirmNotification(client) {
-      this.$dialog.prompt({
-        message: "Type a message",
-        inputAttrs: {
-          placeholder: "Message",
-          maxlenght: 2000
-        },
-        onConfirm: value => this.sendNotification(client, value)
-      });
-    },
-
-    confirmDelete(client) {
-      this.selectedAudition = client;
+    confirmDelete(audition) {
+      this.selectedAudition = audition;
 
       this.$dialog.confirm({
         message: `Are you sure you want to delete "${
@@ -235,9 +177,10 @@ export default {
         confirmText: "Yes, I'm sure",
         type: "is-info",
         hasIcon: true,
-        onConfirm: this.deleteClient
+        onConfirm: this.deleteAudition
       });
     },
+
     showPerformers() {
       this.selectedFile = {};
       this.selectedCategory = {
@@ -246,15 +189,8 @@ export default {
       };
       this.isModalActive = true;
     },
-    async sendBroadcast(message) {
-      await this.broadcast(message);
-    },
 
-    async sendNotification(client, message) {
-      await this.notify({ client, message });
-    },
-
-    async deleteClient() {
+    async deleteAudition() {
       await this.destroy(this.selectedAudition);
     }
   },
