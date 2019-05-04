@@ -77,10 +77,6 @@
                         {{ props.row.time }}
                       </p>
                       <p>
-                        <strong>Location:</strong>
-                        {{ props.row.agency }}
-                      </p>
-                      <p>
                         <strong>Description:</strong>
                         <span v-html=" props.row.description"></span>
                       </p>
@@ -102,10 +98,6 @@
                         <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'rehearsal').from}}</span>
                         <span class="flex mb-2">{{props.row.dates.find(x => x.type === 'rehearsal').to}}</span>
                       </div>
-                      <p>
-                        <strong>Manage appointments:</strong>
-                        {{ props.row.manageAppointments }}
-                      </p>
                       <p>
                         <strong>Union status:</strong>
                         {{ props.row.union.toUpperCase() }}
@@ -181,19 +173,11 @@ export default {
       });
     },
 
-    showPerformers() {
-      this.selectedFile = {};
-      this.selectedCategory = {
-        name: null,
-        url_img: null
-      };
-      this.isModalActive = true;
-    },
-
     async deleteAudition() {
       await this.destroy(this.selectedAudition);
     }
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

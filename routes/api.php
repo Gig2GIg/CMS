@@ -253,15 +253,17 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
 
     Route::prefix('cms')->group(function() {
         // AUDITIONS
+        Route::get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
         Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
-        Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
-        Route::get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-        Route::get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
+        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
+        Route::delete('/contributors/{id}','AuditionsController@deleteContributor');
+
+        Route::post('/remember', ['uses' => 'UserController@sendPassword']);
 
         //poner aqui endpoint
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
-        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
     });
 });

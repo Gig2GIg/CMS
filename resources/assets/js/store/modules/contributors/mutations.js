@@ -12,4 +12,9 @@ export default {
   [types.FETCH_CONTRIBUTORS_FAILURE] (state) {
     state.contributors = [];
   },
+
+  [types.DELETE_CONTRIBUTOR] (state, contributor) {
+    let index = state.contributors.indexOf(contributor);
+    state.contributors.splice(index, 1);
+  },
 };
