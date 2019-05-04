@@ -34,3 +34,6 @@ export const CREATE_VENDOR = 'Create Vendor';
 export const UPDATE_VENDOR = 'Update Vendor';
 export const DELETE_VENDOR = 'Delete Vendor';
 
+export const FETCH_SUBSCRIPTIONS_SUCCESS = 'Fetch Subscriptions successful';
+export const FETCH_SUBSCRIPTIONS_FAILURE = 'Fetch Subscriptions failed';
+export const UPDATE_SUBSCRIPTION = 'Update Subscription';

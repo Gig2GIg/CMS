@@ -73,7 +73,16 @@ class SubscriptionController extends Controller
             'pricing_type' => $request->plan,
         ];
         return $stripe->changeSubscription($data);
+    }
 
+    public function updateSubscriptionForUser(Request $request)
+    {
+        $stripe = new StripeManagementController();
+        $data = [
+            'id' => $request->user['id'],
+            'pricing_type' => $request->plan,
+        ];
+        return $stripe->changeSubscription($data);
     }
 
     public function cancelSubscription()
@@ -154,17 +163,11 @@ class SubscriptionController extends Controller
         try {
             $dataUserRepo = new UserRepository(new User());
             $dataUser = $dataUserRepo->all();
-            if ($dataUser->count() > 0) {
-                $filter = $dataUser->filter(function($item){
-                    return $item->details->type === '2';
-                });
-                $dataResponse = SubsCriptionUserResource::collection($filter);
-                $code = 200;
-            } else {
-                $dataResponse = ['data' => 'not card data'];
-                $code = 404;
-            }
-            return response()->json($dataResponse, $code);
+            $filter = $dataUser->filter(function($item){
+                return $item->details->type === '2';
+            });
+
+            return SubsCriptionUserResource::collection($filter);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['error' => 'ERROR'], 404);
