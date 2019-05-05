@@ -15,7 +15,7 @@ export default {
     }
   },
 
-  async sendPassword({ dispatch, commit }, contributor) {
+  async sendPassword({ dispatch }, contributor) {
     try {
       dispatch('toggleSpinner');
 

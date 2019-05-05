@@ -14,6 +14,10 @@ export const FETCH_CONTRIBUTORS_SUCCESS = 'Fetch Contributors successful';
 export const FETCH_CONTRIBUTORS_FAILURE = 'Fetch Contributors failed';
 export const DELETE_CONTRIBUTOR = 'Delete Contributor';
 
+export const FETCH_PERFORMERS_SUCCESS = 'Fetch Performers successful';
+export const FETCH_PERFORMERS_FAILURE = 'Fetch Performers failed';
+export const DELETE_PERFORMER = 'Delete Performer';
+
 export const FETCH_PRODUCTION_TYPES_SUCCESS = 'Fetch Production Types successful';
 export const FETCH_PRODUCTION_TYPES_FAILURE = 'Fetch Production Types failed';
 export const UPDATE_PRODUCTION_TYPE = 'Update Production Type';

@@ -97,7 +97,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("contributors", ["fetch", 'sendPassword', 'destroy']),
+    ...mapActions("contributors", ['fetch', 'sendPassword', 'destroy']),
 
     confirmSendPassword(contributor) {
       this.selectedContributor = contributor;

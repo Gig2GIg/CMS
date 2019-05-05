@@ -258,6 +258,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
         Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
         Route::delete('/contributors/{id}','AuditionsController@deleteContributor');
+        Route::delete('/slots/{id}','AppoinmentAuditionsController@deleteUserSlot');
 
         Route::post('/remember', ['uses' => 'UserController@sendPassword']);
 

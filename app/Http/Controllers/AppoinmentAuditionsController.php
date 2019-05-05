@@ -145,6 +145,15 @@ class AppoinmentAuditionsController extends Controller
         }
     }
 
+    public function deleteUserSlot($id)
+    {
+        UserSlots::find($id)->delete();
+
+        return response()->json([
+            'status' => 'Success',
+        ]);
+    }
+
     public function showListNotWalk(Request $request)
     {
         try {
