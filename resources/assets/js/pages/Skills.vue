@@ -138,7 +138,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('skills', ['fetch', 'update', 'destroy']),
+    ...mapActions('skills', ['fetch', 'store', 'update', 'destroy']),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(skill) {

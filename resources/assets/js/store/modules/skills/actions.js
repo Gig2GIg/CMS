@@ -20,7 +20,7 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      const { data } = await axios.post('/api/cms/skill-suggestions/create', skill);
+      const { data: { data } } = await axios.post('/api/cms/skill-suggestions/create', skill);
       commit(types.CREATE_SKILL, data);
 
       dispatch('toast/showMessage', 'Skill created.', { root: true });
