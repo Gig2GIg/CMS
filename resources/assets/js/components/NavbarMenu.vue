@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     ...mapActions({ signout: "auth/logout" }),
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('auth', ['broadcast']),
 
     confirmBroadcast() {
       this.$dialog.prompt({
@@ -55,9 +55,11 @@ export default {
         onConfirm: value => this.sendBroadcast(value)
       });
     },
+
     async sendBroadcast(message) {
       await this.broadcast(message);
     },
+
     async logout() {
       // Log out the user.
       await this.signout();
