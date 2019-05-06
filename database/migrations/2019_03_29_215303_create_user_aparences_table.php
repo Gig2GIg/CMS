@@ -15,8 +15,8 @@ class CreateUserAparencesTable extends Migration
     {
         Schema::create('user_aparences', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('height');
-            $table->integer('weight');
+            $table->double('height',7,2);
+            $table->integer('weight',7,2);
             $table->string('hair');
             $table->string('eyes');
             $table->string('race');
