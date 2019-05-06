@@ -21,6 +21,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/logout', ['uses' => 'AuthController@logout']);
     $router->post('/remember', ['uses' => 'UserController@sendPassword']);
+    $router->post('/remember/admin', ['uses' => 'UserController@sendPasswordAdmin']);
     $router->post('/users/create',['uses'=>'UserController@store']);
 
 });

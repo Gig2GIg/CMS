@@ -16,6 +16,7 @@ use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
+use App\Models\Admin;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
@@ -34,7 +35,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword','sendPasswordAdmin']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
 
@@ -381,6 +382,40 @@ class UserController extends Controller
 
         } catch (NotFoundException $e) {
             return response()->json(['data' => "email not found"], 404);
+        }
+
+
+    }
+
+    public function sendPasswordAdmin(Request $request)
+    {
+        $dataResponse = null;
+        $code = null;
+        try {
+
+            $response = new SendMail();
+            $user = new Admin();
+            $data = $user->where('email', $request->email)->first();
+            if (isset($data->id)) {
+                $faker = \Faker\Factory::create();
+                $password = $faker->word . '' . $faker->numberBetween(2345, 4565);
+                if ($data->update(['password' => Hash::make($password)])) {
+                    $response->send($password, $data->email);
+                    $dataResponse = ['data' => "email send"];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => "email not send"];
+                    $code = 406;
+                }
+            } else {
+                $dataResponse = ['data' => "email not found"];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e);
+            return response()->json(['data' => "email not found"], 404);
+
         }
 
 

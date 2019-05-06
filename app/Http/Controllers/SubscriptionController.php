@@ -56,24 +56,33 @@ class SubscriptionController extends Controller
 
     public function createSubscription(Request $request)
     {
-        $stripe = new StripeManagementController();
-        $data = [
-            'id' => $this->getUserLogging(),
-            'pricing_type' => $request->plan,
-            'stripeToken' => $request->token_stripe
-        ];
-        return $stripe->setSubscription($data);
+        try {
+            $stripe = new StripeManagementController();
+            $data = [
+                'id' => $this->getUserLogging(),
+                'pricing_type' => $request->plan,
+                'stripeToken' => $request->token_stripe
+            ];
+            return $stripe->setSubscription($data);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
     }
 
     public function updateSubscription(Request $request)
     {
-        $stripe = new StripeManagementController();
-        $data = [
-            'id' => $this->getUserLogging(),
-            'pricing_type' => $request->plan,
-        ];
-        return $stripe->changeSubscription($data);
-
+        try {
+            $stripe = new StripeManagementController();
+            $data = [
+                'id' => $this->getUserLogging(),
+                'pricing_type' => $request->plan,
+            ];
+            return $stripe->changeSubscription($data);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
     }
 
     public function cancelSubscription()
@@ -155,7 +164,7 @@ class SubscriptionController extends Controller
             $dataUserRepo = new UserRepository(new User());
             $dataUser = $dataUserRepo->all();
             if ($dataUser->count() > 0) {
-                $filter = $dataUser->filter(function($item){
+                $filter = $dataUser->filter(function ($item) {
                     return $item->details->type === '2';
                 });
                 $dataResponse = SubsCriptionUserResource::collection($filter);

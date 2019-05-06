@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Admin;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
@@ -198,6 +199,17 @@ class UserControllerTest extends TestCase
         $response = $this->json('POST','api/remember',[
             'email'=>$user->email
         ])->assertStatus(200);
+    }
+
+    public function test_send_email_admin_200(){
+        $user = factory(Admin::class)->create([
+            'email'=>'alphyon21@gmail.com'
+        ]);
+
+        $response = $this->json('POST','api/remember/admin',[
+            'email'=>$user->email
+        ]);
+        $response->assertStatus(200);
     }
 
     public function test_send_email_404(){
