@@ -217,6 +217,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         });
         //marketplace
         $router->get('/marketplaces', 'MarketplaceController@getAll')->where('id', '[0-9]+');
+        $router->post('/marketplaces/create', 'MarketplaceController@store');
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+');
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+');
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+');
@@ -253,14 +254,18 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
 
     Route::prefix('cms')->group(function() {
         // AUDITIONS
+        Route::get('/auditions/show/{id}',['uses'=>'AuditionsController@get']);
         Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
-        Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
-        Route::get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-        Route::get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
+        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
+        Route::delete('/contributors/{id}','AuditionsController@deleteContributor');
+        Route::delete('/slots/{id}','AppoinmentAuditionsController@deleteUserSlot');
+
+        Route::post('/remember', ['uses' => 'UserController@sendPassword']);
 
         //poner aqui endpoint
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
-        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
+        Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
     });
 });

@@ -33,13 +33,15 @@ class AppointmentDetailsUserResource extends JsonResource
             $rolData = $rol->find($this->roles_id);
         }
         $videosRepo = new AuditionVideosRepository(new AuditionVideos());
-        $videoData = $videosRepo->findbyparam('slot_id',$this->slots_id)->first();
+        $videoData = $videosRepo->findbyparam('user_id',$this->user_id)->first();
         $feedbackRepo = new FeedbackRepository(new Feedbacks());
-        $feedbackData = $feedbackRepo->findbyparam('slot_id',$this->slots_id)->first();
+        $feedbackData = $feedbackRepo->findbyparam('user_id',$this->user_id)->first();
 
 
         return [
+            'id' => $this->id,
             'user_id' => $this->user_id,
+            'email' => $userData->email,
             'rol'=>$this->roles_id,
             'rol_name' => $rolData->name ?? null,
             'video'=>$videoData->url ?? null,

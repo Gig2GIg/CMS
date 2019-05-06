@@ -10,15 +10,6 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="performers.length">
@@ -37,10 +28,10 @@
             </div>
 
             <b-table
-              :data="performers"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!performers.length"
+              :paginated="!!filter.length"
               :show-detail-icon="true"
               detail-key="id"
               detailed
@@ -48,13 +39,13 @@
             >
               <template slot-scope="props">
                 <b-table-column
-                  field="title"
+                  field="name"
                   label="Performer"
                   width="250"
                   sortable
                 >{{ props.row.name }}</b-table-column>
 
-                <b-table-column field="date" label="City" sortable>{{ props.row.city }}</b-table-column>
+                <b-table-column field="user_city" label="City" sortable>{{ props.row.user_city }}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
@@ -63,9 +54,6 @@
                     </button>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmSendPassword(props.row)">Send password</a>
-                    </b-dropdown-item>
-                     <b-dropdown-item has-link>
-                       <a @click.prevent.stop="confirmNotification(props.row)">Send notification</a>
                     </b-dropdown-item>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
@@ -78,45 +66,46 @@
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
                     <div class="mb-4">
-                      <img class="w-24 h-24" :src="props.row.avatar">
+                      <img class="w-24 h-24" :src="props.row.image">
                     </div>
                     <div class="content">
                       <p>
                         <strong>City:</strong>
-                        {{ props.row.city }}
+                        {{ props.row.user_city }}
                       </p>
                       <div class="border-grey-light border-t mb-4"></div>
                       <div>
-                        <h4>Media files</h4>    
-                         <a
-                          class="block mb"
-                          v-for="(item, index) in props.row.files"
-                          :href="item.url"
-                          :key="index"
-                          download
-                        >{{item.name}}</a>
+                        <h4>Video</h4>
+                        <video width="320" height="240" controls v-if="props.row.video">
+                          <source :src="props.row.video" type="video/mp4">
+                          Your browser does not support the video tag.
+                        </video>
+                        <p v-else>No video.</p>
                       </div>
                     </div>
                   </div>
                   <div class="w-1/2 mx-4">
                     <div class="content">
                       <h3>Feedback</h3>
-                      <p class="flex items-center">
-                        <strong>Instant Feedback:</strong>
-                        <img src="/storage/feedback/i2.png" class="w-6 h-6 mx-2 inline" alt>
-                      </p>
-                      <p>
-                        <strong>Call Back:</strong>
-                        {{props.row.callBack === '0' ? 'No' : 'Yes'}}
-                      </p>
-                      <p>
-                        <strong>Work On:</strong>
-                        {{ props.row.workOn }}
-                      </p>
-                      <p>
-                        <strong>Comment:</strong>
-                        <span v-html=" props.row.comment_feedback"></span>
-                      </p>
+                      <div v-if="props.row.feedback">
+                        <p class="flex items-center">
+                          <strong>Instant Feedback:</strong>
+                          <img src="/storage/feedback/i2.png" class="w-6 h-6 mx-2 inline" alt>
+                        </p>
+                        <p>
+                          <strong>Call Back:</strong>
+                          {{props.row.feedback.callBack === '0' ? 'No' : 'Yes'}}
+                        </p>
+                        <p>
+                          <strong>Work On:</strong>
+                          {{ props.row.feedback.work }}
+                        </p>
+                        <p>
+                          <strong>Comment:</strong>
+                          <span v-html=" props.row.comment_feedback"></span>
+                        </p>
+                      </div>
+                      <p v-else>No feedback.</p>
                     </div>
                   </div>
                 </article>
@@ -137,63 +126,6 @@
         </div>
       </section>
     </transition>
-    <!-- <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedCategory.id ? updateCategory() : createCategory()">
-        <div class="modal-card">
-          <header class="modal-card-head">
-            <p class="modal-card-title">{{ modalTitle }} Category</p>
-          </header>
-
-          <section class="modal-card-body">
-            <b-field
-              label="Name"
-              :type="{'is-danger': errors.has('name')}"
-              :message="errors.first('name')"
-            >
-              <b-input
-                v-model="selectedCategory.name"
-                v-validate="'required|max:255'"
-                name="name"
-                autofocus
-              />
-            </b-field>
-
-            <label class="label">Image</label>
-
-            <div class="columns is-vcentered pb-2">
-              <p class="image is-64x64">
-                <img :src="selectedFile.preview ? selectedFile.preview : (selectedCategory.url_img ? selectedCategory.url_img : 'test.png')">
-              </p>
-
-              <b-field
-                class="column file"
-                :type="{'is-danger': errors.has('url_img')}"
-                :message="errors.first('url_img')"
-              >
-                <b-upload
-                  v-model="selectedFile.file"
-                  accept=".png,.jpg,.jpeg"
-                  :required="!selectedCategory.id"
-                  @input="fileChanged"
-                >
-                  <a class="button is-primary">
-                    <b-icon icon="upload"></b-icon>
-                    <span>Click to upload</span>
-                  </a>
-                </b-upload>
-                <span class="file-name" v-if="selectedFile.file">
-                  {{ selectedFile.file.name }}
-                </span>
-              </b-field>
-            </div>
-          </section>
-          <footer class="modal-card-foot">
-            <button class="button" type="button" :disabled="isLoading" @click="isModalActive = false">Close</button>
-            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} category</button>
-          </footer>
-        </div>
-      </form>
-    </b-modal>-->
   </div>
 </template>
 
@@ -206,96 +138,57 @@ export default {
     loaded: false,
     perPage: 10,
     searchText: "",
-    selectedClient: {},
+    selectedPerformer: {},
     isModalActive: false,
-    performers: [
-      {
-        id: "p01",
-        name: "Greg Smith",
-        avatar:
-          "https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg",
-        city: "New York, NY",
-        instantFeedback: "1",
-        comment_feedback: "<p>We love your energy and enthusiasm!!</p>",
-        callBack: "0",
-        workOn: "Vocals",
-        photo:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg",
-        files:[
-          {name:'pdf example', url:'/storage/example.pdf'},
-          {name: 'img example', url:'/storage/logo.png'},          
-        ]
-      },
-      {
-        id: "p02",
-        name: "David Doe",
-        avatar:
-          "https://cactusthemes.com/blog/wp-content/uploads/2018/01/tt_avatar_small.jpg",
-        city: "New York, NY",
-        instantFeedback: "1",
-        comment_feedback: "<p>We love your energy and enthusiasm!!</p>",
-        callBack: "0",
-        workOn: "Vocals",
-        photo:
-          "https://cdn.evbstatic.com/s3-build/perm_001/7e2eb7/django/images/homepage/no-text/bg-desktop-generationdiy.jpg"
-      }
-    ]
   }),
   computed: {
-    //...mapState('clients', ['clients', 'isLoading']),
-    ...mapGetters("clients", ["search"]),
+    ...mapState('performers', ['performers', 'isLoading']),
+    ...mapGetters('performers', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     }
   },
   methods: {
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('performers', ['fetch', 'sendPassword', 'destroy']),
 
-    confirmBroadcast() {
-      this.$dialog.prompt({
-        message: "Type a message",
-        inputAttrs: {
-          placeholder: "Message",
-          maxlenght: 2000
-        },
-        onConfirm: value => this.sendBroadcast(value)
+    confirmSendPassword(performer) {
+      this.selectedPerformer = performer;
+      this.$dialog.confirm({
+        message: `Are you sure you want to send a forgot password "${
+          this.selectedPerformer.name
+        }"?`,
+        confirmText: "Yes, I'm sure",
+        type: "is-success",
+        hasIcon: true,
+        onConfirm: this.sendNewPassword
       });
     },
 
-    confirmNotification(client) {
-      this.$dialog.prompt({
-        message: 'Type a message',
-        inputAttrs: {
-          placeholder: 'Message',
-          maxlenght: 2000
-        },
-        onConfirm: (value) => this.sendNotification(client, value),
+    confirmDelete(performer) {
+      this.selectedPerformer = performer;
+
+      this.$dialog.confirm({
+        message: `Are you sure you want to delete "${
+          this.selectedPerformer.name
+        }"?`,
+        confirmText: "Yes, I'm sure",
+        type: "is-info",
+        hasIcon: true,
+        onConfirm: this.deletePerformer
       });
     },
 
-    showPerformers() {
-      this.selectedFile = {};
-      this.selectedCategory = {
-        name: null,
-        url_img: null
-      };
-      this.isModalActive = true;
-    },
-    async sendBroadcast(message) {
-      await this.broadcast(message);
+    async sendNewPassword() {
+      await this.sendPassword(this.selectedPerformer);
     },
 
-    async sendNotification(client, message) {
-      await this.notify({ client, message });
-    },
-
-    async deleteClient() {
-      await this.destroy(this.selectedClient);
+    async deletePerformer() {
+      await this.destroy(this.selectedPerformer);
     }
   },
   async created() {
-    await this.fetch();
+    await this.fetch(this.$route.params.id);
     this.loaded = true;
   }
 };

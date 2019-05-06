@@ -3,25 +3,16 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">{{ $options.name }}</a>
+          <a href="#" aria-current="page">Production Types</a>
         </li>
       </ul>
     </nav>
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>-->
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="production_types.length">
+            <div class="columns" v-if="productionTypes.length">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -37,13 +28,10 @@
             </div>
 
             <b-table
-              :data="production_types"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!production_types.length"
-              :show-detail-icon="true"
-              detail-key="id"
-              detailed
+              :paginated="!!filter.length"
               hoverable
             >
               <template slot-scope="props">
@@ -65,22 +53,6 @@
                 </b-table-column>
               </template>
 
-              <template slot="detail" slot-scope="props">
-                <article class="media pl-4 is-top">
-                  <div class="w-1/2 mx-4">
-                    <div class="content">
-                      <p>
-                        <strong>Description:</strong>
-                        <span v-html=" props.row.description"></span>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="w-1/2 mx-4">
-                    <div class="content"></div>
-                  </div>
-                </article>
-              </template>
-
               <template slot="empty">
                 <section class="section">
                   <div class="content has-text-grey has-text-centered">
@@ -97,10 +69,10 @@
       </section>
     </transition>
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedCategory.id ? updateCategory() : createCategory()">
+      <form @submit.prevent="selectedProductionType.id ? updateProductionType() : createType()">
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ modalTitle }} Category</p>
+            <p class="modal-card-title">{{ modalTitle }} Type</p>
           </header>
 
           <section class="modal-card-body">
@@ -110,23 +82,9 @@
               :message="errors.first('name')"
             >
               <b-input
-                v-model="selectedCategory.name"
+                v-model="selectedProductionType.name"
                 v-validate="'required|max:255'"
                 name="name"
-                autofocus
-              />
-            </b-field>
-
-            <b-field
-              label="Description"
-              :type="{'is-info': errors.has('description')}"
-              :message="errors.first('description')"
-            >
-              <b-input
-                v-model="selectedCategory.description"
-                v-validate="'required'"
-                type="textarea"
-                name="description"
                 autofocus
               />
             </b-field>
@@ -138,7 +96,7 @@
               :disabled="isLoading"
               @click="isModalActive = false"
             >Close</button>
-            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} category</button>
+            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} Production Type</button>
           </footer>
         </div>
       </form>
@@ -155,88 +113,50 @@ export default {
     loaded: false,
     perPage: 10,
     isModalActive: false,
-    selectedCategory: {},
+    selectedProductionType: {},
     searchText: "",
-    selectedAudition: {},
-    production_types: [
-      {
-        id: "1",
-        name: "Theater",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "2",
-        name: "FILM",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "3",
-        name: "TV & VIDEO",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "4",
-        name: "COMMERCIALS",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "5",
-        name: "MODELING",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "6",
-        name: "VOICEOVER",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      }
-    ]
   }),
   computed: {
-    //...mapState('categories', ['categories', 'isLoading']),
-    ...mapGetters("categories", ["search"]),
+    ...mapState('productionTypes', ['productionTypes', 'isLoading']),
+    ...mapGetters('productionTypes', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     },
+
     modalTitle: function() {
-      return this.selectedCategory.id ? "Update" : "Create";
+      return this.selectedProductionType.id ? "Update" : "Create";
     }
   },
   methods: {
-    ...mapActions("categories", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('productionTypes', ['fetch', 'update', 'destroy']),
+    ...mapActions('toast', ['showError']),
 
-    confirmDelete(category) {
-      this.selectedCategory = category;
+    confirmDelete(productionType) {
+      this.selectedProductionType = productionType;
       this.$dialog.confirm({
-        message: `Are you sure you want to delete "${this.selectedCategory.name}"?`,
+        message: `Are you sure you want to delete "${this.selectedProductionType.name}"?`,
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
-        onConfirm: this.deleteCategory,
+        onConfirm: this.deleteProductionType,
       });
     },
 
-    showUpdateModal(category) {
-      this.selectedCategory = Object.assign({}, category);
+    showUpdateModal(productionType) {
+      this.selectedProductionType = Object.assign({}, productionType);
       this.isModalActive = true;
     },
-    async updateCategory() {
+
+    async updateProductionType() {
       try {
         let valid = await this.$validator.validateAll();
         if (!valid) {
           this.showError("Please check the fields.");
           return;
         }
-        // await this.update({
-        //   category: this.selectedCategory,
-        //   fileData: this.selectedFile
-        // });
+
+        await this.update(this.selectedProductionType);
 
         this.isModalActive = false;
       } catch (e) {
@@ -244,10 +164,11 @@ export default {
       }
     },
 
-    async deleteCategory() {
-      await this.destroy(this.selectedAudition);
+    async deleteProductionType() {
+      await this.destroy(this.selectedProductionType);
     }
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

@@ -19,13 +19,11 @@ class SubsCriptionUserResource extends JsonResource
     public function toArray($request)
     {
         $data = DB::table('subscriptions')->where('user_id', $this->id)->first();
-        $plan = new StripeManagementController();
 
         return [
-          'name'=>sprintf('%s %s', $this->details->first_name, $this->details->last_name),
-            'plan' =>$this->details->subscription ==1  ? 'FREE': 'PAID',
-            'subscription'=>$this->details->subscription !== 1? $data:null//$this->subscriptions()
-
+            'user' => $this->details,
+            'plan' => $this->details->subscription,
+            'subscription' => $this->details->subscription !== 1 ? $data : null,
         ];
     }
 }

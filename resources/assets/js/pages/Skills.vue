@@ -10,18 +10,9 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>-->
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="production_types.length">
+            <div class="columns" v-if="skills.length">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -37,14 +28,10 @@
             </div>
 
             <b-table
-              :data="production_types"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!production_types.length"
-              :show-detail-icon="true"
-              detail-key="id"
-              detailed
-              hoverable
+              :paginated="!!filter.length"
             >
               <template slot-scope="props">
                 <b-table-column field="name" label="Name" width="250" sortable>{{ props.row.name }}</b-table-column>
@@ -65,22 +52,6 @@
                 </b-table-column>
               </template>
 
-              <template slot="detail" slot-scope="props">
-                <article class="media pl-4 is-top">
-                  <div class="w-1/2 mx-4">
-                    <div class="content">
-                      <p>
-                        <strong>Description:</strong>
-                        <span v-html=" props.row.description"></span>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="w-1/2 mx-4">
-                    <div class="content"></div>
-                  </div>
-                </article>
-              </template>
-
               <template slot="empty">
                 <section class="section">
                   <div class="content has-text-grey has-text-centered">
@@ -97,7 +68,7 @@
       </section>
     </transition>
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedCategory.id ? updateCategory() : createCategory()">
+      <form @submit.prevent="selectedSkill.id ? updateSkill() : createCategory()">
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{{ modalTitle }} Category</p>
@@ -110,23 +81,9 @@
               :message="errors.first('name')"
             >
               <b-input
-                v-model="selectedCategory.name"
+                v-model="selectedSkill.name"
                 v-validate="'required|max:255'"
                 name="name"
-                autofocus
-              />
-            </b-field>
-
-            <b-field
-              label="Description"
-              :type="{'is-info': errors.has('description')}"
-              :message="errors.first('description')"
-            >
-              <b-input
-                v-model="selectedCategory.description"
-                v-validate="'required'"
-                type="textarea"
-                name="description"
                 autofocus
               />
             </b-field>
@@ -138,7 +95,7 @@
               :disabled="isLoading"
               @click="isModalActive = false"
             >Close</button>
-            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} category</button>
+            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} skill</button>
           </footer>
         </div>
       </form>
@@ -150,93 +107,55 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  name: "ProductionTypes",
+  name: "Skills",
   data: () => ({
     loaded: false,
     perPage: 10,
     isModalActive: false,
-    selectedCategory: {},
+    selectedSkill: {},
     searchText: "",
-    selectedAudition: {},
-    production_types: [
-      {
-        id: "1",
-        name: "Aerobics",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "2",
-        name: "Ballet",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "3",
-        name: "Spanish",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "4",
-        name: "Salsa",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "5",
-        name: "Impersonations",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "6",
-        name: "Puppetry",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      }
-    ]
   }),
   computed: {
-    //...mapState('categories', ['categories', 'isLoading']),
-    ...mapGetters("categories", ["search"]),
+    ...mapState('skills', ['skills', 'isLoading']),
+    ...mapGetters('skills', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     },
+
     modalTitle: function() {
-      return this.selectedCategory.id ? "Update" : "Create";
+      return this.selectedSkill.id ? "Update" : "Create";
     }
   },
   methods: {
-    ...mapActions("categories", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('skills', ['fetch', 'update', 'destroy']),
+    ...mapActions('toast', ['showError']),
 
-    confirmDelete(category) {
-      this.selectedCategory = category;
+    confirmDelete(skill) {
+      this.selectedSkill = skill;
       this.$dialog.confirm({
-        message: `Are you sure you want to delete "${this.selectedCategory.name}"?`,
+        message: `Are you sure you want to delete "${this.selectedSkill.name}"?`,
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
-        onConfirm: this.deleteCategory,
+        onConfirm: this.deleteSkill,
       });
     },
 
-    showUpdateModal(category) {
-      this.selectedCategory = Object.assign({}, category);
+    showUpdateModal(skill) {
+      this.selectedSkill = Object.assign({}, skill);
       this.isModalActive = true;
     },
-    async updateCategory() {
+
+    async updateSkill() {
       try {
         let valid = await this.$validator.validateAll();
         if (!valid) {
           this.showError("Please check the fields.");
           return;
         }
-        // await this.update({
-        //   category: this.selectedCategory,
-        //   fileData: this.selectedFile
-        // });
+
+        await this.update(this.selectedSkill);
 
         this.isModalActive = false;
       } catch (e) {
@@ -244,10 +163,11 @@ export default {
       }
     },
 
-    async deleteCategory() {
-      await this.destroy(this.selectedAudition);
+    async deleteSkill() {
+      await this.destroy(this.selectedSkill);
     }
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

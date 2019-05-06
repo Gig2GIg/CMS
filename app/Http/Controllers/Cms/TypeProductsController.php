@@ -22,18 +22,12 @@ class TypeProductsController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
     public function getAll()
     {
         $data = new TypeProductsRepository(new TypeProduct);
         $count = count($data->all());
-        if ($count !== 0)
-        {
-            $responseData = TypeProductsResource::collection($data->all());
-            return response()->json(['data' => $responseData], 200);
-        } else {
-            return response()->json(['data' => 'Record Not Found'], 404);
-        }
+        return TypeProductsResource::collection($data->all());
     }
 
     public function store(TypeProductsRequest $request)
@@ -45,7 +39,7 @@ class TypeProductsController extends Controller
             ];
 
             $typeProductRepo = new TypeProductsRepository(new TypeProduct);
-          
+
             $typeProductResult = $typeProductRepo->create($typeProductData);
 
             return response()->json(['data' => new TypeProductsResource($typeProductResult)], 201);
@@ -61,7 +55,7 @@ class TypeProductsController extends Controller
                 $typeProductData = [
                     'name' => $request->name
                 ];
-    
+
                 $typeProductRepo= new TypeProductsRepository(new TypeProduct());
 
                 $typeProductResult =  $typeProductRepo->find($request->id);
