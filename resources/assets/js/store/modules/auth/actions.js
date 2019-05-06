@@ -52,27 +52,15 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      await axios.post('/api/admin/password/email', email);
-      dispatch('toast/showMessage', 'Email sent!', { root: true });
+      await axios.post('/api/remember/admin', email);
+      dispatch('toast/showMessage', 'Password sent!', { root: true });
 
       return true;
     } catch (e) {
-      throw e;
-    } finally {
-      dispatch('toggleSpinner');
-    }
-  },
+      const error = e.response.data.data;
+      dispatch('toast/showError', error, { root: true });
 
-  async reset({ dispatch }, credentials) {
-    try {
-      dispatch('toggleSpinner');
-
-      await axios.post('/api/admin/password/reset', credentials);
-      dispatch('toast/showMessage', 'Password changed!', { root: true });
-
-      return true;
-    } catch (e) {
-      throw e;
+      return false;
     } finally {
       dispatch('toggleSpinner');
     }
