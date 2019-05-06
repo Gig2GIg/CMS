@@ -33,9 +33,12 @@ class EducationsController extends Controller
                 'user_id' => $this->getUserLogging(),
             ];
             $repo = new EducationsRepository(new Educations());
-            $repo->create($data);
+            $education = $repo->create($data);
 
-            $dataResponse = ['data' => 'Educations created'];
+            $dataResponse = [
+                'message' =>'Educations created',
+                'data' => $education
+            ];
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {

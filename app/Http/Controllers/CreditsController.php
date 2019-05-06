@@ -35,9 +35,12 @@ class CreditsController extends Controller
                 'user_id' => Auth::user()->getAuthIdentifier(),
             ];
             $repo = new CreditsRepository(new Credits());
-            $repo->create($data);
+            $credits = $repo->create($data);
 
-            $dataResponse = ['data' => 'Credits created'];
+            $dataResponse = [
+                'message'=>'Credits created',
+                'data' =>$credits
+            ];
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
