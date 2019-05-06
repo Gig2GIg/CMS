@@ -1,6 +1,5 @@
 import Login from '@/pages/auth/Login';
 import Email from '@/pages/auth/password/Email';
-import Reset from '@/pages/auth/password/Reset';
 import Home from '@/pages/Home';
 import Auditions from '@/pages/Auditions';
 import Performers from '@/pages/Performers';
@@ -19,7 +18,6 @@ export default [
   ...middleware('guest', [
     { path: '/login', alias: '/', name: 'login', component: Login },
     { path: '/password/reset', name: 'password.request', component: Email },
-    { path: '/password/reset/:token', name: 'password.reset', component: Reset },
   ]),
 
   // Authenticated routes.

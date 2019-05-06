@@ -19,9 +19,9 @@ Vue.use(CKEditor);
 Vue.config.productionTip = false;
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyDSamX1us63KDTNfT5rbvWz1bIcZ1jwOfU',
-  projectId: 'lending-lavish',
-  storageBucket: 'lending-lavish.appspot.com',
+  apiKey: 'AIzaSyDTrKkhJCM4ZNbFXRTq0AE2uKzNlpo3_i4',
+  projectId: 'dd-gig2gi',
+  storageBucket: 'dd-gig2gig.appspot.com',
 });
 
 Array.prototype.search = function(needle) {
