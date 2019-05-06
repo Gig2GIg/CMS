@@ -85,4 +85,9 @@ class ContentSettingRepository implements IContentSettingRepository
     {
       return $this->model->all();
     }
+
+    public function first()
+    {
+      return $this->model->first();
+    }
 }
