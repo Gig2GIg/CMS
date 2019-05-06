@@ -5,7 +5,7 @@
         <div class="card-content">
           <h1 class="title has-text-centered">
             <a href="/">
-              <img src="/storage/logo.png" alt="Logo" class="h-auto ">
+              <img src="/images/logo.png" alt="Logo" class="h-auto ">
             </a>
           </h1>
 
