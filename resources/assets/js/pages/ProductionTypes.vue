@@ -72,7 +72,7 @@
       <form @submit.prevent="selectedProductionType.id ? updateProductionType() : createType()">
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ modalTitle }} Type</p>
+            <p class="modal-card-title">{{ modalTitle }} Production Type</p>
           </header>
 
           <section class="modal-card-body">
