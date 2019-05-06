@@ -18,19 +18,19 @@ class ContentSettingController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
     public function getAllContentSetting(ContentSetting $request)
     {
        $data = new ContentSettingRepository($request);
-       
+
        $count = count($data->all());
        if ($count > 0) {
            $responseData = ContentSettingResource::collection($data->all());
            return response()->json(['data' => $responseData], 200);
        } else {
            return response()->json(['data' => "Not found Data"], 404);
-       }   
-    }   
+       }
+    }
 
     public function update(Request $request)
     {
@@ -39,7 +39,7 @@ class ContentSettingController extends Controller
             'term_of_use' => $request->term_of_use,
             'privacy_policy' => $request->privacy_policy,
             'app_info' => $request->app_info,
-            'contact_us' => $request->contact_us,
+            // 'contact_us' => $request->contact_us,
             'help' => $request->help
 
         ];

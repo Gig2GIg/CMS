@@ -19,7 +19,7 @@ class ContentSettingResource extends JsonResource
             'term_of_use' => $this->term_of_use,
             'privacy_policy' => $this->privacy_policy,
             'app_info' => $this->app_info,
-            'contact_us' => $this->contact_us,
+            // 'contact_us' => $this->contact_us,
             'help' => $this->help
         ];
     }
