@@ -246,6 +246,9 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
 
         //SUBCRIPTIONS
         $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
+
+        // CONTENT SETTING TEXT
+        $router->get('content-settings', 'getAllContentSetting@ContentSettingController');
     });
 
     Route::prefix('cms')->group(function() {
