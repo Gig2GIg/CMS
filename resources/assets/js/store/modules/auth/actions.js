@@ -87,4 +87,16 @@ export default {
       commit(types.LOGOUT);
     }
   },
+
+  async broadcast(_, message) {
+    try {
+      await axios.post('/api/cms/send-notifications', {
+        'title': message,
+      });
+
+      dispatch('toast/showMessage', 'Notification sent!', { root: true });
+    } catch (e) {
+      throw e;
+    }
+  },
 };

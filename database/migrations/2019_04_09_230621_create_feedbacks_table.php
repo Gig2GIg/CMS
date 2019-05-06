@@ -19,6 +19,7 @@ class CreateFeedbacksTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('evaluator_id')->unsigned();
             $table->integer('evaluation')->unsigned();
+            $table->integer('slot_id')->unsigned();
             $table->boolean('callback');
             $table->enum('work', ['vocals', 'acting', 'dancing']);
             $table->boolean('favorite')->default(false);

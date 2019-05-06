@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\StripeManagementController;
 use App\Http\Repositories\UserRepository;
+use App\Http\Resources\SubsCriptionUserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -72,7 +73,16 @@ class SubscriptionController extends Controller
             'pricing_type' => $request->plan,
         ];
         return $stripe->changeSubscription($data);
+    }
 
+    public function updateSubscriptionForUser(Request $request)
+    {
+        $stripe = new StripeManagementController();
+        $data = [
+            'id' => $request->user['id'],
+            'pricing_type' => $request->plan,
+        ];
+        return $stripe->changeSubscription($data);
     }
 
     public function cancelSubscription()
@@ -142,6 +152,22 @@ class SubscriptionController extends Controller
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => 'ERROR'], 404);
+        }
+    }
+
+    public function getallSubscription()
+    {
+        try {
+            $dataUserRepo = new UserRepository(new User());
+            $dataUser = $dataUserRepo->all();
+            $filter = $dataUser->filter(function($item){
+                return $item->details->type === '2';
+            });
+
+            return SubsCriptionUserResource::collection($filter);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['error' => 'ERROR'], 404);

@@ -38,6 +38,7 @@ class FeedBackController extends Controller
                 'callback' => $request->callback,
                 'work' => $request->work,
                 'favorite' => $request->favorite,
+                'slot_id'=>$request->slot_id
             ];
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);

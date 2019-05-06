@@ -38,7 +38,7 @@ $media = new Resources();
             "production" => explode(',',$this->production),
             "status" => $this->status,
             "user_id" => $this->user_id,
-            "media" => $url_media[0] ??null,
+            "cover" => $url_media[0] ??null,
             "number_roles" => $countRoles,
         ];
     }

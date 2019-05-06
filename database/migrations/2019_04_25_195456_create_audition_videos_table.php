@@ -19,6 +19,7 @@ class CreateAuditionVideosTable extends Migration
             $table->integer('auditions_id')->unsigned();
             $table->string('url');
             $table->integer('contributors_id')->unsigned();
+            $table->integer('slot_id')->unsigned();
             $table->timestamps();
         });
     }

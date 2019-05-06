@@ -22,13 +22,7 @@ class MarketplaceCategoriesController extends Controller
      public function getAll()
      {
         $data = new MarketplaceCategoryRepo(new MarketplaceCategory);
-        $count = count($data->all());
-        if ($count !== 0) {
-            $responseData = MarketplaceCategoryResource::collection($data->all());
-            return response()->json(['data' => $responseData], 200);
-        } else {
-            return response()->json(['data' => "Not found Data"], 404);
-        }   
+        return MarketplaceCategoryResource::collection($data->all());
      }
 
     public function store(MarketplaceCategoryRequest $request)
@@ -37,7 +31,7 @@ class MarketplaceCategoriesController extends Controller
             $marketplaceCatagoryData = [
                 'name' => $request->name,
                 'description' => $request->description
-            ]; 
+            ];
 
             $marketplaceCatagoryDetails = new MarketplaceCategoryRepo(new MarketplaceCategory());
             $marketplaceCatagoryDetails->create($marketplaceCatagoryData);
@@ -54,7 +48,7 @@ class MarketplaceCategoriesController extends Controller
                 $marketplaceCatagoryData = [
                     'name' => $request->name,
                     'description' => $request->description
-                ]; 
+                ];
 
                 $marketplaceCategory = new MarketplaceCategoryRepo(new MarketplaceCategory());
                 $result =  $marketplaceCategory->find(request('id'));

@@ -23,18 +23,11 @@ class MarketplaceController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
     public function getAll()
     {
         $data = new MarketplaceRepo(new Marketplace);
-        $count = count($data->all());
-        if ($count !== 0)
-        {
-            $responseData = MarketplaceResource::collection($data->all());
-            return response()->json(['data' => $responseData], 200);
-        } else {
-            return response()->json(['data' => 'Record Not Found'], 404);
-        }
+        return MarketplaceResource::collection($data->all());
     }
 
     public function getAllMarketplaceByCategory(MarketplaceCategory $marketplaceCategory)
@@ -46,11 +39,11 @@ class MarketplaceController extends Controller
            return response()->json(['data' => $responseData], 200);
        } else {
            return response()->json(['data' => "Not found Data"], 404);
-       }   
+       }
     }
 
 
-    public function store(MarketplaceRequest $request, MarketplaceCategory $marketplaceCategory)
+    public function store(MarketplaceRequest $request)
     {
         if ($request->json())
         {
@@ -60,7 +53,7 @@ class MarketplaceController extends Controller
                 'services' => $request->services,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'marketplace_category_id' => $marketplaceCategory->id,
+                'marketplace_category_id' => $request->marketplace_category_id,
                 'url_web' => $request->url_web
             ];
 
@@ -88,18 +81,19 @@ class MarketplaceController extends Controller
                     'email' => $request->email,
                     'phone_number' => $request->phone_number
                 ];
-    
+
                 $marketplace = new MarketplaceRepo(new Marketplace());
 
-                $marketplace_result =  $marketplace->find($request('id'));
+                $marketplace_result = $marketplace->find(request('id'));
                 $marketplace_result->update($marketplaceData);
 
-                if (! $request->image_url){
+                if ($request->image_url){
                     $marketplace_result->image()->update([
-                        'url' => $request->image_url
+                        'url' => $request->image_url,
+                        'name' => $request->image_name,
                     ]);
                 };
-              return response()->json(['data' => 'Marketplace  Updated'], 204);
+                return response()->json(['data' => new MarketplaceResource($marketplace_result)]);
             } else {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }

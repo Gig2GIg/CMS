@@ -10,15 +10,6 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>-->
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="categories.length">
@@ -37,10 +28,10 @@
             </div>
 
             <b-table
-              :data="categories"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!categories.length"
+              :paginated="!!filter.length"
               :show-detail-icon="true"
               detail-key="id"
               detailed
@@ -157,59 +148,22 @@ export default {
     isModalActive: false,
     selectedCategory: {},
     searchText: "",
-    selectedAudition: {},
-    categories: [
-      {
-        id: "ct-01",
-        name: "Photographers",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "ct-02",
-        name: "Coaches",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "ct-03",
-        name: "Classes",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "ct-04",
-        name: "Health & Support",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "ct-05",
-        name: "Gigs",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      },
-      {
-        id: "ct-06",
-        name: "Gear",
-        description:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-      }
-    ]
   }),
   computed: {
-    //...mapState('categories', ['categories', 'isLoading']),
-    ...mapGetters("categories", ["search"]),
+    ...mapState('categories', ['categories', 'isLoading']),
+    ...mapGetters('categories', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     },
+
     modalTitle: function() {
       return this.selectedCategory.id ? "Update" : "Create";
     }
   },
   methods: {
-    ...mapActions("categories", ["fetch", "broadcast", "notify", "destroy"]),
+    ...mapActions('categories', ['fetch', 'update', 'destroy']),
+    ...mapActions('toast', ['showError']),
 
     confirmDelete(category) {
       this.selectedCategory = category;
@@ -226,6 +180,7 @@ export default {
       this.selectedCategory = Object.assign({}, category);
       this.isModalActive = true;
     },
+
     async updateCategory() {
       try {
         let valid = await this.$validator.validateAll();
@@ -233,10 +188,8 @@ export default {
           this.showError("Please check the fields.");
           return;
         }
-        // await this.update({
-        //   category: this.selectedCategory,
-        //   fileData: this.selectedFile
-        // });
+
+        await this.update(this.selectedCategory);
 
         this.isModalActive = false;
       } catch (e) {
@@ -245,9 +198,10 @@ export default {
     },
 
     async deleteCategory() {
-      await this.destroy(this.selectedAudition);
+      await this.destroy(this.selectedCategory);
     }
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

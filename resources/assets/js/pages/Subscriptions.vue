@@ -10,15 +10,6 @@
 
     <transition name="page">
       <section v-if="loaded">
-        <!-- <div class="mb-6">
-          <button
-            class="button is-primary shadow"
-            :disabled="isLoading"
-            @click="confirmBroadcast"
-          >
-            Broadcast notification
-          </button>
-        </div>-->
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="subscriptions.length">
@@ -37,47 +28,33 @@
             </div>
 
             <b-table
-              :data="subscriptions"
+              :data="filter"
               :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!subscriptions.length"
-              :show-detail-icon="true"
-              detail-key="id"
-            
+              :paginated="!!filter.length"
               hoverable
             >
               <template slot-scope="props">
                 <b-table-column
-                  field="name"
+                  field="user.first_name"
                   label="Name"
                   width="250"
                   sortable
-                >{{ props.row.performer }}</b-table-column>
+                >{{ props.row.user.first_name }} {{ props.row.user.last_name }}</b-table-column>
 
-                <b-table-column field="tier" label="Tier" sortable>{{ props.row.tier }}</b-table-column>
-                <b-table-column field="date" label="Date" sortable>{{ props.row.date }}</b-table-column>
+                <b-table-column field="plan" label="Plan" sortable>Plan {{ props.row.plan }}</b-table-column>
+                <b-table-column field="subscription.ends_at" label="Expiration" sortable>{{ props.row.subscription ? props.row.subscription.ends_at : '' }}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
-                    </button>                                      
+                    </button>
                     <b-dropdown-item has-link>
                        <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
-                    </b-dropdown-item>                   
+                    </b-dropdown-item>
                   </b-dropdown>
                 </b-table-column>
-              </template>
-
-              <template slot="detail" slot-scope="">
-                <article class="media is-top">
-                  <div class="w-1/2 mx-4">                  
-                  </div>
-                  <div class="w-1/2 mx-4">
-                    <div class="content">                     
-                    </div>
-                  </div>
-                </article>
               </template>
 
               <template slot="empty">
@@ -96,7 +73,7 @@
       </section>
     </transition>
        <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedCategory.id ? updateCategory() : createCategory()">
+      <form @submit.prevent="updateSubscription">
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">Update Subscription</p>
@@ -104,34 +81,22 @@
 
           <section class="modal-card-body">
             <b-field
-              label="Title"
-              :type="{'is-danger': errors.has('title')}"
-              :message="errors.first('title')"
+              label="Plan"
+              :type="{'is-danger': errors.has('plan')}"
+              :message="errors.first('plan')"
             >
-              <b-input
-                v-model="selectedSubscription.performer"
-                v-validate="'required|max:255'"
-                name="title"
-                autofocus
-              />
-            </b-field>          
-            <b-field
-              label="Tier"
-              :type="{'is-danger': errors.has('tier')}"
-              :message="errors.first('tier')"
-            >
-             <b-select placeholder="Select a name"  name="tier"   
-             v-model="selectedSubscription.tier"  v-validate="'required'"  
+             <b-select placeholder="Select a plan" name="plan"
+             v-model="selectedSubscription.plan"  v-validate="'required'"
              autofocus expanded>
               <option
                     v-for="option in options"
-                    :value="option.name"
+                    :value="option.id"
                     :key="option.id">
                     {{ option.name }}
-                </option>                                                          
+                </option>
               </b-select>
             </b-field>
-                         
+
           </section>
           <footer class="modal-card-foot">
             <button
@@ -160,53 +125,45 @@ export default {
     isModalActive: false,
     selectedSubscription: {},
     options : [
-      {id: '1', name:'Paid'},
-      {id: '2', name:'Free'}
+      {id: "1", name:'Plan 1'},
+      {id: "2", name:'Plan 2'},
+      {id: "3", name:'Plan 3'},
     ],
-    subscriptions: [
-      {
-        id: "1",
-        performer: "David Doe",
-        date: "2019-06-01",
-        tier: "Free"
-      },
-      {
-        id: "2",
-        performer: "Greg Smith",
-        date: "2019-06-01",
-        tier: "Paid"
-      },
-      {
-        id: "3",
-        performer: "Performer",
-        date: "2019-06-01",
-        tier: "Free"
-      }
-    ]
   }),
   computed: {
-    //...mapState('clients', ['clients', 'isLoading']),
-    ...mapGetters("clients", ["search"]),
+    ...mapState('subscriptions', ['subscriptions', 'isLoading']),
+    ...mapGetters('subscriptions', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     }
   },
   methods: {
-    ...mapActions("clients", ["fetch", "broadcast", "notify", "destroy"]),
-    showUpdateModal(category) {
-      this.selectedSubscription = Object.assign({}, category);
+    ...mapActions('subscriptions', ['fetch', 'update']),
+    ...mapActions('toast', ['showError']),
+
+    showUpdateModal(subscription) {
+      this.selectedSubscription = Object.assign({}, subscription);
       this.isModalActive = true;
     },
-    showSubscription() {
-      this.selectedFile = {};
-      this.selectedCategory = {
-        name: null,
-        url_img: null
-      };
-      this.isModalActive = true;
-    },   
+
+    async updateSubscription() {
+      try {
+        let valid = await this.$validator.validateAll();
+        if (!valid) {
+          this.showError("Please check the fields.");
+          return;
+        }
+
+        await this.update(this.selectedSubscription);
+
+        this.isModalActive = false;
+      } catch (e) {
+        this.$setErrorsFromResponse(e.response.data);
+      }
+    },
   },
+
   async created() {
     await this.fetch();
     this.loaded = true;

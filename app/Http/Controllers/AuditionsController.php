@@ -338,6 +338,15 @@ class AuditionsController extends Controller
 
     }
 
+    public function deleteContributor($id)
+    {
+        AuditionContributors::find($id)->delete();
+
+        return response()->json([
+            'status' => 'Success',
+        ]);
+    }
+
     public function show_contributors(Request $request)
     {
         try {
