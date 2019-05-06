@@ -31,4 +31,27 @@ class ContentSettingController extends Controller
            return response()->json(['data' => "Not found Data"], 404);
        }   
     }   
+
+    public function update(Request $request)
+    {
+        $contentRepo = new ContentSettingRepository(new ContentSetting);
+        $data = [
+            'term_of_use' => $request->term_of_use,
+            'privacy_policy' => $request->privacy_policy,
+            'app_info' => $request->app_info,
+            'contact_us' => $request->contact_us,
+            'help' => $request->help
+
+        ];
+        $conten_setting = $contentRepo->first();
+
+        $result = $conten_setting->update($data);
+
+        if ($result){
+            return response()->json([''], 204);
+        }else{
+            return response()->json(['data' => "Not update Data"], 422);
+        }
+
+    }
 }
