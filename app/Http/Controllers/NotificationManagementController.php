@@ -15,6 +15,7 @@ use App\Http\Requests\Notification\NotificationSettingUserRequest;
 use App\Http\Resources\NoficationSettingUserResource;
 use Illuminate\Http\Request;
 use App\Http\Repositories\UserRepository;
+use Illuminate\Support\Facades\Log;
 
 class NotificationManagementController extends Controller
 {
@@ -24,6 +25,7 @@ class NotificationManagementController extends Controller
     public function __construct()
     {
         $this->middleware('jwt');
+        $this->log = new LogManger();
     }
     
 
@@ -42,6 +44,7 @@ class NotificationManagementController extends Controller
                 return response()->json(['data' => "Not found Data"], 404);
             }   
         } catch (NotFoundException $e) {
+$this->log->error($e->getMessage());
             return response()->json(['data' => "Not found Data"], 404);  
         }
     }
