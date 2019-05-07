@@ -230,11 +230,10 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->put('/type-products/update/{id}','TypeProductsController@update');
 
         //SKILL SUGGESTIONS
-        $router->get('/skill-suggestions', 'SkillSuggestionsController@getAll');
-        $router->post('/skill-suggestions/create', 'SkillSuggestionsController@store');
-        $router->get('/skill-suggestions/show/{id}','SkillSuggestionsController@show');
-        $router->delete('/skill-suggestions/delete/{id}','SkillSuggestionsController@delete');
-        $router->put('/skill-suggestions/update/{id}','SkillSuggestionsController@update');
+        $router->get('/skills', 'SkillsController@getAll');
+        $router->delete('/skills/delete/{id}','SkillsController@delete');
+        $router->put('/skills/update/{id}','SkillsController@update');
+        $router->post('/skills/create','SkillsController@store');
 
         //NOTIFICATIONS
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');

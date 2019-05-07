@@ -118,7 +118,6 @@
                 v-validate="'required'"
                 type="textarea"
                 name="description"
-                autofocus
               />
             </b-field>
           </section>

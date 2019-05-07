@@ -8,7 +8,7 @@ export default {
 
   async fetch({ commit }) {
     try {
-      const { data: { data } } = await axios.get('/api/cms/skill-suggestions');
+      const { data: { data } } = await axios.get('/api/cms/skills');
       commit(types.FETCH_SKILLS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_SKILLS_FAILURE);
@@ -20,7 +20,7 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      const { data: { data } } = await axios.post('/api/cms/skill-suggestions/create', skill);
+      const { data: { data } } = await axios.post('/api/cms/skills/create', skill);
       commit(types.CREATE_SKILL, data);
 
       dispatch('toast/showMessage', 'Skill created.', { root: true });
@@ -36,7 +36,7 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      await axios.put(`/api/cms/skill-suggestions/update/${skill.id}`, skill);
+      await axios.put(`/api/cms/skills/update/${skill.id}`, skill);
       commit(types.UPDATE_SKILL, skill);
 
       dispatch('toast/showMessage', 'Skill updated.', { root: true });
@@ -52,7 +52,7 @@ export default {
       dispatch('toggleSpinner');
 
       // Delete skill
-      await axios.delete(`/api/cms/skill-suggestions/delete/${skill.id}`);
+      await axios.delete(`/api/cms/skills/delete/${skill.id}`);
       commit(types.DELETE_SKILL, skill);
 
       dispatch('toast/showMessage', 'Skill deleted.', { root: true });

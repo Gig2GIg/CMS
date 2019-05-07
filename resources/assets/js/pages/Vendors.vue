@@ -230,10 +230,18 @@
                 name="website"
               />
             </b-field>
-            <div>
-              <strong>Services</strong>
-              <ckeditor :editor="editor" v-model="selectedVendor.services" :config="editorConfig"></ckeditor>
-            </div>
+            <b-field
+              label="Services"
+              :type="{'is-info': errors.has('services')}"
+              :message="errors.first('services')"
+            >
+              <b-input
+                v-model="selectedVendor.services"
+                v-validate="'required'"
+                type="textarea"
+                name="services"
+              />
+            </b-field>
           </section>
           <footer class="modal-card-foot">
             <button
@@ -252,7 +260,6 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from "vuex";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 export default {
   name: "Vendors",
@@ -263,8 +270,6 @@ export default {
     selectedVendor: {},
     isModalActive: false,
     selectedFile: {},
-    editor: ClassicEditor,
-    editorConfig: {}
   }),
   computed: {
     ...mapState('vendors', ['vendors', 'isLoading']),
