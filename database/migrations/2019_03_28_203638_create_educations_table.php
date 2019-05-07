@@ -17,8 +17,8 @@ class CreateEducationsTable extends Migration
             $table->increments('id');
             $table->string('school');
             $table->string('degree');
-            $table->string('instructor');
-            $table->string('location');
+            $table->string('instructor')->nullable();
+            $table->string('location')->nullable();
             $table->string('year');
             $table->integer('user_id')->unsigned();
             $table->timestamps();

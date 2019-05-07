@@ -6,6 +6,7 @@ use App\Http\Repositories\UserRepository;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Stripe\Plan;
 use Stripe\Stripe;
 
 class StripeManagementController extends Controller
@@ -95,5 +96,15 @@ class StripeManagementController extends Controller
             $element = $plans[$data];
         }
         return $element;
+    }
+
+    public function getStripePlans(){
+        try{
+            $this->connect();
+            return Plan::all();
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return [];
+        }
     }
 }

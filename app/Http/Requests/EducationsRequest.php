@@ -26,8 +26,6 @@ class EducationsRequest extends FormRequest
         return [
             'school'=>'required',
             'degree'=>'required',
-            'instructor'=>'required',
-            'location'=>'required',
             'year'=>'required',
         ];
     }

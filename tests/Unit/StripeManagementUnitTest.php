@@ -96,5 +96,10 @@ class StripeManagementUnitTest extends TestCase
 
     }
 
+    public function test_plans_stripe(){
+        $connect = new StripeManagementController();
+        $this->assertTrue(count($connect->getStripePlans()) > 0);
+    }
+
 
 }
