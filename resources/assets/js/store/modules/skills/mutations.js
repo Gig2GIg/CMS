@@ -14,6 +14,10 @@ export default {
     state.skills = [];
   },
 
+  [types.CREATE_SKILL] (state, skill) {
+    state.skills.push(skill);
+  },
+
   [types.UPDATE_SKILL] (state, skill) {
     let currentSkill = state.skills.find(x => x.id === skill.id);
     let index = state.skills.indexOf(currentSkill);

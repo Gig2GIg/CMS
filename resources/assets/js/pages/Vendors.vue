@@ -55,7 +55,7 @@
                   sortable
                 >{{ props.row.title }}</b-table-column>
 
-                <b-table-column field="contact" label="Contact" sortable>{{ props.row.phone_number }}</b-table-column>
+                <b-table-column field="phone_number" label="Contact" sortable>{{ props.row.phone_number }}</b-table-column>
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">

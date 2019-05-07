@@ -10,6 +10,16 @@
 
     <transition name="page">
       <section v-if="loaded">
+        <div class="mb-6">
+          <button
+            class="button is-primary shadow"
+            :disabled="isLoading"
+            @click="showCreateModal"
+          >
+            Create skill
+          </button>
+        </div>
+
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="skills.length">
@@ -68,10 +78,10 @@
       </section>
     </transition>
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedSkill.id ? updateSkill() : createCategory()">
+      <form @submit.prevent="selectedSkill.id ? updateSkill() : createSkill()">
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ modalTitle }} Category</p>
+            <p class="modal-card-title">{{ modalTitle }} Skill</p>
           </header>
 
           <section class="modal-card-body">
@@ -128,7 +138,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('skills', ['fetch', 'update', 'destroy']),
+    ...mapActions('skills', ['fetch', 'store', 'update', 'destroy']),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(skill) {
@@ -142,9 +152,31 @@ export default {
       });
     },
 
+    showCreateModal() {
+      this.selectedSkill = {};
+      this.isModalActive = true;
+    },
+
     showUpdateModal(skill) {
       this.selectedSkill = Object.assign({}, skill);
       this.isModalActive = true;
+    },
+
+    async createSkill() {
+      try {
+        let valid = await this.$validator.validateAll();
+
+        if (! valid) {
+          this.showError('Please check the fields.');
+          return;
+        }
+
+        await this.store(this.selectedSkill);
+
+        this.isModalActive = false;
+      } catch(e) {
+        this.$setErrorsFromResponse(e.response.data);
+      }
     },
 
     async updateSkill() {

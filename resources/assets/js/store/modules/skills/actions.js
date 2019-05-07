@@ -15,6 +15,22 @@ export default {
     }
   },
 
+  async store({ dispatch, commit }, skill) {
+    try {
+      dispatch('toggleSpinner');
+
+      // Save changes
+      const { data: { data } } = await axios.post('/api/cms/skill-suggestions/create', skill);
+      commit(types.CREATE_SKILL, data);
+
+      dispatch('toast/showMessage', 'Skill created.', { root: true });
+    } catch (e) {
+      throw e;
+    } finally {
+      dispatch('toggleSpinner');
+    }
+  },
+
   async update({ dispatch, commit }, skill) {
     try {
       dispatch('toggleSpinner');

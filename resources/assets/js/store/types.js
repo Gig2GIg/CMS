@@ -25,6 +25,7 @@ export const DELETE_PRODUCTION_TYPE = 'Delete Production Type';
 
 export const FETCH_SKILLS_SUCCESS = 'Fetch Skills successful';
 export const FETCH_SKILLS_FAILURE = 'Fetch Skills failed';
+export const CREATE_SKILL = 'Create Skill';
 export const UPDATE_SKILL = 'Update Skill';
 export const DELETE_SKILL = 'Delete Skill';
 
