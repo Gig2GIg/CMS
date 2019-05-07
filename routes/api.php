@@ -28,7 +28,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
     $router->get('/skills/show',['uses'=>'SkillsController@list']);
-
+    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     //auditions
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
@@ -84,7 +84,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/type-products', 'TypeProductsController@getAll');
 
     //SKILL SUGGESTIONS
-    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+//    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 
     // CONTENT SETTING
