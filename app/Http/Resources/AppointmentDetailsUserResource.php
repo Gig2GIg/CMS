@@ -48,6 +48,7 @@ class AppointmentDetailsUserResource extends JsonResource
             'image' => $userData->image->url,
             'name' => sprintf('%s %s', $userData->details->first_name, $userData->details->last_name),
             'user_city'=> sprintf('%s, %s', $userData->details->city, $userData->details->state),
+            'details' => $userData->details,
             'favorite'=>$this->favorite,
             'slot_id'=>$this->slots_id,
             'feedback'=>$feedbackData,

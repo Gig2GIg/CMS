@@ -56,6 +56,9 @@
                       <a @click.prevent.stop="confirmSendPassword(props.row)">Send password</a>
                     </b-dropdown-item>
                     <b-dropdown-item has-link>
+                       <a @click.prevent.stop="confirmNotification(props.row)">Send notification</a>
+                    </b-dropdown-item>
+                    <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
                     </b-dropdown-item>
                   </b-dropdown>
@@ -69,6 +72,26 @@
                       <img class="w-24 h-24" :src="props.row.image">
                     </div>
                     <div class="content">
+                      <p>
+                        <strong>Agency:</strong>
+                        {{ props.row.details.agency_name }}
+                      </p>
+                      <p>
+                        <strong>Profession:</strong>
+                        {{ props.row.details.profesion }}
+                      </p>
+                      <p>
+                        <strong>Subscription:</strong>
+                        Plan {{ props.row.details.subscription }}
+                      </p>
+                      <p>
+                        <strong>Address:</strong>
+                        {{ props.row.details.address }}
+                      </p>
+                      <p>
+                        <strong>Zip code:</strong>
+                        {{ props.row.details.zip }}
+                      </p>
                       <p>
                         <strong>City:</strong>
                         {{ props.row.user_city }}
@@ -150,7 +173,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('performers', ['fetch', 'sendPassword', 'destroy']),
+    ...mapActions('performers', ['fetch', 'sendPassword', 'notify', 'destroy']),
 
     confirmSendPassword(performer) {
       this.selectedPerformer = performer;
@@ -162,6 +185,17 @@ export default {
         type: "is-success",
         hasIcon: true,
         onConfirm: this.sendNewPassword
+      });
+    },
+
+    confirmNotification(client) {
+      this.$dialog.prompt({
+        message: 'Type a message',
+        inputAttrs: {
+          placeholder: 'Message',
+          maxlenght: 2000
+        },
+        onConfirm: (value) => this.sendNotification(client, value),
       });
     },
 
@@ -181,6 +215,10 @@ export default {
 
     async sendNewPassword() {
       await this.sendPassword(this.selectedPerformer);
+    },
+
+    async sendNotification(client, message) {
+      await this.notify({ client, message });
     },
 
     async deletePerformer() {
