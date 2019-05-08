@@ -31,6 +31,18 @@ export default {
     }
   },
 
+  async notify(_, { client, message }) {
+    try {
+      await axios.post(`/api/cms/send-notifications/users/${client.user_id}`, {
+        'title': message,
+      });
+
+      dispatch('toast/showMessage', 'Notification sent!', { root: true });
+    } catch (e) {
+      throw e;
+    }
+  },
+
   async destroy({ dispatch, commit }, performer) {
     try {
       dispatch('toggleSpinner');
