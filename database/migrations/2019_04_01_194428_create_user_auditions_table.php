@@ -18,6 +18,7 @@ class CreateUserAuditionsTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('auditions_id')->unsigned();
             $table->integer('rol_id')->unsigned();
+            $table->integer('slot_id')->unsigned()->nullable();
             $table->integer('type');
             $table->timestamps();
         });

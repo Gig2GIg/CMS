@@ -106,8 +106,12 @@ class AuditionManagementController extends Controller
                     'roles_id' => $request->slot['rol']
                 ]);
             }
+            $dataSlot = isset($request->slot['slot']) ? $request->slot['slot'] : null;
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-            $updateAudi = $dataRepoAuditionUser->find($request->id)->update(['type' => '1']);
+            $updateAudi = $dataRepoAuditionUser->find($request->id)->update([
+                'type' => '1',
+                'slot_id' => $dataSlot
+            ]);
             if ($updateAudi) {
                 $code = 200;
                 $responseData = 'Audition update';
@@ -387,7 +391,7 @@ class AuditionManagementController extends Controller
                     'auditions_id' => $request->audition,
                     'url' => $request->url,
                     'contributors_id' => $this->getUserLogging(),
-                    'slot_id'=>$request->slot_id,
+                    'slot_id' => $request->slot_id,
                 ]);
                 if (isset($data->id)) {
                     $dataResponse = ['data' => 'Video saved'];
