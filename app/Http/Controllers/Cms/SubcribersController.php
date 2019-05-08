@@ -79,6 +79,8 @@ class SubcribersController extends Controller
             $subscription->amount = number_format(($plan ? $plan->amount : 0) / 100, 2);
         });
 
+        $subscriptions = $subscriptions->where('amount', '!=', "0.00");
+
         return $subscriptions;
     }
 }
