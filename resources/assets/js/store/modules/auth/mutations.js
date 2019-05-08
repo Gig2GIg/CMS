@@ -17,7 +17,7 @@ export default {
 
   [types.SAVE_TOKEN] (state, { token, remember }) {
     state.token = token;
-    Cookies.set("token", token, { expires: remember ? 7 : null });
+    Cookies.set("token", token, { expires: remember ? 365 : null });
   },
 
   [types.LOGOUT] (state) {
