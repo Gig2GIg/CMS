@@ -23,8 +23,8 @@ class CreateUserDetailsTable extends Migration
             $table->date('birth');
             $table->enum('subscription',[1,2,3])->default(1);
             $table->string('profesion');
-            $table->string('stage_name')->default("n/a");
-            $table->string('agency_name')->default("n/a");
+            $table->string('stage_name')->nullable();
+            $table->string('agency_name')->nullable();
             $table->enum('type',[1,2,3]);
             $table->integer('user_id')->unsigned();
 //            $table->json('location');

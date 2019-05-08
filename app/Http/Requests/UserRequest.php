@@ -51,7 +51,7 @@ class UserRequest extends ApiRequest
 //                'location' => 'required',
                 'zip' => 'required',
                 'union_member' => 'required',
-                'stage_name' => 'required',
+//                'stage_name' => 'required',
                 'image' => 'required|url',
                 'profesion' => 'required'
             ];
