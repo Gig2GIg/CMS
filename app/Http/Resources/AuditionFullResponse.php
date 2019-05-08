@@ -58,6 +58,7 @@ class AuditionFullResponse extends JsonResource
             'id_cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=','cover')->get()[0]['id'] ?? null,
             'status' => $this->status,
             'user_id' => $this->user_id,
+            'director' => $this->user->load('details'),
             'agency'=>$dataUserDet->agency_name ?? null,
             'roles' => $this->roles,
             'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','!=','cover')->get(),

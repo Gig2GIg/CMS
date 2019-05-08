@@ -56,4 +56,8 @@ class Auditions extends Model
     public function userauditions(){
         return $this->hasMany(UserAuditions::class);
     }
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }
