@@ -61,12 +61,14 @@ class AuditionsController extends Controller
             if ($request->isJson()) {
                 $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
-                foreach ($request['media'] as $file) {
-                    $auditionFilesData[] = [
-                        'url' => $file['url'],
-                        'type' => $file['type'],
-                        'name' => $file['name'],
-                    ];
+                if(isset($request['media'])) {
+                    foreach ($request['media'] as $file) {
+                        $auditionFilesData[] = [
+                            'url' => $file['url'],
+                            'type' => $file['type'],
+                            'name' => $file['name'],
+                        ];
+                    }
                 }
                 $auditionFilesData[] = [
                     'url' => $request->cover,
@@ -86,7 +88,9 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $rol->image()->create(['type' => 4, 'url' => $roles['cover'], 'name' => $roles['name_cover']]);
+                    $imageUrl =  $roles['cover'] ?? 'https://publicdomainvectors.org/photos/icon_user_whiteongrey.png';
+                    $imageName = $roles['name_cover'] ?? 'default';
+                    $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
                 }
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
@@ -401,9 +405,9 @@ class AuditionsController extends Controller
                      'name'=>$request->cover_name,
                   ]);
                 }
-//                foreach ($auditionFilesData as $file) {
-//                    $audition->media()->update(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
-//                }
+                foreach ($auditionFilesData as $file) {
+                    $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
+                }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->update($this->dataDatesToProcess($date));
                 }
