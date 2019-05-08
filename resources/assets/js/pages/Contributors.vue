@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">{{ $options.name }}</a>
+          <a href="#" aria-current="page">Director / Contributors</a>
         </li>
       </ul>
     </nav>
@@ -37,6 +37,10 @@
               <template slot-scope="props">
                 <b-table-column field="contributor_info.details.first_name" label="Name" width="250" sortable>
                   {{ props.row.contributor_info.details.first_name }} {{ props.row.contributor_info.details.last_name }}
+                  <span
+                    class="text-xs font-bold text-grey-dark"
+                    v-if="props.row.director"
+                  >(Casting director)</span>
                 </b-table-column>
 
                 <b-table-column field="contributor_info.email" label="Email" sortable>
@@ -48,10 +52,10 @@
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
-                    <b-dropdown-item has-link >
+                    <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmSendPassword(props.row)">Send password</a>
                     </b-dropdown-item>
-                    <b-dropdown-item has-link>
+                    <b-dropdown-item has-link v-if="!props.row.director">
                       <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
                     </b-dropdown-item>
                   </b-dropdown>

@@ -8,7 +8,15 @@ export default {
 
   async fetch({ commit }, audition) {
     try {
-      const { data: { data: { contributors } } } = await axios.get(`/api/cms/auditions/show/${audition}`);
+      const { data: { data } } = await axios.get(`/api/cms/auditions/show/${audition}`);
+      const contributors = data.contributors;
+      const director = data.director;
+
+      contributors.push({
+        director: true,
+        contributor_info: director,
+      });
+
       commit(types.FETCH_CONTRIBUTORS_SUCCESS, contributors);
     } catch (e) {
       commit(types.FETCH_CONTRIBUTORS_FAILURE);
