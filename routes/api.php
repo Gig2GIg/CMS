@@ -246,6 +246,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
 
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
+        $router->get('/subcribers-payments/plans','SubcribersController@plans');
 
         //SUBCRIPTIONS
         $router->delete('/unsubscribes/users/{id}','SubcribersController@unsubscribe');
