@@ -123,8 +123,6 @@ class StripeManagementController extends Controller
                 $result = $result->merge($data->data);
             }
 
-            dd($result);
-
             return $result;
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
