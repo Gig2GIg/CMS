@@ -113,7 +113,7 @@
                       <div v-if="props.row.feedback">
                         <p class="flex items-center">
                           <strong>Instant Feedback:</strong>
-                          <img src="/storage/feedback/i2.png" class="w-6 h-6 mx-2 inline" alt>
+                          <img :src="`/images/emoji-${props.row.feedback.evaluation}.png`" class="w-6 h-6 mx-2 inline" alt>
                         </p>
                         <p>
                           <strong>Call Back:</strong>
