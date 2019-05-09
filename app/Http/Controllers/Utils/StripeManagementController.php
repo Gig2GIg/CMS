@@ -102,7 +102,7 @@ class StripeManagementController extends Controller
     public function getStripePlans(){
         try{
             $this->connect();
-            return Plan::all();
+            return Plan::all(['limit' => '100']);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
             return [];
@@ -112,7 +112,20 @@ class StripeManagementController extends Controller
     public function getStripeSubscriptions(){
         try{
             $this->connect();
-            return Subscription::all();
+
+            $result = collect([]);
+
+            $data = Subscription::all(['limit' => '100']);
+            $result = $result->merge($data->data);
+
+            while ($data->has_more) {
+                $data = Subscription::all(array("limit" => 100, "starting_after" => $result->last()->id));
+                $result = $result->merge($data->data);
+            }
+
+            dd($result);
+
+            return $result;
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
             return [];

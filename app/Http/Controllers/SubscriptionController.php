@@ -170,7 +170,7 @@ class SubscriptionController extends Controller
             });
 
             $stripe = new StripeManagementController();
-            $subscriptions = collect($stripe->getStripeSubscriptions()->data);
+            $subscriptions = $stripe->getStripeSubscriptions();
 
             $filter->each(function ($subscription) use ($subscriptions) {
                 $data = DB::table('subscriptions')->where('user_id', $subscription->id)->first();
