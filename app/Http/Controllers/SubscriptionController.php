@@ -164,7 +164,7 @@ class SubscriptionController extends Controller
     {
             $dataUser = User::with('subscription')->get();
             $filter = $dataUser->filter(function($item){
-                return $item->details->type !== '1';
+                return $item->details->type === '2';
             });
 
             $stripe = new StripeManagementController();
