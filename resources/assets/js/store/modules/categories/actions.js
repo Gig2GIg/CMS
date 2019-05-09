@@ -19,6 +19,22 @@ export default {
     }
   },
 
+  async store({ dispatch, commit }, category) {
+    try {
+      dispatch('toggleSpinner');
+
+      // Save changes
+      const { data: { data } } = await axios.post('/api/cms/marketplace_categories/create', category);
+      commit(types.CREATE_CATEGORY, data);
+
+      dispatch('toast/showMessage', 'Category created.', { root: true });
+    } catch (e) {
+      throw e;
+    } finally {
+      dispatch('toggleSpinner');
+    }
+  },
+
   async update({ dispatch, commit }, category) {
     try {
       dispatch('toggleSpinner');

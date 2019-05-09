@@ -11,6 +11,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Notifications\NotificationHistory;
 use App\Models\Notifications\NotificationSettingUser;
 use App\Models\Notifications\NotificationSetting;
+
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
@@ -65,6 +66,10 @@ class User extends Authenticatable implements JWTSubject
 
     public function details(){
         return $this->hasOne(UserDetails::class);
+    }
+
+    public function subscription(){
+        return $this->hasOne(Subscription::class);
     }
 
     public function memberunions(){

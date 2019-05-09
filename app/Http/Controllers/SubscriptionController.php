@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\StripeManagementController;
 use App\Http\Repositories\UserRepository;
@@ -160,18 +161,25 @@ class SubscriptionController extends Controller
 
     public function getallSubscription()
     {
-        try {
-            $dataUserRepo = new UserRepository(new User());
-            $dataUser = $dataUserRepo->all();
+            $dataUser = User::with('subscription')->get();
             $filter = $dataUser->filter(function($item){
                 return $item->details->type === '2';
             });
 
+            $stripe = new StripeManagementController();
+            $subscriptions = collect($stripe->getStripeSubscriptions()->data);
+
+            $filter->each(function ($subscription) use ($subscriptions) {
+                $sub = $subscriptions->where('id', $subscription->subscription->stripe_id)->first();
+
+                if ($sub) {
+                    $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->toDateTimeString();
+                } else {
+                    $subscription->expiration = '';
+                }
+            });
+
             return SubsCriptionUserResource::collection($filter);
-        } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
-            return response()->json(['error' => 'ERROR'], 404);
-        }
     }
 
     public function updateCardData(Request $request)

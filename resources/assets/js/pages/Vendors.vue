@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">{{ $options.name }}</a>
+          <a href="#" aria-current="page">Marketplace Vendors</a>
         </li>
       </ul>
     </nav>
@@ -237,7 +237,7 @@
             >
               <b-input
                 v-model="selectedVendor.services"
-                v-validate="'required'"
+                v-validate="'required|max:400'"
                 type="textarea"
                 name="services"
               />

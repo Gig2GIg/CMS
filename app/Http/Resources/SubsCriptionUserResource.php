@@ -22,6 +22,7 @@ class SubsCriptionUserResource extends JsonResource
 
         return [
             'user' => $this->details,
+            'expiration' => $this->expiration,
             'plan' => $this->details->subscription,
             'subscription' => $this->details->subscription !== 1 ? $data : null,
         ];

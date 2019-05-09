@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">{{ $options.name }}</a>
+          <a href="#" aria-current="page">Marketplace Categories</a>
         </li>
       </ul>
     </nav>
@@ -161,7 +161,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('categories', ['fetch', 'update', 'destroy']),
+    ...mapActions('categories', ['fetch', 'store', 'update', 'destroy']),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(category) {
@@ -175,9 +175,31 @@ export default {
       });
     },
 
+    showCreateModal() {
+      this.selectedCategory = {};
+      this.isModalActive = true;
+    },
+
     showUpdateModal(category) {
       this.selectedCategory = Object.assign({}, category);
       this.isModalActive = true;
+    },
+
+    async createCategory() {
+      try {
+        let valid = await this.$validator.validateAll();
+
+        if (! valid) {
+          this.showError('Please check the fields.');
+          return;
+        }
+
+        await this.store(this.selectedCategory);
+
+        this.isModalActive = false;
+      } catch(e) {
+        this.$setErrorsFromResponse(e.response.data);
+      }
     },
 
     async updateCategory() {
