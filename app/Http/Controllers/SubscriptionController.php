@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use Carbon\Carbon;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\StripeManagementController;
