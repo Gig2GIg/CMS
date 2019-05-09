@@ -38,7 +38,7 @@ class AuditionRequest extends ApiRequest
             'dates',
             'roles'=>'required|array',
             'appointment'=>'required',
-            'contributors'=>'required|array',
+//            'contributors'=>'required|array',
 //            'media'=>'required|array'
         ];
     }
