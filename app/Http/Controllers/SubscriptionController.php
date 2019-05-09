@@ -170,7 +170,13 @@ class SubscriptionController extends Controller
             $subscriptions = collect($stripe->getStripeSubscriptions()->data);
 
             $filter->each(function ($subscription) use ($subscriptions) {
-                $sub = $subscriptions->where('id', $subscription->subscription->stripe_id)->first();
+                $data = DB::table('subscriptions')->where('user_id', $subscription->id)->first();
+
+                if ($data) {
+                    $sub = $subscriptions->where('id', $data->stripe_id)->first();
+                } else {
+                    $sub = null;
+                }
 
                 if ($sub) {
                     $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->toDateTimeString();
