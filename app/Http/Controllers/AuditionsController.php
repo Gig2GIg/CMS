@@ -61,7 +61,7 @@ class AuditionsController extends Controller
             if ($request->isJson()) {
                 $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
-                if(isset($request['media'])) {
+                if (isset($request['media'])) {
                     foreach ($request['media'] as $file) {
                         $auditionFilesData[] = [
                             'url' => $file['url'],
@@ -88,7 +88,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $imageUrl =  $roles['cover'] ?? 'https://publicdomainvectors.org/photos/icon_user_whiteongrey.png';
+                    $imageUrl = $roles['cover'] ?? 'https://publicdomainvectors.org/photos/icon_user_whiteongrey.png';
                     $imageName = $roles['name_cover'] ?? 'default';
                     $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
                 }
@@ -101,15 +101,15 @@ class AuditionsController extends Controller
                     $slotsRepo->create($dataSlots);
                 }
                 $this->createNotification($audition);
-
-                foreach ($request['contributors'] as $contrib) {
-                    $this->saveContributor($contrib, $audition);
+                if (isset($request['contributors'])) {
+                    foreach ($request['contributors'] as $contrib) {
+                        $this->saveContributor($contrib, $audition);
+                    }
+                    $this->sendPushNotification(
+                        $audition,
+                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                    );
                 }
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                );
-
                 DB::commit();
 
                 $responseData = ['data' => ['message' => 'Auditions create']];
@@ -358,7 +358,7 @@ class AuditionsController extends Controller
             $data = $audition->find($request->id);
 
             if (isset($data->id)) {
-                $responseData =  ContributorsResource::collection($data->contributors);
+                $responseData = ContributorsResource::collection($data->contributors);
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
             } else {
@@ -377,7 +377,7 @@ class AuditionsController extends Controller
     public function update(AuditionEditRequest $request)
     {
 
-        $auditionFilesData=[];
+        $auditionFilesData = [];
         try {
             if (isset($request['media'])) {
                 foreach ($request['media'] as $file) {
@@ -397,11 +397,11 @@ class AuditionsController extends Controller
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
                 $updateRepo->update($auditionData);
-                if($request->cover_name) {
-                  $audition->resources()->where('id','=',$request->id_cover)->update([
-                     'url'=>$request->cover,
-                     'name'=>$request->cover_name,
-                  ]);
+                if ($request->cover_name) {
+                    $audition->resources()->where('id', '=', $request->id_cover)->update([
+                        'url' => $request->cover,
+                        'name' => $request->cover_name,
+                    ]);
                 }
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
@@ -427,6 +427,18 @@ class AuditionsController extends Controller
                         $slotsRepo = new SlotsRepository(new Slots());
                         $slotsRepo->find($slot['id'])->update($dataSlots);
                     }
+                }
+
+                if (isset($request['contributors'])) {
+                    foreach ($request['contributors'] as $contrib) {
+                        if(!isset($contrib['id'])) {
+                            $this->saveContributor($contrib, $audition);
+                        }
+                    }
+                    $this->sendPushNotification(
+                        $audition,
+                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                    );
                 }
                 DB::commit();
 
