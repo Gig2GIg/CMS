@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Stripe\Plan;
 use Stripe\Stripe;
+use Stripe\Subscription;
 
 class StripeManagementController extends Controller
 {
@@ -102,6 +103,16 @@ class StripeManagementController extends Controller
         try{
             $this->connect();
             return Plan::all();
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return [];
+        }
+    }
+
+    public function getStripeSubscriptions(){
+        try{
+            $this->connect();
+            return Subscription::all();
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
             return [];

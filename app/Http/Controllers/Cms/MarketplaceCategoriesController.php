@@ -35,7 +35,8 @@ class MarketplaceCategoriesController extends Controller
 
             $marketplaceCatagoryDetails = new MarketplaceCategoryRepo(new MarketplaceCategory());
             $marketplaceCatagoryDetails->create($marketplaceCatagoryData);
-            return response()->json(['data' => 'Marketplace Category Created'], 201);
+
+            return response()->json(['data' => new MarketplaceCategoryResource($marketplaceCatagoryDetails)], 201);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
         }

@@ -12,7 +12,7 @@ class Notifications
 {
     const AUTIDION_UPDATE           = 'autidion_update';
     const AUTIDION_ADD_CONTRIBUIDOR = 'autidion_add_contribuidor';
-    const UPCOMING_AUDITION         = 'upcoming_audition'; 
+    const UPCOMING_AUDITION         = 'upcoming_audition';
     const REPRESENTATION_EMAIL      = 'representation_email';
     const DOCUMENT_UPLOAD           = 'document_upload';
     const CHECK_IN                  = 'check_in';
@@ -39,11 +39,11 @@ class Notifications
                     $title = 'Audition Upcomming';
                     $message = ' you have been upcoming to audition '. $audition->title;
                     $to = 'ONE';
-                    break;  
+                    break;
                 case self::AUTIDION_UPDATE:
                     $log->info("PUSH NOTIFICATION AUDITION UPDATE " . $audition->title);
                     $title = 'Audition Update';
-                    $message = 'A new update has been added '. $audition->title;    
+                    $message = 'A new update has been added '. $audition->title;
                     $to = 'MANY';
                     break;
                 case self::REPRESENTATION_EMAIL:
@@ -61,7 +61,7 @@ class Notifications
                 case self::CHECK_IN:
                     $log->info("PUSH NOTIFICATION  CHECK_IN " . $audition->title);
                     $title = 'Check-in ';
-                    $message = 'you have been registered for the audition '. $audition->title;    
+                    $message = 'you have been registered for the audition '. $audition->title;
                     $to = 'ONE';
                     break;
                 case self::CUSTOM:
@@ -83,7 +83,7 @@ class Notifications
                     $to = 'ONE';
                     break;
                 default:
-            }  
+            }
 
             if ($type == 'cms' || $type == 'cms_to_user')
             {
@@ -95,14 +95,14 @@ class Notifications
                         'status' => 'unread',
                         'message'=> $title
                     ]);
-                
+
                     fcm()
                         ->to([$user->pushkey])
                         ->notification([
                             'title' => $title,
                             'body'  => $title,
                         ])
-                        ->send();   
+                        ->send();
                 }else {
                     $user = User::all();
                     $user->each(function ($user) use ($title, $type) {
@@ -112,16 +112,16 @@ class Notifications
                         'status' => 'unread',
                         'message'=> $title
                     ]);
-                
+
                     fcm()
                         ->to([$user->pushkey])
                         ->notification([
                             'title' => $title,
                             'body'  => $title,
                         ])
-                        ->send();  
+                        ->send();
                     });
-                }  
+                }
             }
 
             if ($audition !== null || $user !== null ){
@@ -136,15 +136,15 @@ class Notifications
                                 'status' => 'unread',
                                 'message'=> $message
                             ]);
-                            
+
                             fcm()
                                 ->to([$user_result->pushkey])
                                 ->notification([
                                     'title' => $title,
                                     'body'  => $message,
                                 ])
-                                ->send();  
-                        });  
+                                ->send();
+                        });
                     }
                     $audition->contributors->each(function ($contributor) use ($title, $message, $type) {
                         $userRepo = new UserRepository(new User);
@@ -155,17 +155,17 @@ class Notifications
                             'status' => 'unread',
                             'message'=> $message
                         ]);
-                        
+
                         fcm()
                             ->to([$contributor->pushkey])
                             ->notification([
                                 'title' => $title,
                                 'body'  => $message,
                             ])
-                            ->send();  
-                    });    
-                
-                }elseif ($to == 'ONE' &&  ($user instanceof User)  ){  
+                            ->send();
+                    });
+
+                }elseif ($to == 'ONE' &&  ($user instanceof User)  ){
                     $user->notification_settings_on->each(function ($notification) use ($title, $message, $type, $user) {
                         if ($notification->code == $type && $notification->status == 'on')
                             $user->notification_history()->create([
@@ -174,20 +174,20 @@ class Notifications
                                 'status' => 'unread',
                                 'message'=> $message
                             ]);
-                            
+
                             fcm()
                                 ->to([$user->pushkey])
                                 ->notification([
                                     'title' => $title,
                                     'body'  => $message,
                                 ])
-                                ->send();  
+                                ->send();
                     });
                 }
             }
 
         } catch (NotificationException $exception) {
-            $this->log->error($exception->getMessage());
+            // $this->log->error($exception->getMessage());
         }
 
     }

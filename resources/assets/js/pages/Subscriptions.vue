@@ -43,7 +43,7 @@
                 >{{ props.row.user.first_name }} {{ props.row.user.last_name }}</b-table-column>
 
                 <b-table-column field="plan" label="Plan" sortable>Plan {{ props.row.plan }}</b-table-column>
-                <b-table-column field="subscription.ends_at" label="Expiration" sortable>{{ props.row.subscription ? props.row.subscription.ends_at : '' }}</b-table-column>
+                <b-table-column field="subscription.ends_at" label="Expiration" sortable>{{ props.row.expiration }}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">

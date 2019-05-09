@@ -31,6 +31,7 @@ export const DELETE_SKILL = 'Delete Skill';
 
 export const FETCH_CATEGORIES_SUCCESS = 'Fetch Categories successful';
 export const FETCH_CATEGORIES_FAILURE = 'Fetch Categories failed';
+export const CREATE_CATEGORY = 'Create Category';
 export const UPDATE_CATEGORY = 'Update Category';
 export const DELETE_CATEGORY = 'Delete Category';
 
