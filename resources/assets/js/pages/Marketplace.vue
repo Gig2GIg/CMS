@@ -10,6 +10,16 @@
 
     <transition name="page">
       <section v-if="loaded">
+        <div class="mb-6">
+          <button
+            class="button is-primary shadow"
+            :disabled="isLoading"
+            @click="showCreateModal"
+          >
+            Create category
+          </button>
+        </div>
+
         <div class="card">
           <div class="card-content">
             <div class="columns" v-if="categories.length">

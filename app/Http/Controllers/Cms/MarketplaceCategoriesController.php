@@ -33,8 +33,8 @@ class MarketplaceCategoriesController extends Controller
                 'description' => $request->description
             ];
 
-            $marketplaceCatagoryDetails = new MarketplaceCategoryRepo(new MarketplaceCategory());
-            $marketplaceCatagoryDetails->create($marketplaceCatagoryData);
+            $repo = new MarketplaceCategoryRepo(new MarketplaceCategory());
+            $marketplaceCatagoryDetails = $repo->create($marketplaceCatagoryData);
 
             return response()->json(['data' => new MarketplaceCategoryResource($marketplaceCatagoryDetails)], 201);
         } else {

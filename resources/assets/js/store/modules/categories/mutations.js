@@ -14,6 +14,10 @@ export default {
     state.categories = [];
   },
 
+  [types.CREATE_CATEGORY] (state, category) {
+    state.categories.push(category);
+  },
+
   [types.UPDATE_CATEGORY] (state, category) {
     let currentSkill = state.categories.find(x => x.id === category.id);
     let index = state.categories.indexOf(currentSkill);
