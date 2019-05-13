@@ -31,6 +31,7 @@ use App\Models\Slots;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -88,7 +89,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $imageUrl = $roles['cover'] ?? 'https://publicdomainvectors.org/photos/icon_user_whiteongrey.png';
+                    $imageUrl = $roles['cover'] ?? App::make('url')->to('/').'/images/roles.png';
                     $imageName = $roles['name_cover'] ?? 'default';
                     $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
                 }

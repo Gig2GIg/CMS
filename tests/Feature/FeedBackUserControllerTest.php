@@ -11,7 +11,7 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class FeedBackControllerTest extends TestCase
+class FeedBackUserControllerTest extends TestCase
 {
     protected $userId;
     protected $auditionId;
