@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
+use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AppointmentRepository;
@@ -249,13 +250,15 @@ class AuditionsController extends Controller
     {
         try {
             $user = new UserRepository(new User());
+            $email = new SendMail();
             $dataUser = $user->findbyparam('email', $contrib['email']);
             if ($dataUser !== null) {
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
-
+                $send = $email->sendContributor($contrib['email'],$audition->title);
                 $this->log->info("Contributors" . $contributors);
+                $this->log->info("send mail" . $send);
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());

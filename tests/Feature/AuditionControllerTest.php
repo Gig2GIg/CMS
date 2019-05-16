@@ -39,7 +39,9 @@ class AuditionControllerTest extends TestCase
     }
     public function test_create_audition_201()
     {
-        $cont1 = factory(User::class)->create();
+        $cont1 = factory(User::class)->create([
+            'email'=>'alphyon21@gmail.com'
+        ]);
         factory(UserDetails::class)->create([
             'user_id' => $cont1->id,
         ]);
