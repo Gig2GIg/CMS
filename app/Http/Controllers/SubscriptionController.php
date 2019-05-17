@@ -162,7 +162,7 @@ class SubscriptionController extends Controller
 
     public function getallSubscription()
     {
-            $dataUser = User::with('subscription')->get();
+            $dataUser = User::with('userSubscription')->get();
             $filter = $dataUser->filter(function($item){
                 return $item->details->type === '2';
             })->filter(function ($item) {

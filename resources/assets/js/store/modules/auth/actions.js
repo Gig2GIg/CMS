@@ -76,7 +76,7 @@ export default {
     }
   },
 
-  async broadcast(_, message) {
+  async broadcast({ dispatch }, message) {
     try {
       await axios.post('/api/cms/send-notifications', {
         'title': message,
