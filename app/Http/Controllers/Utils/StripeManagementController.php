@@ -126,7 +126,7 @@ class StripeManagementController extends Controller
             return $result;
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return [];
+            return collect([]);
         }
     }
 }
