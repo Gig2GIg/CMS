@@ -237,7 +237,7 @@
             >
               <b-input
                 v-model="selectedVendor.services"
-                v-validate="'required|max:400'"
+                v-validate="'required|max:100'"
                 type="textarea"
                 name="services"
               />
