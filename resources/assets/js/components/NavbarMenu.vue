@@ -93,6 +93,7 @@ export default {
   methods: {
     ...mapActions({ signout: "auth/logout" }),
     ...mapActions('auth', ['broadcast']),
+    ...mapActions('toast', ['showError']),
 
     showNotificationModal() {
       this.notification = {};
@@ -114,14 +115,14 @@ export default {
 
         this.isModalActive = false;
       } catch(e) {
-        console.log(e);
         this.$setErrorsFromResponse(e.response.data);
       }
     },
 
     async logout() {
       // Log out the user.
-      await this.signout();
+      await this.signout
+      ();
 
       // Redirect to login.
       this.$router.replace({
