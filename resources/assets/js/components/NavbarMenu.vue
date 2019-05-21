@@ -114,6 +114,7 @@ export default {
 
         this.isModalActive = false;
       } catch(e) {
+        console.log(e);
         this.$setErrorsFromResponse(e.response.data);
       }
     },
