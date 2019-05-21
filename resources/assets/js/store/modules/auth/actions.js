@@ -76,11 +76,9 @@ export default {
     }
   },
 
-  async broadcast({ dispatch }, message) {
+  async broadcast({ dispatch }, notification) {
     try {
-      await axios.post('/api/cms/send-notifications', {
-        'title': message,
-      });
+      await axios.post('/api/cms/send-notifications', notification);
 
       dispatch('toast/showMessage', 'Notification sent!', { root: true });
     } catch (e) {

@@ -22,7 +22,7 @@ class NotificationsController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
     public function sendNotifications(NotificationsRequest $request)
     {
         if ($request->json())
@@ -33,24 +33,25 @@ class NotificationsController extends Controller
                 null,
                 'cms',
                 null,
-                $request->title
+                $request->title,
+                $request->message,
             );
             return response()->json(['data' => 'Notification send'], 200);
         }else {
             return response()->json(['error' => 'Unauthorized'], 401);
-        }     
+        }
     }
 
     public function sendNotificationToUser(Request $request)
     {
         if ($request->json())
         {
-    
+
             $user = new UserRepository(new User());
             $dataUser = $user->find($request->id);
 
            $notification = $this->createNotification($request->title);
-        
+
            $this->sendPushNotification(
                 null,
                 'cms_to_user',
@@ -61,7 +62,7 @@ class NotificationsController extends Controller
             return response()->json(['data' => 'Notification send'], 200);
         }else {
             return response()->json(['error' => 'Unauthorized'], 401);
-        }     
+        }
     }
     public function createNotification($title)
     {

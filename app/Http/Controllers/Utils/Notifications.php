@@ -22,7 +22,7 @@ class Notifications
     const CMS_TO_USER               = 'cms_to_user';
 
 
-    public static function send($audition= null, $type , $user = null, $title = null)
+    public static function send($audition= null, $type , $user = null, $title = null, $message = null)
     {
         try {
 
@@ -66,8 +66,6 @@ class Notifications
                     break;
                 case self::CUSTOM:
                     $log->info("PUSH NOTIFICATION  CUSTOM");
-                    $title =  $title;
-                    $message = $title;
                     $to = 'MANY';
                     break;
                 case self::CMS:

@@ -24,7 +24,8 @@ class NotificationsRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|string|max:100', 
+            'title' => 'required|string|max:100',
+            'message' => 'required|string|max:2000',
         ];
     }
 }
