@@ -6,7 +6,7 @@
  * Time: 18:10
  */
 
-namespace  App\Http\Controllers\Utils;
+namespace App\Http\Controllers\Utils;
 
 
 use App\Http\Exceptions\SendEmailException;
@@ -16,6 +16,7 @@ use SendGrid\Mail\Mail;
 class SendMail
 {
     protected $log;
+
     /**
      * SendMail constructor.
      */
@@ -24,44 +25,45 @@ class SendMail
         $this->log = new LogManger();
     }
 
-    public function send($password,$emailTo)
+    public function send($password, $emailTo)
     {
         $email = new Mail();
 
         $email->setFrom(env('SUPPORT_EMIAL'));
         $email->setSubject('Recover Password');
         $email->addTo($emailTo);
-        $email->addContent("text/html","Your new password is: <strong>" .
-            $password."</strong><br/>Please, change the password now.");
-
-        $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
-
-            $response = $sendgrid->send($email);
-            if($response->statusCode() === 202 ){
-                return true;
-            }else {
-                $this->log->error($response->body()." ". $response->statusCode());
-                return false;
-            }
-    }
-
-    public function sendManager($emailTo, $name)
-    {
-        $email = new Mail();
-
-        $email->setFrom(env('SUPPORT_EMIAL'));
-        $email->setSubject('Check Auditions');
-        $email->addTo($emailTo);
-        $email->addContent("text/html","Your client: <strong> ".$name."</strong> wants to attend an audition, 
-        check his agenda to set the time of the appointment");
+        $email->addContent("text/html", "Your new password is: <strong>" .
+            $password . "</strong><br/>Please, change the password now.");
 
         $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
         $response = $sendgrid->send($email);
-        if($response->statusCode() === 202 ){
+        if ($response->statusCode() === 202) {
             return true;
-        }else {
-            $this->log->error($response->body()." ". $response->statusCode());
+        } else {
+            $this->log->error($response->body() . " " . $response->statusCode());
+            return false;
+        }
+    }
+
+    public function sendManager($emailTo, $data)
+    {
+        $email = new Mail();
+        $content = sprintf("Your client: <strong> %s</strong> wants to attend the audition: <strong>%s</strong>, check his agenda to set the time of the appointment",
+            $data['name'],
+            $data['audition']);
+        $email->setFrom(env('SUPPORT_EMIAL'));
+        $email->setSubject('Check Auditions');
+        $email->addTo($emailTo);
+        $email->addContent("text/html", $content);
+
+        $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+        $response = $sendgrid->send($email);
+        if ($response->statusCode() === 202) {
+            return true;
+        } else {
+            $this->log->error($response->body() . " " . $response->statusCode());
             return false;
         }
     }
@@ -73,15 +75,15 @@ class SendMail
         $email->setFrom(env('SUPPORT_EMIAL'));
         $email->setSubject('You have invited to audition');
         $email->addTo($emailTo);
-        $email->addContent("text/html","You have been invited to participate as a contributor in the audition: <strong> ".$name."</strong> ");
+        $email->addContent("text/html", "You have been invited to participate as a contributor in the audition: <strong> " . $name . "</strong> ");
 
         $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
         $response = $sendgrid->send($email);
-        if($response->statusCode() === 202 ){
+        if ($response->statusCode() === 202) {
             return true;
-        }else {
-            $this->log->error($response->body()." ". $response->statusCode());
+        } else {
+            $this->log->error($response->body() . " " . $response->statusCode());
             return false;
         }
     }

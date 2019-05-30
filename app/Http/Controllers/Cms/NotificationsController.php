@@ -34,7 +34,7 @@ class NotificationsController extends Controller
                 'cms',
                 null,
                 $request->title,
-                $request->message,
+                $request->message
             );
             return response()->json(['data' => 'Notification send'], 200);
         }else {

@@ -39,7 +39,7 @@ class AuditionManagementTest extends TestCase
         factory(UserManager::class)->create([
             'user_id' => $this->userId,
             'notifications' => true,
-            'email' => 'alphyon21@gamial.com'
+            'email' => 'alphyon21@gmail.com'
         ]);
 
         $response = $this->json('POST',
