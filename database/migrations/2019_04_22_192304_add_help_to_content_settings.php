@@ -14,7 +14,7 @@ class AddHelpToContentSettings extends Migration
     public function up()
     {
         Schema::table('content_settings', function (Blueprint $table) {
-            $table->text('help');
+            $table->text('help')->nullable();
 
         });
     }

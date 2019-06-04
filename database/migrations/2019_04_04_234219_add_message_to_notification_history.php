@@ -14,7 +14,7 @@ class AddMessageToNotificationHistory extends Migration
     public function up()
     {
         Schema::table('notification_history', function (Blueprint $table) {
-            $table->string('message');
+            $table->string('message')->nullable();
         });
     }
 

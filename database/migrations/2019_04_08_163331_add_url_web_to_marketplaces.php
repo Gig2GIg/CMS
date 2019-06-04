@@ -14,7 +14,7 @@ class AddUrlWebToMarketplaces extends Migration
     public function up()
     {
         Schema::table('marketplaces', function (Blueprint $table) {
-            $table->string('url_web');
+            $table->string('url_web')->nullable();
         });
     }
 

@@ -21,7 +21,7 @@ class AuditionSeeder extends Seeder
         );
 
         $audition->each(function ($item) {
-            $item->media()->create(['url' => $this->faker->imageUrl(), 'type' => 4, 'name' => $this->faker->word()]);
+            $item->media()->create(['url' => App::make('url')->to('/').'/images/coveraudition.jpg', 'type' => 4, 'name' => $this->faker->word()]);
             factory(\App\Models\Dates::class)->create([
                 'date_type' => 'App\Models\\'.class_basename($item),
                 'date_id' => $item->id,
@@ -48,7 +48,7 @@ class AuditionSeeder extends Seeder
             $roles->each(function ($itemrol) {
                 $itemrol->image()->create([
                     'type' => 4,
-                    'url' => $this->faker->url(),
+                    'url' => App::make('url')->to('/').'/images/roles.png',
                     'name' => $this->faker->word(),
                 ]);
             });
