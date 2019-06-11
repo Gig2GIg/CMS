@@ -49,8 +49,9 @@ class SendMail
     public function sendManager($emailTo, $data)
     {
         $email = new Mail();
-        $content = sprintf("Your client: <strong> %s</strong> wants to attend the audition: <strong>%s</strong>, check his agenda to set the time of the appointment",
+        $content = sprintf("Your client: <strong> %s</strong> wants to attend the audition:<a href='%s'> <strong>%s</strong></a>, check his agenda to set the time of the appointment",
             $data['name'],
+            $data['url'],
             $data['audition']);
         $email->setFrom(env('SUPPORT_EMIAL'));
         $email->setSubject('Check Auditions');
