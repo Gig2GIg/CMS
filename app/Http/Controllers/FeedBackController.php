@@ -30,6 +30,12 @@ class FeedBackController extends Controller
     public function store(Request $request)
     {
         try {
+            if (Feedbacks::whereEvaluatorId($request->evaluator)->exists()) {
+                return response()->json([
+                    'data' => 'You have already done feedback.'
+                ], 409);
+            }
+
             $data = [
                 'auditions_id' => $request->auditions,
                 'user_id' => $request->user, //id usuario que recibe evaluacion
