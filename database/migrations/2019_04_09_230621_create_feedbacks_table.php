@@ -23,6 +23,7 @@ class CreateFeedbacksTable extends Migration
             $table->boolean('callback');
             $table->enum('work', ['vocals', 'acting', 'dancing']);
             $table->boolean('favorite')->default(false);
+            $table->unique(['auditions_id','user_id','evaluator_id']);
             $table->timestamps();
         });
     }
