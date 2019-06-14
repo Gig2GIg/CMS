@@ -172,11 +172,12 @@ class UserController extends Controller
 
             foreach ($notificationSetting as $iValue) {
                 $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-                $notificationSettingUserRepo->create([
+                $noti=$notificationSettingUserRepo->create([
                     'notification_setting_id' => $iValue['id'],
                     'user_id' => $user->id,
                     'code' => $iValue['code']
                 ]);
+                $this->log->info($noti);
             }
 
             DB::commit();

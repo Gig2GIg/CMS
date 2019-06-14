@@ -28,7 +28,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
     $router->get('/skills/show',['uses'=>'SkillsController@list']);
-    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+//    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     //auditions
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
@@ -239,10 +239,10 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
         $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+');
 
-        // AUDITIONS
-        $router->get('/auditions',['uses'=>'AuditionsController@getall']);
-        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+//         AUDITIONS
+//        $router->get('/auditions',['uses'=>'AuditionsController@getall']);
+//        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
+//        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
 
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
