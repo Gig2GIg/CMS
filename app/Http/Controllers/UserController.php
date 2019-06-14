@@ -174,7 +174,7 @@ class UserController extends Controller
                 $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
                 $noti=$notificationSettingUserRepo->create([
                     'notification_setting_id' => $iValue['id'],
-                    'user_id' => $user->id,
+                    'user_id' => $user->user_id,
                     'code' => $iValue['code']
                 ]);
                 $this->log->info($noti);
