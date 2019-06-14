@@ -182,7 +182,7 @@ class SubscriptionController extends Controller
                 }
 
                 if ($sub) {
-                    $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->toDateTimeString();
+                    $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->format('m/d/Y g:i A');
                 } else {
                     $subscription->expiration = '';
                 }

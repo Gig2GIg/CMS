@@ -70,14 +70,10 @@ class Notifications
                     break;
                 case self::CMS:
                     $log->info("PUSH NOTIFICATION FROM CMS");
-                    $title =  $title;
-                    $message = $title;
                     $to = 'NONE';
                     break;
                 case self::CMS_TO_USER:
                     $log->info("PUSH NOTIFICATION FROM CMS TO USER");
-                    $title =  $title;
-                    $message = $title;
                     $to = 'ONE';
                     break;
                 default:
