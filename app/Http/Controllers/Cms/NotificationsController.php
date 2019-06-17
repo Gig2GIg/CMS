@@ -36,6 +36,9 @@ class NotificationsController extends Controller
                 $request->title,
                 $request->message
             );
+           $this->log->info($request->title);
+            $this->log->info($request->message);
+
             return response()->json(['data' => 'Notification send'], 200);
         }else {
             return response()->json(['error' => 'Unauthorized'], 401);
