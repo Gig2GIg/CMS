@@ -99,7 +99,7 @@ class Notifications
                         ->send();
                 }else {
                     $user = User::all();
-                    $user->each(function ($user) use ($title, $type) {
+                    $user->each(function ($user) use ($title, $type,$message) {
                     $user->notification_history()->create([
                         'title' => $title,
                         'code' => $type,

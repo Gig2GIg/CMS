@@ -18,7 +18,8 @@ class NoficationSettingUserResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status,
-            'code' => $this->code
+            'code' => $this->code,
+            'label'=>str_replace('_',' ',$this->code)
            
 
         ];
