@@ -122,13 +122,14 @@ class Notifications
                 if ($to == 'MANY'){
                     if ($type == 'custom') {
                         $audition->userauditions->each(function ($useraudition) use ($title, $message, $type) {
+                            $tomsg = !empty($message) ? $message:$title;
                             $userRepo = new UserRepository(new User);
                             $user_result = $userRepo->find($useraudition->user_id);
                             $user_result->notification_history()->create([
                                 'title' => $title,
                                 'code' => $type,
                                 'status' => 'unread',
-                                'message'=> $message ?? $title
+                                'message'=> $tomsg
                             ]);
 
                             fcm()
