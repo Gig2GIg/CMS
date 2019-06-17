@@ -109,7 +109,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function notification_history()
     {
-        return $this->hasMany(NotificationHistory::class)->orderByDesc('created_at');
+        return $this->hasMany(NotificationHistory::class)->orderBy('created_at');
     }
 
     public function educations(){
