@@ -128,7 +128,7 @@ class Notifications
                                 'title' => $title,
                                 'code' => $type,
                                 'status' => 'unread',
-                                'message'=> $message
+                                'message'=> $message != null ? $message:$title
                             ]);
 
                             fcm()
