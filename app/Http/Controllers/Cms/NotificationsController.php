@@ -14,6 +14,7 @@ use App\Http\Requests\NotificationsRequest;
 use App\Http\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class NotificationsController extends Controller
@@ -36,8 +37,8 @@ class NotificationsController extends Controller
                 $request->title,
                 $request->message
             );
-           $this->log->info($request->title);
-            $this->log->info($request->message);
+           Log::info($request->title);
+           Log::info($request->message);
 
             return response()->json(['data' => 'Notification send'], 200);
         }else {
