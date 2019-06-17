@@ -41,7 +41,7 @@ class Controller extends BaseController
             $type,
             $user,
             $title,
-            $message,
+            $message
         );
     }
 

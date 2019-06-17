@@ -45,8 +45,7 @@ class MonitorManagerController extends Controller
                     $audition,
                     'custom',
                     null,
-                    $request->title,
-                    ''
+                    $request->title
                 );
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
