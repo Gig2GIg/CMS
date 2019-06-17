@@ -104,14 +104,14 @@ class Notifications
                         'title' => $title,
                         'code' => $type,
                         'status' => 'unread',
-                        'message'=> $title
+                        'message'=> $message
                     ]);
 
                     fcm()
                         ->to([$user->pushkey])
                         ->notification([
                             'title' => $title,
-                            'body'  => $title,
+                            'body'  => $message,
                         ])
                         ->send();
                     });
