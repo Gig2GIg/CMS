@@ -143,12 +143,13 @@ class Notifications
                     }
                     $audition->contributors->each(function ($contributor) use ($title, $message, $type) {
                         $userRepo = new UserRepository(new User);
+                        $tomsg = !empty($message) ? $message:$title;
                         $user_result = $userRepo->find($contributor->user_id);
                         $user_result->notification_history()->create([
                             'title' => $title,
                             'code' => $type,
                             'status' => 'unread',
-                            'message'=> $message
+                            'message'=> $tomsg
                         ]);
 
                         fcm()
