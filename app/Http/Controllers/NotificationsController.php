@@ -36,7 +36,7 @@ class NotificationsController extends Controller
 
             $count = count($user->notification_history);
             if ($count > 0) {
-                $responseData = NoficationsResource::collection($user->notification_history->asc());
+                $responseData = NoficationsResource::collection($user->notification_history);
                 return response()->json(['data' => $responseData], 200);
             } else {
                 return response()->json(['data' => "Not found Data"], 404);
