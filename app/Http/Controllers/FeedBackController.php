@@ -30,11 +30,10 @@ class FeedBackController extends Controller
     public function store(Request $request)
     {
         try {
-//            if (Feedbacks::whereEvaluatorId($request->evaluator)->exists()) {
-//                return response()->json([
-//                    'data' => 'You have already done feedback.'
-//                ], 409);
-//            }
+
+            $userExists = false;
+            $evaluatorExits = false;
+            $slotExits = false;
 
             $data = [
                 'auditions_id' => $request->auditions,
@@ -46,6 +45,7 @@ class FeedBackController extends Controller
                 'favorite' => $request->favorite,
                 'slot_id'=>$request->slot_id
             ];
+
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);
             if ($data->id) {
