@@ -17,6 +17,7 @@ class CreateNotificationSettingsTable extends Migration
             $table->increments('id');
             $table->enum('status',['on', 'off']);
             $table->string('code')->unique();
+            $table->string('label');
             $table->timestamps();
         });
     }
