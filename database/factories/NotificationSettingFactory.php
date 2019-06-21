@@ -6,5 +6,6 @@ $factory->define(App\Models\Notifications\NotificationSetting::class, function (
     return [
             'status' => 'on',
             'code' => 'autidion_update',
+        'label'=>'Audition update'
         ];
 });

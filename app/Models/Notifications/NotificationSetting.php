@@ -7,7 +7,8 @@ class NotificationSetting extends Model
     protected $fillable = [
         'status',
         'code',
+        'label'
     ];
-    
+
 }
 

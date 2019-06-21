@@ -38,20 +38,20 @@ class NotificationSettingUnitTest extends TestCase
         $dataTest = $dataAll->all();
         $this->assertIsArray($dataTest->toArray());
         $this->assertTrue($dataTest->count() > 1);
-    } 
+    }
 
     public function test_create_notification_setting()
     {
-        $notificationable_type = 'auditions';  
+        $notificationable_type = 'auditions';
         $data = [
             'status' => 'on',
             'code' => 'autidion_update',
         ];
 
-        
+
         $notification_repo = new NotificationSettingRepository(new NotificationSetting());
         $notification_setting = $notification_repo->create($data);
-     
+
         $this->assertInstanceOf(NotificationSetting::class, $notification_setting);
         $this->assertEquals($data['code'], $notification_setting->code);
         $this->assertEquals($data['status'], $notification_setting->status);
@@ -65,11 +65,12 @@ class NotificationSettingUnitTest extends TestCase
 
         $this->assertInstanceOf(NotificationSetting::class, $found);
         $this->assertEquals($found->code,$notification_setting->code);
+        $this->assertEquals($found->label,$notification_setting->label);
 
     }
 
     public function test_update_notification_setting()
-    {    
+    {
         $data = [
             'status' => 'off'
         ];
@@ -80,7 +81,7 @@ class NotificationSettingUnitTest extends TestCase
         $update = $notification_setting_repo->update($data);
         $this->assertTrue($update);
         $this->assertInstanceOf(NotificationSetting::class, $notification_setting);
-        $this->assertEquals($data['status'], $notification_setting->status);   
+        $this->assertEquals($data['status'], $notification_setting->status);
     }
 
 
@@ -106,7 +107,7 @@ class NotificationSettingUnitTest extends TestCase
         $this->expectException(NotFoundException::class);
 
         $notification_setting = factory(NotificationSetting::class)->create();
-        
+
         $notification_setting_repo = new NotificationSettingRepository($notification_setting);
 
         $notification_setting_repo->find(282374);
