@@ -32,7 +32,5 @@ COPY --chown=www-data:www-data --from=vendor /app/vendor/ ./vendor
 COPY --chown=www-data:www-data --from=frontend /app/public/js/ ./public/js/
 COPY --chown=www-data:www-data --from=frontend /app/public/css/ ./public/css/
 COPY --chown=www-data:www-data --from=frontend /app/mix-manifest.json ./mix-manifest.json
-USER root
-RUN chmod 777 /var/www/html/storage -R
 EXPOSE 8080
 
