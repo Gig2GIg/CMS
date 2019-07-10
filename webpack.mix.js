@@ -15,6 +15,7 @@ require("dotenv").config();
  */
 
 mix
+  .setPublicPath('./')
   .js("resources/assets/js/app.js", "public/js")
   .sass("resources/assets/sass/app.scss", "public/css")
   .options({
