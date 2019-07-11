@@ -1,0 +1,89 @@
+version: '2.0'
+services:
+    web:
+        build: .
+        depends_on:
+            - db
+        ports:
+            - '8080:8080'
+        volumes:
+            - '.:/var/www/html'
+            - /var/www/html/vendor
+        environment:
+            DB_CONNECTION: mysql
+            DB_HOST: db
+            DB_PORT: 3306
+            DB_DATABASE: laravel
+            DB_USERNAME: laravel
+            DB_PASSWORD: laravel
+            APP_ENV: development
+            APP_KEY: 'base64:9Dxc6fGW2BBuu/z0PLs5z+14vmmhfO1wB3JRGZXjtTg='
+            APP_DEBUG: 'true'
+            LOG_CHANNEL: stderr
+    db:
+        image: 'mysql:5.7'
+        volumes:
+            - './db:/var/lib/mysql'
+        environment:
+            MYSQL_ROOT_PASSWORD: laravel
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: laravel
+            MYSQL_DATABASE: laravel
+    sonar:
+        image: sonarqube:lts
+        environment:
+            - SONARQUBE_JDBC_USERNAME=sonar
+            - SONARQUBE_JDBC_PASSWORD=v07IGCFCF83Z95NX
+            - SONARQUBE_JDBC_URL=jdbc:postgresql://db_sonar/sonarqube
+        ports:
+            - "9000:9000"
+            - "9092:9092"
+        volumes:
+            - ./tmp/sonarqube_conf:/opt/sonarqube/conf
+            - ./tmp/sonarqube_data:/opt/sonarqube/data
+            - ./tmp/sonarqube_extensions:/opt/sonarqube/extensions
+            - ./tmp/sonarqube_bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+    db-sonar:
+        image: postgres
+        volumes:
+            - ./db_sonar:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_USER=sonar
+            - POSTGRES_PASSWORD=v07IGCFCF83Z95NX
+            - POSTGRES_DB=sonarqube
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+        volumes:
+            - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        environment:
+            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    logstash:
+        image: docker.elastic.co/logstash/logstash:6.4.2
+        volumes:
+            - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+            - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+        ports:
+            - "5000:5000"
+        environment:
+            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+        depends_on:
+            - elasticsearch
+    kibana:
+        image: docker.elastic.co/kibana/kibana:6.4.2
+        volumes:
+            - ./elk/kibana/config/:/usr/share/kibana/config:ro
+        ports:
+            - "5601:5601"
+        depends_on:
+            - elasticsearch
+    apm_server:
+        image: docker.elastic.co/apm/apm-server:6.4.2
+        volumes:
+            - ./elk/apm/config/:/usr/share/apm/config:ro
+        ports:
+            - "8200:8200"
+        depends_on:
+            - elasticsearch

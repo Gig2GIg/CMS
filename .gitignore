@@ -3,7 +3,7 @@
 /public/storage
 /storage/*.key
 /vendor
-.env
+.env.bk
 .env.testing
 .idea
 .phpunit.result.cache
@@ -15,3 +15,4 @@ sonar-project.properties
 /build
 /.scannerwork/
  .DS_Store
+db
