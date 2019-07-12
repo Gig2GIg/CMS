@@ -26,12 +26,11 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 RUN sed -s -i -e "s/80/${PORT}/" /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
 WORKDIR /var/www/html
-USER www-data
-COPY --chown=www-data:www-data . .
-COPY --chown=www-data:www-data --from=vendor /app/vendor/ ./vendor
-COPY --chown=www-data:www-data --from=frontend /app/public/js/ ./public/js/
-COPY --chown=www-data:www-data --from=frontend /app/public/css/ ./public/css/
-COPY --chown=www-data:www-data --from=frontend /app/mix-manifest.json ./mix-manifest.json
-RUN chmod 777 bootstrap/cache -R
+COPY . .
+COPY --from=vendor /app/vendor/ ./vendor
+COPY --from=frontend /app/public/js/ ./public/js/
+COPY --from=frontend /app/public/css/ ./public/css/
+COPY --from=frontend /app/mix-manifest.json ./mix-manifest.json
+RUN chmod 775 -R /var/www/html && chown www-data:www-data -R /var/www/html && chmod 777 bootstrap/cache -R && chmod 777 storage
 EXPOSE 8080
 
