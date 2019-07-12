@@ -31,6 +31,6 @@ COPY --from=vendor /app/vendor/ ./vendor
 COPY --from=frontend /app/public/js/ ./public/js/
 COPY --from=frontend /app/public/css/ ./public/css/
 COPY --from=frontend /app/mix-manifest.json ./mix-manifest.json
-RUN chmod 775 -R /var/www/html && chown www-data:www-data -R /var/www/html && chmod 777 bootstrap/cache -R && chmod 777 storage
+RUN chmod 775 -R /var/www/html && chown www-data:www-data -R /var/www/html && chmod 777 bootstrap/cache -R && chmod 777 /var/www/html/storage
 EXPOSE 8080
 
