@@ -32,5 +32,6 @@ COPY --chown=www-data:www-data --from=vendor /app/vendor/ ./vendor
 COPY --chown=www-data:www-data --from=frontend /app/public/js/ ./public/js/
 COPY --chown=www-data:www-data --from=frontend /app/public/css/ ./public/css/
 COPY --chown=www-data:www-data --from=frontend /app/mix-manifest.json ./mix-manifest.json
+RUN chown www-data:www-data bootstrap/cache -R
 EXPOSE 8080
 
