@@ -51,7 +51,7 @@ class AuditionManagementController extends Controller
                 'user_id' => $this->getUserLogging(),
                 'auditions_id' => $request->auditions,
                 'rol_id' => $request->rol,
-                'type' => $request->type
+                'type' => $request->type,
             ];
             $userAudi = new UserAuditions();
             $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
@@ -62,18 +62,15 @@ class AuditionManagementController extends Controller
                 return response()->json(['data' => 'You already registered'], 406);
             } else {
                 $data = $userAuditions->create($data);
-                if ($request->type === 2) {
+               if ($request->type === 2) {
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
                     $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
-
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
-
-
                     $auditionRepo = new AuditionRepository(new Auditions());
                     $audition = $auditionRepo->find($request->auditions);
-                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url'=>$audition->url];
+                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
                     if (isset($userManager->email) !== null && isset($userManager->notifications)) {
                         $mail = new SendMail();
                         $mail->sendManager($userManager->email, $dataMail);
@@ -83,6 +80,16 @@ class AuditionManagementController extends Controller
                         'upcoming_audition',
                         $detailData
                     );
+                }else{
+                 $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                $dataSlotRepo->create([
+                    'user_id' => $this->getUserLogging(),
+                    'auditions_id' => $request->auditions,
+                    'slots_id' => null,
+                    'roles_id' => $request->rol,
+                    'status' => 1
+                ]);
+
                 }
             }
             return response()->json(['data' => 'Audition Saved'], 201);
@@ -97,18 +104,21 @@ class AuditionManagementController extends Controller
     {
         try {
             DB::beginTransaction();
-            if (isset($request->slot)) {
+
+            $dataSlot = isset($request->slot['slot']) ? $request->slot['slot'] : null;
+
+            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+                $dataAuditionsUser = $dataRepoAuditionUser->find($request->id);
                 $dataRepo = new UserSlotsRepository(new UserSlots());
                 $dataRepo->create([
                     'user_id' => $this->getUserLogging(),
-                    'auditions_id' => $request->slot['auditions'],
-                    'slots_id' => $request->slot['slot'],
-                    'roles_id' => $request->slot['rol']
+                    'auditions_id' => $dataAuditionsUser->auditions_id,
+                    'slots_id' => $dataSlot,
+                    'roles_id' => $dataAuditionsUser->rol_id,
+                    'status'=>1
                 ]);
-            }
-            $dataSlot = isset($request->slot['slot']) ? $request->slot['slot'] : null;
-            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-            $updateAudi = $dataRepoAuditionUser->find($request->id)->update([
+
+            $updateAudi =$dataAuditionsUser ->update([
                 'type' => '1',
                 'slot_id' => $dataSlot
             ]);

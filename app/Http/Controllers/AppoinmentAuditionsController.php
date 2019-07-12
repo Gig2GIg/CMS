@@ -64,50 +64,75 @@ class AppoinmentAuditionsController extends Controller
 
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $iduser = null;
+            $data = null;
             if (isset($request->email)) {
                 $dataUserRepo = new UserRepository(new User());
                 $dataUser = $dataUserRepo->findbyparam('email', $request->email);
                 $iduser = $dataUser->id;
             } else {
                 $iduser = $request->user;
+
             }
             $dataCheckRepo = new UserSlots();
-            $dataCheck = $dataCheckRepo->where('user_id','=',$iduser)->where('roles_id','=',$request->rol)->where('slots_id','=',$request->slot);
-            if($dataCheck->count() > 0){
-                $dataResponse = 'You already registered';
-                $code = 406;
-            }else {
-                $createData = $dataRepo->create([
+            $dataCheck = $dataCheckRepo
+                ->where('user_id', '=', $iduser)
+                ->where('roles_id', '=', $request->rol)
+                ->where('slots_id', '=', $request->slot);
+            if ($dataCheck->count() > 0) {
+                throw new \Exception('You already registered');
+            }
+
+            $dataCheckUpdate = new UserSlots();
+            $proccessData = $dataCheckUpdate
+                ->where('user_id', '=', $iduser)
+                ->where('roles_id', '=', $request->rol)
+                ->where('auditions_id', '=', $request->auditions);
+            $dataSave = new UserSlots();
+            if ($proccessData->count() == 0) {
+               $data= $dataSave->create([
                     'user_id' => $iduser,
                     'auditions_id' => $request->auditions,
                     'slots_id' => $request->slot,
                     'roles_id' => $request->rol,
+                    'status' => 2
                 ]);
-                $slot = new SlotsRepository(new Slots());
-                $slot->find($request->slot)->update([
-                    'status' => '1'
+            } else {
+
+                $data = $dataSave->save([
+                    'user_id' => $iduser,
+                    'auditions_id' => $request->auditions,
+                    'slots_id' => $request->slot,
+                    'roles_id' => $request->rol,
+                    'status' => 2
                 ]);
-                $userRepo = new UserRepository(new User());
-                $user = $userRepo->find($iduser);
 
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($request->auditions);
-
-                try {
-                    $this->sendPushNotification(
-                        $audition,
-                        'check_in',
-                        $audition,
-                        null
-                    );
-
-                } catch (NotificationException $exception) {
-                    $this->log->error($exception->getMessage());
-                }
-
-                $dataResponse = new AppointmentResource($createData);
-                $code = 200;
             }
+
+            $slot = new SlotsRepository(new Slots());
+            $slot->find($request->slot)->update([
+                'status' => '1'
+            ]);
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($iduser);
+
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audition = $auditionRepo->find($request->auditions);
+
+            try {
+                $this->sendPushNotification(
+                    $audition,
+                    'check_in',
+                    $audition,
+                    null
+                );
+
+            } catch (NotificationException $exception) {
+                $this->log->error($exception->getMessage());
+            }
+
+            $dataResponse = new AppointmentResource($data);
+            $code = 200;
+
             return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

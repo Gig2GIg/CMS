@@ -39,7 +39,7 @@ class AuditionManagementTest extends TestCase
         factory(UserManager::class)->create([
             'user_id' => $this->userId,
             'notifications' => true,
-            'email' => 'alphyon21@gmail.com'
+            'email' => $this->faker->safeEmail,
         ]);
 
         $response = $this->json('POST',
@@ -186,7 +186,11 @@ class AuditionManagementTest extends TestCase
                 'password' => bcrypt('123456')]
         );
         $this->testId = $user->id;
-        $user->image()->create(['url' => $this->faker->url, 'name' => 'test']);
+//        $user->image()->create([
+//            'url' => $this->faker->url,
+//            'name' => 'test',
+//            'type'=>6
+//        ]);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 2,
             'user_id' => $user->id,
