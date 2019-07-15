@@ -62,7 +62,6 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
 
-            $dataRepo = new UserSlotsRepository(new UserSlots());
             $iduser = null;
             $data = null;
             if (isset($request->email)) {
@@ -73,22 +72,22 @@ class AppoinmentAuditionsController extends Controller
                 $iduser = $request->user;
 
             }
-            $dataCheckRepo = new UserSlots();
-            $dataCheck = $dataCheckRepo
-                ->where('user_id', '=', $iduser)
-                ->where('roles_id', '=', $request->rol)
-                ->where('slots_id', '=', $request->slot);
-            if ($dataCheck->count() > 0) {
+            $dataSlotUser = new UserSlots();
+            $dataCompareExistsRegister = $dataSlotUser->where('user_id', $iduser)
+            ->where('roles_id', '=', $request->rol)
+            ->where('slots_id', '=', $request->slot);
+            if ($dataCompareExistsRegister->count() > 0) {
                 throw new \Exception('You already registered');
             }
 
-            $dataCheckUpdate = new UserSlots();
-            $proccessData = $dataCheckUpdate
+            $dataSlotReserved = new UserSlots();
+            $dataCompareExists = $dataSlotReserved
                 ->where('user_id', '=', $iduser)
                 ->where('roles_id', '=', $request->rol)
-                ->where('auditions_id', '=', $request->auditions);
-            $dataSave = new UserSlots();
-            if ($proccessData->count() == 0) {
+                ->where('auditions_id', '=', $request->auditions)->first();
+            $elementcount = $dataCompareExists ??  collect([]);
+            if ($elementcount->count() == 0) {
+                $dataSave = new UserSlots();
                $data= $dataSave->create([
                     'user_id' => $iduser,
                     'auditions_id' => $request->auditions,
@@ -97,14 +96,16 @@ class AppoinmentAuditionsController extends Controller
                     'status' => 2
                 ]);
             } else {
-
-                $data = $dataSave->save([
+                $this->log->info("COMPARE::".$dataCompareExists);
+                $this->log->info("COMPARE::".$dataCompareExists->id);
+               UserSlots::find($dataCompareExists->id)->update([
                     'user_id' => $iduser,
                     'auditions_id' => $request->auditions,
                     'slots_id' => $request->slot,
                     'roles_id' => $request->rol,
                     'status' => 2
                 ]);
+                $data = UserSlots::where('id','=',$dataCompareExists->id)->first();
 
             }
 
@@ -135,7 +136,7 @@ class AppoinmentAuditionsController extends Controller
 
             return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error("Line:".$exception->getLine()." ".$exception->getMessage()." ".$exception->getFile());
             return response()->json(['data' => 'Appointment not assigned'], 406);
         }
     }
@@ -145,9 +146,8 @@ class AppoinmentAuditionsController extends Controller
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $data = $dataRepo->findbyparam('auditions_id', $request->audition);
-
-
-            $dataResponse = AppointmentResource::collection($data);
+            $res = $data->where('status','=','checked');
+            $dataResponse = AppointmentResource::collection($res);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

@@ -28,6 +28,12 @@ class ManageAppointmentControllerTest extends TestCase
         $rol = factory(Roles::class)->create([
             'auditions_id'=>$audition->id
         ]);
+        $useSlot = factory(UserSlots::class)->create([
+            'user_id'=>$user->id,
+            'auditions_id'=>$audition->id,
+            'roles_id'=>$rol->id,
+            'status'=>2
+        ]);
 
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
             'slot' => $slot->id,
