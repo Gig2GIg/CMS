@@ -62,55 +62,81 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
 
-            $dataRepo = new UserSlotsRepository(new UserSlots());
             $iduser = null;
+            $data = null;
             if (isset($request->email)) {
                 $dataUserRepo = new UserRepository(new User());
                 $dataUser = $dataUserRepo->findbyparam('email', $request->email);
                 $iduser = $dataUser->id;
             } else {
                 $iduser = $request->user;
+
             }
-            $dataCheckRepo = new UserSlots();
-            $dataCheck = $dataCheckRepo->where('user_id','=',$iduser)->where('roles_id','=',$request->rol)->where('slots_id','=',$request->slot);
-            if($dataCheck->count() > 0){
-                $dataResponse = 'You already registered';
-                $code = 406;
-            }else {
-                $createData = $dataRepo->create([
+            $dataSlotUser = new UserSlots();
+            $dataCompareExistsRegister = $dataSlotUser->where('user_id', $iduser)
+            ->where('roles_id', '=', $request->rol)
+            ->where('slots_id', '=', $request->slot);
+            if ($dataCompareExistsRegister->count() > 0) {
+                throw new \Exception('You already registered');
+            }
+
+            $dataSlotReserved = new UserSlots();
+            $dataCompareExists = $dataSlotReserved
+                ->where('user_id', '=', $iduser)
+                ->where('roles_id', '=', $request->rol)
+                ->where('auditions_id', '=', $request->auditions)->first();
+            $elementcount = $dataCompareExists ??  collect([]);
+            if ($elementcount->count() == 0) {
+                $dataSave = new UserSlots();
+               $data= $dataSave->create([
                     'user_id' => $iduser,
                     'auditions_id' => $request->auditions,
                     'slots_id' => $request->slot,
                     'roles_id' => $request->rol,
+                    'status' => 2
                 ]);
-                $slot = new SlotsRepository(new Slots());
-                $slot->find($request->slot)->update([
-                    'status' => '1'
+            } else {
+                $this->log->info("COMPARE::".$dataCompareExists);
+                $this->log->info("COMPARE::".$dataCompareExists->id);
+               UserSlots::find($dataCompareExists->id)->update([
+                    'user_id' => $iduser,
+                    'auditions_id' => $request->auditions,
+                    'slots_id' => $request->slot,
+                    'roles_id' => $request->rol,
+                    'status' => 2
                 ]);
-                $userRepo = new UserRepository(new User());
-                $user = $userRepo->find($iduser);
+                $data = UserSlots::where('id','=',$dataCompareExists->id)->first();
 
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($request->auditions);
-
-                try {
-                    $this->sendPushNotification(
-                        $audition,
-                        'check_in',
-                        $audition,
-                        null
-                    );
-
-                } catch (NotificationException $exception) {
-                    $this->log->error($exception->getMessage());
-                }
-
-                $dataResponse = new AppointmentResource($createData);
-                $code = 200;
             }
+
+            $slot = new SlotsRepository(new Slots());
+            $slot->find($request->slot)->update([
+                'status' => '1'
+            ]);
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($iduser);
+
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audition = $auditionRepo->find($request->auditions);
+
+            try {
+                $this->sendPushNotification(
+                    $audition,
+                    'check_in',
+                    $audition,
+                    null
+                );
+
+            } catch (NotificationException $exception) {
+                $this->log->error($exception->getMessage());
+            }
+
+            $dataResponse = new AppointmentResource($data);
+            $code = 200;
+
             return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error("Line:".$exception->getLine()." ".$exception->getMessage()." ".$exception->getFile());
             return response()->json(['data' => 'Appointment not assigned'], 406);
         }
     }
@@ -120,9 +146,8 @@ class AppoinmentAuditionsController extends Controller
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $data = $dataRepo->findbyparam('auditions_id', $request->audition);
-
-
-            $dataResponse = AppointmentResource::collection($data);
+            $res = $data->where('status','=','checked');
+            $dataResponse = AppointmentResource::collection($res);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

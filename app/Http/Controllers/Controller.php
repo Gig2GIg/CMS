@@ -16,7 +16,14 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    protected $log;
+
+       protected $log;
+
+    public function __construct()
+    {
+        $this->middleware('jwt', ['except' => []]);
+        $this->log = new LogManger();
+    }
 
     public function getDataToken()
     {
