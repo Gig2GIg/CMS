@@ -2,12 +2,16 @@
 
 namespace Tests\Unit;
 
+use App\Http\Controllers\AuditionManagementController;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\AuditionRepository;
+use App\Models\Appointments;
 use App\Models\Auditions;
+use App\Models\Slots;
 use App\Models\User;
+use App\Models\UserSlots;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -133,6 +137,49 @@ class AuditionsUnitTest extends TestCase
         $data = $audition_repo->findMediaByParams('audio');
         $this->assertIsArray($data->toArray());
         $this->assertTrue($data->count() > 0);
+    }
+
+    public function test_count_slots_not_avalibled(){
+        $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+        $users = factory(User::class,10)->create();
+        $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
+        $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
+
+       $users->each(function ($item) use ($audition){
+          factory(UserSlots::class)->create([
+              'user_id' => $item->id,
+              'auditions_id'=>$audition->id,
+              'status'=>'reserved'
+          ]);
+       });
+
+
+        $element = new AuditionManagementController();
+
+        $this->assertFalse($element->alertSlotsEmpty($audition->id));
+
+
+    }
+    public function test_count_slots_avalibled(){
+        $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+        $users = factory(User::class,7)->create();
+        $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
+        $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
+
+        $users->each(function ($item) use ($audition){
+            factory(UserSlots::class)->create([
+                'user_id' => $item->id,
+                'auditions_id'=>$audition->id,
+                'status'=>'reserved'
+            ]);
+        });
+
+
+        $element = new AuditionManagementController();
+
+        $this->assertTrue($element->alertSlotsEmpty($audition->id));
+
+
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionVideosRepository;
@@ -18,6 +19,7 @@ use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\AuditionVideosResource;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
+use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
@@ -46,6 +48,9 @@ class AuditionManagementController extends Controller
     {
 
         try {
+            if(!$this->alertSlotsEmpty($request->auditions)){
+                throw new Exception('all the spaces of this audition have been reserved',10);
+            }
             $userAuditions = new UserAuditionsRepository(new UserAuditions());
             $data = [
                 'user_id' => $this->getUserLogging(),
@@ -95,7 +100,13 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['error' => 'Not Saved'], 500);
+            $message = $exception->getMessage();
+            $code = 406;
+            if($exception->getCode() !== 10){
+                $message = 'Not Saved';
+            }
+
+            return response()->json(['error' => $message], $code);
         }
 
     }
@@ -456,5 +467,33 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Not Found Data'], 404);
         }
+    }
+
+
+    public function alertSlotsEmpty($audition){
+        try {
+            $available = true;
+            $repoAppointmenst = new AppointmentRepository(new Appointments());
+            $repoUserSlots = new UserSlotsRepository(new UserSlots());
+
+            $slotsAppointment = $repoAppointmenst->findbyparam('auditions_id', $audition);
+            $countSlotsAppointment= $slotsAppointment->slot ?? collect([]);
+            $userSlots = $repoUserSlots->findbyparam('auditions_id', $audition);
+            $countUserSlots = $userSlots ?? collect([]);
+
+            if ($countUserSlots->count() >= $countSlotsAppointment->count()) {
+                $available = false;
+            }
+
+            return $available;
+        }catch (\Throwable $exception){
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+        catch (Exception $exception){
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+
     }
 }

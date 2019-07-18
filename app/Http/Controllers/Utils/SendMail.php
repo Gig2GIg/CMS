@@ -53,7 +53,7 @@ class SendMail
             $data['name'],
             $data['url'],
             $data['audition']);
-        $email->setFrom(env('SUPPORT_EMIAL'));
+        $email->setFrom(env('SUPPORT_EMAIL'));
         $email->setSubject('Check Auditions');
         $email->addTo($emailTo);
         $email->addContent("text/html", $content);
