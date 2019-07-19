@@ -15,6 +15,7 @@
         "laravel/cashier": "^9.2",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
+        "philkra/elastic-apm-laravel": "^5.8",
         "sendgrid/sendgrid": "^7.2",
         "tymon/jwt-auth": "dev-develop"
     },
