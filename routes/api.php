@@ -93,6 +93,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     // NOTIFICATIONS HISTORY
     $router->get('/notification-history','NotificationsController@getHistory');
     $router->put('/notification-send-pushkey','NotificationsController@update');
+    $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
+
 
 });
 
