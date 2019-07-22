@@ -8,6 +8,7 @@ use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
+
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
@@ -16,12 +17,14 @@ use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserRepository;
+
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
 use App\Http\Requests\MediaRequest;
 use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\ContributorsResource;
+
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -30,6 +33,7 @@ use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -276,7 +280,7 @@ class AuditionsController extends Controller
         return [
             'user_id' => $contrib->id,
             'auditions_id' => $audition->id,
-            'status' => true
+            'status' => false
         ];
 
     }
@@ -491,4 +495,33 @@ class AuditionsController extends Controller
             'status' => 'Success',
         ]);
     }
+
+
+    public function updateInviteContribuidor(Request $request)
+    {
+        try {
+            $repo = new AuditionContributorsRepository(new AuditionContributors());
+            $auditionContributorsData = $repo->findbyparam('user_id', $repuest->id);
+
+            $data = [
+                'status' => true
+            ];
+
+            $invite = $auditionContributorsData->update($data);
+            
+            if ($invite) {
+                $dataResponse = ['data' => 'Invite Accept'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Invite Error'];
+                $code = 404;
+            }
+
+            return response()->json(['data' => $dataResponse], $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Error to process'], 406);
+        }
+    }
+
 }
