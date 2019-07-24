@@ -53,7 +53,7 @@ class NotificationControllerTest extends TestCase
         ]]]);
     }
 
-    public function test_delete_skill_user_200()
+    public function test_delete_history_200()
     {
         $data = factory(NotificationHistory::class)->create(['user_id'=> $this->testId]);
 
