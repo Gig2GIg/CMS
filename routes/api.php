@@ -68,6 +68,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
+    $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
 
 
    //calendar routes
@@ -93,6 +94,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     // NOTIFICATIONS HISTORY
     $router->get('/notification-history','NotificationsController@getHistory');
     $router->put('/notification-send-pushkey','NotificationsController@update');
+    $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
+
 
 });
 

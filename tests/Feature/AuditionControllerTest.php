@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\Models\Appointments;
 use App\Models\Auditions;
+use App\Models\AuditionContributors;
 use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
@@ -348,5 +349,17 @@ class AuditionControllerTest extends TestCase
         $count = $this->count($response);
         $response->assertStatus(200);
         $this->assertTrue($count > 0);
+    }
+
+    public function test_accept_invite_contribuitor(){
+        $user = factory(User::class)->create();
+
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+      
+        $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
+
+        $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?token=' . $this->token);
+        $response->assertStatus(200);
+
     }
 }
