@@ -501,7 +501,7 @@ class AuditionsController extends Controller
     {
         try {
             $repo = new AuditionContributorsRepository(new AuditionContributors());
-            $auditionContributorsData = $repo->findbyparam('user_id', $repuest->id);
+            $auditionContributorsData = $repo->find($request->id);
 
             $data = [
                 'status' => true
@@ -510,14 +510,15 @@ class AuditionsController extends Controller
             $invite = $auditionContributorsData->update($data);
             
             if ($invite) {
-                $dataResponse = ['data' => 'Invite Accept'];
+                $dataResponse = 'Invite Accept';
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Invite Error'];
+                $dataResponse = 'Invite Error';
                 $code = 404;
             }
 
             return response()->json(['data' => $dataResponse], $code);
+            
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);

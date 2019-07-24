@@ -68,7 +68,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
-    $router->put('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
+    $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
 
 
    //calendar routes
