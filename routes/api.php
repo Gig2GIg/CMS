@@ -69,7 +69,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
-
+    $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
 
    //calendar routes
    $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
