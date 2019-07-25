@@ -98,6 +98,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //MARKETPLACE
     $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
+     $router->get('marketplaces/{marketplaceCategory}/vendors', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
 
 });
 
