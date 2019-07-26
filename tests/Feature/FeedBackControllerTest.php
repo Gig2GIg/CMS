@@ -42,15 +42,15 @@ class FeedBackControllerTest extends TestCase
             'dancing',
         ];
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
-            'auditions' => 3,//$this->auditionId,
-            'user' => 7,//$user->id, //id usuario que recibe evaluacion
-            'evaluator' =>6, //$this->userId,//id de usuario que da feecback,
+            'auditions' => $this->auditionId,//$this->auditionId,
+            'user' => $user->id,//$user->id, //id usuario que recibe evaluacion
+            'evaluator' => $this->userId, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
-          'favorite' => $this->faker->boolean(),
-
-            'slot_id'=>$slot->id
+            'favorite' => $this->faker->boolean(),
+            'slot_id'=>$slot->id,
+            'comment' => $this->faker->text()
         ]);
 
         $response->assertStatus(201);
@@ -85,7 +85,7 @@ class FeedBackControllerTest extends TestCase
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
             'favorite' => $this->faker->boolean(),
-
+            'comment' => $this->faker->text(),
             'slot_id'=>$slot->id
         ]);
 
@@ -153,7 +153,7 @@ class FeedBackControllerTest extends TestCase
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
             'favorite' => $this->faker->boolean(),
-
+             'comment' => $this->faker->text(),
             'slot_id'=>$slot->id
         ]);
 
