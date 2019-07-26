@@ -32,9 +32,9 @@ class RecommendationsController extends Controller
        ];
        $recommendation = $recommendationsRepo->create($data);
      
-       if (recommendation) {
+       if ($recommendation) {
            $responseData = 'Recommendations save';
-           $code = 200;
+           $code = 201;
        } else {
             $responseData = 'Unproccesable';
             $code = 422;

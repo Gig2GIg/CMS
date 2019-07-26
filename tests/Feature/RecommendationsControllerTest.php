@@ -44,7 +44,9 @@ class RecommendationsControllerTest extends TestCase
         $user2 = factory(User::class)->create();
         $this->user_id = $user2->id;
 
-        $audition = factory(Auditions::class)->create();
+        $audition = factory(Auditions::class)->create(
+            ['user_id' => $user2->id]
+        );
         $this->audition_id = $audition->id;
 
         $this->token = $response->json('access_token');
@@ -55,15 +57,15 @@ class RecommendationsControllerTest extends TestCase
     public function testCreateRecommendationsMarketplaces201()
     {
         $data = [
-            'marketplace_id' => $this->faker->numberBetween(1,2),
-            'user_id' => $this->faker->numberBetween(1,2),
-            'audition_id' => $this->faker->numberBetween(1,2),
+            'marketplace_id' => $this->marketplace_id,
+            'user_id' => $this->user_id,
+            'audition_id' => $this->audition_id,
         ];
 
         $response = $this->json('POST',
             'api/t/auditions/feeback/recommendations-marketplaces?token=' . $this->token,
             $data);
-        
+    
         $response->assertStatus(201);
     }
 
