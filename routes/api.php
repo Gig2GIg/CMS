@@ -81,6 +81,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
 
+    $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
+
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
 
@@ -96,6 +98,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/notification-send-pushkey','NotificationsController@update');
     $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
 
+    //MARKETPLACE
+    $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
+     $router->get('marketplaces/{marketplaceCategory}/vendors', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
 
 });
 
