@@ -13,7 +13,9 @@ use Tests\TestCase;
 class NotificationControllerTest extends TestCase
 {
     protected $token;
+    protected $token_performance;
     protected $testId;
+    protected $performanceId;
     protected $skillId;
 
     public function setUp(): void
@@ -35,6 +37,25 @@ class NotificationControllerTest extends TestCase
         ]);
         
         $this->token = $response->json('access_token');
+        
+        // USER PERFORMANCE
+        $user_performance = factory(User::class)->create([
+                'email' => 'performance@test.com',
+                'password' => bcrypt('123456')]
+        );
+        $this->performanceId = $user_performance->id;
+        $user_performance->image()->create(['url' => $this->faker->url,'name'=>'test']);
+        $user_performanceDetails = factory(UserDetails::class)->create([
+            'type' => 2,
+            'user_id' => $user_performance->id,
+        ]);
+        $response = $this->post('api/login', [
+            'email' => 'performance@test.com',
+            'password' => '123456',
+        ]);
+        
+        $this->token_performance = $response->json('access_token');
+        
 
     }
 
@@ -53,11 +74,20 @@ class NotificationControllerTest extends TestCase
         ]]]);
     }
 
-    public function test_delete_history_200()
+    public function test_delete_history_director_200()
     {
         $data = factory(NotificationHistory::class)->create(['user_id'=> $this->testId]);
 
         $response = $this->json('DELETE','api/t/notification-history/delete/'.$data->id.'?token='.$this->token);
+        $response->assertStatus(200);
+
+    }
+
+    public function test_delete_history_performance200()
+    {
+        $data = factory(NotificationHistory::class)->create(['user_id'=> $this->performanceId]);
+
+        $response = $this->json('DELETE','api/a/notification-history/delete/'.$data->id.'?token='.$this->token_performance);
         $response->assertStatus(200);
 
     }
