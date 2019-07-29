@@ -138,6 +138,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/aparences/byuser',['uses'=>'AparencesController@byUser']);
     $router->post('/aparences',['uses'=>'AparencesController@store']);
     $router->put('/aparences/update/{id}',['uses'=>'AparencesController@update']);
+
     //Education routes
     $router->post('/educations/create',['uses'=>'EducationsController@store']);
     $router->get('/educations/show',['uses'=>'EducationsController@getAll']);
@@ -193,6 +194,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     //feedback final user
     $router->get('feedbacks/final/{id}',['uses'=>'FeedBackController@finalUserFeedback']);
 
+    // MARKEPLACE RECOMMENDATIONS
+    $router->get('/auditions/{audition}/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@list']);
 });
 
 
