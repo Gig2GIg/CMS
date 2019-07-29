@@ -14,6 +14,7 @@ class Feedbacks extends Model
         'callback',
         'work',
         'favorite',
-        'slot_id'
+        'slot_id',
+        'comment'
     ];
 }
