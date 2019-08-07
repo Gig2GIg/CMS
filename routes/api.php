@@ -83,6 +83,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
     $router->post('feedbacks/tags', ['uses'=>'TagsController@store']);
     $router->delete('feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
+    $router->get('feedbacks/{id}/tags', ['uses'=>'TagsController@list']);
 
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');

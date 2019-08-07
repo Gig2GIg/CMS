@@ -94,12 +94,21 @@ class TagsControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
-
     public function test_delete_tags_200()
     {
         
         $tag = factory(Tags::class)->create(['feedback_id' => $this->feedback_id]);
         $response = $this->json('DELETE', 'api/t/feedbacks/tags/'. $tag->id. '/delete' .'?token=' . $this->token);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_list_tags_200()
+    {
+        
+        factory(Tags::class, 20)->create(['feedback_id' => $this->feedback_id]);
+
+        $response = $this->json('GET', 'api/t/feedbacks/'. $this->feedback_id. '/tags' .'?token=' . $this->token);
 
         $response->assertStatus(200);
     }

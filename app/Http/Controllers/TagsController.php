@@ -68,4 +68,27 @@ class TagsController extends Controller
         }
 
     }
+
+
+    public function list(Request $request)
+    {
+        try {
+            $repoTag = new TagsRepository(new Tags());
+            $tag = $repoTag->find($request->id);
+
+            if ($tag) {
+                $dataResponse = ['data' => 'Tag removed'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Tag not removed'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
 }
