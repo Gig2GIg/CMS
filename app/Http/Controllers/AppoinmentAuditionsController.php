@@ -155,6 +155,12 @@ class AppoinmentAuditionsController extends Controller
         }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return void
+     */
     public function showCms(Request $request)
     {
         try {
