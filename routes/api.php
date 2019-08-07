@@ -69,7 +69,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
-
+    $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
 
    //calendar routes
    $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
@@ -80,6 +80,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //feedback
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
+
+    $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
 
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
@@ -96,6 +98,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/notification-send-pushkey','NotificationsController@update');
     $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
 
+    //MARKETPLACE
+    $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
+     $router->get('marketplaces/{marketplaceCategory}/vendors', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
 
 });
 
@@ -133,6 +138,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/aparences/byuser',['uses'=>'AparencesController@byUser']);
     $router->post('/aparences',['uses'=>'AparencesController@store']);
     $router->put('/aparences/update/{id}',['uses'=>'AparencesController@update']);
+
     //Education routes
     $router->post('/educations/create',['uses'=>'EducationsController@store']);
     $router->get('/educations/show',['uses'=>'EducationsController@getAll']);
@@ -164,6 +170,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     // NOTIFICATIONS HISTORY
     $router->get('/notification-history','NotificationsController@getHistory');
     $router->put('/notification-send-pushkey','NotificationsController@update');
+    $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
 
 
     // CONTENT SETTING
@@ -187,6 +194,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     //feedback final user
     $router->get('feedbacks/final/{id}',['uses'=>'FeedBackController@finalUserFeedback']);
 
+    // MARKEPLACE RECOMMENDATIONS
+    $router->get('/auditions/{audition}/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@list']);
 });
 
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
+
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
@@ -14,11 +15,14 @@ use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
+use App\Http\Repositories\ResourcesRepository;
+
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\AuditionVideosResource;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
+
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -28,6 +32,8 @@ use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use App\Models\UserManager;
 use App\Models\UserSlots;
+use App\Models\Resources;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -496,4 +502,33 @@ class AuditionManagementController extends Controller
         }
 
     }
+
+    public function updateDocument(Request $request)
+    {
+        try {
+            $repoResource = new ResourcesRepository(new Resources());
+            $resourceData = $repoResource->find($request->id);
+
+            $data = [
+                'shareable' => $request->shareable
+            ];
+
+            $resource = $resourceData->update($data);
+            
+            if ($resource) {
+                $dataResponse = 'Document update';
+                $code = 200;
+            } else {
+                $dataResponse = 'Error';
+                $code = 422;
+            }
+
+            return response()->json(['data' => $dataResponse], $code);
+            
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Error to process'], 406);
+        }
+    }
+
 }
