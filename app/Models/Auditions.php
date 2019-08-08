@@ -60,4 +60,8 @@ class Auditions extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function recommendations_marketplaces(){
+        return $this->hasMany(Recommendations::class, 'audition_id');
+    }
 }

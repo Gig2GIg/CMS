@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: alphyon
- * Date: 2019-03-27
- * Time: 17:24
+ * Date: 2019-03-28
+ * Time: 16:19
  */
 
 namespace App\Http\Repositories;
@@ -13,28 +13,24 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\ICreditsRepository;
-use App\Models\Credits;
+use App\Http\Repositories\Interfaces\IRecommendationsRepository;
+use App\Models\Recommendations;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class CreditsRepository implements ICreditsRepository
+class RecommendationsRepository implements IRecommendationsRepository
 {
     protected $model;
     protected $log;
 
-    /**
-     * UserRepository constructor.
-     * @param User $user
-     */
-    public function __construct(Credits $credits)
+    public function __construct(Recommendations $recommendations)
     {
-        $this->model = $credits;
+        $this->model = $recommendations;
         $this->log = new LogManger();
     }
 
 
-    public function create(array $data): Credits
+    public function create(array $data): Recommendations
     {
 
 
@@ -48,7 +44,7 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function find($id): Credits
+    public function find($id): Recommendations
     {
         try{
             return $this->model->findOrFail($id);
@@ -60,11 +56,11 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function findbyparam($colum, $value)
+    public function findbyparam($colum, $value): Recommendations
     {
         try{
 
-            return $this->model->where($colum,'=',$value);
+            return $this->model->where($colum,'=',$value)->first();
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");

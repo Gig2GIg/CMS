@@ -8,8 +8,8 @@ use Illuminate\Database\QueryException;
 use App\Http\Controllers\Utils\LogManger;
 
 use App\Http\Controllers\Controller;
-use App\Http\Repositories\Notification\NotificationSettingUserRepository;
-use App\Models\Notifications\NotificationSettingUser;
+use App\Http\Repositories\Notification\NotificationHistoryRepository;
+use App\Models\Notifications\NotificationHistory;
 use App\Models\User;
 use App\Http\Requests\NotificationPushKeyRequest;
 use App\Http\Resources\NoficationsResource;
@@ -67,6 +67,28 @@ class NotificationsController extends Controller
             return response()->json(['data' => "Not found Data"], 404);  
         }
     }
+
+    public function delete(Request $request)
+    {
+        try {
+            $repo = new NotificationHistoryRepository(new NotificationHistory());
+        
+            $data = $repo->find($request->id)->delete();
+
+            if ($data) {
+                $dataResponse = ['data' => 'Notification removed'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Notification not removed'];
+                $code = 404;
+            }
+
+            return response()->json($dataResponse, $code);
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
+
 
 }
 

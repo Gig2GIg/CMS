@@ -1,42 +1,31 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: alphyon
- * Date: 2019-03-27
- * Time: 17:24
- */
-
-namespace App\Http\Repositories;
+namespace App\Http\Repositories\Notification;
 
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\ICreditsRepository;
-use App\Models\Credits;
+use App\Http\Repositories\Interfaces\Notification\INotificationRepository;
+use App\Models\Notifications\NotificationHistory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class CreditsRepository implements ICreditsRepository
+class NotificationHistoryRepository implements INotificationRepository
 {
     protected $model;
     protected $log;
 
-    /**
-     * UserRepository constructor.
-     * @param User $user
-     */
-    public function __construct(Credits $credits)
+
+    public function __construct(NotificationHistory $notification)
     {
-        $this->model = $credits;
+        $this->model = $notification;
         $this->log = new LogManger();
     }
 
 
-    public function create(array $data): Credits
+    public function create(array $data): NotificationHistory
     {
-
 
         try {
             return $this->model->create($data);
@@ -48,7 +37,7 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function find($id): Credits
+    public function find($id): NotificationHistory
     {
         try{
             return $this->model->findOrFail($id);
@@ -60,11 +49,12 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function findbyparam($colum, $value)
+    public function findbyparam($colum, $value) : NotificationHistory
+
     {
         try{
 
-            return $this->model->where($colum,'=',$value);
+            return $this->model->where($colum,'=',$value)->first();
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
@@ -93,6 +83,7 @@ class CreditsRepository implements ICreditsRepository
 
     public function all()
     {
-        return $this->model->all();
+      return $this->model->all();
     }
+
 }
