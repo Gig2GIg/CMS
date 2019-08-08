@@ -60,7 +60,17 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
+    public function findbyparam($colum, $value)
+    {
+        try{
 
+            return $this->model->where($colum,'=',$value);
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
+    }
 
 
     public function update(array $data) : bool
