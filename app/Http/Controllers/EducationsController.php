@@ -78,7 +78,7 @@ class EducationsController extends Controller
     {
 
         $repo = new EducationsRepository(new Educations());
-        $data = $repo->findbyparam('user_id',$this->getUserLogging());
+        $data = $repo->findbyparam('user_id',$this->getUserLogging())->get();
         if ($data->count() > 0) {
             $dataResponse = ['data' => EducationsResource::collection($data)];
             $code = 200;
