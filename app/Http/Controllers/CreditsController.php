@@ -78,7 +78,6 @@ class CreditsController extends Controller
      */
     public function getAll(Credits $credits)
     {
-//change
             $repo = new CreditsRepository(new Credits());
             $data = $repo->findbyparam('user_id',$this->getUserLogging())->get();
             if ($data->count() > 0) {
