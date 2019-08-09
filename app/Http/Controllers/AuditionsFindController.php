@@ -87,6 +87,8 @@ class AuditionsFindController extends Controller
 
                 }
 
+            }else{
+                $elementResponse = Auditions::all();
             }
             if (isset($request->union)) {
                 $elementResponse = $elementResponse->where('union', '=', $request->union);
