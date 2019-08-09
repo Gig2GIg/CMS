@@ -18,3 +18,5 @@ sonar-project.properties
 db
 tmp
 db_sonar
+Dockerfile
+docker-compose*
