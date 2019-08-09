@@ -33,11 +33,11 @@ class AuditionsFindController extends Controller
 
 
             if (isset($request->union)) {
-                $elementResponse->where('union', '=', $request->union);
+                $elementResponse->where('union', '=', strtoupper($request->union));
             }
 
             if (isset($request->contract)) {
-                $elementResponse->where('contract', '=', $request->contract);
+                $elementResponse->where('contract', '=', strtoupper($request->contract));
 
             }
 
@@ -91,11 +91,11 @@ class AuditionsFindController extends Controller
                 $elementResponse = Auditions::all();
             }
             if (isset($request->union)) {
-                $elementResponse = $elementResponse->where('union', '=', $request->union);
+                $elementResponse = $elementResponse->where('union', '=', strtoupper($request->union));
             }
 
             if (isset($request->contract)) {
-                $elementResponse = $elementResponse->where('contract', '=', $request->contract);
+                $elementResponse = $elementResponse->where('contract', '=', strtoupper($request->contract));
             }
             $response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
 
