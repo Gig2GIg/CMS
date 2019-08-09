@@ -18,93 +18,100 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 
-class AuditionsFindController
+class AuditionsFindController extends Controller
 {
     public function findByTitleAndMulti(Request $request)
     {
+        try {
 
-        $data = new Auditions();
-        $elementResponse = new Collection();
+            $data = new Auditions();
+            $elementResponse = new Collection();
 
-        if (isset($request->base)) {
-            $elementResponse = $data->where('title', 'like', "%{$request->base}%");
+            if (isset($request->base)) {
+                $elementResponse = $data->where('title', 'like', "%{$request->base}%");
+            }
+
+
+            if (isset($request->union)) {
+                $elementResponse->where('union', '=', $request->union);
+            }
+
+            if (isset($request->contract)) {
+                $elementResponse->where('contract', '=', $request->contract);
+
+            }
+
+            if (isset($request->production)) {
+
+                $elementResponse->where('production', 'like', "%{$request->production}%");
+
+            }
+
+
+            $data2 = $elementResponse->get()->sortByDesc('created_at');
+            $response = AuditionResourceFind::collection($data2);
+
+            if (count($data2) === 0) {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            } else {
+                $dataResponse = ['data' => $response];
+                $code = 200;
+            }
+
+
+            return response()->json($dataResponse, $code);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json( ['error' => 'Not Found'], 404);
         }
-
-
-        if (isset($request->union)) {
-            $elementResponse->where('union', '=', $request->union);
-        }
-
-        if (isset($request->contract)) {
-            $elementResponse->where('contract', '=', $request->contract);
-
-        }
-
-        if (isset($request->production)) {
-
-            $elementResponse->where('production', 'like', "%{$request->production}%");
-
-        }
-
-
-        $data2 = $elementResponse->get()->sortByDesc('created_at');
-        $response = AuditionResourceFind::collection($data2);
-
-        if (count($data2) === 0) {
-            $dataResponse = ['error' => 'Not Found'];
-            $code = 404;
-        } else {
-            $dataResponse = ['data' => $response];
-            $code = 200;
-        }
-
-
-        return response()->json($dataResponse, $code);
 
     }
 
     public function findByProductionAndMulty(Request $request)
     {
-        $elementResponse = new Collection();
+        try {
+            $elementResponse = new Collection();
 
 
-        if (isset($request->production)) {
+            if (isset($request->production)) {
 
-            $split_elements = explode(',', $request->production);
-            foreach ($split_elements as $item) {
-                $query = DB::table('auditions')
-                    ->whereRaw('FIND_IN_SET(?,production)', [$item])
-                    ->get();
-                foreach ($query as $items) {
-                    $elementResponse->push($items);
+                $split_elements = explode(',', $request->production);
+                foreach ($split_elements as $item) {
+                    $query = DB::table('auditions')
+                        ->whereRaw('FIND_IN_SET(?,production)', [$item])
+                        ->get();
+                    foreach ($query as $items) {
+                        $elementResponse->push($items);
+                    }
+
                 }
 
             }
+            if (isset($request->union)) {
+                $elementResponse = $elementResponse->where('union', '=', $request->union);
+            }
 
+            if (isset($request->contract)) {
+                $elementResponse = $elementResponse->where('contract', '=', $request->contract);
+            }
+            $response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
+
+            if (count($elementResponse) === 0) {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            } else {
+                $dataResponse = ['data' => $response];
+                $code = 200;
+            }
+
+
+            return response()->json($dataResponse, $code);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json( ['error' => 'Not Found'], 404);
         }
-        if (isset($request->union)) {
-            $elementResponse = $elementResponse->where('union', '=', $request->union);
-        }
-
-        if (isset($request->contract)) {
-            $elementResponse = $elementResponse->where('contract', '=', $request->contract);
-        }
-$response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
-
-        if (count($elementResponse) === 0) {
-            $dataResponse = ['error' => 'Not Found'];
-            $code = 404;
-        } else {
-            $dataResponse = ['data' => $response];
-            $code = 200;
-        }
-
-
-        return response()->json($dataResponse, $code);
 
     }
-
-
-
 
 }

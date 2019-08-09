@@ -471,10 +471,17 @@ class AuditionsController extends Controller
 
     public function findby(Request $request)
     {
-        if (isset($request->base)) {
-            return $this->find->findByTitleAndMulti($request);
-        } else {
-            return $this->find->findByProductionAndMulty($request);
+
+        try {
+            if (isset($request->base)) {
+                return $this->find->findByTitleAndMulti($request);
+            } else {
+                return $this->find->findByProductionAndMulty($request);
+            }
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+
+            return response()->json(['error' => 'Not Found'], 404);
         }
     }
 
@@ -508,7 +515,7 @@ class AuditionsController extends Controller
             ];
 
             $invite = $auditionContributorsData->update($data);
-            
+
             if ($invite) {
                 $dataResponse = 'Invite Accept';
                 $code = 200;
@@ -518,7 +525,7 @@ class AuditionsController extends Controller
             }
 
             return response()->json(['data' => $dataResponse], $code);
-            
+
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);
