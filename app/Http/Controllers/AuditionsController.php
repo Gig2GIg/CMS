@@ -473,6 +473,7 @@ class AuditionsController extends Controller
     {
 
         try {
+            $this->log->info($request);
             if (isset($request->base)) {
                 return $this->find->findByTitleAndMulti($request);
             } else {
