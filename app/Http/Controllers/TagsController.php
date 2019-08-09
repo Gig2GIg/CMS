@@ -8,10 +8,16 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
 use App\Models\Tags;
+use App\Models\Feedbacks;
+
 use Illuminate\Http\Request;
 
-use App\Http\Repositories\TagsRepository;
+use App\Http\Requests\AuditionEditRequest;
 
+use App\Http\Repositories\TagsRepository;
+use App\Http\Repositories\FeedbackRepository;
+
+use App\Http\Resources\TagsResource;
 class TagsController extends Controller
 {
     protected $log;
@@ -73,14 +79,14 @@ class TagsController extends Controller
     public function list(Request $request)
     {
         try {
-            $repoTag = new TagsRepository(new Tags());
-            $tag = $repoTag->find($request->id);
+            $feedbackRepo = new FeedbackRepository(new Feedbacks());
+            $feeback = $feedbackRepo->find($request->id);
 
-            if ($tag) {
-                $dataResponse = ['data' => 'Tag removed'];
+            if (! is_null($feeback)) {
+                $dataResponse = ['data' =>   TagsResource::collection($feeback->tags)];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Tag not removed'];
+                $dataResponse = ['data' => 'Not found'];
                 $code = 404;
             }
       

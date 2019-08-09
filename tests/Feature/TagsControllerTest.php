@@ -13,7 +13,6 @@ use App\Models\Feedbacks;
 use App\Models\UserSlots;
 use App\Models\Slots;
 
-
 class TagsControllerTest extends TestCase
 {
     protected $token;
@@ -107,9 +106,9 @@ class TagsControllerTest extends TestCase
     {
         
         factory(Tags::class, 20)->create(['feedback_id' => $this->feedback_id]);
-
         $response = $this->json('GET', 'api/t/feedbacks/'. $this->feedback_id. '/tags' .'?token=' . $this->token);
 
         $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
     }
 }
