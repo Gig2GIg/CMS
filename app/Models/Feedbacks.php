@@ -17,4 +17,8 @@ class Feedbacks extends Model
         'slot_id',
         'comment'
     ];
+ 
+    public function tags(){
+        return $this->hasMany(Tags::class, 'feedback_id');
+    }
 }
