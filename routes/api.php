@@ -104,6 +104,11 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
      $router->get('marketplaces/{marketplaceCategory}/vendors', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
 
+    //  BLOG POST
+    $router->post('blog/posts', ['uses'=>'PostsController@store']);
+    $router->delete('blog/posts/{id}/delete', ['uses'=>'PostsController@delete']);
+    $router->get('blog/posts', ['uses'=>'PostsController@list']);
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {

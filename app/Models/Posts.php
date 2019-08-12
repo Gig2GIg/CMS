@@ -8,6 +8,7 @@ class Posts extends Model
 {
     protected $fillable =[
         'title',
-        'body'
+        'body',
+        'created_at'
     ];
 }

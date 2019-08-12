@@ -7,18 +7,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
-use App\Models\Tags;
-use App\Models\Feedbacks;
-
+use App\Models\Posts;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\AuditionEditRequest;
 
-use App\Http\Repositories\TagsRepository;
+use App\Http\Repositories\PostsRepository;
 use App\Http\Repositories\FeedbackRepository;
 
-use App\Http\Resources\TagsResource;
-class TagsController extends Controller
+use App\Http\Resources\PostsResource;
+
+class PostsController extends Controller
 {
     protected $log;
 
@@ -32,15 +31,15 @@ class TagsController extends Controller
     {
         try {
             $data = [
-                'title'=>$request->title,
-                'feedback_id'=>$request->feedback_id
+                'title'=> $request->title,
+                'body'=>$request->body
             ];
 
-            $repoTag = new TagsRepository(new Tags());
-            $tag = $repoTag->create($data);
+            $repoPost = new PostsRepository(new Posts());
+            $tag = $repoPost->create($data);
 
             $dataResponse = [
-                'message' =>'Tag created',
+                'message' =>'Post created',
                 'data' => $tag
             ];
             $code = 201;
@@ -56,15 +55,14 @@ class TagsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $repoTag = new TagsRepository(new Tags());
-            $tag = $repoTag->find($request->id);
-            
+            $repoPost = new PostsRepository(new Posts());
+            $post = $repoPost->find($request->id);
 
-            if ($tag->delete()) {
-                $dataResponse = ['data' => 'Tag removed'];
+            if ($post->delete()) {
+                $dataResponse = ['data' => 'Post removed'];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Tag not removed'];
+                $dataResponse = ['data' => 'Post not removed'];
                 $code = 404;
             }
       
@@ -80,11 +78,11 @@ class TagsController extends Controller
     public function list(Request $request)
     {
         try {
-            $feedbackRepo = new FeedbackRepository(new Feedbacks());
-            $feeback = $feedbackRepo->find($request->id);
+            $repoPost = new PostsRepository(new Posts());
+            $posts = $repoPost->all();
 
-            if (! is_null($feeback)) {
-                $dataResponse = ['data' =>   TagsResource::collection($feeback->tags)];
+            if (count($posts) > 0 ) {
+                $dataResponse = ['data' => PostsResource::collection($posts)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
