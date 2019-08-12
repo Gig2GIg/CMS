@@ -78,9 +78,8 @@ class CreditsController extends Controller
      */
     public function getAll(Credits $credits)
     {
-
             $repo = new CreditsRepository(new Credits());
-            $data = $repo->all();
+            $data = $repo->findbyparam('user_id',$this->getUserLogging())->get();
             if ($data->count() > 0) {
                 $dataResponse = ['data' => CreditsResource::collection($data)];
                 $code = 200;
