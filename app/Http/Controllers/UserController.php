@@ -26,6 +26,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -363,7 +364,7 @@ class UserController extends Controller
             if (isset($data->id)) {
                 $userUpdate->find($data->id);
                 $faker = \Faker\Factory::create();
-                $password = $faker->word . '' . $faker->numberBetween(2345, 4565);
+                $password = Str::random(4) . '' . $faker->numberBetween(2345, 4565);
                 if ($data->update(['password' => Hash::make($password)])) {
                     $response->send($password, $data->email);
                     $dataResponse = ['data' => "email send"];

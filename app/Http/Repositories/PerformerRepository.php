@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: alphyon
- * Date: 2019-03-27
- * Time: 17:24
- */
+
 
 namespace App\Http\Repositories;
 
@@ -12,29 +7,26 @@ namespace App\Http\Repositories;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
-use App\Http\Exceptions\UpdateException;
-use App\Http\Repositories\Interfaces\ICreditsRepository;
-use App\Models\Credits;
+use App\Http\Repositories\Interfaces\Iperformers;
+use App\Models\Performers;
+use App\Models\Slots;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 
-class CreditsRepository implements ICreditsRepository
+class PerformerRepository implements Iperformers
 {
     protected $model;
     protected $log;
 
-    /**
-     * UserRepository constructor.
-     * @param User $user
-     */
-    public function __construct(Credits $credits)
+
+    public function __construct(Performers $performer)
     {
-        $this->model = $credits;
+        $this->model = $performer;
         $this->log = new LogManger();
     }
 
 
-    public function create(array $data): Credits
+    public function create(array $data): Performers
     {
 
 
@@ -48,7 +40,7 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function find($id): Credits
+    public function find($id): Slots
     {
         try{
             return $this->model->findOrFail($id);
@@ -73,15 +65,6 @@ class CreditsRepository implements ICreditsRepository
     }
 
 
-    public function update(array $data) : bool
-    {
-        try{
-            return $this->model->update($data);
-        }catch (QueryException $e){
-            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UpdateException($e);
-        }
-    }
 
     /**
      * @return bool
@@ -95,4 +78,5 @@ class CreditsRepository implements ICreditsRepository
     {
         return $this->model->all();
     }
+
 }

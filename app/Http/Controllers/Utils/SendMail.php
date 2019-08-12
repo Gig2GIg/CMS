@@ -29,7 +29,7 @@ class SendMail
     {
         $email = new Mail();
 
-        $email->setFrom(env('SUPPORT_EMIAL'));
+        $email->setFrom(env('SUPPORT_EMAIL'));
         $email->setSubject('Recover Password');
         $email->addTo($emailTo);
         $email->addContent("text/html", "Your new password is: <strong>" .
@@ -73,7 +73,7 @@ class SendMail
     {
         $email = new Mail();
 
-        $email->setFrom(env('SUPPORT_EMIAL'));
+        $email->setFrom(env('SUPPORT_EMAIL'));
         $email->setSubject('You have invited to audition');
         $email->addTo($emailTo);
         $email->addContent("text/html", "You have been invited to participate as a contributor in the audition: <strong> " . $name . "</strong> ");
