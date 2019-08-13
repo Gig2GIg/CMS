@@ -50,6 +50,11 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
+   //performers db
+    $router->post('performers/add',['uses'=>'PerformersController@add']);
+    $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
+    $router->post('performers/list',['uses'=>'PerformersController@list']);
+
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->get('/users',['uses'=>'UserController@getAll']);

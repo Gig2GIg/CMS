@@ -31,7 +31,7 @@ class CalendarController extends Controller
         if ($count !== 0) {
             $data =$user_repo->calendars();
             $responseData = CalendarResource::collection($data);
-            
+
             $dataResponse = ['data' => $responseData];
             $code = 200;
 
@@ -56,7 +56,7 @@ class CalendarController extends Controller
         if ($count !== 0) {
             $data = $calendar_repo->findbyuser($user_id);
             $responseData = CalendarResource::collection($data);
-            
+
             $dataResponse = ['data' => $responseData];
             $code = 200;
 
@@ -101,11 +101,12 @@ class CalendarController extends Controller
             $data = [
                 'production_type' => $request->production_type,
                 'project_name' => $request->project_name,
+                'event_type'=>$request->event_type,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'user_id' => $user_id,
             ];
-    
+
             $calendar = $calendarRepo->create($data);
 
             $responseData = ['data' => new CalendarResource($calendar)];
@@ -171,7 +172,7 @@ class CalendarController extends Controller
                         return response()->json(['error' => "Can't use past dates"], 422);
                     }
                 }
-                
+
                 // End date must be greater than start date
                 if($end_date < $start_date){
                     return response()->json(['error' => "End date must be greater than start date"], 422);
@@ -187,10 +188,11 @@ class CalendarController extends Controller
                 $data = [
                     'production_type' => $request->production_type,
                     'project_name' => $request->project_name,
+                    'event_type'=>$request->event_typ,
                     'start_date' => $start_date,
                     'end_date' => $end_date
                 ];
-                
+
                 // Update data
                 $calendar->update($data);
 

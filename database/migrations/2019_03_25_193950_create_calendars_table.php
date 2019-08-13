@@ -16,6 +16,7 @@ class CreateCalendarsTable extends Migration
         Schema::create('calendars', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('production_type');
+            $table->enum('event_type',['personal','professional']);
             $table->string('project_name');
             $table->date('start_date');
             $table->date('end_date');
