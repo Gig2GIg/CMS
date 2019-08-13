@@ -34,8 +34,8 @@ class CalendarControllerTest extends TestCase
             'email' => 'token@test.com',
             'password' => '123456',
         ]);
-        
-        $this->token = $response->json('access_token'); 
+
+        $this->token = $response->json('access_token');
     }
 
     public function test_create_event_201()
@@ -43,15 +43,16 @@ class CalendarControllerTest extends TestCase
         $data = [
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
-            'start_date' => '04-15',
-            'end_date' => '04-19',
+            'event_type'=>$this->faker->numberBetween(1,2),
+            'start_date' => '08-15',
+            'end_date' => '09-19',
             'user_id' => $this->user_id
         ];
 
         $response = $this->json('POST',
             'api/a/calendar/create_event?token=' . $this->token,
             $data);
-        
+
         $response->assertStatus(201);
     }
 
@@ -63,6 +64,7 @@ class CalendarControllerTest extends TestCase
         $data = [
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
+            'event_type'=>$this->faker->numberBetween(1,2),
             'start_date' => '04-20',
             'end_date' => '04-30',
             'user_id' => $this->user_id
@@ -71,7 +73,7 @@ class CalendarControllerTest extends TestCase
         $response = $this->json('POST',
             'api/a/calendar/create_event?token=' . $this->token,
             $data);
-        
+
         $response->assertStatus(422);
     }
 
@@ -83,6 +85,7 @@ class CalendarControllerTest extends TestCase
         $data = [
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
+            'event_type'=>$this->faker->numberBetween(1,2),
             'start_date' => '04-10',
             'end_date' => '04-27',
             'user_id' => $this->user_id
@@ -91,7 +94,7 @@ class CalendarControllerTest extends TestCase
         $response = $this->json('POST',
             'api/a/calendar/create_event?token=' . $this->token,
             $data);
-        
+
         $response->assertStatus(422);
     }
 
@@ -121,7 +124,7 @@ class CalendarControllerTest extends TestCase
             'api/a/calendar/show/' . $id . '?token=' . $this->token);
         $response->assertStatus(404);
     }
-   
+
     public function test_show_all_events_200()
     {
         $calendars = factory(Calendar::class, 10)->create();
@@ -139,15 +142,16 @@ class CalendarControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    
+
 
     public function test_update_event_200()
     {
         $data = [
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
-            'start_date' => '04-10',
-            'end_date' => '04-27',
+            'event_type'=>$this->faker->numberBetween(1,2),
+            'start_date' => '08-20',
+            'end_date' => '08-27',
         ];
 
         $calendar = factory(Calendar::class)->create();
