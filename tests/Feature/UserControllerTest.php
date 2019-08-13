@@ -67,6 +67,7 @@ class UserControllerTest extends TestCase
             'profesion'=>'lawyer',
             'zip'=>'12345',
             'image'=>'http://test.com/image.jpg',
+            'url'=>$this->faker->url,
             'resource_name'=>'test',
             'union_member' => [['name'=>'test1'], ['name'=>'test2']]
         ]);
@@ -132,6 +133,7 @@ class UserControllerTest extends TestCase
             'city' => 'New York',
             'state' => '1',
             'birth' => '1980-05-24',
+            'url'=>$this->faker->url,
 //            'location' => '12,33334 - 23,00000',
             'zip'=>'00000',
             'stage_name'=>'test',

@@ -17,6 +17,7 @@ class CreateUserDetailsTable extends Migration
             $table->increments('id');
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('url')->nullable();
             $table->string('address');
             $table->string('city');
             $table->integer('state');

@@ -18,6 +18,7 @@ class UserDetails extends Model
         'user_id',
         'profesion',
         'stage_name',
+        'url',
         'zip',
         'agency_name'
     ];
