@@ -114,6 +114,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
+    $router->get('/users/settings',['uses'=>'UserSettingsController@list']);
+    $router->put('/users/settings/{id}',['uses'=>'UserSettingsController@update']);
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->post('/auditions/user',['uses'=>'AuditionManagementController@saveUserAudition']);
     $router->get('/auditions/user/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
