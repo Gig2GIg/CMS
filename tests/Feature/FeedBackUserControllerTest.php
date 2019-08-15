@@ -2,11 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Roles;
+use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserSlots;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -28,6 +31,18 @@ class FeedBackUserControllerTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id'=>$user->id,
         ]);
+        $appoinment = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
+
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appoinment->id
+        ]);
+        $slot_user = factory(UserSlots::class)->create([
+            'user_id'=>$this->userId,
+            'auditions_id'=>$this->auditionId,
+            'slots_id'=>$slot->id
+        ]);
         $work = [
             'vocals',
             'acting',
@@ -40,6 +55,7 @@ class FeedBackUserControllerTest extends TestCase
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
+            'slot_id'=>$slot->id,
             'favorite' => $this->faker->boolean()
         ]);
 
