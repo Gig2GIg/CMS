@@ -10,6 +10,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\UserSettingsRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Http\Requests\UserEditRequest;
@@ -19,6 +20,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Admin;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -156,6 +158,7 @@ class UserController extends Controller
                 $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
                 $userUnion->create(['name' => $iValue['name'], 'user_id' => $id]);
             }
+            $this->create_setting(['FEEDBACK','RECOMMENDATION'],$id);
             //CREATED DEFAULT NOTIFICATION SETTING
             $this->createNotificationSetting($user);
 
@@ -459,6 +462,17 @@ class UserController extends Controller
             $code = 404;
         }
         return response()->json($responseData, $code);
+    }
+
+    public function create_setting(Array $settings,$id){
+        foreach ($settings as $setting){
+            $repo = new UserSettingsRepository(new UserSettings());
+            $repo->create([
+                'user_id'=>$id,
+                'setting'=>$setting,
+                'value'=>true
+            ]);
+        }
     }
 
 
