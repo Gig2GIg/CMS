@@ -134,9 +134,9 @@ class AuditionControllerTest extends TestCase
 
             ],
             'media' => [
-                ['type' => 1, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
-                ['type' => 2, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
-                ['type' => 3, 'url' => $this->faker->url(),'name'=>$this->faker->word()],
+                ['type' => 1, 'url' => $this->faker->url(),'name'=>$this->faker->word(),'share'=>'yes'],
+                ['type' => 2, 'url' => $this->faker->url(),'name'=>$this->faker->word(),'share'=>'no'],
+                ['type' => 3, 'url' => $this->faker->url(),'name'=>$this->faker->word(),'share'=>'yes'],
             ]
         ];
 
@@ -355,7 +355,7 @@ class AuditionControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-      
+
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
         $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?token=' . $this->token);

@@ -73,6 +73,7 @@ class AuditionsController extends Controller
                             'url' => $file['url'],
                             'type' => $file['type'],
                             'name' => $file['name'],
+                            'share'=>$file['share']
                         ];
                     }
                 }
@@ -80,12 +81,13 @@ class AuditionsController extends Controller
                     'url' => $request->cover,
                     'type' => 'cover',
                     'name' => $request->cover_name,
+                    'share'=>'no'
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
+                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'],'shareable'=>$file['share']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->create($this->dataDatesToProcess($date));
@@ -128,6 +130,7 @@ class AuditionsController extends Controller
         } catch (\Exception $exception) {
             DB::rollBack();
             $this->log->error($exception->getMessage());
+            $this->log->error($exception->getLine());
             return response()->json(['error' => 'Unprocessable '], 406);
         }
     }
