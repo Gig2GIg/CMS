@@ -7,15 +7,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
-use App\Models\Tags;
-use App\Models\Feedbacks;
+use App\Models\Comments;
+use App\Models\Posts;
 
 use Illuminate\Http\Request;
-use App\Http\Repositories\TagsRepository;
-use App\Http\Repositories\FeedbackRepository;
+
+use App\Http\Requests\CommentsRequest;
+
+use App\Http\Repositories\CommentsRepository;
+use App\Http\Repositories\PostsRepository;
 
 use App\Http\Resources\TagsResource;
-class TagsController extends Controller
+use App\Http\Resources\CommentsResource;
+
+class CommentsController extends Controller
 {
     protected $log;
 
@@ -25,20 +30,22 @@ class TagsController extends Controller
         $this->log = new LogManger();
     }
 
-    public function store(Request $request)
+    public function store(CommentsRequest $request)
     {
         try {
+
             $data = [
-                'title'=>$request->title,
-                'feedback_id'=>$request->feedback_id
+                'body'=> $request->body,
+                'post_id'=> $request->id
             ];
 
-            $repoTag = new TagsRepository(new Tags());
-            $tag = $repoTag->create($data);
+            $repoComment = new CommentsRepository(new Comments());
+       
+            $comment = $repoComment->create($data);
 
             $dataResponse = [
-                'message' =>'Tag created',
-                'data' => $tag
+                'message' =>'comment created',
+                'data' => $comment
             ];
             $code = 201;
             return response()->json($dataResponse, $code);
@@ -53,15 +60,14 @@ class TagsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $repoTag = new TagsRepository(new Tags());
-            $tag = $repoTag->find($request->id);
-            
-
-            if ($tag->delete()) {
-                $dataResponse = ['data' => 'Tag removed'];
+            $repoPost = new CommentsRepository(new Comments());
+            $post = $repoPost->find($request->id);
+        
+            if ($post->delete()) {
+                $dataResponse = ['data' => 'Post removed'];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => 'Tag not removed'];
+                $dataResponse = ['data' => 'Post not removed'];
                 $code = 404;
             }
       
@@ -77,11 +83,11 @@ class TagsController extends Controller
     public function list(Request $request)
     {
         try {
-            $feedbackRepo = new FeedbackRepository(new Feedbacks());
-            $feeback = $feedbackRepo->find($request->id);
+            $postRepo = new PostsRepository(new Posts());
+            $post = $postRepo->find($request->id);
 
-            if (! is_null($feeback)) {
-                $dataResponse = ['data' =>   TagsResource::collection($feeback->tags)];
+            if (! is_null($post)) {
+                $dataResponse = ['data' => CommentsResource::collection($post->comments)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];

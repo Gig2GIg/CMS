@@ -104,10 +104,16 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/marketplaces/search', 'MarketplaceController@search_by_title');
      $router->get('marketplaces/{marketplaceCategory}/vendors', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
 
-    //  BLOG POST
+    //BLOGPOST
     $router->post('blog/posts', ['uses'=>'PostsController@store']);
+    $router->put('blog/posts/{id}', ['uses'=>'PostsController@update']);
     $router->delete('blog/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('blog/posts', ['uses'=>'PostsController@list']);
+
+     //BLOG-POST-COMMENTS
+    $router->post('blog/posts/{id}/comments', ['uses'=>'CommentsController@store']);
+    $router->delete('blog/posts/{id}/comments/{comment_id}/delete', ['uses'=>'CommentsController@delete']);
+    $router->get('blog/posts/{id}/comments', ['uses'=>'CommentsController@list']);
 
 });
 
@@ -273,6 +279,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         // CONTENT SETTING TEXT
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
+
 
     });
 

@@ -9,11 +9,9 @@ use App\Http\Exceptions\NotFoundException;
 
 use App\Models\Posts;
 use Illuminate\Http\Request;
-
-use App\Http\Requests\AuditionEditRequest;
+use App\Http\Requests\PostsRequest;
 
 use App\Http\Repositories\PostsRepository;
-use App\Http\Repositories\FeedbackRepository;
 
 use App\Http\Resources\PostsResource;
 
@@ -27,20 +25,24 @@ class PostsController extends Controller
         $this->log = new LogManger();
     }
 
-    public function store(Request $request)
+    public function store(PostsRequest $request)
     {
         try {
             $data = [
                 'title'=> $request->title,
-                'body'=>$request->body
+                'body'=>$request->body,
+                'url_media' =>  $request->url_media,
+                'type' => $request->type,
+                'search_to' =>  $request->search_to,
+                'user_id' => $this->getUserLogging()
             ];
 
             $repoPost = new PostsRepository(new Posts());
-            $tag = $repoPost->create($data);
+            $post = $repoPost->create($data);
 
             $dataResponse = [
                 'message' =>'Post created',
-                'data' => $tag
+                'data' => $post
             ];
             $code = 201;
             return response()->json($dataResponse, $code);
@@ -48,9 +50,35 @@ class PostsController extends Controller
             $this->log->error($ex->getMessage());
             return response()->json(['error' => 'ERROR'], 422);
         }
-
     }
+    
+    public function update(Request $request)
+    {
+        try {
+            $data = [
+                'title'=> $request->title,
+                'body'=>$request->body,
+                'url_media' =>  $request->url_media,
+                'type' => $request->type,
+                'search_to' =>  $request->search_to
+            ];
 
+            $repoPost = new PostsRepository(new Posts());
+            $post = $repoPost->find($request->id);
+
+            if ($post->update(array_filter($data))) {
+                $dataResponse = ['data' => 'Post update'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Post not update'];
+                $code = 422;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+    }
 
     public function delete(Request $request)
     {
@@ -65,7 +93,7 @@ class PostsController extends Controller
                 $dataResponse = ['data' => 'Post not removed'];
                 $code = 404;
             }
-      
+        
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());

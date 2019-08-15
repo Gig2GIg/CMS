@@ -37,31 +37,56 @@ class PostsControllerTest extends TestCase
 
     public function test_created_posts_201()
     {
+   
         $response = $this->json('POST',
             'api/t/blog/posts?token=' . $this->token, 
             [
-                'title' =>  $this->faker->text(),
-                'body' =>  $this->faker->paragraph()
+                'title' =>  $this->faker->title(),
+                'url_media' =>  $this->faker->url(),
+                'body' =>  $this->faker->paragraph(),
+                'type' => 'blog',
+                'search_to' =>  'both'
             ]);
 
         $response->assertStatus(201);
+
     }
+
+    public function test_update_posts_200()
+    {
+        $post = factory(Posts::class)->create(['user_id' => $this->userId]);
+        
+        $response = $this->json('PUT',
+            'api/t/blog/posts/'. $post->id .'?token=' . $this->token, 
+            [
+                'title' =>  $this->faker->title(),
+                'url_media' =>  $this->faker->url(),
+                'body' =>  $this->faker->paragraph(),
+                'type' => 'blog',
+                'search_to' =>  'both'
+            ]);
+
+        $response->assertStatus(200);
+
+    }
+
 
     public function test_delete_posts_200()
     { 
         
-        $post = factory(Posts::class)->create();
+        $post = factory(Posts::class)->create(['user_id' => $this->userId]);
+     
         $response = $this->json('DELETE', 'api/t/blog/posts/'. $post->id. '/delete' .'?token=' . $this->token);
         $response->assertStatus(200);
     }
 
     public function test_list_posts_200()
     {
-        $post = factory(Posts::class, 20)->create();
+        $post = factory(Posts::class, 20)->create(['user_id' => $this->userId]);
         $response = $this->json('GET', 'api/t/blog/posts'. '?token=' . $this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data']);
-        dd($response);
+  
     }
 }
