@@ -29,6 +29,7 @@ class PostsRequest extends FormRequest
             'url_media' => 'required|string|max:700',
             'type' => 'required|string|max:15',
             'search_to' => 'required|string|max:15',
+            'topic_id' => 'required|integer',
         ];
     }
 }

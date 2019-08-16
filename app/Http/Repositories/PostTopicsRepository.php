@@ -68,7 +68,6 @@ class PostTopicsRepository implements IPostTopicsRepository
 
     }
 
-
     public function update(array $data) : bool
     {
         try{
