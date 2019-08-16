@@ -149,10 +149,10 @@ class AuditionsController extends Controller
             'location' => json_encode($request->location),
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
-            'personal_information'=>$request->information,
+            'personal_information'=>$request->personal_information,
             'phone'=>$request->phone,
             'email'=>$request->email,
-            'other_info'=>$request->aditional_info,
+            'other_info'=>$request->other_info,
             'union' => $request->union,
             'contract' => $request->contract,
             'production' => $request->production,
@@ -471,6 +471,7 @@ class AuditionsController extends Controller
             return response()->json(['data' => 'Data Not Found'], 404);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
+            $this->log->error($exception->getLine());
             DB::rollBack();
             return response()->json(['data' => 'Data Not Update'], 406);
         }
