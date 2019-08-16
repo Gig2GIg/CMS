@@ -49,7 +49,7 @@ class TopicsUnitTest extends TestCase
     {
         $topic =factory(Topics::class)->create();
         $data = [
-            'name' => $this->faker->word(),
+            'title' => $this->faker->word(),
         ];
 
         $topicRepo = new TopicsRepository($topic);

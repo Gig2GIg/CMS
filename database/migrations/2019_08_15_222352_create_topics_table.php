@@ -18,7 +18,7 @@ class CreateTopicsTable extends Migration
             $table->timestamps();
 
             $table->string('title');
-            $table->enum('status',['off','on']);
+            $table->enum('status',['off','on'])->default('on');
         });
     }
 
