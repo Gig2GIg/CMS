@@ -62,6 +62,10 @@ class AuditionControllerTest extends TestCase
             ],
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
+            'personal_information'=>$this->faker->paragraph(),
+            'phone'=>$this->faker->phoneNumber,
+            'email'=>$this->faker->companyEmail,
+            'other_info'=>$this->faker->paragraph,
             'cover' => $this->faker->imageUrl(),
             'cover_name'=>$this->faker->word(),
             'union' => $this->faker->word(),
@@ -236,6 +240,10 @@ class AuditionControllerTest extends TestCase
             ],
             'description' => 'Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.',
             'url' => 'http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html',
+            'personal_information'=>'Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.',
+            'phone'=>$this->faker->phoneNumber,
+            'email'=>$this->faker->companyEmail,
+            'other_info'=>$this->faker->paragraph,
             'cover_name'=>'covername',
             'dates' => [
                 [
