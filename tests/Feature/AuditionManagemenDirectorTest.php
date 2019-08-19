@@ -2,12 +2,14 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
 use App\Models\Credits;
 use App\Models\Educations;
 use App\Models\Roles;
+use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAparence;
 use App\Models\UserAuditions;
@@ -21,6 +23,7 @@ class AuditionManagemenDirectorTest extends TestCase
     protected $rolId;
     protected $userId;
     protected $auditionId;
+    protected $slot;
 
     public function test_auditions_upcomming_director()
     {
@@ -72,6 +75,7 @@ class AuditionManagemenDirectorTest extends TestCase
 
     public function test_auditions_passed_director_404()
     {
+        Auditions::whereNotNull('id')->delete();
         $user = factory(User::class)->create();
 
         $data = factory(Auditions::class)->create([
@@ -144,7 +148,8 @@ class AuditionManagemenDirectorTest extends TestCase
             'api/t/auditions/video/save?token=' . $this->token, [
                 'url' => $this->faker->imageUrl(),
                 'audition' => $data->id,
-                'performer' => $user->id
+                'performer' => $user->id,
+                'slot_id'=>$this->slot->id
             ]);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
@@ -158,11 +163,13 @@ class AuditionManagemenDirectorTest extends TestCase
         $data = factory(Auditions::class)->create([
             'user_id' => $user->id,
         ]);
+
         $video = factory(AuditionVideos::class)->create([
             'user_id' => $user->id,
             'auditions_id' => $data->id,
             'url' => $this->faker->imageUrl(),
             'contributors_id' => $this->userId,
+            'slot_id'=>$this->slot->id
         ]);
 
         $response = $this->json('DELETE',
@@ -179,11 +186,13 @@ class AuditionManagemenDirectorTest extends TestCase
             factory(UserDetails::class)->create([
                 'user_id' => $element->id
             ]);
+
             factory(AuditionVideos::class)->create([
                 'user_id' => $element->id,
                 'auditions_id' => $this->auditionId,
                 'url' => $this->faker->imageUrl(),
                 'contributors_id' => $this->userId,
+                'slot_id'=>$this->slot->id,
             ]);
         });
         $response = $this->json('GET',
@@ -220,6 +229,12 @@ class AuditionManagemenDirectorTest extends TestCase
 
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
+        ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id,
+        ]);
+        $this->slot = factory(Slots::class)->create([
+            'appointment_id'=>$appointment->id
         ]);
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
         $rol = factory(Roles::class)->create([

@@ -111,6 +111,7 @@ class ManageAppointmentControllerTest extends TestCase
             'slots_id'=>$slot->id,
             'auditions_id'=>$audition->id,
             'roles_id'=>$rol->id,
+            'status'=>'checked'
         ]);
 
         $response = $this->json('GET', 'api/appointments/auditions/'.$audition->id.'?token=' . $this->token);

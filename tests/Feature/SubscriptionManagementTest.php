@@ -29,6 +29,7 @@ class SubscriptionManagementTest extends TestCase
         $userDetails = factory(UserDetails::class)->create([
             'type'=>2,
             'user_id' => $user->id,
+            'subscription'=>'1',
         ]);
         $response = $this->post('api/login', [
             'email' => 'subscription@test.com',

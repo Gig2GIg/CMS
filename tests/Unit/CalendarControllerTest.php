@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Marketplace;
 
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 use App\Http\Repositories\CalendarRepository;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -44,8 +45,8 @@ class CalendarControllerTest extends TestCase
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
             'event_type'=>$this->faker->numberBetween(1,2),
-            'start_date' => '08-15',
-            'end_date' => '09-19',
+            'start_date' => Carbon::now()->format('m-d'),
+            'end_date' => Carbon::tomorrow()->format('m-d'),
             'user_id' => $this->user_id
         ];
 
@@ -65,8 +66,8 @@ class CalendarControllerTest extends TestCase
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
             'event_type'=>$this->faker->numberBetween(1,2),
-            'start_date' => '04-20',
-            'end_date' => '04-30',
+            'start_date' => Carbon::now(),
+            'end_date' => Carbon::tomorrow(),
             'user_id' => $this->user_id
         ];
 

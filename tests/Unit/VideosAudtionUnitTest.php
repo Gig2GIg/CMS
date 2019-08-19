@@ -5,9 +5,11 @@ namespace Tests\Unit;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AuditionVideosRepository;
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
 use App\Models\Resources;
+use App\Models\Slots;
 use App\Models\User;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -31,13 +33,20 @@ class VideosAudtionUnitTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id'=>$contributors->id,
         ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id,
+        ]);
+        $slot = factory(Slots::class)->create([
+           'appointment_id'=>$appointment->id
+        ]);
         $repo = new AuditionVideosRepository(New AuditionVideos());
 
         $data = [
             'user_id'=>$this->userId,
             'contributors_id'=>$contributors->id,
             'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id
+            'auditions_id'=>$audition->id,
+            'slot_id'=>$slot->id
         ];
         $videoaudition = $repo->create($data);
         $this->assertInstanceOf(AuditionVideos::class, $videoaudition);
@@ -55,13 +64,21 @@ class VideosAudtionUnitTest extends TestCase
         $contributors = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
             'user_id'=>$contributors->id,
-        ]);$resource = new Resources();
+        ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id,
+        ]);
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appointment->id
+        ]);
+        $resource = new Resources();
 
         $vid = factory(AuditionVideos::class)->create([
             'user_id'=>$this->userId,
             'contributors_id'=>$contributors->id,
             'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id
+            'auditions_id'=>$audition->id,
+            'slot_id'=>$slot->id
         ]);
 
         $videoRepo = new AuditionVideosRepository(new AuditionVideos());
@@ -73,13 +90,21 @@ class VideosAudtionUnitTest extends TestCase
         $contributors = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
             'user_id'=>$contributors->id,
-        ]);$resource = new Resources();
+        ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id,
+        ]);
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appointment->id
+        ]);
+        $resource = new Resources();
 
         $vid = factory(AuditionVideos::class,3)->create([
             'user_id'=>$this->userId,
             'contributors_id'=>$contributors->id,
             'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id
+            'auditions_id'=>$audition->id,
+           'slot_id'=>$slot->id
         ]);
 
         $videoRepo = new AuditionVideosRepository(new AuditionVideos());

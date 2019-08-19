@@ -4,22 +4,22 @@ use Faker\Generator as Faker;
 
 $factory->define(App\Models\Auditions::class, function (Faker $faker) {
     $data= [
-        'union',
-        'nonunion',
-        'any'
+        'UNION',
+        'NONUNION',
+        'ANY'
     ];
 
     $dataContract= [
-        'any',
-        'paid',
-        'unpaid'
+        'ANY',
+        'PAID',
+        'UNPAID'
     ];
 
     $dataProd = [
-        'film,theather,tvvideo',
-        'voiceover,film',
-        'modeling,commercials',
-        'comercials,tvvideo'
+        'FILM,THEATHER,TVVIDEO',
+        'VOICEOVER,FILM',
+        'MODELING,COMMERCIALS',
+        'COMMERCIALS,TVVIDEO'
     ];
     $randNumber = rand(0,2);
     $randNumber1 = rand(0,3);

@@ -350,9 +350,9 @@ class AuditionControllerTest extends TestCase
         $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
         $response = $this->json('POST',
             'api/auditions/findby?token=' . $this->token,[
-                'union'=>'any',
-                'contract'=>'unpaid',
-                'production'=>'film,modeling'
+                'union'=>'ANY',
+                'contract'=>'UNPAID',
+                'production'=>'MODELING'
             ]);
         $count = $this->count($response);
         $response->assertStatus(200);

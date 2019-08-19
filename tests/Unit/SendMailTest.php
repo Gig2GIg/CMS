@@ -28,7 +28,7 @@ class SendMailTest extends TestCase
     public function test_send_mail_fail(){
         $mail = new SendMail();
         $password = $this->faker->word(12);
-        $this->assertFalse($mail->send($password, ''));
+        $this->assertFalse($mail->send($password, 'test@test'));
     }
 
 

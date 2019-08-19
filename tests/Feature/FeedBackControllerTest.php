@@ -97,10 +97,20 @@ class FeedBackControllerTest extends TestCase
     {
 
         $user = factory(User::class)->create();
-        factory(Feedbacks::class,10)->create([
+        $audition = factory(Auditions::class)->create([
+            'user_id'=>$user->id
+        ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id,
+        ]);
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appointment->id
+        ]);
+        factory(Feedbacks::class)->create([
             'user_id'=>$user->id,
             'auditions_id'=>$this->auditionId,
-            'evaluator_id'=>$this->userId
+            'evaluator_id'=>$this->userId,
+            'slot_id'=>$slot->id,
         ]);
         $response = $this->json('GET', 'api/t/feedbacks/list?token=' . $this->token,[
             'audition'=>$this->auditionId,

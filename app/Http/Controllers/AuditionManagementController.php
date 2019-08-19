@@ -286,8 +286,7 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection)];
                 $code = 200;
             } else {
-                $dataResponse = ['data' => []];
-                $code = 200;
+             throw new Exception('Not Found Data');
             }
 
 
@@ -514,7 +513,7 @@ class AuditionManagementController extends Controller
             ];
 
             $resource = $resourceData->update($data);
-            
+
             if ($resource) {
                 $dataResponse = 'Document update';
                 $code = 200;
@@ -524,7 +523,7 @@ class AuditionManagementController extends Controller
             }
 
             return response()->json(['data' => $dataResponse], $code);
-            
+
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);
