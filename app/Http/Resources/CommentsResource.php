@@ -21,8 +21,8 @@ class CommentsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $user = new UserRepository(new User());
-        $userData = $user->find($user->id);
+        $user = new UserDetailsRepository(new UserDetails());
+        $userData = $user->findbyparam('user_id',$this->user_id);
 
         return [
             'id' => $this->id,

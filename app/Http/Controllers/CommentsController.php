@@ -36,7 +36,8 @@ class CommentsController extends Controller
 
             $data = [
                 'body'=> $request->body,
-                'post_id'=> $request->id
+                'post_id'=> $request->id,
+                'user_id' => $this->getUserLogging()
             ];
 
             $repoComment = new CommentsRepository(new Comments());
@@ -87,6 +88,7 @@ class CommentsController extends Controller
             $post = $postRepo->find($request->id);
 
             if (! is_null($post)) {
+           
                 $dataResponse = ['data' => CommentsResource::collection($post->comments)];
                 $code = 200;
             } else {
