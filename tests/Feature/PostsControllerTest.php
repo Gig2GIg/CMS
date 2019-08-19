@@ -7,11 +7,13 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\Posts;
+use App\Models\Topics;
 
 class PostsControllerTest extends TestCase
 {
     protected $token;
     protected $userId;
+    protected $topicId;
 
     public function setUp(): void
     {
@@ -26,6 +28,7 @@ class PostsControllerTest extends TestCase
             'type' => 1,
             'user_id' => $user->id,
         ]);
+
         $response = $this->post('api/login', [
             'email' => 'token@test.com',
             'password' => '123456',
@@ -33,11 +36,18 @@ class PostsControllerTest extends TestCase
 
         $this->token = $response->json('access_token');
 
+        $topic = factory(Topics::class)->create();
+        $this->topicId = $topic->id;
+
+
     }
 
     public function test_created_posts_201()
     {
-   
+        $topic_1 = factory(Topics::class)->create();
+        $topic_2 = factory(Topics::class)->create();
+        $topic_3 = factory(Topics::class)->create();
+        
         $response = $this->json('POST',
             'api/t/blog/posts?token=' . $this->token, 
             [
@@ -45,7 +55,40 @@ class PostsControllerTest extends TestCase
                 'url_media' =>  $this->faker->url(),
                 'body' =>  $this->faker->paragraph(),
                 'type' => 'blog',
-                'search_to' =>  'both'
+                'search_to' =>  'both',
+                'topic_id' => $this->topicId,
+                'topic_ids' => [
+                    ['id' => $topic_1->id],
+                    ['id' => $topic_2->id],
+                    ['id' => $topic_3->id]
+                ]
+            ]);
+
+        $response->assertStatus(201);
+
+    }
+
+
+    public function test_created_posts_to_performance201()
+    {
+        $topic_1 = factory(Topics::class)->create();
+        $topic_2 = factory(Topics::class)->create();
+        $topic_3 = factory(Topics::class)->create();
+        
+        $response = $this->json('POST',
+            'api/t/blog/posts?token=' . $this->token, 
+            [
+                'title' =>  $this->faker->title(),
+                'url_media' =>  $this->faker->url(),
+                'body' =>  $this->faker->paragraph(),
+                'type' => 'forum',
+                'search_to' =>  'performance',
+                'topic_id' => $this->topicId,
+                'topic_ids' => [
+                    ['id' => $topic_1->id],
+                    ['id' => $topic_2->id],
+                    ['id' => $topic_3->id]
+                ]
             ]);
 
         $response->assertStatus(201);

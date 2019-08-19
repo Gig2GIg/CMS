@@ -8,10 +8,13 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
 use App\Models\Posts;
+use App\Models\PostTopics;
+
 use Illuminate\Http\Request;
 use App\Http\Requests\PostsRequest;
 
 use App\Http\Repositories\PostsRepository;
+use App\Http\Repositories\PostTopicsRepository;
 
 use App\Http\Resources\PostsResource;
 
@@ -40,10 +43,22 @@ class PostsController extends Controller
             $repoPost = new PostsRepository(new Posts());
             $post = $repoPost->create($data);
 
+            if (! is_null($post))
+            {
+                $repoPostTopic = new PostTopicsRepository(new PostTopics());
+           
+                if (isset($request['topic_ids'])) {
+                    foreach ($request['topic_ids'] as $topic) {
+                        $repoPostTopic->create(['post_id' =>  $post->id, 'topic_id' => $topic['id']]);
+                    }
+                }
+            }
+            
             $dataResponse = [
                 'message' =>'Post created',
                 'data' => $post
             ];
+            
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
