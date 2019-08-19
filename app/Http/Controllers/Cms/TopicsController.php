@@ -7,7 +7,7 @@ use App\Http\Resources\TopicsResource;
 
 use App\Models\Topics;
 
-use App\Http\Requests\TopicsRepository;
+use App\Http\Repositories\TopicsRepository;
 
 use App\Http\Exceptions\NotFoundException;
 
@@ -31,29 +31,33 @@ class TopicsController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->json())
-        {
-            $data = [
-                'title' => $request->name,
-            ];
+        try {
+            if ($request->json())
+                {
+                    $data = [
+                        'title' => $request->title,
+                    ];
 
-            $topicRepo = new TopicsRepository(new Topics);
+                    $topicRepo = new TopicsRepository(new Topics);
 
-            $result = $topicRepo->create($data);
+                    $result = $topicRepo->create($data);
 
-            return response()->json(['data' => new TopicsResource($result)], 201);
-        }else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+                    return response()->json(['data' => new TopicsResource($result)], 201);
+                }else {
+                    return response()->json(['error' => 'Unauthorized'], 401);
+                }
+        } catch (\Exception $e) {
+            return response()->json(['data' => "No created Data"], 422);
         }
     }
 
-    public function update(TypeProductsRequest $request)
+    public function update(Request $request)
     {
         try {
             if ($request->json()) {
 
                 $data = [
-                    'title' => $request->name
+                    'title' => $request->title
                 ];
 
                 $topicRepo = new TopicsRepository(new Topics);
@@ -74,8 +78,8 @@ class TopicsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $topicRepo = new TopicsRepository(new TypeProduct());
-            $topic = $typeProductRepo->find($request->id);
+            $topicRepo = new TopicsRepository(new Topics());
+            $topic = $topicRepo->find($request->id);
             $topic->delete();
 
             return response()->json(['data' => 'Topic Product  deleted'], 204);

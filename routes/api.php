@@ -267,7 +267,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->put('/skills/update/{id}','SkillsController@update');
         $router->post('/skills/create','SkillsController@store');
 
-        //SKILL SUGGESTIONS
+        //SKILL TOPIC TO ADD TO POST BLOG
         $router->get('/topics', 'TopicsController@getAll');
         $router->delete('/topics/delete/{id}','TopicsController@delete');
         $router->put('/topics/update/{id}','TopicsController@update');
@@ -293,6 +293,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
 
+        
 
     });
 
