@@ -9,7 +9,8 @@ class Comments extends Model
     protected $fillable =[
         'body',
         'created_at',
-        'post_id'
+        'post_id',
+        'user_id'
     ];
    
 }

@@ -36,6 +36,7 @@ class TopicsController extends Controller
                 {
                     $data = [
                         'title' => $request->title,
+                        'status' => $request->status
                     ];
 
                     $topicRepo = new TopicsRepository(new Topics);
