@@ -71,7 +71,7 @@ class MarketplaceCategoriesController extends Controller
 
             $data = $marketplaceCategory->find(request('id'));
 
-            if (! empty($data)) {
+            if (! is_null($data)) {
                 $responseData = new MarketplaceCategoryResource($data);
                 return response()->json(['data' => $responseData], 200);
             } else {
