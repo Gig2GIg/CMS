@@ -47,6 +47,7 @@ class AuditionResponse extends JsonResource
             'phone'=>$this->phone,
             'email'=>$this->email,
             'other_info'=>$this->other_info,
+            'additional_info'=>$this->additional_info,
             "union" => $this->union,
             "contract" => $this->contract,
             "production" => $dataProduction,

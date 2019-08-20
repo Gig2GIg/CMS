@@ -17,6 +17,7 @@ class Auditions extends Model
         'phone',
         'email',
         'other_info',
+        'additional_info',
         'union',
         'contract',
         'production',

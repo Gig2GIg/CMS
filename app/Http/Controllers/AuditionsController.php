@@ -153,6 +153,7 @@ class AuditionsController extends Controller
             'phone'=>$request->phone,
             'email'=>$request->email,
             'other_info'=>$request->other_info,
+            'additional_info'=>$request->additional_info,
             'union' => $request->union,
             'contract' => $request->contract,
             'production' => $request->production,
