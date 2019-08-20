@@ -120,6 +120,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->delete('blog/posts/{id}/comments/{comment_id}/delete', ['uses'=>'CommentsController@delete']);
     $router->get('blog/posts/{id}/comments', ['uses'=>'CommentsController@list']);
 
+    // TOPICS
+    $router->get('/topics','TopicsController@list');
+
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -216,6 +219,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
     // MARKEPLACE RECOMMENDATIONS
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@list']);
+
 });
 
 
@@ -267,7 +271,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->put('/skills/update/{id}','SkillsController@update');
         $router->post('/skills/create','SkillsController@store');
 
-        //SKILL TOPIC TO ADD TO POST BLOG
+        // TOPIC TO ADD TO POST BLOG
         $router->get('/topics', 'TopicsController@getAll');
         $router->delete('/topics/delete/{id}','TopicsController@delete');
         $router->put('/topics/update/{id}','TopicsController@update');
