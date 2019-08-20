@@ -42,8 +42,7 @@ class MarketplaceController extends Controller
        }
     }
 
-
-    public function store(MarketplaceRequest $request)
+    public function store(MarketplaceRequest $request, MarketplaceCategory $marketplaceCategory)
     {
         if ($request->json())
         {
@@ -53,7 +52,7 @@ class MarketplaceController extends Controller
                 'services' => $request->services,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
-                'marketplace_category_id' => $request->marketplace_category_id,
+                'marketplace_category_id' => $marketplaceCategory->id,
                 'url_web' => $request->url_web
             ];
 
@@ -74,6 +73,7 @@ class MarketplaceController extends Controller
     {
         try {
             if ($request->json()) {
+              
                 $marketplaceData = [
                     'title' => $request->title,
                     'address' => $request->address,
@@ -83,7 +83,6 @@ class MarketplaceController extends Controller
                 ];
 
                 $marketplace = new MarketplaceRepo(new Marketplace());
-
                 $marketplace_result = $marketplace->find(request('id'));
                 $marketplace_result->update($marketplaceData);
 
