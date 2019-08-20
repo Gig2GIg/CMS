@@ -77,7 +77,7 @@ class AuditionManagementController extends Controller
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ?? '';
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $auditionRepo = new AuditionRepository(new Auditions());
                     $audition = $auditionRepo->find($request->auditions);
@@ -514,7 +514,7 @@ class AuditionManagementController extends Controller
             ];
 
             $resource = $resourceData->update($data);
-            
+
             if ($resource) {
                 $dataResponse = 'Document update';
                 $code = 200;
@@ -524,7 +524,7 @@ class AuditionManagementController extends Controller
             }
 
             return response()->json(['data' => $dataResponse], $code);
-            
+
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);

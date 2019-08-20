@@ -50,6 +50,10 @@ class AuditionControllerTest extends TestCase
         factory(UserDetails::class)->create([
             'user_id' => $cont2->id,
         ]);
+        $cont3 = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id' => $cont3->id,
+        ]);
         $data = [
             'title' => $this->faker->words(3, 3),
             'date' => $this->faker->date(),
@@ -130,6 +134,7 @@ class AuditionControllerTest extends TestCase
             'contributors' => [
                 ['email' => $cont1->email],
                 ['email' => $cont2->email],
+                ['email' => $cont3->email],
                 ['email' => 'g2g@test.com'],
 
             ],
@@ -355,7 +360,7 @@ class AuditionControllerTest extends TestCase
         $user = factory(User::class)->create();
 
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
-      
+
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
         $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?token=' . $this->token);
