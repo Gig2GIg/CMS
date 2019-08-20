@@ -220,6 +220,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     // MARKEPLACE RECOMMENDATIONS
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@list']);
 
+    // TOPICS
+    $router->get('/topics','TopicsController@list');
+
 });
 
 
