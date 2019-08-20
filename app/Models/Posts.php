@@ -19,4 +19,8 @@ class Posts extends Model
     public function comments(){
         return $this->hasMany(Comments::class, 'post_id');
     } 
+
+    public function post_topics(){
+        return $this->hasMany(PostTopics::class, 'post_id');
+    } 
 }

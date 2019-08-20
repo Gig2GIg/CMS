@@ -6,9 +6,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\Posts;
+use App\Models\Topics;
 
+use App\Http\Repositories\TopicsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
+
+use App\Http\Repositories\PostsRepository;
 
 class CommentsResource extends JsonResource
 {
@@ -23,7 +28,8 @@ class CommentsResource extends JsonResource
     {
         $user = new UserDetailsRepository(new UserDetails());
         $userData = $user->findbyparam('user_id',$this->user_id);
-
+        
+    
         return [
             'id' => $this->id,
             'body' => $this->body,

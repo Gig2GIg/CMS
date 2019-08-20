@@ -26,9 +26,9 @@ class PostsRequest extends FormRequest
         return [
             'title' => 'required|string|max:30',
             'body' => 'required|string|max:5000',
-            'url_media' => 'required|string|max:700',
+            'url_media' => 'string|max:700',
             'type' => 'required|string|max:15',
-            'search_to' => 'required|string|max:15',
+            'search_to' => 'string|max:15',
             'topic_ids' => 'required',
         ];
     }
