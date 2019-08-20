@@ -223,6 +223,18 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     // TOPICS
     $router->get('/topics','TopicsController@list');
 
+    //FORUM
+    $router->post('forum/posts', ['uses'=>'PostsController@store']);
+    $router->put('forum/posts/{id}', ['uses'=>'PostsController@update']);
+    $router->delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
+    $router->get('forum/posts', ['uses'=>'PostsController@list']);
+
+    //FORUM-POST-COMMENTS
+    $router->post('forum/posts/{id}/comments', ['uses'=>'CommentsController@store']);
+    $router->delete('forum/posts/{id}/comments/{comment_id}/delete', ['uses'=>'CommentsController@delete']);
+    $router->get('forum/posts/{id}/comments', ['uses'=>'CommentsController@list']);
+
+
 });
 
 

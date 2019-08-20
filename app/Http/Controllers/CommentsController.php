@@ -19,6 +19,9 @@ use App\Http\Repositories\PostsRepository;
 
 use App\Http\Resources\TagsResource;
 use App\Http\Resources\CommentsResource;
+use App\Http\Resources\PostsResource;
+use App\Http\Resources\TopicsResource;
+use App\Http\Resources\PostsTopicsResource;
 
 class CommentsController extends Controller
 {
@@ -88,8 +91,10 @@ class CommentsController extends Controller
             $post = $postRepo->find($request->id);
 
             if (! is_null($post)) {
-           
-                $dataResponse = ['data' => CommentsResource::collection($post->comments)];
+                $topics = PostsTopicsResource::collection($post->post_topics);
+                $post_resources = new PostsResource($post);
+                $dataResponse = [ 'data' => ['post' => ['post_data' => $post_resources, 'topics' => $topics],
+                                 'comments' => CommentsResource::collection($post->comments->sortByDesc('created_at'))]];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];

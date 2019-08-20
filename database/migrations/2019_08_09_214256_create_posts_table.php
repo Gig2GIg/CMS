@@ -19,9 +19,9 @@ class CreatePostsTable extends Migration
     
             $table->string('title');
             $table->text('body');
-            $table->string('url_media',700);
+            $table->string('url_media',700)->nullable();
             $table->enum('type',['blog','forum']);
-            $table->enum('search_to',['performance','director', 'both']);
+            $table->enum('search_to',['performance','director', 'both'])->nullable();
             $table->integer('user_id')->unsigned();
 
             $table->foreign('user_id')
