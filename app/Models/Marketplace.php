@@ -20,8 +20,15 @@ class Marketplace extends Model
         return $this->belongsTo(MarketplaceCategory::class);
     }
 
+
     public function image(){
         return $this->morphOne(Resources::class,'resource');
     }
+
+    public function recommendations(){
+        return $this->belongsTo(Recommendations::class, 'marketplace_id');
+    }
+
+
 
 }

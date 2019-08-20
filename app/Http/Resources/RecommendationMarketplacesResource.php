@@ -22,9 +22,10 @@ class RecommendationMarketplacesResource extends JsonResource
        
         $marketplaceRepo = new MarketplaceRepository(new Marketplace());
         $markeplace = $marketplaceRepo->find($this->marketplace_id);
+        // dd($markeplace);
         return [
             'id' => $this->id,
-            'markeplace' => $this->markeplace
+            'markeplace' => $markeplace
         ];
     }
 }

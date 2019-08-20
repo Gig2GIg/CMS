@@ -12,4 +12,8 @@ class Recommendations extends Model
         'audition_id',
     ];
 
+    public function markeplace(){
+        $this->belongsTo(Marketplace::class);
+    }
+
 }

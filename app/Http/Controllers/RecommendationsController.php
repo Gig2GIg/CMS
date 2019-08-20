@@ -50,7 +50,9 @@ class RecommendationsController extends Controller
 
     public function list(Auditions $audition, Request $request)
     {
-      $data =  $audition->recommendations_marketplaces;
+        $data =  $audition->recommendations_marketplaces;
+
+        $data = $audition->recommendations_marketplaces->where('user_id', $this->getUserLogging());
      
        if (count($data) > 0) {
            $data->where('user_id', $this->getUserLogging());
