@@ -12,6 +12,7 @@ class TopicsControllerUnitTest extends TestCase
 {
 
     protected $token;
+    protected $token2;
 
     public function setUp(): void
     {
@@ -33,6 +34,23 @@ class TopicsControllerUnitTest extends TestCase
 
         $this->token = $response->json('access_token');
 
+        $user2 = factory(User::class)->create([
+            'email' => 'token2@test.com',
+            'password' => bcrypt('123456')]
+        );
+      
+        $user2->image()->create(['url' => $this->faker->url,'name'=>$this->faker->word()]);
+        $userDetails2 = factory(UserDetails::class)->create([
+            'type'=>2,
+            'user_id' => $user2->id,
+        ]);
+        $response = $this->post('api/login', [
+            'email' => 'token2@test.com',
+            'password' => '123456',
+        ]);
+
+        $this->token2 = $response->json('access_token');
+
     }
 
     public function testListTopicsToTablet200()
@@ -52,7 +70,7 @@ class TopicsControllerUnitTest extends TestCase
         $topic = factory(Topics::class,15)->create();
 
         $response = $this->json('GET',
-            'api/t/topics?token=' . $this->token);
+            'api/a/topics?token=' . $this->token2);
         
         $response->assertStatus(200);
     }
