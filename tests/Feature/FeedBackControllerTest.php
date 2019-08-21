@@ -53,8 +53,13 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
 
+
         $response->assertStatus(201);
         $response->assertJson(['data' => 'Feedback add']);
+        $response->assertJsonStructure([
+            'data',
+            'feedback_id'
+        ]);
     }
     public function test_set_feedback_contributor_to_performer()
     {
