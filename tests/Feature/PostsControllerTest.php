@@ -68,6 +68,17 @@ class PostsControllerTest extends TestCase
 
     }
 
+    public function test_search_by_title_posts_200()
+    {
+        $post = factory(Posts::class)->create(['user_id' => $this->userId]);
+        
+        $query = $post->title;
+        $response = $this->json('GET',
+            'api/t/blog/posts/find_by_title/?query='.$query.'&token=' . $this->token);
+
+        $response->assertStatus(201);
+
+    }
 
     public function test_created_posts_to_performance201()
     {
