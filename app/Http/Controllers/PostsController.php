@@ -164,6 +164,28 @@ class PostsController extends Controller
 
     }
 
+    public function listPostToPerformance(Request $request)
+    {
+        try {
+            $repoPost = new PostsRepository(new Posts());
+            $posts = $repoPost->all()->where('type', 'blog');
+
+            if (count($posts) > 0 ) {
+                $dataResponse = ['data' => PostsResource::collection($posts->where('search_to' , '!=', 'director'))];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not found'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
 
 
     public function search_post_by_title(Request $request)

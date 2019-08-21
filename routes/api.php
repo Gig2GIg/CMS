@@ -236,7 +236,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->delete('forum/posts/{id}/comments/{comment_id}/delete', ['uses'=>'CommentsController@delete']);
     $router->get('forum/posts/{id}/comments', ['uses'=>'CommentsController@list']);
 
-
+     //BLOGPOST
+    $router->get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
 });
 
 
