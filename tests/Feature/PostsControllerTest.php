@@ -43,11 +43,12 @@ class PostsControllerTest extends TestCase
             'email' => 'token2@test.com',
             'password' => bcrypt('123456')]
         );
+        
         $this->userId2 = $user2->id;
         $user2->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
             'type' => 2,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
         ]);
 
         $response = $this->post('api/login', [
@@ -112,10 +113,22 @@ class PostsControllerTest extends TestCase
         $query = $post1->first()->title;
    
         $response = $this->json('GET',
-            'api/t/blog/forum/find_by_title?value='.$query.'&token=' . $this->token2);
+            'api/a/forum/posts/find_by_title?value='.$query.'&token=' . $this->token2);
 
         $response->assertStatus(200);
 
+    }
+
+    public function test_list_forum_200()
+    {
+        factory(Posts::class, 10)->create(['user_id' => $this->userId, 'type'=> 'blog']);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'type'=> 'forum']);
+
+        $response = $this->json('GET', 'api/a/forum/posts'. '?token=' . $this->token2);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+  
     }
 
 
@@ -183,4 +196,6 @@ class PostsControllerTest extends TestCase
         $response->assertJsonStructure(['data']);
   
     }
+
+   
 }
