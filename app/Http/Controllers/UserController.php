@@ -242,6 +242,7 @@ class UserController extends Controller
                 'birth' => $this->date->transformDate($request->birth),
                 'stage_name' => $request->stage_name,
                 'profesion' => $request->profesion,
+                'url' => $request->url,
 //                    'location' => $request->location,
                 'zip' => $request->zip,
             ];
