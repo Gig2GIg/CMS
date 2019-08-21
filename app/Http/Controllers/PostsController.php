@@ -139,4 +139,54 @@ class PostsController extends Controller
         }
 
     }
+
+
+    public function search_post_by_title(Request $request)
+    {
+        if (! is_null($request->value)) {
+            $postRepo = new PostsRepository(new Posts());
+           
+            $result = $postRepo->search_by_title($request->value);
+            $post = $result->where('type', 'blog');
+       
+            $count = count($post);
+
+            if ($count > 0) {
+                $responseData = PostsResource::collection($post);
+                return response()->json(['data' => $responseData], 200);
+
+            } else {
+                return response()->json(['data' => "Not found Data"], 404);
+            }  
+
+        } else {
+            return response()->json(['data' => "Not found Data"], 404);
+        }
+       
+    }
+
+
+    public function search_forum_by_title(Request $request)
+    {
+        if (! is_null($request->value)) {
+            $postRepo = new PostsRepository(new Posts());
+           
+            $result = $postRepo->search_by_title($request->value);
+            $post = $result->where('type', 'forum');
+       
+            $count = count($post);
+
+            if ($count > 0) {
+                $responseData = PostsResource::collection($post);
+                return response()->json(['data' => $responseData], 200);
+
+            } else {
+                return response()->json(['data' => "Not found Data"], 404);
+            }  
+
+        } else {
+            return response()->json(['data' => "Not found Data"], 404);
+        }
+       
+    }
 }

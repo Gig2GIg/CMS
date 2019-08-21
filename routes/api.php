@@ -114,6 +114,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('blog/posts/{id}', ['uses'=>'PostsController@update']);
     $router->delete('blog/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('blog/posts', ['uses'=>'PostsController@list']);
+    $router->get('blog/posts/find_by_title', ['uses'=>'PostsController@search_post_by_title']);
 
      //BLOG-POST-COMMENTS
     $router->post('blog/posts/{id}/comments', ['uses'=>'CommentsController@store']);
@@ -228,6 +229,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->put('forum/posts/{id}', ['uses'=>'PostsController@update']);
     $router->delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('forum/posts', ['uses'=>'PostsController@list']);
+    $router->get('forum/posts/find_by_title', ['uses'=>'PostsController@search_forum_by_title']);
 
     //FORUM-POST-COMMENTS
     $router->post('forum/posts/{id}/comments', ['uses'=>'CommentsController@store']);
