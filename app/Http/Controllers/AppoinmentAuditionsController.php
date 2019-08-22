@@ -7,15 +7,20 @@ use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserSlotsRepository;
+use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserRepository;
+
 use App\Http\Resources\AppointmentDetailsUserResource;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
+
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\UserAuditions;
+
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
 
@@ -46,11 +51,22 @@ class AppoinmentAuditionsController extends Controller
             } else {
                 $dataUser = $dataUserRepo->find($request->user);
             }
+
+            $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+            $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
+
+            $userAudition = $userAudition->where('user_id', getUserLogging())->first();
+            $slotRepo =  new SlotsRepository(new Slots());
+            $slot = $slotRepo->find($userAudition->slot_id);
+
             $dataResponse = [
                 'id' => $dataUser->id,
                 'image' => $dataUser->image->url,
                 'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                'hour' => $slot->time,
+                'slot_id' => $slott->id
             ];
+      
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
