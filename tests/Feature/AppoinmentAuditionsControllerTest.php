@@ -17,6 +17,7 @@ use Tests\TestCase;
 class AppoinmentAuditionsControllerTest extends TestCase
 {
     protected $userId;
+    protected $userId2;
     protected $auditionId;
     protected $rolId;
     protected $token;
@@ -40,16 +41,54 @@ class AppoinmentAuditionsControllerTest extends TestCase
         ]);
 
         $this->token = $response->json('access_token');
+        
+        // CREATED USER TYPE APP
+        $user2 = factory(User::class)->create([
+                'email' => 'app@test.com',
+                'password' => bcrypt('123456')]
+        );
+        $user2->image()->create(['url' => $this->faker->url,'name'=>$this->faker->word()]);
 
+        $userDetails2 = factory(UserDetails::class)->create([
+            'type' => 2,
+            'user_id' => $user2->id,
+        ]);
+
+        // =========================
+
+        // CREATED AUDITIONS WITH USER TYPE TABLE
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
+
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
-        $rol = factory(Roles::class)->create([
+        
+        // CREATED ROTES TO AUIDITIONS WITH USER TYPE TABLE
+        $rols = factory(Roles::class, 12)->create([
             'auditions_id' => $audition->id
         ]);
-        $this->rolId = $rol->id;
-        $this->userId = $user->id;
+
+        // CREATED APPOIMENT TO AUIDITIONS WITH USER TYPE TABLE
+        $appoiment = factory(Appointments::class)->create([
+            'auditions_id' => $audition->id
+        ]);
+         // CREATED SLOTS WITH APPOIMENTS ID WITH USER TYPE TABLE
+        $slot = factory(Slots::class, 12)->create([
+            'appointment_id' => $appoiment->id
+        ]);
+
+        // CREATED REQUEST UPCOMMING WIT WITH USER TYPE APP
+        $user_audition = factory(UserAuditions::class)->create([
+            'user_id' => $user2->id,
+            'auditions_id' => $audition->id,
+            'rol_id' =>  $rols->first()->id,
+            'slot_id' => $slot->first()->id,
+            'type' => 1
+        ]);
+
+
+        $this->rolId = $rols->first()->id;
+        $this->userId2 = $user2->id;
         $this->auditionId = $audition->id;
     }
 
@@ -58,8 +97,17 @@ class AppoinmentAuditionsControllerTest extends TestCase
     public function test_it_checking_auditions_QR_404()
     {
         $response = $this->json('GET',
-            'api/t/appointments/auditions?'.'rol_id='. $this->rolId.'&user='. $this->userId. '&token=' . $this->token);
-        $response->assertStatus(404);
+            'api/t/appointments/auditions?'.'role_id='. $this->rolId.'&user='. $this->userId2. '&token=' . $this->token);
+
+   
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [
+            'id',
+            'image',
+            'name',
+            'hour',
+            'slot_id',
+        ]]);
        
     }
 

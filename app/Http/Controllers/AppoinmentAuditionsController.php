@@ -54,10 +54,12 @@ class AppoinmentAuditionsController extends Controller
                 $dataUser = $dataUserRepo->find($request->user);
             }
 
+           
             $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
             $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
 
-            $userAudition = $userAudition->where('user_id', getUserLogging())->first();
+            $userAudition = $userAuditions->where('user_id', $request->user)->first();
+  
             $slotRepo =  new SlotsRepository(new Slots());
             $slot = $slotRepo->find($userAudition->slot_id);
 
@@ -68,6 +70,7 @@ class AppoinmentAuditionsController extends Controller
                 'hour' => $slot->time,
                 'slot_id' => $slot->id
             ];
+       
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
