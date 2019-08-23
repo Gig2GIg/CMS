@@ -71,6 +71,14 @@ class SkillsController extends Controller
             $skillRepo = new SkillsRepository(new Skills);
             $skillResult = $skillRepo->create($data);
 
+            $data = [
+                'skills_id' => $skillResult->id,
+                'user_id' => $this->getUserLogging(),
+            ];
+            $repo = new UserSkillsRepository(new UserSkills());
+            $repo->create($data);
+
+
             $dataResponse = ['data' => 'Skill created'];
             $code = 201;
             return response()->json($dataResponse, $code);
