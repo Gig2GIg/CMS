@@ -51,6 +51,7 @@ class AuditionFullResponse extends JsonResource
             'description' => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,
+            'additional_info'=>$this->additional_info,
             'phone'=>$this->phone,
             'email'=>$this->email,
             'other_info'=>$this->other_info,

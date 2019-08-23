@@ -288,7 +288,7 @@ class AuditionsController extends Controller
         return [
             'user_id' => $contrib->id,
             'auditions_id' => $audition->id,
-            'status' => false
+            'status' => true
         ];
 
     }
