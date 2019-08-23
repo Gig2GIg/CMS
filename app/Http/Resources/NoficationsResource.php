@@ -17,7 +17,10 @@ class NoficationsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title
+            'title' => $this->title,
+            'status' => $this->status,
+            'code' => $this->code,
+            'custom_data' => $this->custom_data,
         ];
     }
 }
