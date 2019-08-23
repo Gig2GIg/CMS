@@ -231,6 +231,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('forum/posts', ['uses'=>'PostsController@listForum']);
     $router->get('forum/posts/find_by_title', ['uses'=>'PostsController@search_forum_by_title']);
+    $router->post('forum/posts/find_by_topics', ['uses'=>'PostsController@searcByTopics']);
 
     //FORUM-POST-COMMENTS
     $router->post('forum/posts/{id}/comments', ['uses'=>'CommentsController@store']);
