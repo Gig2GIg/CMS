@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\SkillsRepository;
+use App\Http\Resources\Cms\SkillResource;
+use App\Http\Requests\SkillRequest;
 use App\Http\Repositories\UserSkillsRepository;
 use App\Http\Resources\SkillsResource;
 use App\Models\Skills;
@@ -56,6 +58,37 @@ class SkillsController extends Controller
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
+
+
+    public function store(SkillRequest $request)
+    {
+      
+        try {
+            $data = [
+                'name' => $request->name
+            ];
+
+            $skillRepo = new SkillsRepository(new Skills);
+            $skillResult = $skillRepo->create($data);
+
+            $data_skill = [
+                'skills_id' => $skillResult->id,
+                'user_id' => $this->getUserLogging(),
+            ];
+            $repo = new UserSkillsRepository(new UserSkills());
+            $repo->create($data_skill);
+
+
+            $dataResponse = ['data' => 'Skill created'];
+            $code = 201;
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 500);
+        }
+
+    }
+
 
     public function addToUser(Request $request)
     {
