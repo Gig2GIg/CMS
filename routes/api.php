@@ -238,6 +238,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
      //BLOGPOST
     $router->get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
+    $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 });
 
 
@@ -315,7 +316,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
 
-        
+
 
     });
 

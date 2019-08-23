@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ContentSettingSeeder::class);
         $this->call(SkillSeed::class);
         $this->call(AdminsTableSeeder::class);
+        $this->call(MarketplacesSeeder::class);
 
     }
 }

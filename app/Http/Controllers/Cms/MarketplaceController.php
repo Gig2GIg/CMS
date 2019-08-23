@@ -65,7 +65,7 @@ class MarketplaceController extends Controller
             ]);
             return response()->json(['data' => new MarketplaceResource($marketplace_result)], 201);
         }else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Marketplace not created'], 406);
         }
     }
 
@@ -73,7 +73,7 @@ class MarketplaceController extends Controller
     {
         try {
             if ($request->json()) {
-              
+
                 $marketplaceData = [
                     'title' => $request->title,
                     'address' => $request->address,

@@ -11,11 +11,10 @@ class MarketplacesSeeder extends Seeder
      */
     public function run()
     {
-        $category2 = factory(\App\Models\MarketplaceCategory::class)->create();
-        $category1 = factory(\App\Models\MarketplaceCategory::class)->create();
+        factory(\App\Models\MarketplaceCategory::class)->create([
+            'name'=>'Non category',
+            'description'=>'category to place requested from app'
+        ]);
 
-        factory(\App\Models\Marketplace::class, 10)->create(['marketplace_category_id' =>  $category2->id ]);
-
-        factory(\App\Models\Marketplace::class, 10)->create(['marketplace_category_id' =>  $category1->id ]);
     }
 }
