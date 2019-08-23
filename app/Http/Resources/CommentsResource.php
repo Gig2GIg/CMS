@@ -26,15 +26,20 @@ class CommentsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $user = new UserDetailsRepository(new UserDetails());
-        $userData = $user->findbyparam('user_id',$this->user_id);
+        $userDetailRepo = new UserDetailsRepository(new UserDetails());
+        $userDataDetail = $userDetailRepo->findbyparam('user_id',$this->user_id);
         
+        $userRepo = new UserRepository(new User());
+        $userData = $userRepo->find($this->user_id);
+        
+    
     
         return [
             'id' => $this->id,
             'body' => $this->body,
             'time_ago' => $this->created_at->diffForHumans(),
-            'name' => $userData->first_name 
+            'name' => $userDataDetail->first_name,
+            'avatar' => $userData->image->url
         ];
     }
 }
