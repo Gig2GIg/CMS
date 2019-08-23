@@ -149,6 +149,7 @@ class Notifications
                             'title' => $title,
                             'code' => $type,
                             'status' => 'unread',
+                            'custom_data' => $contributor->id,
                             'message'=> $tomsg
                         ]);
 
