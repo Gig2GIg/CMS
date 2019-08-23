@@ -65,7 +65,7 @@ class FeedBackController extends Controller
                 $code = 201;
 
             } else {
-                $dataResponse = ['data' => 'has already been added'];
+                $dataResponse = ['data' => 'Feedback already submitted'];
                 $code = 406;
             }
             return response()->json($dataResponse, $code);
