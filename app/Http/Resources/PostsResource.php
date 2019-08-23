@@ -28,6 +28,7 @@ class PostsResource extends JsonResource
             'title' => $this->title,
             'body' => $this->body,
             'avatar' => $avatar,
+            'url_media' => $this->url_media,
             'name' => $user->details->first_name,
             'time_ago' => $this->created_at->diffForHumans()
         ];
