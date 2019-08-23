@@ -66,7 +66,7 @@ class AppoinmentAuditionsController extends Controller
                 'image' => $dataUser->image->url,
                 'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
                 'hour' => $slot->time,
-                'slot_id' => $slott->id
+                'slot_id' => $slot->id
             ];
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
