@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Http\Repositories\Marketplace\MarketplaceRepository as MarketplaceRepo;
 use App\Http\Repositories\Marketplace\MarketplaceCategoryRepository as MarketplaceCategoryRepo;
 
+use App\Http\Requests\Marketplace\MarketplaceRequest;
 use App\Models\Marketplace;
 use App\Models\MarketplaceCategory;
 use App\Http\Resources\Cms\MarketplaceResource;
@@ -13,7 +14,9 @@ use App\Http\Resources\Cms\MarketplaceResource;
 use App\Http\Requests\Marketplace\MarketplaceSearchRequest;
 
 
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 
 class MarketplaceController extends Controller
@@ -63,7 +66,7 @@ class MarketplaceController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(MarketplaceRequest $request)
     {
         try {
             $marketplaceData = [
@@ -84,7 +87,7 @@ class MarketplaceController extends Controller
                 'type' => '4'
             ]);
             return response()->json(['data' => new MarketplaceResource($marketplace_result)], 201);
-        } catch (\Exception $exception) {
+        } catch (QueryException $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error created Marketplace'], 406);
         }
