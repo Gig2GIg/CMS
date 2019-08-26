@@ -60,15 +60,25 @@ class AppoinmentAuditionsController extends Controller
 
             $userAudition = $userAuditions->where('user_id', $request->user)->first();
   
-            $slotRepo =  new SlotsRepository(new Slots());
-            $slot = $slotRepo->find($userAudition->slot_id);
-
+            if (! is_null($userAudition)){
+                $slotRepo =  new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($userAudition->slot_id);
+              
+                $dataResponse = [
+                    'id' => $dataUser->id,
+                    'image' => $dataUser->image->url,
+                    'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                    'hour' => $slot->time,
+                    'slot_id' => $slot->id
+                ];
+           
+                return response()->json(['data' => $dataResponse], 200);
+            }
+                
             $dataResponse = [
                 'id' => $dataUser->id,
                 'image' => $dataUser->image->url,
-                'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
-                'hour' => $slot->time,
-                'slot_id' => $slot->id
+                'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name
             ];
        
             return response()->json(['data' => $dataResponse], 200);
