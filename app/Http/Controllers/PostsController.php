@@ -198,7 +198,7 @@ class PostsController extends Controller
             $posts = $repoPost->all()->where('type', 'blog');
 
             if (count($posts) > 0 ) {
-                $dataResponse = ['data' => PostsResource::collection($posts->where('search_to' , '!=', 'director'))];
+                $dataResponse = ['data' => PostsResource::collection($posts)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
