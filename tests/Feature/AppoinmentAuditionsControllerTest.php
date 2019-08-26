@@ -114,7 +114,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
     public function test_it_checking_auditions_QR_200_without_slot()
     {
         $response = $this->json('GET',
-            'api/t/appointments/auditions?'.'role_id='. '12'.'&user='. $this->userId2. '&token=' . $this->token);
+            'api/t/appointments/auditions?'.'role_id='. '23434'.'&user='. $this->userId2. '&token=' . $this->token);
 
    
         $response->assertStatus(200);

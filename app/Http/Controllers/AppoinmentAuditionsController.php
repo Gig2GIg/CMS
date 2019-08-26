@@ -60,10 +60,9 @@ class AppoinmentAuditionsController extends Controller
 
             $userAudition = $userAuditions->where('user_id', $request->user)->first();
   
-            if (! is_null($userAudition)){
+            if (! is_null($userAudition->slot_id)){
                 $slotRepo =  new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($userAudition->slot_id);
-              
                 $dataResponse = [
                     'id' => $dataUser->id,
                     'image' => $dataUser->image->url,
