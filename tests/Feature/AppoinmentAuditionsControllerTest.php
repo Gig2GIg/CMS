@@ -125,4 +125,25 @@ class AppoinmentAuditionsControllerTest extends TestCase
             'name'
         ]]);  
     }
+
+    public function test_it_store_user_auditions()
+    {
+        $response = $this->json('POST',
+            'api/t/appointments/auditions?'. 'token=' . $this->token,
+        [
+            'auditions'=> 1,
+            'rol'=> 2,
+            'type'=> 3
+        ]
+    );
+
+   
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure(['data' => [
+            'id',
+            'image',
+            'name'
+        ]]);  
+    }
 }
