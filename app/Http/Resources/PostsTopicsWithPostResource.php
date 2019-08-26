@@ -21,21 +21,24 @@ class PostsTopicsWithPostResource extends JsonResource
     public function toArray($request)
     {
         $postRepo = new PostsRepository(new Posts());
-        $post = $postRepo->find($this->topic_id);
+        $post = $postRepo->find($this->post_id);
 
         $userRepo = new UserRepository(new User());
         $user = $userRepo->find($post->user_id);
         $avatar = $user->image->url;
 
-        return [
-            'id' => $post->id,
-            'title' => $post->title,
-            'body' => $post->body,
-            'url_media' => $post->url_media,
-            'avatar' => $avatar,
-            'url_media' => $this->url_media,
-            'name' => $user->details->first_name,
-            'time_ago' => $this->created_at->diffForHumans()
-        ];
+        if ($post->search_to != 'director'){
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'type' => $post->type,
+                'url_media' => $post->url_media,
+                'avatar' => $avatar,
+                'url_media' => $post->url_media,
+                'name' => $user->details->first_name,
+                'time_ago' => $post->created_at->diffForHumans()
+            ];
+        }  
     }
 }

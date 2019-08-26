@@ -23,6 +23,7 @@ class PostsResource extends JsonResource
         $userRepo = new UserRepository(new User());
         $user = $userRepo->find($this->user_id);
         $avatar = $user->image->url;
+  
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -30,7 +31,8 @@ class PostsResource extends JsonResource
             'avatar' => $avatar,
             'url_media' => $this->url_media,
             'name' => $user->details->first_name,
-            'time_ago' => $this->created_at->diffForHumans()
+            'time_ago' => $this->created_at->diffForHumans(),
+            'search_to' => $this->search_to
         ];
     }
 }
