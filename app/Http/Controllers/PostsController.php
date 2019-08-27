@@ -167,7 +167,34 @@ class PostsController extends Controller
 
     }
 
-   
+    public function searchPostToPerformance(Request $request)
+    {
+        try {
+            $postTopics = PostTopics::whereIn('topic_id', $request->topics_ids)->get();
+
+            $posts = $postTopics->map(function ($postTopics) {
+                return $postTopics;
+            })->flatten()->unique();
+
+            $data =  PostsTopicsWithPostResource::collection($posts);
+            $response= collect($data)->filter()->all();
+
+            if (count($posts) > 0 ) {
+                $dataResponse = ['data' => $response];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not found'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
 
     public function listForum(Request $request)
     {
@@ -198,7 +225,7 @@ class PostsController extends Controller
             $posts = $repoPost->all()->where('type', 'blog');
 
             if (count($posts) > 0 ) {
-                $dataResponse = ['data' => PostsResource::collection($posts->where('search_to' , '!=', 'director'))];
+                $dataResponse = ['data' => PostsResource::collection($posts->where('search_to', '!=', 'director'))];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
