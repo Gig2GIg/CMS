@@ -75,6 +75,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
+    $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
 
    //calendar routes
    $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
@@ -93,7 +94,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
 
-    //SKILL SUGGESTIONS
+    //SKILL SUGGESTIONS 
 //    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 

@@ -530,4 +530,33 @@ class AuditionManagementController extends Controller
         }
     }
 
+    public function reorderAppointmentTimes(Request $request)
+    {
+        try {
+       
+            $repoApp = new AppointmentRepository(new Appointments());
+            $appoiment = $repoApp->find($request->id);
+
+            $useSlotRepo = new UserSlotsRepository(new  UserSlots);
+            $userSlot = $useSlotRepo->find($request->slot_id);
+
+            $slots = $appoiment->slot;
+
+            if ($slots) {
+                $dataResponse =   $slots ;
+                $code = 200;
+            } else {
+                $dataResponse = 'Error';
+                $code = 422;
+            }
+
+            return response()->json(['data' => $dataResponse], $code);
+
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Unprocesable Entity'], 422);
+        }
+    }
+
+
 }
