@@ -497,7 +497,7 @@ class AuditionsController extends Controller
 
     public function media(MediaRequest $request, Auditions $audition)
     {
-        $repository = new AuditionRepository($auditions);
+        $repository = new AuditionRepository($audition);
         $data = $repository->findMediaByParams($request->type);
 
         return response()->json(['data' => $data]);

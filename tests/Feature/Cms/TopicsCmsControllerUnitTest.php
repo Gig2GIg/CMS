@@ -8,7 +8,7 @@ use App\Models\Admin;
 use App\Models\Topics;
 use App\Models\UserDetails;
 
-class TopicsControllerUnitTest extends TestCase
+class TopicsCmsControllerUnitTest extends TestCase
 {
 
     protected $token;
@@ -26,8 +26,8 @@ class TopicsControllerUnitTest extends TestCase
             'email' => 'cms@test.com',
             'password' => '123456',
         ]);
-   
-        $this->token = $response->json('token'); 
+
+        $this->token = $response->json('token');
     }
 
     public function testCreateTopics201()
@@ -39,7 +39,7 @@ class TopicsControllerUnitTest extends TestCase
         $response = $this->json('POST',
             'api/cms/topics/create?token=' . $this->token,
             $data);
-        
+
         $response->assertStatus(201);
     }
 
@@ -60,7 +60,7 @@ class TopicsControllerUnitTest extends TestCase
         'api/cms/topics/show/' . $topic->id . '?token=' . $this->token);
         $response->assertStatus(200);
     }
-   
+
     public function testShowAll200()
     {
         $topic = factory(Topics::class, 5)->create();
@@ -88,7 +88,7 @@ class TopicsControllerUnitTest extends TestCase
 
     public function testDeleteTopic()
     {
-    
+
         $topic = factory(Topics::class)->create();
 
         $response = $this->json('DELETE',
