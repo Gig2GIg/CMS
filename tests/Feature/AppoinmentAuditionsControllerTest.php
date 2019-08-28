@@ -134,7 +134,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
     }
 
 
-    public function test_it_checking_auditions_QR_200_walking()
+    public function test_it_checking_auditions_QR_200_wallking()
     {
         $response = $this->json('GET',
             'api/t/appointments/auditions?'.'role_id='. $this->rolId.'&user='. $this->userId3. '&token=' . $this->token);
@@ -149,5 +149,24 @@ class AppoinmentAuditionsControllerTest extends TestCase
         ]]);  
     }
 
+    public function test_it_store_user_auditions()
+    {
+        $response = $this->json('POST',
+            'api/t/appointments/auditions?'. 'token=' . $this->token,
+        [
+            'auditions'=> 1,
+            'rol'=> 2,
+            'type'=> 3
+        ]
+    );
 
+   
+        $response->assertStatus(200);
+
+        $response->assertJsonStructure(['data' => [
+            'id',
+            'image',
+            'name'
+        ]]);  
+    }
 }

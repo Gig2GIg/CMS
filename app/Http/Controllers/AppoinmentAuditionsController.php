@@ -62,7 +62,7 @@ class AppoinmentAuditionsController extends Controller
            
             $userSlots = UserSlots::where('user_id',$request->user );
             $userSlot =   $userSlots->where('roles_id', $request->role_id)->first();
-        
+    
             if (! is_null($userAudition)){
                if ($userAudition->slot_id){
                 $slotRepo =  new SlotsRepository(new Slots());
@@ -79,7 +79,8 @@ class AppoinmentAuditionsController extends Controller
                 return response()->json(['data' => $dataResponse], 200);
                }
                 
-            }elseif (! is_null($userSlot->slots_id)) {
+            }
+            if  (! is_null($userSlot->slots_id)) {
               
                 $slotRepo =  new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($userSlot->slots_id);
