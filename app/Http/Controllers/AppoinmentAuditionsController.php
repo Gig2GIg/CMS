@@ -59,10 +59,15 @@ class AppoinmentAuditionsController extends Controller
             $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
 
             $userAudition = $userAuditions->where('user_id', $request->user)->first();
-  
-            if (! is_null($userAudition->slot_id)){
+           
+            $userSlots = UserSlots::where('user_id',$request->user );
+            $userSlot =   $userSlots->where('roles_id', $request->role_id)->first();
+        
+            if (! is_null($userAudition)){
+               if ($userAudition->slot_id){
                 $slotRepo =  new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($userAudition->slot_id);
+
                 $dataResponse = [
                     'id' => $dataUser->id,
                     'image' => $dataUser->image->url,
@@ -72,8 +77,23 @@ class AppoinmentAuditionsController extends Controller
                 ];
            
                 return response()->json(['data' => $dataResponse], 200);
-            }
+               }
                 
+            }elseif (! is_null($userSlot->slots_id)) {
+              
+                $slotRepo =  new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($userSlot->slots_id);
+                $dataResponse = [
+                    'id' => $dataUser->id,
+                    'image' => $dataUser->image->url,
+                    'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                    'hour' => $slot->time,
+                    'slot_id' => $slot->id
+                ];
+                
+                return response()->json(['data' => $dataResponse], 200);
+            }
+            
             $dataResponse = [
                 'id' => $dataUser->id,
                 'image' => $dataUser->image->url,

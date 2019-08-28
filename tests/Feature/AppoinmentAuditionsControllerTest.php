@@ -21,6 +21,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
     protected $auditionId;
     protected $rolId;
     protected $token;
+    protected $token3;
 
     protected function setUp(): void
     {
@@ -54,6 +55,17 @@ class AppoinmentAuditionsControllerTest extends TestCase
             'user_id' => $user2->id,
         ]);
 
+         // CREATED USER TYPE APP
+         $user3 = factory(User::class)->create([
+            'email' => 'app-3@test.com',
+            'password' => bcrypt('123456')]
+        );
+        $user3->image()->create(['url' => $this->faker->url,'name'=>$this->faker->word()]);
+
+        $userDetails2 = factory(UserDetails::class)->create([
+            'type' => 2,
+            'user_id' => $user3->id,
+        ]);
         // =========================
 
         // CREATED AUDITIONS WITH USER TYPE TABLE
@@ -86,9 +98,20 @@ class AppoinmentAuditionsControllerTest extends TestCase
             'type' => 1
         ]);
 
+         // CREATED UserSlots
+         $user_slot = factory(UserSlots::class)->create([
+            'user_id' => $user3->id,
+            'auditions_id' => $audition->id,
+            'roles_id' =>  $rols->first()->id,
+            'slots_id' => $slot[3]->id,
+         
+        ]);
+
+
 
         $this->rolId = $rols->first()->id;
         $this->userId2 = $user2->id;
+        $this->userId3 = $user3->id;
         $this->auditionId = $audition->id;
     }
 
@@ -111,10 +134,10 @@ class AppoinmentAuditionsControllerTest extends TestCase
     }
 
 
-    public function test_it_checking_auditions_QR_200_without_slot()
+    public function test_it_checking_auditions_QR_200_walking()
     {
         $response = $this->json('GET',
-            'api/t/appointments/auditions?'.'role_id='. '23434'.'&user='. $this->userId2. '&token=' . $this->token);
+            'api/t/appointments/auditions?'.'role_id='. $this->rolId.'&user='. $this->userId3. '&token=' . $this->token);
 
    
         $response->assertStatus(200);
@@ -126,24 +149,5 @@ class AppoinmentAuditionsControllerTest extends TestCase
         ]]);  
     }
 
-    public function test_it_store_user_auditions()
-    {
-        $response = $this->json('POST',
-            'api/t/appointments/auditions?'. 'token=' . $this->token,
-        [
-            'auditions'=> 1,
-            'rol'=> 2,
-            'type'=> 3
-        ]
-    );
 
-   
-        $response->assertStatus(200);
-
-        $response->assertJsonStructure(['data' => [
-            'id',
-            'image',
-            'name'
-        ]]);  
-    }
 }
