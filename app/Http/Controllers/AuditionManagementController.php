@@ -508,6 +508,7 @@ class AuditionManagementController extends Controller
             $repoResource = new ResourcesRepository(new Resources());
             $resourceData = $repoResource->find($request->id);
 
+            
             $data = [
                 'shareable' => $request->shareable
             ];
@@ -533,17 +534,20 @@ class AuditionManagementController extends Controller
     public function reorderAppointmentTimes(Request $request)
     {
         try {
-       
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
+            $this->log->info($request);
 
-            $useSlotRepo = new UserSlotsRepository(new  UserSlots);
-            $userSlot = $useSlotRepo->find($request->slot_id);
+            foreach ($appoiment->slots as $slot) {
+                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
+                $userSlot->update(['slots_id' => $slot['slot_id']]);
+                
+            }
 
-            $slots = $appoiment->slot;
+            $this->log->info('LOGINFO',UserSlots::all());
 
-            if ($slots) {
-                $dataResponse =   $slots ;
+            if ($userSlotRepo) {
+                $dataResponse =  'success' ;
                 $code = 200;
             } else {
                 $dataResponse = 'Error';

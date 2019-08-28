@@ -23,6 +23,7 @@ class SlotAuditionsMoveTest extends TestCase
     protected $token;
     protected $slots;
     protected $appoimentId;
+    protected $user_slot;
 
     protected function setUp(): void
     {
@@ -83,17 +84,48 @@ class SlotAuditionsMoveTest extends TestCase
         $user_audition = factory(UserAuditions::class)->create([
             'user_id' => $user2->id,
             'auditions_id' => $audition->id,
-            'rol_id' =>  $rols->first()->id,
+            'rol_id' =>  $rols[0]->id,
             'slot_id' => $slots[0]->id,
             'type' => 1
         ]);
 
-      
+        // CREATED USERSLOTS
+        $user_slot = factory(UserSlots::class)->create([
+            'user_id' => $user2->id,
+            'auditions_id' => $audition->id,
+            'slots_id' =>  $slots[0]->id,
+            'roles_id' => $rols[0]->id,
+            'status' => 'reserved', //'checked'
+            'favorite' => 1
+        ]);
+
+        $users= factory(User::class)->create();
+        
+          // CREATED REQUEST UPCOMMING WIT WITH USER TYPE APP
+          $user_audition = factory(UserAuditions::class)->create([
+            'user_id' => $users[1]->id,
+            'auditions_id' => $audition->id,
+            'rol_id' =>  $rols[1]->id,
+            'slot_id' => $slots[1]->id,
+            'type' => 1
+        ]);
+
+        // CREATED USERSLOTS
+        $user_slot = factory(UserSlots::class)->create([
+            'user_id' => $user[1]->id,
+            'auditions_id' => $audition->id,
+            'slots_id' =>  $slots[1]->id,
+            'roles_id' => $rols[1]->id,
+            'status' => 'reserved', //'checked'
+            'favorite' => 1
+        ]);
+
         $this->rolId = $rols->first()->id;
         $this->userId2 = $user2->id;
         $this->auditionId = $audition->id;
         $this->slots = $slots;
         $this->appoimentId = $appoiment->id;
+        $this->user_slot = $user_slot->id;
         
     }
 
@@ -101,21 +133,20 @@ class SlotAuditionsMoveTest extends TestCase
 
     public function test_it_reorder_appointment_times_slots200()
     {
-     
-   
         $data = [
-                'dates' => ['current_slot_it' => $this->slots[0]->id,
-                            'slot_id' =>  $this->slots[1]->id,
-                            'user_id' =>  $this->userId2
-                            ]
-                ];
+                'slots' => [
+                    [
+                        'slot_id' =>  $this->slots[1]->id,
+                        'user_id' =>  $this->userId2
+                    ]
+                ]];
             
         $response = $this->json('PUT',
             'api/t/auditions/appointments/'. $this->appoimentId.'/slots?'. '&token=' . $this->token,
             $data
         );
 
-   dd($response);
+
         $response->assertStatus(200);
        
     }
