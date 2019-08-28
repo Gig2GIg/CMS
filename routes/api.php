@@ -50,7 +50,12 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
-   //performers db
+   //final cast
+    $router->post('finalcast',['uses'=>'FinalCastController@add']);
+    $router->get('finalcast/{audition_id}/audition',['uses'=>'FinalCastController@list']);
+    $router->put('finalcast/{id}',['uses'=>'FinalCastController@update']);
+
+    //performers db
     $router->post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
     $router->post('performers/list',['uses'=>'PerformersController@list']);

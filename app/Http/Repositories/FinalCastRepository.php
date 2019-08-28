@@ -40,7 +40,7 @@ class FinalCastRepository
         }
     }
 
-    public function find($id):Feedbacks
+    public function find($id):FinalCast
     {
         try{
             return $this->model->findOrFail($id);
@@ -67,7 +67,8 @@ class FinalCastRepository
             return $this->model->update($data);
         }catch (QueryException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
-            throw new UpdateException($e);
+            throw new QueryException($e->getSql(),[],$e->getPrevious());
+
         }
     }
 
