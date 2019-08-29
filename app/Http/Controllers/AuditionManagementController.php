@@ -563,4 +563,34 @@ class AuditionManagementController extends Controller
     }
 
 
+    public function bannedAuditions(Request $request)
+    {
+        try {
+            $repoAudition = new AuditionRepository(new Auditions());
+            $audition = $repoAudition->find($request->audition_id);
+
+            
+            $data = [
+                'banned' => 'pending'
+            ];
+
+            $resource = $audition->update($data);
+
+            if ($resource) {
+                $dataResponse = 'Audition Banned';
+                $code = 200;
+            } else {
+                $dataResponse = 'Error';
+                $code = 422;
+            }
+
+            return response()->json(['data' => $dataResponse], $code);
+
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Error to process'], 406);
+        }
+    }
+    
+
 }
