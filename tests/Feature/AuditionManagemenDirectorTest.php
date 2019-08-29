@@ -244,5 +244,5 @@ class AuditionManagemenDirectorTest extends TestCase
         $this->userId = $user->id;
         $this->auditionId = $audition->id;
     }
-
+    
 }

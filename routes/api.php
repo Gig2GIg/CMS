@@ -77,6 +77,10 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
 
+    //auditions BANNED
+    $router->post('/auditions/banned',['uses'=>'AuditionManagementController@bannedAuditionsFromCms']);
+
+
    //calendar routes
    $router->get('/user/{id}/calendar',['uses'=>'CalendarController@getAll']);
 
@@ -142,6 +146,9 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('/users',['uses'=>'UserController@getAll']);
     $router->put('/users/union/update',['uses'=>'UserController@updateMemberships']);
     $router->get('/users/union/list',['uses'=>'UserController@listMemberships']);
+
+    //auditions BANNED
+    $router->post('/auditions/banned',['uses'=>'AuditionManagementController@bannedAuditions']);
 
     //credits routes
     $router->post('/credits/create',['uses'=>'CreditsController@store']);

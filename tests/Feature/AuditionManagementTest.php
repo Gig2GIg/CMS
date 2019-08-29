@@ -293,4 +293,18 @@ class AuditionManagementTest extends TestCase
         $this->auditionId = $audition->id;
     }
 
+
+    public function test_it_user_performance_bannend_audition200(){
+        
+        $response = $this->json('POST',
+        'api/a/auditions/banned?token=' . $this->token,
+        [
+            'audition_id' => $this->auditionId
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+    }
+
+
+    
 }

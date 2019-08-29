@@ -245,7 +245,7 @@ class AuditionControllerTest extends TestCase
             'phone'=>$this->faker->phoneNumber,
             'additional_info'=>$this->faker->paragraph,
             'email'=>$this->faker->companyEmail,
-            'other_info'=>$this->faker->paragraph,
+            'other_info'=>$this->faker->text,
             'cover_name'=>'covername',
             'dates' => [
                 [
@@ -372,4 +372,6 @@ class AuditionControllerTest extends TestCase
         $response->assertStatus(200);
 
     }
+
+    
 }
