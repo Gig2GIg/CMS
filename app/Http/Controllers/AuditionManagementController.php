@@ -538,13 +538,13 @@ class AuditionManagementController extends Controller
             $appoiment = $repoApp->find($request->id);
             $this->log->info($request);
 
-            foreach ($appoiment->slots as $slot) {
+            foreach ($appoiment->slot as $slot) {
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
-                $userSlot->update(['slots_id' => $slot['slot_id']]);
+                $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
                 
             }
 
-            $this->log->info('LOGINFO',UserSlots::all());
+            $this->log->info('SLOTS',$appoiment->slot);
 
             if ($userSlotRepo) {
                 $dataResponse =  'success' ;

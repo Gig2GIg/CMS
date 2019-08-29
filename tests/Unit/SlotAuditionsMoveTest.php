@@ -24,6 +24,7 @@ class SlotAuditionsMoveTest extends TestCase
     protected $slots;
     protected $appoimentId;
     protected $user_slot;
+    protected $users;
 
     protected function setUp(): void
     {
@@ -99,8 +100,8 @@ class SlotAuditionsMoveTest extends TestCase
             'favorite' => 1
         ]);
 
-        $users= factory(User::class)->create();
-        
+        $users= factory(User::class, 12)->create();
+  
           // CREATED REQUEST UPCOMMING WIT WITH USER TYPE APP
           $user_audition = factory(UserAuditions::class)->create([
             'user_id' => $users[1]->id,
@@ -110,9 +111,9 @@ class SlotAuditionsMoveTest extends TestCase
             'type' => 1
         ]);
 
-        // CREATED USERSLOTS
+        // CREATED USERSLOTS1
         $user_slot = factory(UserSlots::class)->create([
-            'user_id' => $user[1]->id,
+            'user_id' => $users[1]->id,
             'auditions_id' => $audition->id,
             'slots_id' =>  $slots[1]->id,
             'roles_id' => $rols[1]->id,
@@ -120,12 +121,45 @@ class SlotAuditionsMoveTest extends TestCase
             'favorite' => 1
         ]);
 
+         // CREATED USERSLOTS 2
+         $user_slot2 = factory(UserSlots::class)->create([
+            'user_id' => $users[2]->id,
+            'auditions_id' => $audition->id,
+            'slots_id' =>  $slots[2]->id,
+            'roles_id' => $rols[2]->id,
+            'status' => 'reserved', //'checked'
+            'favorite' => 1
+        ]);
+
+          // CREATED USERSLOTS 3
+          $user_slot3 = factory(UserSlots::class)->create([
+            'user_id' => $users[3]->id,
+            'auditions_id' => $audition->id,
+            'slots_id' =>  $slots[6]->id,
+            'roles_id' => $rols[4]->id,
+            'status' => 'reserved', //'checked'
+            'favorite' => 1
+        ]);
+
+        // CREATED USERSLOTS 4
+        $user_slot3 = factory(UserSlots::class)->create([
+            'user_id' => $users[4]->id,
+            'auditions_id' => $audition->id,
+            'slots_id' =>  $slots[7]->id,
+            'roles_id' => $rols[8]->id,
+            'status' => 'reserved', //'checked'
+            'favorite' => 1
+        ]);
+
+
+
         $this->rolId = $rols->first()->id;
         $this->userId2 = $user2->id;
         $this->auditionId = $audition->id;
         $this->slots = $slots;
         $this->appoimentId = $appoiment->id;
         $this->user_slot = $user_slot->id;
+        $this->users = $users;
         
     }
 
@@ -136,8 +170,20 @@ class SlotAuditionsMoveTest extends TestCase
         $data = [
                 'slots' => [
                     [
-                        'slot_id' =>  $this->slots[1]->id,
+                        'slot_id' =>  $this->slots[4]->id,
                         'user_id' =>  $this->userId2
+                    ],
+                    [
+                        'slot_id' =>  $this->slots[2]->id,
+                        'user_id' =>  $this->users[2]->id
+                    ],
+                    [
+                        'slot_id' =>  $this->slots[5]->id,
+                        'user_id' =>  $this->users[2]->id
+                    ],
+                    [
+                        'slot_id' =>  $this->slots[1]->id,
+                        'user_id' =>  $this->users[4]->id
                     ]
                 ]];
             
@@ -150,7 +196,5 @@ class SlotAuditionsMoveTest extends TestCase
         $response->assertStatus(200);
        
     }
-
-
 }
 
