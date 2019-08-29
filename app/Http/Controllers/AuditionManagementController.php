@@ -508,6 +508,7 @@ class AuditionManagementController extends Controller
             $repoResource = new ResourcesRepository(new Resources());
             $resourceData = $repoResource->find($request->id);
 
+            
             $data = [
                 'shareable' => $request->shareable
             ];
@@ -529,5 +530,37 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Error to process'], 406);
         }
     }
+
+    public function reorderAppointmentTimes(Request $request)
+    {
+        try {
+            $repoApp = new AppointmentRepository(new Appointments());
+            $appoiment = $repoApp->find($request->id);
+            $this->log->info($request);
+
+            foreach ($appoiment->slot as $slot) {
+                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
+                $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
+                
+            }
+
+            $this->log->info('SLOTS',$appoiment->slot);
+
+            if ($userSlotRepo) {
+                $dataResponse =  'success' ;
+                $code = 200;
+            } else {
+                $dataResponse = 'Error';
+                $code = 422;
+            }
+
+            return response()->json(['data' => $dataResponse], $code);
+
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Unprocesable Entity'], 422);
+        }
+    }
+
 
 }
