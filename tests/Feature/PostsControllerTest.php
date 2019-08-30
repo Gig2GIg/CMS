@@ -44,6 +44,7 @@ class PostsControllerTest extends TestCase
             'password' => bcrypt('123456')]
         );
         
+    
         $this->userId2 = $user2->id;
         $user2->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $userDetails = factory(UserDetails::class)->create([
@@ -197,5 +198,27 @@ class PostsControllerTest extends TestCase
   
     }
 
-   
+    public function test_it_user_sort_list_posts_by_created_at_ASC_for_performance_200()
+    {
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08"]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId]);
+       
+        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?query=asc'.'&token=' . $this->token2);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+       
+    }
+
+    public function test_it_user_sort_list_posts_by_created_at_DESC_for_performance_200()
+    {
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08"]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId]);
+        
+        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?query=desc'.'&token=' . $this->token2);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+  
+    }
 }

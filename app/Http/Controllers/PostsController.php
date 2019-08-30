@@ -290,4 +290,27 @@ class PostsController extends Controller
         }
        
     }
+
+
+    public function sort_post_by_param(Request $request)
+    {
+        try {
+            $repoPost = new PostsRepository(new Posts());
+            $posts = $repoPost->all()->where('search_to', 'both');
+
+            if (count($posts) > 0 ) {
+                $dataResponse = ['data' => PostsResource::collection($posts->id->orderBy('created_at', $request->query)->get())];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not found'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
 }
