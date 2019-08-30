@@ -51,39 +51,39 @@ services:
             - POSTGRES_USER=sonar
             - POSTGRES_PASSWORD=v07IGCFCF83Z95NX
             - POSTGRES_DB=sonarqube
-    elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
-        volumes:
-            - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-        ports:
-            - "9200:9200"
-            - "9300:9300"
-        environment:
-            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-    logstash:
-        image: docker.elastic.co/logstash/logstash:6.4.2
-        volumes:
-            - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-            - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
-        ports:
-            - "5000:5000"
-        environment:
-            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-        depends_on:
-            - elasticsearch
-    kibana:
-        image: docker.elastic.co/kibana/kibana:6.4.2
-        volumes:
-            - ./elk/kibana/config/:/usr/share/kibana/config:ro
-        ports:
-            - "5601:5601"
-        depends_on:
-            - elasticsearch
-    apm_server:
-        image: docker.elastic.co/apm/apm-server:6.4.2
-        volumes:
-            - ./elk/apm/config/:/usr/share/apm/config:ro
-        ports:
-            - "8200:8200"
-        depends_on:
-            - elasticsearch
+#    elasticsearch:
+#        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+#        volumes:
+#            - ./elk/elastic/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+#        ports:
+#            - "9200:9200"
+#            - "9300:9300"
+#        environment:
+#            ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+#    logstash:
+#        image: docker.elastic.co/logstash/logstash:6.4.2
+#        volumes:
+#            - ./elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+#            - ./elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+#        ports:
+#            - "5000:5000"
+#        environment:
+#            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+#        depends_on:
+#            - elasticsearch
+#    kibana:
+#        image: docker.elastic.co/kibana/kibana:6.4.2
+#        volumes:
+#            - ./elk/kibana/config/:/usr/share/kibana/config:ro
+#        ports:
+#            - "5601:5601"
+#        depends_on:
+#            - elasticsearch
+#    apm_server:
+#        image: docker.elastic.co/apm/apm-server:6.4.2
+#        volumes:
+#            - ./elk/apm/config/:/usr/share/apm/config:ro
+#        ports:
+#            - "8200:8200"
+#        depends_on:
+#            - elasticsearch
