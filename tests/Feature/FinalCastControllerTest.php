@@ -59,7 +59,10 @@ class FinalCastControllerTest extends TestCase
             'performer_id' => factory(User::class)->create()->id
         ]);
 
-        $response->assertStatus(201)->assertJson(['data' => 'Add performer to final cast']);
+        $response->assertStatus(201)->assertJsonStructure([
+            'data',
+            'message'
+        ]);
     }
 
     public function test_add_performer_final_cast_406()
@@ -95,6 +98,7 @@ class FinalCastControllerTest extends TestCase
         $response = $this->json('get', 'api/t/finalcast/' . $audition->id . '/audition?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
+            'id',
             'user_id',
             'name',
             'rol_id',

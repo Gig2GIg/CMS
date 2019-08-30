@@ -25,6 +25,7 @@ class FinalCastResource extends JsonResource
         $fname = $dataDetUser->first_name ?? '';
           $lname=$dataDetUser->last_name ?? '';
        return [
+           'id'=>$this->id,
            'user_id'=>$this->performer_id,
            'rol_id'=>$this->rol_id,
            'name'=>$fname.' '.$lname,

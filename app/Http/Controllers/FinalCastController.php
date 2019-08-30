@@ -22,7 +22,7 @@ class FinalCastController extends Controller
           if($create->id === null){
               throw  new Exception('NOT CREATED REGISTER FOR FINAL CAST');
           }
-            return response()->json(['data'=>'Add performer to final cast'],201);
+            return response()->json(['data'=>$create,'message'=>'Add performer to final cast'],201);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
             return response()->json(['data'=>'fail to add performer'],406);
