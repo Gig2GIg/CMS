@@ -39,7 +39,7 @@ class FinalCastController extends Controller
             return response()->json(['data'=>FinalCastResource::collection($data)],200);
         }catch (Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>$exception->getMessage()],404);
+            return response()->json(['data'=>'Data Not Found'],404);
         }
     }
 
@@ -52,6 +52,21 @@ class FinalCastController extends Controller
            if(!$update){
                throw new Exception('performer in final cast list not updated');
            }
+            return response()->json(['data'=>true],200);
+        }catch (Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['data'=>false],406);
+        }
+    }
+
+    public function delete(Request $request){
+        try{
+            $repo = new FinalCastRepository(new FinalCast());
+            $data = $repo->find($request->id);
+            $delete = $data->delete();
+            if(!$delete){
+                throw new Exception('performer in final cast list not updated');
+            }
             return response()->json(['data'=>true],200);
         }catch (Exception $exception){
             $this->log->error($exception->getMessage());

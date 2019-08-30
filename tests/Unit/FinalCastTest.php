@@ -137,4 +137,24 @@ class FinalCastTest extends TestCase
         $this->assertTrue($update);
     }
 
+    public function test_delete_final_cast(){
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create([
+            'user_id' => $user->id
+        ]);
+        $rol = factory(Roles::class)->create([
+            'auditions_id' => $audition->id,
+        ]);
+        $cast = factory(FinalCast::class)->create([
+            'audition_id' => $audition->id,
+            'performer_id' => factory(User::class)->create()->id,
+            'rol_id' => $rol->id
+        ]);
+        $repo = new FinalCastRepository(new FinalCast());
+        $data = $repo->find($cast->id);
+        $delete = $data->delete();
+
+        $this->assertTrue($delete);
+    }
+
 }
