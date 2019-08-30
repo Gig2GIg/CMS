@@ -521,13 +521,13 @@ class AuditionsController extends Controller
             $auditionContributorsData = $repo->find($request->id);
 
             $data = [
-                'status' => true
+                'status' => $request->status
             ];
 
             $invite = $auditionContributorsData->update($data);
 
             if ($invite) {
-                $dataResponse = 'Invite Accept';
+                $dataResponse = 'Invite Update';
                 $code = 200;
             } else {
                 $dataResponse = 'Invite Error';

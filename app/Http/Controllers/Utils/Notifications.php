@@ -132,6 +132,7 @@ class Notifications
                                 'message'=> $tomsg
                             ]);
 
+                            
                             fcm()
                                 ->to([$user_result->pushkey])
                                 ->notification([
@@ -141,18 +142,18 @@ class Notifications
                                 ->send();
                         });
                     }
-                    $audition->contributors->each(function ($contributor) use ($title, $message, $type) {
+                    $audition->contributors->each(function ($contributor) use ($title, $message, $type, $audition, $log) {
                         $userRepo = new UserRepository(new User);
                         $tomsg = !empty($message) ? $message:$title;
                         $user_result = $userRepo->find($contributor->user_id);
-                        $user_result->notification_history()->create([
-                            'title' => $title,
+                        $history = $user_result->notification_history()->create([
+                            'title' => $audition->title,
                             'code' => $type,
                             'status' => 'unread',
                             'custom_data' => $contributor->id,
                             'message'=> $tomsg
                         ]);
-
+                        $log->info($history);
                         fcm()
                             ->to([$contributor->pushkey])
                             ->notification([
@@ -182,6 +183,7 @@ class Notifications
                     });
                 }
             }
+            
 
         } catch (NotificationException $exception) {
             // $this->log->error($exception->getMessage());
