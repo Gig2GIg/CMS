@@ -54,6 +54,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('finalcast',['uses'=>'FinalCastController@add']);
     $router->get('finalcast/{audition_id}/audition',['uses'=>'FinalCastController@list']);
     $router->put('finalcast/{id}',['uses'=>'FinalCastController@update']);
+    $router->delete('finalcast/{id}',['uses'=>'FinalCastController@delete']);
 
     //performers db
     $router->post('performers/add',['uses'=>'PerformersController@add']);

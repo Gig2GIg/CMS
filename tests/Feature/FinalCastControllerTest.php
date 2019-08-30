@@ -104,7 +104,6 @@ class FinalCastControllerTest extends TestCase
 
     public function test_update_register_in_list_final_cast()
     {
-        $this->
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
@@ -123,6 +122,30 @@ class FinalCastControllerTest extends TestCase
         $response = $this->json('put', 'api/t/finalcast/'.$cast->id.'?token=' . $this->token,[
             'performer_id'=>$user2->id
         ]);
+        $response->assertStatus(200);
+        $response->assertJson(['data' => true]);
+    }
+
+
+    public function test_delete_register_in_list_final_cast()
+    {
+
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create([
+            'user_id' => $user->id
+        ]);
+        $rol = factory(Roles::class)->create([
+            'auditions_id' => $audition->id,
+        ]);
+        $cast = factory(FinalCast::class)->create([
+            'audition_id' => $audition->id,
+            'performer_id' => factory(User::class)->create()->id,
+            'rol_id' => $rol->id
+        ]);
+
+        $user2 = factory(User::class)->create();
+
+        $response = $this->json('delete', 'api/t/finalcast/'.$cast->id.'?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJson(['data' => true]);
     }
