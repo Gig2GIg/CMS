@@ -280,7 +280,7 @@ class AuditionsController extends Controller
         return [
             'user_id' => $contrib->id,
             'auditions_id' => $audition->id,
-            'status' => false
+            'status' => true
         ];
 
     }
@@ -488,7 +488,7 @@ class AuditionsController extends Controller
 
     public function media(MediaRequest $request, Auditions $audition)
     {
-        $repository = new AuditionRepository($auditions);
+        $repository = new AuditionRepository($audition);
         $data = $repository->findMediaByParams($request->type);
 
         return response()->json(['data' => $data]);
