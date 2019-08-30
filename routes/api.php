@@ -253,6 +253,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
      //BLOGPOST
     $router->get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
+    $router->get('blog/posts/order_by', ['uses'=>'PostsController@listPostToPerformance']);
     $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 });
 
