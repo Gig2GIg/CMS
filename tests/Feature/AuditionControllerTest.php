@@ -9,6 +9,7 @@ use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\Notifications\NotificationHistory;
 use App\Models\UserDetails;
 use Tests\TestCase;
 
@@ -366,11 +367,14 @@ class AuditionControllerTest extends TestCase
 
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
 
+        $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
+
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
-        $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=1'.'&token=' . $this->token);
+        $response = $this->json('GET',
+            'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=1'. '&notification_id='. $notification->id .'&token=' . $this->token);
         $response->assertStatus(200);
-
+       
     }
 
     public function test_reject_invite_contribuitor(){
@@ -380,8 +384,11 @@ class AuditionControllerTest extends TestCase
 
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
-        $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=0'.'&token=' . $this->token);
-        $response->assertStatus(200);
+        $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
+        
+        $response = $this->json('GET',
+        'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=0'. '&notification_id='. $notification->id .'&token=' . $this->token);
+         $response->assertStatus(200);
 
     }
 
