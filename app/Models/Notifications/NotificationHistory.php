@@ -12,7 +12,8 @@ class NotificationHistory extends Model
         'status',
         'user_id',
         'message',
-        'custom_data'
+        'custom_data',
+        'created_at'
     ];
 
     public function user()
