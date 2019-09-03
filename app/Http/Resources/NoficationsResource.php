@@ -15,12 +15,14 @@ class NoficationsResource extends JsonResource
      */
     public function toArray($request)
     {
+     
         return [
             'id' => $this->id,
             'title' => $this->title,
             'status' => $this->status,
             'code' => $this->code,
             'custom_data' => $this->custom_data,
+            'time_ago' => $this->created_at->diffForHumans()
         ];
     }
 }

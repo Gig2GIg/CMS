@@ -70,8 +70,10 @@ class NotificationControllerTest extends TestCase
         $count = count($dataj['data']);
         $this->assertTrue($count > 5);
         $response->assertJsonStructure(['data' => [[
-            "id"
+            "id",
+            "time_ago" 
         ]]]);
+        
     }
 
     public function test_delete_history_director_200()
