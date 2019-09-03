@@ -46,6 +46,29 @@ class NotificationsController extends Controller
         }
     }
 
+    public function readHistory(Request $request)
+    {
+        try {
+        
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($this->getUserLogging());
+
+            $count = count($user->notification_history);
+          
+            foreach ($user->notification_history as $notification) {
+                $notification->update(['status' => 'read']);
+            }
+     
+            $responseData = NoficationsResource::collection($user->notification_history);
+
+            return response()->json(['data' => 'Success'], 204);
+             
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Not found Data"], 404);  
+        }
+    }
+
+
 
     public function update(NotificationPushKeyRequest $request)
     {

@@ -112,6 +112,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
     // NOTIFICATIONS HISTORY
+    $router->get('/notification-read','NotificationsController@readHistory');
     $router->get('/notification-history','NotificationsController@getHistory');
     $router->put('/notification-send-pushkey','NotificationsController@update');
     $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);

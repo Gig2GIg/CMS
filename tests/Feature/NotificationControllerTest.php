@@ -76,6 +76,17 @@ class NotificationControllerTest extends TestCase
         
     }
 
+    public function test_change_to_read_all_notification_history_200()
+    {
+
+        $data = factory(NotificationHistory::class, 50)->create(['user_id'=> $this->testId]);
+
+        $response = $this->json('GET', 'api/t/notification-read?token=' . $this->token);
+
+        $response->assertStatus(204);    
+    }
+
+
     public function test_delete_history_director_200()
     {
         $data = factory(NotificationHistory::class)->create(['user_id'=> $this->testId]);
