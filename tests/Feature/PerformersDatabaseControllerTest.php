@@ -78,7 +78,20 @@ class PerformersDatabaseControllerTest extends TestCase
 
     public function test_send_code(){
         $director = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id'=>$director->id,
+            'type'=>1
+        ]);
+        $sharedDirector = factory(User::class)->create(['email'=>'alphyon21@gmail.com']);
+        factory(UserDetails::class)->create([
+            'user_id'=>$sharedDirector->id,
+            'type'=>1
+        ]);
         $user = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id'=>$user->id,
+            'type'=>2
+        ]);
         $performer = factory(Performers::class)->create([
             'performer_id' => $user->id,
             'director_id' => $director->id,
@@ -86,6 +99,7 @@ class PerformersDatabaseControllerTest extends TestCase
         ]);
         $response = $this->post('api/t/performers/code?token='.$this->token,[
             'code'=>$performer->uuid,
+            'email'=>$sharedDirector->email
         ]);
 
         $response->assertStatus(200);
@@ -93,10 +107,9 @@ class PerformersDatabaseControllerTest extends TestCase
     }
 
     public function test_list_user_by_director(){
-        $director = factory(User::class)->create();
         $users = factory(User::class,15)->create();
 
-        $users->each(function ($item) use ($director){
+        $users->each(function ($item){
             $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
             factory(\App\Models\UserDetails::class)->create([
                 'user_id'=>$item->id,
@@ -107,15 +120,13 @@ class PerformersDatabaseControllerTest extends TestCase
             factory(UserAparence::class)->create(['user_id'=>$item->id]);
             factory(Performers::class)->create([
                 'performer_id' => $item->id,
-                'director_id' => $director->id,
+                'director_id' => $this->testId,
                 'uuid' => $this->faker->uuid,
             ]);
 
         });
 
-        $response = $this->post('api/t/performers/list?token='.$this->token,[
-            'director'=>$director->id
-        ]);
+        $response = $this->get('api/t/performers/list?token='.$this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[

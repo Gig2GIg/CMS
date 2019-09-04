@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Performers extends Model
 {
@@ -12,4 +13,9 @@ class Performers extends Model
         'director_id',
         'uuid'
     ];
+
+    public function details(){
+        return $this->hasOne(UserDetails::class,'user_id','performer_id');
+    }
+
 }

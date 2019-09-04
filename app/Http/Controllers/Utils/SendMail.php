@@ -9,6 +9,7 @@
 namespace App\Http\Controllers\Utils;
 
 
+use App\Http\Controllers\NotificationManagementController;
 use App\Http\Exceptions\SendEmailException;
 
 use SendGrid\Mail\Mail;
@@ -89,6 +90,37 @@ class SendMail
             $email->addTo($emailTo);
             $email->addContent("text/html", "You have been invited to participate as a contributor in the audition: <strong> " . $name . "</strong> ");
 
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
+
+    public function sendCode($user, $data)
+    {
+        try {
+            $push = new NotificationManagementController();
+            $email = new Mail();
+
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Add them to your Talent Database');
+            $email->addTo($user->email);
+            $content = sprintf('<strong>%s</strong> has shared <strong>%s</strong> with you! Add them to your Talent Database with code: <strong>%s</strong>. ',
+                $data['sender'],
+                $data['performer'],
+                $data['code']);
+
+            $email->addContent("text/html", $content);
+            $push->sendPushNotification(null,'cms_to_user',$user,$content);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
             $response = $sendgrid->send($email);
