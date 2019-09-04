@@ -59,7 +59,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //performers db
     $router->post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
-    $router->post('performers/list',['uses'=>'PerformersController@list']);
+    $router->get('performers/list',['uses'=>'PerformersController@list']);
 
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
