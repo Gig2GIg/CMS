@@ -241,6 +241,29 @@ class PostsController extends Controller
     }
 
 
+    public function listPostToDirector(Request $request)
+    {
+        try {
+            $repoPost = new PostsRepository(new Posts());
+            $posts = $repoPost->all()->where('type', 'blog');
+
+            if (count($posts) > 0 ) {
+                $dataResponse = ['data' => PostsResource::collection($posts->where('search_to', '!=', 'performance'))];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Not found'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
+
 
     public function search_post_by_title(Request $request)
     {
@@ -292,19 +315,56 @@ class PostsController extends Controller
     }
 
 
-    public function sort_post_by_param(Request $request)
+    public function sort_post_by_param_to_director(Request $request)
     {
         try {
-            $repoPost = new PostsRepository(new Posts());
-            $posts = $repoPost->all()->where('search_to', 'both');
+           
+            if ($request->order_by === 'desc'){
+                $posts = Posts::where('search_to', '!=', 'performance')->get()->sortByDesc('created_at');
+            }
+
+            if ($request->order_by === 'asc'){
+         
+                $posts = Posts::where('search_to', '!=', 'performance')->get()->sortBy('created_at');
+            }
 
             if (count($posts) > 0 ) {
-                $dataResponse = ['data' => PostsResource::collection($posts->id->orderBy('created_at', $request->query)->get())];
+                $dataResponse = ['data' => PostsResource::collection($posts) ];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
                 $code = 404;
             }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
+
+    public function sort_post_by_param_to_performance(Request $request)
+    {
+        try {
+            
+                if ($request->order_by === 'desc'){
+                    $posts = Posts::where('search_to', '!=', 'director')->get()->sortByDesc('created_at');
+                }
+
+                if ($request->order_by === 'asc'){
+             
+                    $posts = Posts::where('search_to', '!=', 'director')->get()->sortBy('created_at');
+                }
+               
+                if (count($posts) > 0 ) {
+                    $dataResponse = ['data' => PostsResource::collection($posts)];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => 'Not found'];
+                    $code = 404;
+                }
       
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
