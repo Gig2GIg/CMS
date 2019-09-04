@@ -103,4 +103,29 @@ class SendMail
             return false;
         }
     }
+
+    public function sendPerformance($emailTo, $name)
+    {
+        try {
+            $email = new Mail();
+
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('You have invited to audition');
+            $email->addTo($emailTo);
+            $email->addContent("text/html", "You have been invited to participate as a contributor in the audition: <strong> " . $name . "</strong> ");
+
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
 }

@@ -538,13 +538,45 @@ class AuditionManagementController extends Controller
             $appoiment = $repoApp->find($request->id);
             $this->log->info($request);
 
-            foreach ($appoiment->slot as $slot) {
-                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
-                $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
+            //  TIENE QUE  REFACTORIZAR ESTE MODULO PARA QUE PUEDAN HACER UPADATE
+            //  BIEN A LOS SLOST ESTA FUNCIOKN ESTA MAL PENSANADA TIENE QUE 
+            //  ITERARR PERO  LOS PARAMS QUE VIENEN EN EL REQUESST Y ELIMINAR LO LAS RESERVAS QUE ESTASS TIENE
+            
+            $this->log->info('USERSLOTALL:::::::::::', UserSlots::all());
+            foreach ($request->slots as $slot) {
                 
+                dd($slot);
+                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
+               
+                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+       
+                $userSlot->update(['slot_id' => $slot['slot_id']]);
+
+
+                $this->log->info('=================:::::::::::====================');
+
+
+                $userRepo = new UserRepository(new User());
+              
+                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+               
+                $this->log->info('USERSLOTchange:::::::::::', $userSlot);
+
+                // $user =  $userRepo->find($slot['user_id']);
+                    
+                // $dataMail = ['name' => $user->details->first_name];
+
+                // $mail = new SendMail();
+                // $mail->sendManager($user->email, $dataMail);
+            
+            //    $this->sendPushNotification(
+            //        $audition,
+            //        'upcoming_audition',
+            //        $detailData
+            //    );                
             }
 
-            $this->log->info('SLOTS',$appoiment->slot);
+
 
             if ($userSlotRepo) {
                 $dataResponse =  'success' ;
