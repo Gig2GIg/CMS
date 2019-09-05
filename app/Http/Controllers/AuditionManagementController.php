@@ -536,48 +536,36 @@ class AuditionManagementController extends Controller
         try {
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-            $this->log->info($request);
+             
+            $this->log->info(UserSlots::all());
 
-            //  TIENE QUE  REFACTORIZAR ESTE MODULO PARA QUE PUEDAN HACER UPADATE
-            //  BIEN A LOS SLOST ESTA FUNCIOKN ESTA MAL PENSANADA TIENE QUE 
-            //  ITERARR PERO  LOS PARAMS QUE VIENEN EN EL REQUESST Y ELIMINAR LO LAS RESERVAS QUE ESTASS TIENE
-            
-            $this->log->info('USERSLOTALL:::::::::::', UserSlots::all());
             foreach ($request->slots as $slot) {
-                
-                dd($slot);
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
-               
                 $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
-       
-                $userSlot->update(['slot_id' => $slot['slot_id']]);
-
-
-                $this->log->info('=================:::::::::::====================');
-
+                $update=  $userSlot->update(['slot_id' => $slot['slot_id']]);
 
                 $userRepo = new UserRepository(new User());
-              
-                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
-               
-                $this->log->info('USERSLOTchange:::::::::::', $userSlot);
+                $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+                  
+                $user =  $userRepo->find($slot['user_id']);  
+                
+                $dataMail = ['name' => $user->details->first_name];
 
-                // $user =  $userRepo->find($slot['user_id']);
-                    
-                // $dataMail = ['name' => $user->details->first_name];
-
-                // $mail = new SendMail();
-                // $mail->sendManager($user->email, $dataMail);
-            
-            //    $this->sendPushNotification(
-            //        $audition,
-            //        'upcoming_audition',
-            //        $detailData
-            //    );                
+                $mail = new SendMail();
+                $mail->sendPerformance($user->email, $dataMail);
+ 
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($newUserSlot->auditions_id);
+                
+               $this->sendPushNotification(
+                   $audition,
+                   'cms_to_user',
+                   $user,
+                   'Your appointment time to audition ' . '* '. $audition->title . ' *'. ' is was moved'
+               ); 
+               $this->log->info('HISTORY::::::::::::::', $user->notification_history);
             }
-
-
-
+            
             if ($userSlotRepo) {
                 $dataResponse =  'success' ;
                 $code = 200;
@@ -589,7 +577,7 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => $dataResponse], $code);
 
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error($exception);
             return response()->json(['data' => 'Unprocesable Entity'], 422);
         }
     }
