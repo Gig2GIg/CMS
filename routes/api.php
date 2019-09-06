@@ -60,6 +60,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
     $router->get('performers/list',['uses'=>'PerformersController@list']);
+    $router->post('performers/filter',['uses'=>'PerformersController@filter']);
 
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
