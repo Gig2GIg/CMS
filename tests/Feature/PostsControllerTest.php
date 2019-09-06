@@ -200,10 +200,11 @@ class PostsControllerTest extends TestCase
 
     public function test_it_user_sort_list_posts_by_created_at_ASC_for_performance_200()
     {
-        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08"]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'both',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'performance',]);
         factory(Posts::class, 2)->create(['user_id' => $this->userId]);
        
-        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?query=asc'.'&token=' . $this->token2);
+        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?order_by=asc'.'&token=' . $this->token2);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data']);
@@ -212,10 +213,38 @@ class PostsControllerTest extends TestCase
 
     public function test_it_user_sort_list_posts_by_created_at_DESC_for_performance_200()
     {
-        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08"]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'both',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'performance',]);
         factory(Posts::class, 2)->create(['user_id' => $this->userId]);
         
-        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?query=desc'.'&token=' . $this->token2);
+        $response = $this->json('GET', 'api/a/blog/posts/order_by'. '?order_by=desc'.'&token=' . $this->token2);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+  
+    }
+
+
+    public function test_it_user_sort_list_posts_by_created_at_ASC_for_director_200()
+    {
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'both',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'director',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId]);
+       
+        $response = $this->json('GET', 'api/t/blog/posts/order_by'. '?order_by=asc'.'&token=' . $this->token);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data']);
+       
+    }
+
+    public function test_it_user_sort_list_posts_by_created_at_DESC_for_director_200()
+    {
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'both',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId, 'created_at' =>  "2019-08-30 18:19:08", 'search_to' =>  'director',]);
+        factory(Posts::class, 2)->create(['user_id' => $this->userId]);
+        
+        $response = $this->json('GET', 'api/t/blog/posts/order_by'. '?order_by=desc'.'&token=' . $this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data']);

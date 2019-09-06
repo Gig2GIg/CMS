@@ -102,7 +102,7 @@ class SlotAuditionsMoveTest extends TestCase
         ]);
 
         $users= factory(User::class, 12)->create();
-        
+    
         // CREATE USER DETAILS FROM USERS PULL
         foreach ($users as $user) {
             $userDetails = factory(UserDetails::class)->create([

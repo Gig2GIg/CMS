@@ -16,6 +16,7 @@ use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\ResourcesRepository;
+use App\Http\Repositories\SlotsRepository;
 
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
@@ -33,6 +34,7 @@ use App\Models\UserDetails;
 use App\Models\UserManager;
 use App\Models\UserSlots;
 use App\Models\Resources;
+use App\Models\Slots;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -549,21 +551,24 @@ class AuditionManagementController extends Controller
                   
                 $user =  $userRepo->find($slot['user_id']);  
                 
-                $dataMail = ['name' => $user->details->first_name];
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($newUserSlot->auditions_id);
+
+                $slotRepo = new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($slot['slot_id']);
+
+                $dataMail = ['name' => $user->details->first_name, 'audition_title' =>  $audition->title, 'slot_time' =>  $slot->time];
 
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
- 
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($newUserSlot->auditions_id);
-                
-               $this->sendPushNotification(
+     
+                $this->sendPushNotification(
                    $audition,
                    'cms_to_user',
                    $user,
                    'Your appointment time to audition ' . '* '. $audition->title . ' *'. ' is was moved'
-               ); 
-               $this->log->info('HISTORY::::::::::::::', $user->notification_history);
+                ); 
+                $this->log->info('HISTORY::::::::::::::', $user->notification_history);
             }
             
             if ($userSlotRepo) {

@@ -59,7 +59,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //performers db
     $router->post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
-    $router->post('performers/list',['uses'=>'PerformersController@list']);
+    $router->get('performers/list',['uses'=>'PerformersController@list']);
 
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
@@ -127,6 +127,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->delete('blog/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('blog/posts', ['uses'=>'PostsController@list']);
     $router->get('blog/posts/find_by_title', ['uses'=>'PostsController@search_post_by_title']);
+    $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_director']);
 
      //BLOG-POST-COMMENTS
     $router->post('blog/posts/{id}/comments', ['uses'=>'CommentsController@store']);
@@ -135,6 +136,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     // TOPICS
     $router->get('/topics','TopicsController@list');
+
 
 });
 
@@ -255,7 +257,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
      //BLOGPOST
     $router->get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
-    $router->get('blog/posts/order_by', ['uses'=>'PostsController@listPostToPerformance']);
+    $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_performance']);
     $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 });
 
