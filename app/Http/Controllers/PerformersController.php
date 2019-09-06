@@ -105,4 +105,24 @@ class PerformersController extends Controller
             return false;
         }
     }
+
+    public function filter(Request $request){
+        if($request->base){
+            $dataResponse=$this->filterBase($request->base);
+        }
+
+            return response()->json(['data' => $dataResponse], 200);
+    }
+
+
+
+    public function filterBase($value){
+        $repo = new PerformerRepository(new Performers());
+        $dataBase ="";
+
+
+
+
+        return collect();
+    }
 }
