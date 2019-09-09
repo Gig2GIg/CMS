@@ -149,7 +149,6 @@ class SendMail
             $email->addTo($user->email);
             $content = sprintf('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition'.  $data['audition_title'] . 'is update <strong>%s</strong>'. 'to'. $data['slot_time']);
 
-            $this->log->info('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition'.  $data['audition_title'] . 'is update <strong>%s</strong>'. 'to'. $data['slot_time']);
             $email->addContent("text/html", $content);
             $push->sendPushNotification(null,'cms_to_user',$user,$content);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));

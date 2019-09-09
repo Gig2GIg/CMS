@@ -568,7 +568,6 @@ class AuditionManagementController extends Controller
                    $user,
                    'Your appointment time to audition ' . '* '. $audition->title . ' *'. ' is was moved'
                 ); 
-                $this->log->info('HISTORY::::::::::::::', $user->notification_history);
             }
             
             if ($userSlotRepo) {

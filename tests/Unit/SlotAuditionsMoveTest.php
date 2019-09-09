@@ -183,6 +183,7 @@ class SlotAuditionsMoveTest extends TestCase
                         'user_id' =>  $this->userId2
                     ],
                     [
+                    
                         'slot_id' =>  $this->slots[2]->id,
                         'user_id' =>  $this->users[1]->id
                     ],
