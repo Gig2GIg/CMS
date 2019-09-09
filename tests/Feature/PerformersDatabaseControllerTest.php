@@ -8,6 +8,7 @@ use App\Models\Performers;
 use App\Models\User;
 use App\Models\UserAparence;
 use App\Models\UserDetails;
+use App\Models\UserUnionMembers;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -162,18 +163,54 @@ class PerformersDatabaseControllerTest extends TestCase
         });
 
         $response = $this->post('api/t/performers/filter?token='.$this->token,[
-            'base'=>'jo'
+            'base'=>'e'
         ]);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
-            'user',
             'image',
             'details',
             'appearance',
             'education',
             'credits',
             'calendar',
+        ]]]);
+    }
+    public function test_talent_filter_union(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'union'=>1
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
         ]]]);
     }
 

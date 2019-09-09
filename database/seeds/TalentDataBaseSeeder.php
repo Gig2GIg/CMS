@@ -22,7 +22,7 @@ class TalentDataBaseSeeder extends Seeder
         $this->faker = $faker;
         $users = factory(User::class,15)->create();
         $director = factory(User::class)->create([
-            'email'=>'directortalen$gmail.com'
+            'email'=>'directortalen@gmail.com'
         ]);
         factory(UserDetails::class)->create([
             'user_id'=>$director->id,
