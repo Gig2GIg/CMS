@@ -7,7 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class UserSlots extends Model
 {
     protected $fillable = [
-        'user_id','slots_id','status','auditions_id','roles_id','favorite','status'
+        'user_id',
+        'slots_id',
+        'status',
+        'auditions_id',
+        'roles_id',
+        'favorite',
+        'status'
     ];
 
     public function slot(){
