@@ -105,6 +105,7 @@ class SendMail
         }
     }
 
+
     public function sendCode($user, $data)
     {
         try {
@@ -118,6 +119,35 @@ class SendMail
                 $data['sender'],
                 $data['performer'],
                 $data['code']);
+
+            $email->addContent("text/html", $content);
+            $push->sendPushNotification(null,'cms_to_user',$user,$content);
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
+
+    
+    public function sendPerformance($user, $data)
+    {
+        try {
+            $push = new NotificationManagementController();
+            $email = new Mail();
+            
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Your appointment time to audition'.  $data['audition_title'] . 'is update');
+            $email->addTo($user->email);
+            $content = sprintf('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition'.  $data['audition_title'] . 'is update <strong>%s</strong>'. 'to'. $data['slot_time']);
 
             $email->addContent("text/html", $content);
             $push->sendPushNotification(null,'cms_to_user',$user,$content);
