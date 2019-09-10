@@ -142,6 +142,7 @@ class UserController extends Controller
             'city' => $request->city,
             'state' => $request->state,
             'birth' => $this->date->transformDate($request->birth),
+            'gender' => $request->gender,
             'stage_name' => $request->stage_name ?? null,
             'image' => $request->image,
             'url'=>$request->url ?? null,

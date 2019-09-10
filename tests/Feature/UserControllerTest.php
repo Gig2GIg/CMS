@@ -63,6 +63,7 @@ class UserControllerTest extends TestCase
             'state' => '1',
             'birth' => '1980-05-24',
 //            'location' => '12,33334 - 23,00000',
+            'gender' => 'Male', 
             'stage_name'=>'test',
             'profesion'=>'lawyer',
             'zip'=>'12345',
