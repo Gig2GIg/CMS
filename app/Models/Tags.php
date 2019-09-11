@@ -8,6 +8,7 @@ class Tags extends Model
 {
     protected $fillable =[
         'title',
-        'feedback_id'
+        'audition_id',
+        'user_id'
     ];
 }
