@@ -131,7 +131,6 @@ class PerformersDatabaseControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
-            'user',
             'image',
             'details',
             'appearance',
