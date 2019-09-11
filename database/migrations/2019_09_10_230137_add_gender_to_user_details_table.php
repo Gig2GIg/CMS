@@ -14,7 +14,7 @@ class AddGenderToUserDetailsTable extends Migration
     public function up()
     {
         Schema::table('user_details', function (Blueprint $table) {            
-            $table->enum('gender', ['Male', 'Female', 'Other']);
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
         });
     }
 
