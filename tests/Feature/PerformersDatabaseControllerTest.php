@@ -214,4 +214,42 @@ class PerformersDatabaseControllerTest extends TestCase
         ]]]);
     }
 
+    public function test_talent_filter_non_union(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+          //  factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'union'=>0
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
+
 }
