@@ -115,8 +115,8 @@ class PerformersController extends Controller
     public function filter(Request $request)
     {
         try {
-            if ($request->union!=0 && $request->base) {
-                $dataResponse = $this->filterBaseUnion($request->base);
+            if (isset($request->union) && $request->base) {
+                $dataResponse = $this->filterBaseUnion($request->base, $request->union);
             } else if ($request->base) {
                 $dataResponse = $this->filterBase($request->base);
             }
@@ -148,7 +148,7 @@ class PerformersController extends Controller
         }
     }
 
-    public function filterBaseUnion($value)
+    public function filterBaseUnion($value, $union)
     {
         try {
             $repo = new PerformerRepository(new Performers());
@@ -156,11 +156,20 @@ class PerformersController extends Controller
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $idReturn = $repoUserDetails->all()
                 ->whereIn('user_id', $repoPerformer);
-            $idReturn = $idReturn->reject(function ($element) {
-                $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
-                $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
-                return $count === 0;
-            });
+            if($union == 1) {
+                $idReturn = $idReturn->reject(function ($element) {
+                    $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
+                    $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
+                    return $count === 0;
+                });
+            }
+            if($union == 0){
+                $idReturn = $idReturn->filter(function ($element) {
+                    $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
+                    $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
+                    return $count === 0;
+                });
+            }
 
             return $idReturn->reject(function ($element) use ($value) {
                 return mb_strpos($element->last_name, $value) === false;
@@ -171,19 +180,6 @@ class PerformersController extends Controller
             $this->log->error($e->getMessage());
             return collect();
         }
-    }
-
-    /**
-     * @param $value
-     * @param UserDetailsRepository $repoUserDetails
-     * @param $repoPerformer
-     * @return UserDetailsRepository[]|\Illuminate\Database\Eloquent\Collection
-     */
-    public function filterByString($value, $collect, $idFind)
-    {
-
-
-
     }
 
 
