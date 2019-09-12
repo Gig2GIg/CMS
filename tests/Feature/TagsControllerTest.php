@@ -88,6 +88,42 @@ class TagsControllerTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function test_update_tags_201()
+    {
+        
+        $response = $this->json('POST',
+            'api/t/auditions/feedbacks/tags?token=' . $this->token, 
+            [
+                'title' => 'high',
+                'audition_id' => $this->audition_id,
+                'user_id' => $this->performance_id
+            ]);
+
+        $response->assertStatus(201);
+    }
+
+
+    public function test_update_tags_from_array_200()
+    {
+        
+        $tags = factory(Tags::class, 10)->create(['audition_id' => $this->audition_id, 'user_id' => $this->performance_id]);
+
+       $data =  [
+                    'tags' => [
+                                ['title' => 'UPDA', 'id' => $tags[0]->id],
+                                ['title' => 'UPDA','id' => $tags[1]->id],
+                                ['title' => 'NEW','id' => null, 'audition_id' => $this->audition_id,'user_id' => $this->performance_id]      
+                ] 
+            ];
+
+        $response = $this->json('PUT',
+            'api/t/auditions/feedbacks/user/tags?token=' . $this->token, $data);
+
+        $response->assertStatus(200);
+    }
+
+
+
     public function test_delete_tags_200()
     {
         
@@ -108,7 +144,9 @@ class TagsControllerTest extends TestCase
    
         $response->assertJsonStructure(['data' => [[
             'id',
-            'title'
+            'title',
+            'audition_id',
+            'user_id'
         ]]]);
     }
 }

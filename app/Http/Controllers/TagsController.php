@@ -75,6 +75,45 @@ class TagsController extends Controller
     }
 
 
+
+
+    public function updateFromArray(Request $request)
+    {
+        try {
+            $repoTag = new TagsRepository(new Tags());
+           
+          
+            foreach ($request->tags as $tag_data) {
+              
+                $t = Tags::find($tag_data['id']);
+
+                if (! is_null($t)){   
+                   $t->update([
+                            'title' => $tag_data['title']
+                    ]);     
+                }
+
+                if ( is_null($t) ){
+                    $repoTag->create([
+                            'title' => $tag_data['title'],
+                            'audition_id' => $tag_data['audition_id'],
+                            'user_id' => $tag_data['user_id']
+                    ]);
+                }
+            }
+     
+
+            $dataResponse = ['data' => 'Tags updates'];
+            $code = 200;
+           
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
     public function listByUser(Request $request)
     {
         try {
@@ -99,3 +138,4 @@ class TagsController extends Controller
 
     }
 }
+

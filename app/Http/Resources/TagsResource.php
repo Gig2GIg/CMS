@@ -17,7 +17,9 @@ class TagsResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title
+            'title' => $this->title,
+            'audition_id' => $this->audition_id,
+            'user_id' => $this->user_id
         ];
     }
 }
