@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Appointments;
+use App\Models\AuditionContract;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
@@ -135,7 +136,6 @@ class AuditionManagemenDirectorTest extends TestCase
         $response->assertStatus(404);
         $response->assertJson(['data' => 'Not Found Data']);
     }
-
     public function test_audition_save_video_200()
     {
         $user = factory(User::class)->create();
@@ -206,6 +206,78 @@ class AuditionManagemenDirectorTest extends TestCase
 
 
     }
+    public function test_audition_contract_200()
+    {
+        $user = factory(User::class)->create();
+
+        $data = factory(Auditions::class)->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->json('POST',
+            'api/t/auditions/contract/save?token=' . $this->token, [
+                'url' => $this->faker->imageUrl(),
+                'audition' => $data->id,
+                'performer' => $user->id,
+
+            ]);
+        $response->assertStatus(200);
+        //$response->assertJson(['data' => 'Not Found Data']);
+
+    }
+
+    public function test_audition_delete_contract_200()
+    {
+        $user = factory(User::class)->create();
+
+        $data = factory(Auditions::class)->create([
+            'user_id' => $user->id,
+        ]);
+
+        $video = factory(AuditionContract::class)->create([
+            'user_id' => $user->id,
+            'auditions_id' => $data->id,
+            'url' => $this->faker->imageUrl(),
+
+
+        ]);
+
+        $response = $this->json('DELETE',
+            'api/t/auditions/contract/delete/'.$video->id.'?token=' . $this->token);
+        $response->assertStatus(200);
+        //$response->assertJson(['data' => 'Not Found Data']);
+
+    }
+
+    public function test_audition_contract_by_user_audition_200()
+    {
+        $user = factory(User::class)->create();
+
+            $contract = factory(AuditionContract::class)->create([
+                'user_id' => $user->id,
+                'auditions_id' => $this->auditionId,
+                'url' => $this->faker->imageUrl(),
+
+
+            ]);
+
+        $response = $this->json('GET',
+            'api/t/auditions/contract/'.$user->id.'/' . $this->auditionId . '?token=' . $this->token);
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data'=>[
+
+            "id",
+            "user_id",
+            "auditions_id",
+            "url",
+
+
+
+        ]
+        ]);
+
+
+    }
 
     protected function setUp(): void
     {
@@ -244,5 +316,5 @@ class AuditionManagemenDirectorTest extends TestCase
         $this->userId = $user->id;
         $this->auditionId = $audition->id;
     }
-    
+
 }

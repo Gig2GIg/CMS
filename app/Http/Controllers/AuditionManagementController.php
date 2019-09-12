@@ -7,6 +7,7 @@ use App\Http\Controllers\Utils\SendMail;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 
 use App\Http\Repositories\AppointmentRepository;
+use App\Http\Repositories\AuditionContractRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionVideosRepository;
@@ -20,10 +21,12 @@ use App\Http\Repositories\ResourcesRepository;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\AuditionVideosResource;
+use App\Http\Resources\ContractResponse;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 
 use App\Models\Appointments;
+use App\Models\AuditionContract;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
@@ -474,7 +477,73 @@ class AuditionManagementController extends Controller
         }
     }
 
+    public function saveContract(Request $request)
+    {
+        try {
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
 
+
+
+                $data = $contractRepo->create([
+                    'user_id' => $request->performer,
+                    'auditions_id' => $request->audition,
+                    'url' => $request->url,
+
+                ]);
+                if (isset($data->id)) {
+                    $dataResponse = ['data' => 'Contract saved'];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => 'contract not saved'];
+                    $code = 406;
+                }
+
+
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function deleteContract(Request $request)
+    {
+        try {
+            $videoRepo = new AuditionContractRepository(new AuditionContract());
+            $delvideo = $videoRepo->find($request->id);
+            $data = $delvideo->delete();
+            if ($data) {
+                $dataResponse = ['data' => 'Contract deleted'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Contract not deleted'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function getContact(Request $request)
+    {
+        try {
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
+            $data = $contractRepo->findbyparam('auditions_id', $request->audition_id)->get();
+            if ($data->where('user_id',$request->user_id)->count() > 0) {
+                $dataResponse = ['data' => new ContractResponse($data[0])];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => []];
+                $code = 200;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
     public function alertSlotsEmpty($audition){
         try {
             $available = true;
@@ -508,7 +577,7 @@ class AuditionManagementController extends Controller
             $repoResource = new ResourcesRepository(new Resources());
             $resourceData = $repoResource->find($request->id);
 
-            
+
             $data = [
                 'shareable' => $request->shareable
             ];
@@ -539,9 +608,9 @@ class AuditionManagementController extends Controller
             $this->log->info($request);
 
             foreach ($appoiment->slot as $slot) {
-                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
+                $userSlotRepo = new UserSlotsRepository(new  UserSlots);
                 $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
-                
+
             }
 
             $this->log->info('SLOTS',$appoiment->slot);
@@ -569,7 +638,7 @@ class AuditionManagementController extends Controller
             $repoAudition = new AuditionRepository(new Auditions());
             $audition = $repoAudition->find($request->audition_id);
 
-            
+
             $data = [
                 'banned' => 'pending'
             ];
@@ -591,6 +660,6 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Error to process'], 406);
         }
     }
-    
+
 
 }
