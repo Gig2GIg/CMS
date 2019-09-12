@@ -113,6 +113,56 @@ class FeedBackControllerTest extends TestCase
 
     }
 
+    public function test_show_feedback_details_director_to_performer()
+    {
+        $user = factory(User::class)->create();
+        $appoinment = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
+
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appoinment->id
+        ]);
+
+        $slot_user = factory(UserSlots::class)->create([
+            'user_id'=>$this->userId,
+            'auditions_id'=>$this->auditionId,
+            'slots_id'=>$slot->id
+        ]);
+
+        $work = [
+            'vocals',
+            'acting',
+            'dancing',
+        ];
+
+        $feedback = factory(Feedbacks::class)->create([
+            'auditions_id' => $this->auditionId,//$this->auditionId,
+            'user_id' => $user->id,//$user->id, //id usuario que recibe evaluacion
+            'evaluator_id' => $this->userId, //$this->userId,//id de usuario que da feecback,
+            'evaluation' => $this->faker->numberBetween(1, 5),
+            'callback' => $this->faker->boolean(),
+            'work' => $work[$this->faker->numberBetween(0, 2)],
+            'favorite' => $this->faker->boolean(),
+            'slot_id'=>$slot->id,
+            'comment' => $this->faker->text()
+        ]);
+       
+        $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?token=' . $this->token);
+        
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [
+            'id',
+            'evaluation',
+            'callback',
+            'work',
+            'favorite',
+            'comment',
+        ]]);
+
+    }
+
+
     public function test_set_feedback_contributor_to_performer()
     {
         $user = factory(User::class)->create();
