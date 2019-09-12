@@ -150,7 +150,7 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
        
-        $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?token=' . $this->token);
+        $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?user_id='.$user->id .'&token=' . $this->token);
         
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [

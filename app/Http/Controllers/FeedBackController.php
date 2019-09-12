@@ -168,17 +168,20 @@ class FeedBackController extends Controller
     }
 
 
-    public function feedbackDetails(Request $request)
+    public function feedbackDetailsByUser(Request $request)
     {
         try {
             $repoFeedback = new FeedbackRepository(new Feedbacks());
         
             $feedbacks = $repoFeedback->findbyparam('auditions_id', $request->id);
 
-            $feedback = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->first();
+            $feedbacksEvaluator = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->get();
 
-            if (! is_null($feedback)) {
-                $dataResponse = ['data' => new FeedbackResource($feedback)];
+            $feedbackUser= $feedbacksEvaluator->where('user_id', $request->user_id)->first();
+
+        
+            if (! is_null($feedbackUser)) {
+                $dataResponse = ['data' => new FeedbackResource($feedbackUser)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
