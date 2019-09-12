@@ -76,6 +76,45 @@ class FeedBackController extends Controller
 
     }
 
+
+    public function update(Request $request)
+    {
+        try {
+
+            $userExists = false;
+            $evaluatorExits = false;
+            $slotExits = false;
+
+            $data = [
+                'evaluation' => $request->evaluation,
+                'callback' => $request->callback,
+                'work' => $request->work,
+                'favorite' => $request->favorite,
+                'comment' => $request->comment
+            ];
+
+            
+            $feedbackRepo = new FeedbackRepository(new Feedbacks());
+            $feedbacks = $feedbackRepo->findbyparam('auditions_id', $request->id);
+            $feedback = $feedbacks->where('user_id', $request->user_id)->first();
+
+            $update = $feedback->update($data);
+
+            if ($update) {
+                $dataResponse = ['data' => 'Feedback update'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Feedback not update'];
+                $code = 422;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Feedback not update'], 422);
+        }
+
+    }
+
     public function list(Request $request)
     {
         try {

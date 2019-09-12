@@ -96,6 +96,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //feedback
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
+    $router->put('/auditions/{id}/feedbacks/update',['uses'=>'FeedBackController@update']);
+
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
 
