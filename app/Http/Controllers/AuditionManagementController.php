@@ -511,9 +511,9 @@ class AuditionManagementController extends Controller
     public function deleteContract(Request $request)
     {
         try {
-            $videoRepo = new AuditionContractRepository(new AuditionContract());
-            $delvideo = $videoRepo->find($request->id);
-            $data = $delvideo->delete();
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
+            $del = $contractRepo->find($request->id);
+            $data = $del->delete();
             if ($data) {
                 $dataResponse = ['data' => 'Contract deleted'];
                 $code = 200;

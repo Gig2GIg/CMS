@@ -5,17 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\FeedbackResource;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
+use App\Models\Performers;
 use App\Models\Slots;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class FeedBackController extends Controller
 {
@@ -61,6 +64,7 @@ class FeedBackController extends Controller
                         ]);
                     }
                 }
+                $this->addTalenteToDatabase($request->user);
                 $dataResponse = ['data' => 'Feedback add', 'feedback_id' => $data->id];
                 $code = 201;
 
@@ -93,7 +97,7 @@ class FeedBackController extends Controller
                 'comment' => $request->comment
             ];
 
-            
+
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('auditions_id', $request->id);
             $feedback = $feedbacks->where('user_id', $request->user_id)->first();
@@ -159,6 +163,27 @@ class FeedBackController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
+    function addTalenteToDatabase($performer_id){
+        try {
+            $repo = new PerformerRepository(new Performers());
+            $dataRepo = $repo->findbyparam('director_id',$this->getUserLogging())->get();
+            $count = $dataRepo->where('performer_id',$performer_id)->count();
+            if($count > 0){
+                throw new \Exception("User exists in your database");
+            }
+            $register = [
+                'performer_id' => $performer_id,
+                'director_id' => $this->getUserLogging(),
+                'uuid' => Str::uuid()->toString(),
+            ];
+
+            $repo->create($register);
+            $this->log->info('Talent add');
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
         }
     }
 
