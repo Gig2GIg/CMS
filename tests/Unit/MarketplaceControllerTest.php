@@ -6,6 +6,8 @@ use App\Models\MarketplaceCategory;
 use App\Models\Marketplace;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\Recommendations;
+use App\Models\Auditions;
 
 use Tests\TestCase;
 
@@ -14,6 +16,7 @@ use App\Http\Repositories\Marketplace\MarketplaceRepository;
 class MarketplaceControllerTest extends TestCase
 {
     protected $token;
+    protected $testId;
 
     public function setUp(): void
     {
@@ -36,13 +39,8 @@ class MarketplaceControllerTest extends TestCase
         $this->token = $response->json('access_token'); 
     }
 
-
-
-
     public function test_search_marketplace_by_category_by_title_201()
     {
-        $marketplaceCategory = factory(MarketplaceCategory::class)->create();
-
         $data = [
             'address' => $this->faker->address,
             'title' => $this->faker->name,
@@ -65,6 +63,36 @@ class MarketplaceControllerTest extends TestCase
 
             $data);
        
+        $response->assertStatus(200);
+    }
+
+    public function test_list_marketplace_by_user_id_and_audition_id_200()
+    {
+        $user = factory(User::class)->create();
+        $userDetails = factory(UserDetails::class)->create([
+            'user_id'=>$user->id
+        ]);    
+
+        $audition = factory(Auditions::class)->create([
+            'user_id'=>$this->testId
+        ]);
+
+        $marketplaceCategory = factory(MarketplaceCategory::class)->create();
+
+        $marketplace = factory(Marketplace::class)->create([
+            'marketplace_category_id'=>$marketplaceCategory->id
+        ]);
+
+        $recomendation = factory(Recommendations::class, 10)->create([
+                'marketplace_id' =>$marketplace->id,
+                'user_id' =>$user->id,
+                'audition_id'=>$audition,
+            ]
+        );    
+
+        $response = $this->json('GET',
+            'api/t/feedback/marketplaces/recomendations?user_id='.$userDetails.'1&audition_id='.$audition.'&recommendation_id='.$recomendation.'&token=' . $this->token);
+             
         $response->assertStatus(200);
     }
 }
