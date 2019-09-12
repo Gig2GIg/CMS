@@ -105,7 +105,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
-    $router->put('/auditions/feeback/recommendations-marketplaces/update',['uses'=>'RecommendationsController@updateFromArray']);
+    $router->put('/auditions/{id}/feeback/recommendations-marketplaces/update',['uses'=>'RecommendationsController@updateFromArray']);
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
 
 
@@ -116,7 +116,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('auditions/feedbacks/tags', ['uses'=>'TagsController@store']);
     $router->delete('auditions/feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
     $router->get('auditions/{id}/user/tags', ['uses'=>'TagsController@listByUser']);
-    $router->put('auditions/feedbacks/user/tags', ['uses'=>'TagsController@updateFromArray']);
+    $router->put('auditions/{id}/feedbacks/user/tags', ['uses'=>'TagsController@updateFromArray']);
 
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');

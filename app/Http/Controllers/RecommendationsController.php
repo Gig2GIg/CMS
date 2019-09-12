@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\RecommendationsRepository;
+use App\Http\Repositories\AuditionRepository;
 
 use App\Http\Controllers\Utils\LogManger;
 
 use App\Models\Recommendations;
 use App\Models\Auditions;
+
+
 
 use App\Http\Requests\RecommendationsRequest;
 
@@ -94,6 +97,8 @@ class RecommendationsController extends Controller
     {
         try {
             $repoRecommendation = new RecommendationsRepository(new Recommendations());
+            $repoAudition = new AuditionRepository(new Auditions());
+            $audition = $repoAudition->find($request->id);
            
           
             foreach ($request->marketplaces as $markeplace) {
@@ -109,7 +114,7 @@ class RecommendationsController extends Controller
                 if ( is_null($recommendation) ){
                     $repoRecommendation->create([
                             'marketplace_id' => $markeplace['marketplace_id'],
-                            'audition_id' => $markeplace['audition_id'],
+                            'audition_id' => $audition->id,
                             'user_id' => $markeplace['user_id']
                     ]);
                 }
