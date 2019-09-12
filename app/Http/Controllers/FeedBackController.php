@@ -185,7 +185,7 @@ class FeedBackController extends Controller
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
-                $code = 200;
+                $code = 404;
             }
 
             return response()->json($dataResponse, $code);
