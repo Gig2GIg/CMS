@@ -104,6 +104,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
 
+    // AUDITIONS FEEDBACK
+    $router->get('/auditions/{id}/feedbacks/details',['uses'=>'FeedBackController@feedbackDetails']);
+
     // TAGS
     $router->post('auditions/feedbacks/tags', ['uses'=>'TagsController@store']);
     $router->delete('auditions/feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);

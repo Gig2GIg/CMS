@@ -140,6 +140,7 @@ class FeedBackController extends Controller
             return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
+
     public function finalUserFeedback(Request $request)
     {
         try {
@@ -166,6 +167,32 @@ class FeedBackController extends Controller
         }
     }
 
+
+    public function feedbackDetails(Request $request)
+    {
+        try {
+            $repoFeedback = new FeedbackRepository(new Feedbacks());
+        
+            $feedbacks = $repoFeedback->findbyparam('auditions_id', $request->id);
+
+            $feedback = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->first();
+
+            if (! is_null($feedback)) {
+                $dataResponse = ['data' => new FeedbackResource($feedback)];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Data Not Found'];
+                $code = 200;
+            }
+
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
+
     function addTalenteToDatabase($performer_id){
         try {
             $repo = new PerformerRepository(new Performers());
@@ -184,6 +211,7 @@ class FeedBackController extends Controller
             $this->log->info('Talent add');
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
+
         }
     }
 
