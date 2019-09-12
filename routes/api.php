@@ -105,6 +105,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
+    $router->put('/auditions/feeback/recommendations-marketplaces/update',['uses'=>'RecommendationsController@updateFromArray']);
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
 
 

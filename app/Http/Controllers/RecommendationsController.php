@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Repositories\RecommendationsRepository;
 
+use App\Http\Controllers\Utils\LogManger;
+
 use App\Models\Recommendations;
 use App\Models\Auditions;
 
@@ -20,9 +22,12 @@ use App\Http\Resources\RecommendationMarketplacesResource;
 
 class RecommendationsController extends Controller
 {
+    protected $log;
+
     public function __construct()
     {
         $this->middleware('jwt');
+        $this->log = new LogManger();
     }
     
     public function store(RecommendationsRequest $request)
@@ -83,5 +88,46 @@ class RecommendationsController extends Controller
 
        return response()->json(['data' =>  $responseData], $code);
     }
+
+
+    public function updateFromArray(Request $request)
+    {
+        try {
+            $repoRecommendation = new RecommendationsRepository(new Recommendations());
+           
+          
+            foreach ($request->marketplaces as $markeplace) {
+              
+                $recommendation = Recommendations::find($markeplace['id']);
+
+                if (! is_null($recommendation)){   
+                   $recommendation->update([
+                            'marketplace_id' => $markeplace['marketplace_id']
+                    ]);     
+                }
+
+                if ( is_null($recommendation) ){
+                    $repoRecommendation->create([
+                            'marketplace_id' => $markeplace['marketplace_id'],
+                            'audition_id' => $markeplace['audition_id'],
+                            'user_id' => $markeplace['user_id']
+                    ]);
+                }
+            }
+     
+
+            $dataResponse = ['data' => 'Marketplaces updates'];
+            $code = 200;
+           
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
+
+
 }
 
