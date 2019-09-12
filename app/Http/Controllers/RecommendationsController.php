@@ -65,4 +65,23 @@ class RecommendationsController extends Controller
 
        return response()->json(['data' =>  $responseData], $code);
     }
+
+
+    public function listByUser(Auditions $audition, Request $request)
+    {
+        $data =  $audition->recommendations_marketplaces;
+
+        $data = $audition->recommendations_marketplaces->where('user_id', $request->user_id);
+     
+       if (count($data) > 0) {
+           $responseData = RecommendationMarketplacesResource::collection($data);
+           $code = 200;
+       } else {
+            $responseData = 'Not Found';
+            $code = 404;
+       }   
+
+       return response()->json(['data' =>  $responseData], $code);
+    }
 }
+

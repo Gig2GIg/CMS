@@ -110,4 +110,26 @@ class RecommendationsControllerTest extends TestCase
         ]]]);
     }
 
+    public function testRecommendationsMarketplacesbyUser200()
+    {
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class, 10)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $response = $this->json('GET',
+            'api/t/auditions/'. $this->audition_id.'/feeback/recommendations-marketplaces-by-user?user_id='.$this->performanceId .'&token=' . $this->token);
+    
+        $response->assertStatus(200);
+        dd($response);
+        $response->assertJsonStructure(['data' => [[
+            'id',
+            'markeplace'
+        ]]]);
+    }
+
+
 }

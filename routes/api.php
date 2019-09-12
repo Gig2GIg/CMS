@@ -102,7 +102,11 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/{id}/feedbacks/update',['uses'=>'FeedBackController@update']);
 
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
+
+    // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
+    $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
+
 
     // AUDITIONS FEEDBACK
     $router->get('/auditions/{id}/feedbacks/details',['uses'=>'FeedBackController@feedbackDetailsByUser']);
