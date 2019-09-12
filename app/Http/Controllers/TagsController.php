@@ -82,27 +82,26 @@ class TagsController extends Controller
         try {
             $repoTag = new TagsRepository(new Tags());
            
-            if (!! $request->tags){
-                $tags = $request->tags;
-                for ($i = 0; $i <= count($tags) -1; $i++) {
-                
-                    $repoTag->find($tags[$i]['id']);
+          
+            foreach ($request->tags as $tag_data) {
+              
+                $t = Tags::find($tag_data['id']);
 
-                    if (! is_null($tag) ){
-                        $repoTag->update([
-                                'url' => $tags[$i]['title']
-                        ]);
-                    }
+                if (! is_null($t)){   
+                   $t->update([
+                            'title' => $tag_data['title']
+                    ]);     
+                }
 
-                    if ( is_null($tag[$i]['id']) ){
-                        $repoTag->create([
-                                'title' => $tags[$i]['title'],
-                                'audition_id' => $tags[$i]['audition_id'],
-                                'user_id' => $tasg[$i]['user_id']
-                        ]);
-                    }
+                if ( is_null($t) ){
+                    $repoTag->create([
+                            'title' => $tag_data['title'],
+                            'audition_id' => $tag_data['audition_id'],
+                            'user_id' => $tag_data['user_id']
+                    ]);
                 }
             }
+     
 
             $dataResponse = ['data' => 'Tags updates'];
             $code = 200;
