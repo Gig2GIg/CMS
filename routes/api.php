@@ -99,11 +99,15 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //feedback
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
+    $router->put('/auditions/{id}/feedbacks/update',['uses'=>'FeedBackController@update']);
+
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
-    $router->post('feedbacks/tags', ['uses'=>'TagsController@store']);
-    $router->delete('feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
-    $router->get('feedbacks/{id}/tags', ['uses'=>'TagsController@list']);
+
+    // TAGS
+    $router->post('auditions/feedbacks/tags', ['uses'=>'TagsController@store']);
+    $router->delete('auditions/feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
+    $router->get('auditions/{id}/user/tags', ['uses'=>'TagsController@listByUser']);
 
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');

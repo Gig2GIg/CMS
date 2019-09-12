@@ -8,11 +8,11 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
 use App\Models\Tags;
-use App\Models\Feedbacks;
+use App\Models\User;
+use App\Models\Auditions;
 
 use Illuminate\Http\Request;
 use App\Http\Repositories\TagsRepository;
-use App\Http\Repositories\FeedbackRepository;
 
 use App\Http\Resources\TagsResource;
 class TagsController extends Controller
@@ -30,7 +30,8 @@ class TagsController extends Controller
         try {
             $data = [
                 'title'=>$request->title,
-                'feedback_id'=>$request->feedback_id
+                'audition_id'=>$request->audition_id,
+                'user_id'=>$request->user_id
             ];
 
             $repoTag = new TagsRepository(new Tags());
@@ -74,14 +75,16 @@ class TagsController extends Controller
     }
 
 
-    public function list(Request $request)
+    public function listByUser(Request $request)
     {
         try {
-            $feedbackRepo = new FeedbackRepository(new Feedbacks());
-            $feeback = $feedbackRepo->find($request->id);
+           
+            $tags = Tags::where('audition_id', $request->id)->get();
 
-            if (! is_null($feeback)) {
-                $dataResponse = ['data' =>   TagsResource::collection($feeback->tags)];
+            $userTags = $tags->where('user_id', $request->user_id);
+
+            if (! is_null($userTags )) {
+                $dataResponse = ['data' =>   TagsResource::collection($userTags)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];

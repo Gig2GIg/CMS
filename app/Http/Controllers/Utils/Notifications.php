@@ -78,9 +78,9 @@ class Notifications
                     break;
                 default:
             }
-
+           
             if ($type == 'cms' || $type == 'cms_to_user')
-            {
+            {   
                 if ($to == 'ONE')
                 {
                     $user->notification_history()->create([

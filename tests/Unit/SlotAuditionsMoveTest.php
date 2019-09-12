@@ -24,6 +24,7 @@ class SlotAuditionsMoveTest extends TestCase
     protected $slots;
     protected $appoimentId;
     protected $user_slot;
+    protected $user_slots;
     protected $users;
 
     protected function setUp(): void
@@ -101,7 +102,15 @@ class SlotAuditionsMoveTest extends TestCase
         ]);
 
         $users= factory(User::class, 12)->create();
-  
+    
+        // CREATE USER DETAILS FROM USERS PULL
+        foreach ($users as $user) {
+            $userDetails = factory(UserDetails::class)->create([
+                'type' => 2,
+                'user_id' => $user->id,
+            ]);
+        }
+
           // CREATED REQUEST UPCOMMING WIT WITH USER TYPE APP
           $user_audition = factory(UserAuditions::class)->create([
             'user_id' => $users[1]->id,
@@ -160,7 +169,7 @@ class SlotAuditionsMoveTest extends TestCase
         $this->appoimentId = $appoiment->id;
         $this->user_slot = $user_slot->id;
         $this->users = $users;
-        
+        $this->user_slots = UserSlots::all();
     }
 
 
@@ -174,27 +183,31 @@ class SlotAuditionsMoveTest extends TestCase
                         'user_id' =>  $this->userId2
                     ],
                     [
+                    
                         'slot_id' =>  $this->slots[2]->id,
-                        'user_id' =>  $this->users[2]->id
+                        'user_id' =>  $this->users[1]->id
                     ],
                     [
                         'slot_id' =>  $this->slots[5]->id,
-                        'user_id' =>  $this->users[2]->id
+                        'user_id' =>  $this->users[3]->id
                     ],
                     [
-                        'slot_id' =>  $this->slots[1]->id,
+                        'slot_id' =>  $this->slots[6]->id,
                         'user_id' =>  $this->users[4]->id
                     ]
                 ]];
             
+    
         $response = $this->json('PUT',
             'api/t/auditions/appointments/'. $this->appoimentId.'/slots?'. '&token=' . $this->token,
             $data
         );
 
 
+
         $response->assertStatus(200);
        
     }
 }
+
 

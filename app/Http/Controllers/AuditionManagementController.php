@@ -17,6 +17,7 @@ use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\ResourcesRepository;
+use App\Http\Repositories\SlotsRepository;
 
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
@@ -36,6 +37,7 @@ use App\Models\UserDetails;
 use App\Models\UserManager;
 use App\Models\UserSlots;
 use App\Models\Resources;
+use App\Models\Slots;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -605,15 +607,37 @@ class AuditionManagementController extends Controller
         try {
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-            $this->log->info($request);
 
-            foreach ($appoiment->slot as $slot) {
+            $this->log->info(UserSlots::all());
+
+            foreach ($request->slots as $slot) {
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
-                $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
+                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+                $update=  $userSlot->update(['slot_id' => $slot['slot_id']]);
 
+                $userRepo = new UserRepository(new User());
+                $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+
+                $user =  $userRepo->find($slot['user_id']);
+
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($newUserSlot->auditions_id);
+
+                $slotRepo = new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($slot['slot_id']);
+
+                $dataMail = ['name' => $user->details->first_name, 'audition_title' =>  $audition->title, 'slot_time' =>  $slot->time];
+
+                $mail = new SendMail();
+                $mail->sendPerformance($user->email, $dataMail);
+
+                $this->sendPushNotification(
+                    $audition,
+                    'cms_to_user',
+                    $user,
+                    'Your appointment time to audition ' . '* '. $audition->title . ' *'. ' is was moved'
+                );
             }
-
-            $this->log->info('SLOTS',$appoiment->slot);
 
             if ($userSlotRepo) {
                 $dataResponse =  'success' ;
@@ -626,10 +650,11 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => $dataResponse], $code);
 
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error($exception);
             return response()->json(['data' => 'Unprocesable Entity'], 422);
         }
     }
+
 
 
     public function bannedAuditions(Request $request)
