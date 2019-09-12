@@ -5,11 +5,13 @@ namespace Tests\Unit;
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
+use App\Models\Performers;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserSlots;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -112,7 +114,6 @@ class FeedBackControllerTest extends TestCase
         $response->assertJson(['data' => 'Feedback update']);
 
     }
-
     public function test_set_feedback_contributor_to_performer()
     {
         $user = factory(User::class)->create();
@@ -134,6 +135,47 @@ class FeedBackControllerTest extends TestCase
             'acting',
             'dancing',
         ];
+        $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
+            'auditions' => $this->auditionId,
+            'user' => $user->id, //id usuario que recibe evaluacion
+            'evaluator' => $user2->id,//id de usuario que da feecback,
+            'evaluation' => $this->faker->numberBetween(1, 5),
+            'callback' => $this->faker->boolean(),
+            'work' => $work[$this->faker->numberBetween(0, 2)],
+            'favorite' => $this->faker->boolean(),
+            'comment' => $this->faker->text(),
+            'slot_id'=>$slot->id
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJson(['data' => 'Feedback add']);
+    }
+    public function test_set_feedback_contributor_to_performer_not_add_performer_feedback()
+    {
+        $user = factory(User::class)->create();
+        $user2 = factory(User::class)->create();
+        $appoinment = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
+
+        $slot = factory(Slots::class)->create([
+            'appointment_id'=>$appoinment->id
+        ]);
+        $slot_user = factory(UserSlots::class)->create([
+            'user_id'=>$this->userId,
+            'auditions_id'=>$this->auditionId,
+            'slots_id'=>$slot->id
+        ]);
+        $work = [
+            'vocals',
+            'acting',
+            'dancing',
+        ];
+        factory(Performers::class)->create([
+            'performer_id' => $user->id,
+            'director_id' => $this->userId,
+            'uuid' => Str::uuid()->toString(),
+        ]);
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
             'auditions' => $this->auditionId,
             'user' => $user->id, //id usuario que recibe evaluacion
