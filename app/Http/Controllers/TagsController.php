@@ -13,6 +13,7 @@ use App\Models\Auditions;
 
 use Illuminate\Http\Request;
 use App\Http\Repositories\TagsRepository;
+use App\Http\Repositories\AuditionRepository;
 
 use App\Http\Resources\TagsResource;
 class TagsController extends Controller
@@ -77,34 +78,42 @@ class TagsController extends Controller
 
 
 
-    public function updateFromArray(Request $request)
+    public function updateFromArray( Request $request)
     {
         try {
             $repoTag = new TagsRepository(new Tags());
+            $repoAudition = new AuditionRepository(new Auditions());
+            $audition = $repoAudition->find($request->id);
            
-          
-            foreach ($request->tags as $tag_data) {
+            if (! is_null($audition)){
+                foreach ($request->tags as $tag_data) {
               
-                $t = Tags::find($tag_data['id']);
-
-                if (! is_null($t)){   
-                   $t->update([
-                            'title' => $tag_data['title']
-                    ]);     
+                    $t = Tags::find($tag_data['id']);
+    
+                    if (! is_null($t)){   
+                       $t->update([
+                                'title' => $tag_data['title']
+                        ]);     
+                    }
+    
+                    if ( is_null($t) ){
+                        $repoTag->create([
+                                'title' => $tag_data['title'],
+                                'audition_id' => $audition->id,
+                                'user_id' => $tag_data['user_id']
+                        ]);
+                    }
                 }
 
-                if ( is_null($t) ){
-                    $repoTag->create([
-                            'title' => $tag_data['title'],
-                            'audition_id' => $tag_data['audition_id'],
-                            'user_id' => $tag_data['user_id']
-                    ]);
-                }
+                $dataResponse = ['data' => 'Tags updates'];
+                $code = 200;
+            }else{
+                $dataResponse = ['data' => 'Audition Not Found'];
+                $code = 404;
             }
-     
+          
 
-            $dataResponse = ['data' => 'Tags updates'];
-            $code = 200;
+           
            
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
