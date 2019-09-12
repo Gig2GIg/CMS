@@ -234,7 +234,7 @@ class AuditionManagemenDirectorTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $video = factory(AuditionContract::class)->create([
+        $contract = factory(AuditionContract::class)->create([
             'user_id' => $user->id,
             'auditions_id' => $data->id,
             'url' => $this->faker->imageUrl(),
@@ -243,7 +243,7 @@ class AuditionManagemenDirectorTest extends TestCase
         ]);
 
         $response = $this->json('DELETE',
-            'api/t/auditions/contract/delete/'.$video->id.'?token=' . $this->token);
+            'api/t/auditions/contract/delete/'.$contract->id.'?token=' . $this->token);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
 
