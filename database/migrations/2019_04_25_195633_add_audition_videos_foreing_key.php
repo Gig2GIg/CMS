@@ -13,7 +13,7 @@ class AddAuditionVideosForeingKey extends Migration
      */
     public function up()
     {
-        Schema::table('audition_videos', function (Blueprint $table) {
+
             Schema::table('audition_videos', function (Blueprint $table) {
                 $table->foreign('auditions_id') ->references('id')
                     ->on('auditions')
@@ -25,7 +25,7 @@ class AddAuditionVideosForeingKey extends Migration
                     ->on('users')
                     ->onDelete('cascade');
             });
-        });
+
     }
 
     /**

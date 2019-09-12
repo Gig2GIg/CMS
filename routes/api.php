@@ -80,6 +80,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
+    $router->post('/auditions/contract/save',['uses'=>'AuditionManagementController@saveContract']);
+    $router->get('/auditions/contract/{user_id}/{audition_id}',['uses'=>'AuditionManagementController@getContact']);
+    $router->delete('/auditions/contract/delete/{id}',['uses'=>'AuditionManagementController@deleteContract']);
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
@@ -109,7 +112,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
 
-    //SKILL SUGGESTIONS 
+    //SKILL SUGGESTIONS
 //    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 
