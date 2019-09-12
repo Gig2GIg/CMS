@@ -110,4 +110,60 @@ class RecommendationsControllerTest extends TestCase
         ]]]);
     }
 
+    public function testRecommendationsMarketplacesbyUser200()
+    {
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class, 10)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $response = $this->json('GET',
+            'api/t/auditions/'. $this->audition_id.'/feeback/recommendations-marketplaces-by-user?user_id='.$this->performanceId .'&token=' . $this->token);
+    
+        $response->assertStatus(200);
+        dd($response);
+        $response->assertJsonStructure(['data' => [[
+            'id',
+            'markeplace'
+        ]]]);
+    }
+
+    public function test_update_tags_from_array_200()
+    {
+        
+        $marketplace = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation2 = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+       $data =  [
+                    'marketplaces' => [
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => $recomendation->id],
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => null, 'user_id' => $this->performanceId,'audition_id' => $this->audition_id ],
+                                  
+                ] 
+            ];
+
+        $response = $this->json('PUT',
+            'api/t/auditions/feeback/recommendations-marketplaces/update?token=' . $this->token, $data);
+
+        $response->assertStatus(200);
+    }
+
+
+
 }
