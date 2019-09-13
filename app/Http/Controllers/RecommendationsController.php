@@ -85,8 +85,8 @@ class RecommendationsController extends Controller
            $responseData = RecommendationMarketplacesResource::collection($data);
            $code = 200;
        } else {
-            $responseData = 'Not Found';
-            $code = 404;
+            $responseData = [];
+            $code = 200;
        }   
 
        return response()->json(['data' =>  $responseData], $code);
