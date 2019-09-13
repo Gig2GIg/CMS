@@ -500,7 +500,7 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['message'=>'Not processable','data' =>[]], 406);
         }
     }
 
