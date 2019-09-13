@@ -483,20 +483,16 @@ class AuditionManagementController extends Controller
     {
         try {
             $contractRepo = new AuditionContractRepository(new AuditionContract());
-
-
-
                 $data = $contractRepo->create([
                     'user_id' => $request->performer,
                     'auditions_id' => $request->audition,
                     'url' => $request->url,
-
                 ]);
                 if (isset($data->id)) {
-                    $dataResponse = ['data' => 'Contract saved'];
+                    $dataResponse = ['message'=>'Contract saved','data' =>$data];
                     $code = 200;
                 } else {
-                    $dataResponse = ['data' => 'contract not saved'];
+                    $dataResponse = ['message'=>'Contract Not saved','data' => []];
                     $code = 406;
                 }
 
