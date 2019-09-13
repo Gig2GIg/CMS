@@ -131,6 +131,18 @@ class RecommendationsControllerTest extends TestCase
         ]]]);
     }
 
+    public function testRecommendationsMarketplacesbyUserNotFound()
+    {
+        
+        $response = $this->json('GET',
+            'api/t/auditions/'. $this->audition_id.'/feeback/recommendations-marketplaces-by-user?user_id='.$this->performanceId .'&token=' . $this->token);
+    
+        $response->assertStatus(200);
+        
+        $response->assertJsonStructure([]);
+    }
+
+
     public function test_update_tags_from_array_200()
     {
         
