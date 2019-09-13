@@ -164,7 +164,7 @@ class RecommendationsControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_update_tags_from_array_422()
+    public function test_update_marketplace_from_array_422()
     {
         
         $marketplace = factory(Marketplace::class)->create();
@@ -197,8 +197,21 @@ class RecommendationsControllerTest extends TestCase
         $response->assertStatus(422);
     }
 
+    public function test_delete_marketplace_200()
+    {
+        
+        $marketplace = factory(Marketplace::class)->create();
 
+        $recomendation = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
 
+        $response = $this->json('DELETE',
+            'api/t/auditions/feeback/recommendations-marketplaces/'.$recomendation->id.'/delete/?token=' . $this->token);
 
+        $response->assertStatus(200);
+    }
 }
 
