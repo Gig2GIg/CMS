@@ -133,6 +133,29 @@ class RecommendationsController extends Controller
     }
 
 
+    public function delete(Request $request)
+    {
+        try {
+            $repoRecommendation = new RecommendationsRepository(new Recommendations());
+            $recommendation = $repoRecommendation->find($request->id);
+            
+
+            if ($recommendation->delete()){
+                $dataResponse = ['data' => 'Recommendation removed'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Recommendation not removed'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
 
 }
 
