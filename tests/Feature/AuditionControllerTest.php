@@ -51,6 +51,10 @@ class AuditionControllerTest extends TestCase
         factory(UserDetails::class)->create([
             'user_id' => $cont2->id,
         ]);
+        $cont3 = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id' => $cont3->id,
+        ]);
         $data = [
             'title' => $this->faker->words(3, 3),
             'date' => $this->faker->date(),
@@ -136,6 +140,7 @@ class AuditionControllerTest extends TestCase
             'contributors' => [
                 ['email' => $cont1->email],
                 ['email' => $cont2->email],
+                ['email' => $cont3->email],
                 ['email' => 'g2g@test.com'],
 
             ],
@@ -367,14 +372,16 @@ class AuditionControllerTest extends TestCase
 
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
 
+
         $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
+
 
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
         $response = $this->json('GET',
             'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=1'. '&notification_id='. $notification->id .'&token=' . $this->token);
         $response->assertStatus(200);
-       
+
     }
 
     public function test_reject_invite_contribuitor(){
@@ -385,14 +392,14 @@ class AuditionControllerTest extends TestCase
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
         $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
-        
+
         $response = $this->json('GET',
         'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=0'. '&notification_id='. $notification->id .'&token=' . $this->token);
          $response->assertStatus(200);
 
     }
 
-    
 
-    
+
+
 }

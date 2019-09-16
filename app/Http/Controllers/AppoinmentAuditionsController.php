@@ -9,15 +9,22 @@ use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\UserAuditionsRepository;
+
+
 use App\Http\Resources\AppointmentDetailsUserResource;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
+
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserSlots;
+use App\Models\UserAuditions;
+
 use Illuminate\Http\Request;
+
 
 use App\Http\Exceptions\NotificationException;
 
@@ -46,11 +53,54 @@ class AppoinmentAuditionsController extends Controller
             } else {
                 $dataUser = $dataUserRepo->find($request->user);
             }
+
+           
+            $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+            $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
+
+            $userAudition = $userAuditions->where('user_id', $request->user)->first();
+           
+            $userSlots = UserSlots::where('user_id',$request->user );
+            $userSlot =   $userSlots->where('roles_id', $request->role_id)->first();
+    
+            if (! is_null($userAudition)){
+               if ($userAudition->slot_id){
+                $slotRepo =  new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($userAudition->slot_id);
+
+                $dataResponse = [
+                    'id' => $dataUser->id,
+                    'image' => $dataUser->image->url,
+                    'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                    'hour' => $slot->time,
+                    'slot_id' => $slot->id
+                ];
+           
+                return response()->json(['data' => $dataResponse], 200);
+               }
+                
+            }
+            if  (! is_null($userSlot->slots_id)) {
+              
+                $slotRepo =  new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($userSlot->slots_id);
+                $dataResponse = [
+                    'id' => $dataUser->id,
+                    'image' => $dataUser->image->url,
+                    'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                    'hour' => $slot->time,
+                    'slot_id' => $slot->id
+                ];
+                
+                return response()->json(['data' => $dataResponse], 200);
+            }
+            
             $dataResponse = [
                 'id' => $dataUser->id,
                 'image' => $dataUser->image->url,
-                'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name,
+                'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name
             ];
+       
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -75,7 +125,8 @@ class AppoinmentAuditionsController extends Controller
             $dataSlotUser = new UserSlots();
             $dataCompareExistsRegister = $dataSlotUser->where('user_id', $iduser)
             ->where('roles_id', '=', $request->rol)
-            ->where('slots_id', '=', $request->slot);
+            ->where('slots_id', '=', $request->slot)
+            ->where('status', '=', 'checked');
             if ($dataCompareExistsRegister->count() > 0) {
                 throw new \Exception('You already registered');
             }
