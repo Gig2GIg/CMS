@@ -67,7 +67,7 @@ class AuditionControllerTest extends TestCase
             'additional_info'=>$this->faker->paragraph(),
             'phone'=>$this->faker->phoneNumber,
             'email'=>$this->faker->companyEmail,
-            'other_info'=>$this->faker->paragraph,
+            'other_info'=>$this->faker->title,
             'cover' => $this->faker->imageUrl(),
             'cover_name'=>$this->faker->word(),
             'union' => $this->faker->word(),

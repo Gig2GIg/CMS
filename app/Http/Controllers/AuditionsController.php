@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
+
+use App\Http\Controllers\Utils\PushNotifications;
+
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
@@ -119,6 +122,9 @@ class AuditionsController extends Controller
                         $audition,
                         SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
                     );
+                    $this->sendNotificationToContributors(
+                        $audition
+                    );
                 }
                 DB::commit();
 
@@ -138,6 +144,25 @@ class AuditionsController extends Controller
     }
 
 
+    public function sendNotificationToContributors($audition): void
+    {
+        try {
+            
+            $audition->contributors->each(function ($user_contributor) use ($audition) {
+               
+                $this->pushNotifications(
+                    'You have been added to audition '. $audition->title,
+                    $user_contributor
+                );
+            });
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
+    }
+
+    
     /**
      * @param $request
      * @return array
