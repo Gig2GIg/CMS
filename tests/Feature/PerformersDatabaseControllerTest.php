@@ -65,12 +65,12 @@ class PerformersDatabaseControllerTest extends TestCase
         $user = factory(User::class)->create();
         $performer = factory(Performers::class)->create([
             'performer_id' => $user->id,
-            'director_id' => $director->id,
+            'director_id' => $this->testId,
             'uuid' => $this->faker->uuid,
         ]);
         $response = $this->post('api/t/performers/add?token='.$this->token,[
             'code'=>$performer->uuid,
-            'director'=>$director->id
+            'director'=>$this->testId
         ]);
 
         $response->assertStatus(200);
