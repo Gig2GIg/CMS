@@ -17,8 +17,6 @@ use App\Http\Repositories\Notification\NotificationSettingRepository;
 
 class NotificationSettingUnitTest extends TestCase
 {
-    protected $label;
-
     use WithFaker;
     use RefreshDatabase;
 
