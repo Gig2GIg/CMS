@@ -9,7 +9,6 @@ $factory->define(App\Models\Calendar::class, function (Faker $faker) {
         'project_name' => $faker->name,
         'start_date' => \Carbon\Carbon::now()->toDateString(),
         'end_date' => \Carbon\CarbonImmutable::now()->add(6,'day')->toDateString(),
-        'user_id' => $faker->numberBetween(1, 4),
         'user_id' =>  factory(User::class)->create()->first()->id
     ];
 });
