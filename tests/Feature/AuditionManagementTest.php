@@ -53,13 +53,13 @@ class AuditionManagementTest extends TestCase
         $audition = factory(Auditions::class)->create(['user_id'=>$this->userId]);
         $users = factory(User::class,7)->create();
         $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
-        $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
-
-        $users->each(function ($item) use ($audition){
+        $users->each(function ($item) use ($audition,$appointment){
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
                 'auditions_id'=>$audition->id,
-                'status'=>'reserved'
+                'status'=>'reserved',
+                'slots_id'=>factory(Slots::class)->create(['appointment_id'=>$appointment->id])->id
+
             ]);
         });
 
@@ -81,11 +81,12 @@ class AuditionManagementTest extends TestCase
         $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
         $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
 
-        $users->each(function ($item) use ($audition){
+        $users->each(function ($item) use ($audition, $appointment){
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
                 'auditions_id'=>$audition->id,
-                'status'=>'reserved'
+                'status'=>'reserved',
+//                  'slots_id'=>factory(Slots::class)->create(['appointment_id'=>$appointment->id])->id
             ]);
         });
 
@@ -107,11 +108,13 @@ class AuditionManagementTest extends TestCase
         $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
         $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
 
-        $users->each(function ($item) use ($audition){
+        $users->each(function ($item) use ($audition,$appointment){
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
                 'auditions_id'=>$audition->id,
-                'status'=>'reserved'
+                'status'=>'reserved',
+                'slots_id'=>factory(Slots::class)->create(['appointment_id'=>$appointment->id])->id
+
             ]);
         });
 
@@ -295,7 +298,7 @@ class AuditionManagementTest extends TestCase
 
 
     public function test_it_user_performance_bannend_audition200(){
-        
+
         $response = $this->json('POST',
         'api/a/auditions/banned?token=' . $this->token,
         [
@@ -306,5 +309,5 @@ class AuditionManagementTest extends TestCase
     }
 
 
-    
+
 }
