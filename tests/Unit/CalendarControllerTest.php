@@ -151,8 +151,8 @@ class CalendarControllerTest extends TestCase
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
             'event_type'=>$this->faker->numberBetween(1,2),
-            'start_date' => '08-20',
-            'end_date' => '08-27',
+            'start_date' => \Carbon\Carbon::now()->format('m-d'),
+            'end_date' => \Carbon\CarbonImmutable::now()->add(6,'day')->format('m-d'),
         ];
 
         $calendar = factory(Calendar::class)->create();
