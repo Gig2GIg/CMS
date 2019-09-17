@@ -50,9 +50,9 @@ class PostsTest extends TestCase
     {
         $post = factory(Posts::class)->create(['user_id' => $this->userId]);
         $posttRepo = new PostsRepository($post);
-        
+
         $data = [
-            'title' =>  $this->faker->text(),
+            'title' =>  'test title to valite',
             'body' =>  $this->faker->paragraph()
         ];
 

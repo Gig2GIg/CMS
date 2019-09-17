@@ -47,7 +47,7 @@ class PostTopicsTest extends TestCase
     {
         $data = [
             'post_id' =>    $this->postId,
-            'topic_id' =>   $this->postId
+            'topic_id' =>   factory(Topics::class)->create()->id,
         ];
 
         $postTopic = factory(PostTopics::class)->create($data);

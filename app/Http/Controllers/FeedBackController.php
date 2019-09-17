@@ -172,14 +172,14 @@ class FeedBackController extends Controller
     {
         try {
             $repoFeedback = new FeedbackRepository(new Feedbacks());
-        
+
             $feedbacks = $repoFeedback->findbyparam('auditions_id', $request->id);
 
             $feedbacksEvaluator = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->get();
 
             $feedbackUser= $feedbacksEvaluator->where('user_id', $request->user_id)->first();
 
-        
+
             if (! is_null($feedbackUser)) {
                 $dataResponse = ['data' => new FeedbackResource($feedbackUser)];
                 $code = 200;

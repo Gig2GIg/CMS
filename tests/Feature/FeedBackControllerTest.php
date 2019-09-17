@@ -68,6 +68,7 @@ class FeedBackControllerTest extends TestCase
     public function test_update_feedback_director_to_performer()
     {
         $user = factory(User::class)->create();
+        $user2 = factory(User::class)->create();
         $appoinment = factory(Appointments::class)->create([
             'auditions_id'=>$this->auditionId
         ]);
@@ -91,7 +92,7 @@ class FeedBackControllerTest extends TestCase
         $feedback = factory(Feedbacks::class)->create([
             'auditions_id' => $this->auditionId,//$this->auditionId,
             'user_id' => $user->id,//$user->id, //id usuario que recibe evaluacion
-            'evaluator_id' => $this->userId, //$this->userId,//id de usuario que da feecback,
+            'evaluator_id' => $user2->id, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
             'work' => $work[$this->faker->numberBetween(0, 2)],
@@ -100,7 +101,7 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
 
-        $response= $this->json('PUT', 'api/t/auditions/'. $feedback->id .'/feedbacks/update?token=' . $this->token, [
+        $response= $this->json('PUT', 'api/t/auditions/'.$this->auditionId  .'/feedbacks/update?token=' . $this->token, [
             'user_id' => $user->id,
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
@@ -149,9 +150,9 @@ class FeedBackControllerTest extends TestCase
             'slot_id'=>$slot->id,
             'comment' => $this->faker->text()
         ]);
-       
+
         $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?user_id='.$user->id .'&token=' . $this->token);
-        
+
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [
             'id',
@@ -200,11 +201,11 @@ class FeedBackControllerTest extends TestCase
             'slot_id'=>$slot->id,
             'comment' => $this->faker->text()
         ]);
-       
+
         $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?user_id='. '3000' .'&token=' . $this->token);
-        
+
         $response->assertStatus(404);
-   
+
 
     }
 
