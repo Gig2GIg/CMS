@@ -111,7 +111,7 @@ class PostsControllerTest extends TestCase
         $post1 = factory(Posts::class, 2)->create(['user_id' => $this->userId, 'type'=> 'blog']);
         $post2 = factory(Posts::class, 2)->create(['user_id' => $this->userId, 'type'=> 'forum']);
  
-        $query = $post1->first()->title;
+        $query = $post2->first()->title;
    
         $response = $this->json('GET',
             'api/a/forum/posts/find_by_title?value='.$query.'&token=' . $this->token2);
