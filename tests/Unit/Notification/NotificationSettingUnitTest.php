@@ -46,6 +46,7 @@ class NotificationSettingUnitTest extends TestCase
         $data = [
             'status' => 'on',
             'code' => 'autidion_update',
+            'label'=> 'from test'
         ];
 
 

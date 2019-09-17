@@ -32,7 +32,8 @@ class ManageAppointmentControllerTest extends TestCase
             'user_id'=>$user->id,
             'auditions_id'=>$audition->id,
             'roles_id'=>$rol->id,
-            'status'=>2
+            'status'=>2,
+
         ]);
 
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
