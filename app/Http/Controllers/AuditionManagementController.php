@@ -545,15 +545,16 @@ class AuditionManagementController extends Controller
     public function alertSlotsEmpty($audition){
         try {
             $available = true;
-            $repoAppointmenst = new AppointmentRepository(new Appointments());
+            $repoAppointments = new AppointmentRepository(new Appointments());
             $repoUserSlots = new UserSlotsRepository(new UserSlots());
 
-            $slotsAppointment = $repoAppointmenst->findbyparam('auditions_id', $audition);
+            $slotsAppointment = $repoAppointments->findbyparam('auditions_id', $audition);
             $countSlotsAppointment= $slotsAppointment->slot ?? collect([]);
             $userSlots = $repoUserSlots->findbyparam('auditions_id', $audition);
             $countUserSlots = $userSlots ?? collect([]);
-
-            if ($countUserSlots->count() >= $countSlotsAppointment->count()) {
+            $a = $countUserSlots->count();
+            $b = $countSlotsAppointment->count();
+            if ( $a >= $b )  {
                 $available = false;
             }
 
