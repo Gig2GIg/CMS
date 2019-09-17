@@ -46,7 +46,8 @@ class NotificationSettingUnitTest extends TestCase
         $data = [
             'status' => 'on',
             'code' => 'autidion_update',
-            'label'=> 'from test'
+            'label' => 'Audition update'
+
         ];
 
 
@@ -56,6 +57,7 @@ class NotificationSettingUnitTest extends TestCase
         $this->assertInstanceOf(NotificationSetting::class, $notification_setting);
         $this->assertEquals($data['code'], $notification_setting->code);
         $this->assertEquals($data['status'], $notification_setting->status);
+        $this->assertEquals($data['label'], $notification_setting->label);
     }
 
     public function test_show_notification_setting()

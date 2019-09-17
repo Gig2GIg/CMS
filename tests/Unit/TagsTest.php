@@ -20,7 +20,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TagsTest extends TestCase
 {
-    protected $feedback_id;
+    protected $audition_id;
+    protected $performance_id;
 
     public function setUp(): void
     {
@@ -29,40 +30,8 @@ class TagsTest extends TestCase
         $director = factory(User::class)->create();
         $performance = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id'=>$director->id]);
-
-        $appoinment = factory(Appointments::class)->create([
-            'auditions_id'=> $audition->id
-        ]);
-
-        $slot = factory(Slots::class)->create([
-            'appointment_id'=> $appoinment->id
-        ]);
-
-        $slot_user = factory(UserSlots::class)->create([
-            'user_id'=> $performance->id,
-            'auditions_id'=> $audition->id,
-            'slots_id'=> $slot->id
-        ]);
-
-        $work = [
-            'vocals',
-            'acting',
-            'dancing',
-        ];
-
-        $feedback = factory(Feedbacks::class)->create([
-            'auditions_id' => $audition->id,
-            'user_id' => $performance->id, //id usuario que recibe evaluacion
-            'evaluator_id' =>$director->id, //id de usuario que da feecback,
-            'evaluation' => $this->faker->numberBetween(1, 5),
-            'callback' => $this->faker->boolean(),
-            'work' => $work[$this->faker->numberBetween(0, 2)],
-            'favorite' => $this->faker->boolean(),
-            'slot_id'=> $slot->id
-        ]);
-
-        $this->feedback_id = $feedback->id;
-        
+        $this->audition_id = $audition->id;
+        $this->performance_id = $performance->id;
     }
 
     public function test_create_tags()
@@ -70,7 +39,8 @@ class TagsTest extends TestCase
 
         $data = [
             'title' => 'High',
-            'feedback_id' => $this->feedback_id
+            'audition_id' => $this->audition_id,
+            'user_id' => $this->performance_id
         ];
 
         $tagRepo = new TagsRepository(new Tags());
@@ -82,12 +52,12 @@ class TagsTest extends TestCase
     }
 
     /* @test */
-    public function it_user_can_delete_a_tag()
+    public function test_user_can_delete_a_tag()
     {
-
         $data = [
             'title' => 'High',
-            'feedback_id' => $this->feedback_id
+            'audition_id' => $this->audition_id,
+            'user_id' => $this->performance_id
         ];
 
         $tagRepo = new TagsRepository(new Tags());
