@@ -19,7 +19,8 @@ $factory->define(NotificationHistory::class, function (Faker $faker) {
     return [
         'title' => $faker->title(),
         'code' => 'XSHGDSDG',
-        'status' => 'read',
+        'status' => 'unread',
         'user_id' => Str::random(10),
+        'message' => $faker->title
     ];
 });

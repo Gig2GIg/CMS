@@ -7,6 +7,7 @@ use App\Http\Controllers\Utils\SendMail;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 
 use App\Http\Repositories\AppointmentRepository;
+use App\Http\Repositories\AuditionContractRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionVideosRepository;
@@ -16,14 +17,17 @@ use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\ResourcesRepository;
+use App\Http\Repositories\SlotsRepository;
 
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\AuditionsDetResponse;
 use App\Http\Resources\AuditionVideosResource;
+use App\Http\Resources\ContractResponse;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 
 use App\Models\Appointments;
+use App\Models\AuditionContract;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\AuditionVideos;
@@ -33,6 +37,7 @@ use App\Models\UserDetails;
 use App\Models\UserManager;
 use App\Models\UserSlots;
 use App\Models\Resources;
+use App\Models\Slots;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -77,7 +82,7 @@ class AuditionManagementController extends Controller
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ?? '';
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $auditionRepo = new AuditionRepository(new Auditions());
                     $audition = $auditionRepo->find($request->auditions);
@@ -474,19 +479,82 @@ class AuditionManagementController extends Controller
         }
     }
 
+    public function saveContract(Request $request)
+    {
+        try {
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
+                $data = $contractRepo->create([
+                    'user_id' => $request->performer,
+                    'auditions_id' => $request->audition,
+                    'url' => $request->url,
+                ]);
+                if (isset($data->id)) {
+                    $dataResponse = ['message'=>'Contract saved','data' =>$data];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['message'=>'Contract Not saved','data' => []];
+                    $code = 406;
+                }
 
+
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message'=>'Not processable','data' =>[]], 406);
+        }
+    }
+
+    public function deleteContract(Request $request)
+    {
+        try {
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
+            $del = $contractRepo->find($request->id);
+            $data = $del->delete();
+            if ($data) {
+                $dataResponse = ['data' => 'Contract deleted'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Contract not deleted'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function getContact(Request $request)
+    {
+        try {
+            $contractRepo = new AuditionContractRepository(new AuditionContract());
+            $data = $contractRepo->findbyparam('auditions_id', $request->audition_id)->get();
+            if ($data->where('user_id',$request->user_id)->count() > 0) {
+                $dataResponse = ['data' => new ContractResponse($data[0])];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => []];
+                $code = 200;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Not Found Data'], 404);
+        }
+    }
     public function alertSlotsEmpty($audition){
         try {
             $available = true;
-            $repoAppointmenst = new AppointmentRepository(new Appointments());
+            $repoAppointments = new AppointmentRepository(new Appointments());
             $repoUserSlots = new UserSlotsRepository(new UserSlots());
 
-            $slotsAppointment = $repoAppointmenst->findbyparam('auditions_id', $audition);
+            $slotsAppointment = $repoAppointments->findbyparam('auditions_id', $audition);
             $countSlotsAppointment= $slotsAppointment->slot ?? collect([]);
             $userSlots = $repoUserSlots->findbyparam('auditions_id', $audition);
             $countUserSlots = $userSlots ?? collect([]);
-
-            if ($countUserSlots->count() >= $countSlotsAppointment->count()) {
+            $a = $countUserSlots->count();
+            $b = $countSlotsAppointment->count();
+            if ( $a >= $b )  {
                 $available = false;
             }
 
@@ -508,7 +576,7 @@ class AuditionManagementController extends Controller
             $repoResource = new ResourcesRepository(new Resources());
             $resourceData = $repoResource->find($request->id);
 
-            
+
             $data = [
                 'shareable' => $request->shareable
             ];
@@ -536,15 +604,37 @@ class AuditionManagementController extends Controller
         try {
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-            $this->log->info($request);
 
-            foreach ($appoiment->slot as $slot) {
-                $userSlotRepo = new UserSlotsRepository(new  UserSlots);   
-                $userSlotRepo->update(['slots_id' => $slot['slot_id']]);
-                
+            $this->log->info(UserSlots::all());
+
+            foreach ($request->slots as $slot) {
+                $userSlotRepo = new UserSlotsRepository(new  UserSlots);
+                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+                $update=  $userSlot->update(['slot_id' => $slot['slot_id']]);
+
+                $userRepo = new UserRepository(new User());
+                $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+
+                $user =  $userRepo->find($slot['user_id']);
+
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($newUserSlot->auditions_id);
+
+                $slotRepo = new SlotsRepository(new Slots());
+                $slot = $slotRepo->find($slot['slot_id']);
+
+                $dataMail = ['name' => $user->details->first_name, 'audition_title' =>  $audition->title, 'slot_time' =>  $slot->time];
+
+                $mail = new SendMail();
+                $mail->sendPerformance($user->email, $dataMail);
+
+                $this->sendPushNotification(
+                    $audition,
+                    'cms_to_user',
+                    $user,
+                    'Your appointment time to audition ' . '* '. $audition->title . ' *'. ' is was moved'
+                );
             }
-
-            $this->log->info('SLOTS',$appoiment->slot);
 
             if ($userSlotRepo) {
                 $dataResponse =  'success' ;
@@ -557,10 +647,11 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => $dataResponse], $code);
 
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error($exception);
             return response()->json(['data' => 'Unprocesable Entity'], 422);
         }
     }
+
 
 
     public function bannedAuditions(Request $request)
@@ -569,7 +660,7 @@ class AuditionManagementController extends Controller
             $repoAudition = new AuditionRepository(new Auditions());
             $audition = $repoAudition->find($request->audition_id);
 
-            
+
             $data = [
                 'banned' => 'pending'
             ];
@@ -586,11 +677,12 @@ class AuditionManagementController extends Controller
 
             return response()->json(['data' => $dataResponse], $code);
 
+
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);
         }
     }
-    
+
 
 }

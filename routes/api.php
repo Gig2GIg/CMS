@@ -28,7 +28,6 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
     $router->get('/skills/show',['uses'=>'SkillsController@list']);
-//    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
     //auditions
     $router->get('/auditions/show',['uses'=>'AuditionsController@getAll']);
     $router->get('/auditions/showfull',['uses'=>'AuditionsController@getFullData']);
@@ -59,7 +58,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //performers db
     $router->post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
-    $router->post('performers/list',['uses'=>'PerformersController@list']);
+    $router->get('performers/list',['uses'=>'PerformersController@list']);
+    $router->post('performers/filter',['uses'=>'PerformersController@filter']);
 
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
@@ -79,6 +79,9 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/auditions/video/save',['uses'=>'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}',['uses'=>'AuditionManagementController@listVideos']);
     $router->delete('/auditions/video/delete/{id}',['uses'=>'AuditionManagementController@deleteVideo']);
+    $router->post('/auditions/contract/save',['uses'=>'AuditionManagementController@saveContract']);
+    $router->get('/auditions/contract/{user_id}/{audition_id}',['uses'=>'AuditionManagementController@getContact']);
+    $router->delete('/auditions/contract/delete/{id}',['uses'=>'AuditionManagementController@deleteContract']);
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
@@ -95,23 +98,38 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //feedback
     $router->post('/feedbacks/add',['uses'=>'FeedBackController@store']);
+    $router->put('/auditions/{id}/feedbacks/update',['uses'=>'FeedBackController@update']);
+
     $router->get('/feedbacks/list',['uses'=>'FeedBackController@list']);
+
+    // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces',['uses'=>'RecommendationsController@store']);
-    $router->post('feedbacks/tags', ['uses'=>'TagsController@store']);
-    $router->delete('feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
-    $router->get('feedbacks/{id}/tags', ['uses'=>'TagsController@list']);
+    $router->put('/auditions/{id}/feeback/recommendations-marketplaces/update',['uses'=>'RecommendationsController@updateFromArray']);
+    $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
+    $router->delete('/auditions/feeback/recommendations-marketplaces/{id}/delete/',['uses'=>'RecommendationsController@delete']);
+
+
+
+    // AUDITIONS FEEDBACK
+    $router->get('/auditions/{id}/feedbacks/details',['uses'=>'FeedBackController@feedbackDetailsByUser']);
+
+    // TAGS
+    $router->post('auditions/feedbacks/tags', ['uses'=>'TagsController@store']);
+    $router->delete('auditions/feedbacks/tags/{id}/delete', ['uses'=>'TagsController@delete']);
+    $router->get('auditions/{id}/user/tags', ['uses'=>'TagsController@listByUser']);
+    $router->put('auditions/{id}/feedbacks/user/tags', ['uses'=>'TagsController@updateFromArray']);
 
     //TYPE PRODUCTS
     $router->get('/type-products', 'TypeProductsController@getAll');
 
-    //SKILL SUGGESTIONS 
-//    $router->get('/skill-suggestions', 'Cms\SkillSuggestionsController@getAll');
+    //SKILL SUGGESTIONS
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
 
     // CONTENT SETTING
     $router->get('/content-settings','ContentSettingController@getAllContentSetting');
 
     // NOTIFICATIONS HISTORY
+    $router->get('/notification-read','NotificationsController@readHistory');
     $router->get('/notification-history','NotificationsController@getHistory');
     $router->put('/notification-send-pushkey','NotificationsController@update');
     $router->delete('/notification-history/delete/{id}',['uses'=>'NotificationsController@delete']);
@@ -126,6 +144,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->delete('blog/posts/{id}/delete', ['uses'=>'PostsController@delete']);
     $router->get('blog/posts', ['uses'=>'PostsController@list']);
     $router->get('blog/posts/find_by_title', ['uses'=>'PostsController@search_post_by_title']);
+    $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_director']);
 
      //BLOG-POST-COMMENTS
     $router->post('blog/posts/{id}/comments', ['uses'=>'CommentsController@store']);
@@ -134,6 +153,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     // TOPICS
     $router->get('/topics','TopicsController@list');
+
 
 });
 
@@ -254,7 +274,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
 
      //BLOGPOST
     $router->get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
-    $router->get('blog/posts/order_by', ['uses'=>'PostsController@listPostToPerformance']);
+    $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_performance']);
     $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 });
 

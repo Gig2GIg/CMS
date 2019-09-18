@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SkillSuggestion extends Model
+class AuditionContract extends Model
 {
     protected $fillable = [
-        'name',
+        'user_id',
+        'auditions_id',
+        'url',
+
     ];
 }

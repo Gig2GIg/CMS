@@ -20,6 +20,7 @@ class AuditionsDetResponse extends JsonResource
             'title' => $this->auditions->title,
             'date' => $this->auditions->date,
             'time' => $this->auditions->time,
+            'slot_reserved'=>$this->slot_id,
             'create'=>$this->created_at,
         ];
     }

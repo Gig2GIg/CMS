@@ -33,7 +33,8 @@ class TopicsCmsControllerUnitTest extends TestCase
     public function testCreateTopics201()
     {
         $data = [
-            'title' => "Some text here"
+            'title' => "Some text here",
+            'status'=>'on'
         ];
 
         $response = $this->json('POST',

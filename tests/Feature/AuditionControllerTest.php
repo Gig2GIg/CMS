@@ -9,6 +9,7 @@ use App\Models\Dates;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\Notifications\NotificationHistory;
 use App\Models\UserDetails;
 use Tests\TestCase;
 
@@ -50,6 +51,10 @@ class AuditionControllerTest extends TestCase
         factory(UserDetails::class)->create([
             'user_id' => $cont2->id,
         ]);
+        $cont3 = factory(User::class)->create();
+        factory(UserDetails::class)->create([
+            'user_id' => $cont3->id,
+        ]);
         $data = [
             'title' => $this->faker->words(3, 3),
             'date' => $this->faker->date(),
@@ -62,11 +67,11 @@ class AuditionControllerTest extends TestCase
             ],
             'description' => $this->faker->paragraph(),
             'url' => $this->faker->url(),
-            'personal_information'=>$this->faker->paragraph(),
-            'additional_info'=>$this->faker->paragraph(),
+            'personal_information'=>$this->faker->text(100),
+            'additional_info'=>$this->faker->text(100),
             'phone'=>$this->faker->phoneNumber,
             'email'=>$this->faker->companyEmail,
-            'other_info'=>$this->faker->paragraph,
+            'other_info'=>$this->faker->text(100),
             'cover' => $this->faker->imageUrl(),
             'cover_name'=>$this->faker->word(),
             'union' => $this->faker->word(),
@@ -135,6 +140,7 @@ class AuditionControllerTest extends TestCase
             'contributors' => [
                 ['email' => $cont1->email],
                 ['email' => $cont2->email],
+                ['email' => $cont3->email],
                 ['email' => 'g2g@test.com'],
 
             ],
@@ -243,9 +249,9 @@ class AuditionControllerTest extends TestCase
             'url' => 'http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html',
             'personal_information'=>'Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.',
             'phone'=>$this->faker->phoneNumber,
-            'additional_info'=>$this->faker->paragraph,
+            'additional_info'=>'Sed tempora itaque iusto. Praesentium explicabo pariatur vero',
             'email'=>$this->faker->companyEmail,
-            'other_info'=>$this->faker->text,
+            'other_info'=>'Sed tempora itaque iusto. Praesentium explicabo pariatur vero',
             'cover_name'=>'covername',
             'dates' => [
                 [
@@ -319,7 +325,13 @@ class AuditionControllerTest extends TestCase
 
     public function test_find_by_filter_all_params(){
         $user = factory(User::class)->create();
-
+        factory(Auditions::class)->create([
+            'title'=>'ordinary people',
+            'union'=>'any',
+            'contract'=>'unpaid',
+            'production'=>'film,tv&video',
+            'user_id'=>$user->id
+        ]);
         $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
         $response = $this->json('POST',
             'api/auditions/findby?token=' . $this->token,[
@@ -366,9 +378,14 @@ class AuditionControllerTest extends TestCase
 
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
 
+
+        $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
+
+
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
-        $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=1'.'&token=' . $this->token);
+        $response = $this->json('GET',
+            'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=1'. '&notification_id='. $notification->id .'&token=' . $this->token);
         $response->assertStatus(200);
 
     }
@@ -380,12 +397,15 @@ class AuditionControllerTest extends TestCase
 
         $audition_contributor = factory(AuditionContributors::class)->create(['auditions_id'=> $audition->id,'user_id'=> $this->testId]);
 
-        $response = $this->json('GET', 'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=0'.'&token=' . $this->token);
-        $response->assertStatus(200);
+        $notification = factory(NotificationHistory::class)->create(['user_id' => $user->id]);
+
+        $response = $this->json('GET',
+        'api/t/auditions/invite-accept/'. $audition_contributor->id .'?status=0'. '&notification_id='. $notification->id .'&token=' . $this->token);
+         $response->assertStatus(200);
 
     }
 
-    
 
-    
+
+
 }

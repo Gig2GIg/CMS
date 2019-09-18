@@ -110,4 +110,120 @@ class RecommendationsControllerTest extends TestCase
         ]]]);
     }
 
+    public function testRecommendationsMarketplacesbyUser200()
+    {
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class, 10)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $response = $this->json('GET',
+            'api/t/auditions/'. $this->audition_id.'/feeback/recommendations-marketplaces-by-user?user_id='.$this->performanceId .'&token=' . $this->token);
+    
+        $response->assertStatus(200);
+        
+        $response->assertJsonStructure(['data' => [[
+            'id',
+            'markeplace'
+        ]]]);
+    }
+
+    public function testRecommendationsMarketplacesbyUserNotFound()
+    {
+        
+        $response = $this->json('GET',
+            'api/t/auditions/'. $this->audition_id.'/feeback/recommendations-marketplaces-by-user?user_id='.$this->performanceId .'&token=' . $this->token);
+    
+        $response->assertStatus(200);
+        
+        $response->assertJsonStructure([]);
+    }
+
+
+    public function test_update_tags_from_array_200()
+    {
+        
+        $marketplace = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation2 = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+       $data =  [
+                    'marketplaces' => [
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => $recomendation->id],
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => null, 'user_id' => $this->performanceId,'audition_id' => $this->audition_id ],
+                                  
+                ] 
+            ];
+
+        $response = $this->json('PUT',
+            'api/t/auditions/'. $this->audition_id .'/feeback/recommendations-marketplaces/update?token=' . $this->token, $data);
+
+        $response->assertStatus(200);
+    }
+
+    public function test_update_marketplace_from_array_422()
+    {
+        
+        $marketplace = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $marketplace2 = factory(Marketplace::class)->create();
+
+        $recomendation2 = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace2->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+       $data =  [
+                    'marketplaces' => [
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => $recomendation->id],
+                                ['marketplace_id' =>  $marketplace2->id, 'id' => null, 'user_id' => $this->performanceId,'audition_id' => $this->audition_id ],
+                                  
+                ] 
+            ];
+
+        $response = $this->json('PUT',
+            'api/t/auditions/'. '123123123'.'/feeback/recommendations-marketplaces/update?token=' . $this->token, $data);
+
+        $response->assertStatus(422);
+    }
+
+    public function test_delete_marketplace_200()
+    {
+        
+        $marketplace = factory(Marketplace::class)->create();
+
+        $recomendation = factory(Recommendations::class)->create([
+            'marketplace_id' => $marketplace->id,
+            'user_id' => $this->performanceId,
+            'audition_id' => $this->audition_id,
+        ]);
+
+        $response = $this->json('DELETE',
+            'api/t/auditions/feeback/recommendations-marketplaces/'.$recomendation->id.'/delete/?token=' . $this->token);
+
+        $response->assertStatus(200);
+    }
 }
+

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAuditionContributorsTable extends Migration
+class CreateAuditionContractsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateAuditionContributorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('audition_contributors', function (Blueprint $table) {
+        Schema::create('audition_contracts', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->boolean('status')->default(true);
             $table->integer('auditions_id')->unsigned();
+            $table->string('url');
+
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ class CreateAuditionContributorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('audition_contributors');
+        Schema::dropIfExists('audition_contracts');
     }
 }

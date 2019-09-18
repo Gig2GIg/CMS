@@ -17,6 +17,7 @@ use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\Notification\NotificationHistoryRepository;
 
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
@@ -29,6 +30,7 @@ use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Notifications\Notification;
+use App\Models\Notifications\NotificationHistory;
 use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
@@ -520,24 +522,55 @@ class AuditionsController extends Controller
             $repo = new AuditionContributorsRepository(new AuditionContributors());
             $auditionContributorsData = $repo->find($request->id);
 
+            $auditionRepo = new AuditionRepository( new Auditions());
+            $audition = $auditionRepo->find($auditionContributorsData->auditions_id);
+
+            $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory());
+            
+            $notification = $notificationHistoryRepo->find($request->notification_id);
+
             $data = [
                 'status' => $request->status
             ];
-
+                
             $invite = $auditionContributorsData->update($data);
 
-            if ($invite) {
-                $dataResponse = 'Invite Update';
-                $code = 200;
-            } else {
-                $dataResponse = 'Invite Error';
-                $code = 404;
+            if ($request->status === '1'){
+               
+                $dataNotification = [
+                    'message' =>  'You have accepted this invitation to '. $audition->title,
+                    'status' => 'aceppted'
+                ];
+               
+                if ($notification->update($dataNotification)) {
+                    $dataResponse = 'Invite Update';
+                    $code = 200;
+                } else {
+                    $dataResponse = 'Invite Error';
+                    $code = 404;
+                }
+            }
+
+            if ($request->status === '0'){
+               
+                $dataNotification = [
+                    'message' =>  'You have rejected this invitation to '. $audition->title,
+                    'status' => 'rejected'
+                ];
+        
+                if ($notification->update($dataNotification)) {
+                    $dataResponse = 'Invite Update';
+                    $code = 200;
+                } else {
+                    $dataResponse = 'Invite Error';
+                    $code = 404;
+                }
             }
 
             return response()->json(['data' => $dataResponse], $code);
 
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
+            $this->log->error($exception);
             return response()->json(['data' => 'Error to process'], 406);
         }
     }

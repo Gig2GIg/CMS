@@ -31,6 +31,7 @@ class FeedbackResource extends JsonResource
             'callback'=>$this->callback,
             'work'=>$this->work,
             'favorite'=>$this->favorite,
+            'comment'=>$this->comment,
         ];
     }
 }

@@ -94,4 +94,27 @@ class MarketplaceController extends Controller
 
     }
 
+    public function delete(Request $request)
+    {
+        try {
+            $repoMarket= new MarketplaceRepo(new Marketplace());
+            $marketplace = $repoMarket->find($request->id);
+            
+
+            if ($marketplace->delete()){
+                $dataResponse = ['data' => 'Marketplace removed'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Tag not removed'];
+                $code = 404;
+            }
+      
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $ex) {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
+
+    }
+
 }

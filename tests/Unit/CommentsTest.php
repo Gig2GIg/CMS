@@ -17,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class CommentsTest extends TestCase
 {
     protected $post;
+    protected $user_id;
 
     public function setUp(): void
     {
@@ -26,13 +27,15 @@ class CommentsTest extends TestCase
         $post = factory(Posts::class)->create(['user_id' => $user->id]);
 
         $this->post = $post;
+        $this->user_id = $user->id;
     }
 
     public function test_create_comment()
     {
         $data = [
             'body' => $this->faker->paragraph(),
-            'post_id' => $this->post->id
+            'post_id' => $this->post->id,
+            'user_id' => $this->user_id
         ];
 
         $commentRepo = new CommentsRepository(new Comments());
@@ -45,7 +48,8 @@ class CommentsTest extends TestCase
     {
         $data = [
             'body' => $this->faker->paragraph(),
-            'post_id' => $this->post->id
+            'post_id' => $this->post->id,
+            'user_id' => $this->user_id
         ];
         
         $comment = factory(Comments::class)->create($data);

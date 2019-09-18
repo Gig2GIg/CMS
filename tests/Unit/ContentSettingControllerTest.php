@@ -31,11 +31,11 @@ class ContentSettingControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $this->token = $response->json('access_token'); 
+        $this->token = $response->json('access_token');
     }
 
 
-    public function testContentSettingGetAll404()
+    public function testContentSettingGetAll202()
     {
 
         $data = [
@@ -46,13 +46,13 @@ class ContentSettingControllerTest extends TestCase
         ];
 
         $contentSettingRepo = new ContentSettingRepository(new ContentSetting());
-      
+
         $contentSetting = $contentSettingRepo->create($data);
-       
+
         $response = $this->json('GET',
             'api/a/content-settings'.'&token=' . $this->token
         );
-       
-        $response->assertStatus(404);
+
+        $response->assertStatus(200);
     }
 }
