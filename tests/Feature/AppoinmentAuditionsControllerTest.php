@@ -42,7 +42,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
         ]);
 
         $this->token = $response->json('access_token');
-        
+
         // CREATED USER TYPE APP
         $user2 = factory(User::class)->create([
                 'email' => 'app@test.com',
@@ -74,7 +74,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
         ]);
 
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
-        
+
         // CREATED ROTES TO AUIDITIONS WITH USER TYPE TABLE
         $rols = factory(Roles::class, 12)->create([
             'auditions_id' => $audition->id
@@ -104,7 +104,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
             'auditions_id' => $audition->id,
             'roles_id' =>  $rols->first()->id,
             'slots_id' => $slot[3]->id,
-         
+
         ]);
 
 
@@ -122,7 +122,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
         $response = $this->json('GET',
             'api/t/appointments/auditions?'.'role_id='. $this->rolId.'&user='. $this->userId2. '&token=' . $this->token);
 
-   
+
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [
             'id',
@@ -139,16 +139,13 @@ class AppoinmentAuditionsControllerTest extends TestCase
         $response = $this->json('GET',
             'api/t/appointments/auditions?'.'role_id='. $this->rolId.'&user='. $this->userId3. '&token=' . $this->token);
 
-   
+
         $response->assertStatus(200);
 
         $response->assertJsonStructure(['data' => [
             'id',
             'image',
             'name'
-        ]]);  
+        ]]);
     }
-
-
-    
 }
