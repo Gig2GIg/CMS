@@ -212,9 +212,9 @@ class PerformersDatabaseControllerTest extends TestCase
 
         ]]]);
     }
-
     public function test_talent_filter_non_union(){
         $users = factory(User::class,15)->create();
+        factory(UserUnionMembers::class)->create(['user_id'=>$users[3]->id]);
         $users->each(function ($item){
             $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
             factory(\App\Models\UserDetails::class)->create([
@@ -224,7 +224,7 @@ class PerformersDatabaseControllerTest extends TestCase
             factory(Educations::class,3)->create(['user_id'=>$item->id]);
             factory(Credits::class,4)->create(['user_id'=>$item->id]);
             factory(UserAparence::class)->create(['user_id'=>$item->id]);
-          //  factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+
             factory(Performers::class)->create([
                 'performer_id' => $item->id,
                 'director_id' => $this->testId,
@@ -250,5 +250,195 @@ class PerformersDatabaseControllerTest extends TestCase
 
         ]]]);
     }
+    public function test_talent_filter_union_any(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
 
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'union'=>2
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
+
+
+    public function test_talent_filter_by_gender_male(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            //  factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'gender'=>'male'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
+
+    public function test_talent_filter_by_gender_female(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            //  factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'gender'=>'female'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
+
+    public function test_talent_filter_by_gender_other(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            //  factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'gender'=>'other'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
+
+    public function test_talent_filter_by_gender_union(){
+        $users = factory(User::class,15)->create();
+        $users->each(function ($item){
+            $item->image()->create(['type'=>'cover','url'=>$this->faker->imageUrl(),'name'=>$this->faker->word()]);
+            factory(\App\Models\UserDetails::class)->create([
+                'user_id'=>$item->id,
+                'type'=>2
+            ]);
+            factory(Educations::class,3)->create(['user_id'=>$item->id]);
+            factory(Credits::class,4)->create(['user_id'=>$item->id]);
+            factory(UserAparence::class)->create(['user_id'=>$item->id]);
+            factory(UserUnionMembers::class)->create(['user_id'=>$item->id]);
+            factory(Performers::class)->create([
+                'performer_id' => $item->id,
+                'director_id' => $this->testId,
+                'uuid' => $this->faker->uuid,
+            ]);
+
+        });
+
+        $response = $this->post('api/t/performers/filter?token='.$this->token,[
+            'base'=>'e',
+            'gender'=>'other',
+            'union'=>'1'
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['data' => [[
+            'image',
+            'details',
+            'appearance',
+            'education',
+            'credits',
+            'calendar',
+            'unions',
+
+        ]]]);
+    }
 }
