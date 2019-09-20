@@ -575,4 +575,27 @@ class AuditionsController extends Controller
         }
     }
 
+    public function updateBannedStatus(Request $request)
+    {
+        try{
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $banStatus = $request->banned;
+            $audition = $auditionRepo->find($request->id);
+            $updateRepo = new AuditionRepository($audition);
+            $update = $updateRepo->update(['banned' => $banStatus,]);
+            
+            if ($update){
+                $dataResponse = ['data' => 'Data Updated'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Data Not Updated'];
+                $code = 406;
+            }
+            return response()->json(['data' => $dataResponse], $code);            
+        }
+        catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => 'Data Not Updated'], 406);
+        }            
+    }
 }
