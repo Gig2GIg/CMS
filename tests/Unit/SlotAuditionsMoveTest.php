@@ -203,6 +203,7 @@ class SlotAuditionsMoveTest extends TestCase
             $data
         );
         
+   
         $response->assertStatus(200);
        
     }

@@ -602,6 +602,8 @@ class AuditionManagementController extends Controller
     public function reorderAppointmentTimes(Request $request)
     {
         try {
+
+            
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
 
@@ -609,6 +611,7 @@ class AuditionManagementController extends Controller
                 
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
                 $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+
                 $update=  $userSlot->update(['slots_id' => $slot['slot_id']]);
 
                 $userRepo = new UserRepository(new User());
