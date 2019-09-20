@@ -605,12 +605,11 @@ class AuditionManagementController extends Controller
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
 
-            $this->log->info(UserSlots::all());
-
             foreach ($request->slots as $slot) {
+                
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
                 $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
-                $update=  $userSlot->update(['slot_id' => $slot['slot_id']]);
+                $update=  $userSlot->update(['slots_id' => $slot['slot_id']]);
 
                 $userRepo = new UserRepository(new User());
                 $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
@@ -637,6 +636,7 @@ class AuditionManagementController extends Controller
             }
 
             if ($userSlotRepo) {
+                $this->log->info(UserSlots::all());
                 $dataResponse =  'success' ;
                 $code = 200;
             } else {

@@ -202,9 +202,7 @@ class SlotAuditionsMoveTest extends TestCase
             'api/t/auditions/appointments/'. $this->appoimentId.'/slots?'. '&token=' . $this->token,
             $data
         );
-
-
-
+        
         $response->assertStatus(200);
        
     }
