@@ -13,6 +13,8 @@ class Appointments extends Model
         'length',
         'start',
         'end',
+        'round',
+        'status',
         'auditions_id'
     ];
 

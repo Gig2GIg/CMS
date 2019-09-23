@@ -34,7 +34,9 @@ class AuditionSeeder extends Seeder
             ]);
 
             $apointment = factory(\App\Models\Appointments::class)->create([
-                'auditions_id'=>$item->id
+                'auditions_id'=>$item->id,
+                'status'=>true,
+                'round'=>1,
             ]);
 
             $apointment->each(function ($item){

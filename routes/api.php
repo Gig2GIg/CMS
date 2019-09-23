@@ -36,6 +36,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
 
+
     $router->get('/appointments/show/{id}/walk',['uses'=>'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk',['uses'=>'AppoinmentAuditionsController@showListNotWalk']);
 //monitor update
@@ -154,6 +155,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     // TOPICS
     $router->get('/topics','TopicsController@list');
 
+    //rounds
+    $router->get('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@getRounds']);
 
 });
 

@@ -25,6 +25,7 @@ class AuditionManagemenDirectorTest extends TestCase
     protected $userId;
     protected $auditionId;
     protected $slot;
+    protected $token;
 
     public function test_auditions_upcomming_director()
     {

@@ -211,6 +211,8 @@ class AuditionsController extends Controller
             'length' => $request['appointment']['length'],
             'start' => $request['appointment']['start'],
             'end' => $request['appointment']['end'],
+            'status'=>$request['appointment']['status'],
+            'round'=>$request['appointment']['round'],
         ];
 
     }
@@ -526,22 +528,22 @@ class AuditionsController extends Controller
             $audition = $auditionRepo->find($auditionContributorsData->auditions_id);
 
             $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory());
-            
+
             $notification = $notificationHistoryRepo->find($request->notification_id);
 
             $data = [
                 'status' => $request->status
             ];
-                
+
             $invite = $auditionContributorsData->update($data);
 
             if ($request->status === '1'){
-               
+
                 $dataNotification = [
                     'message' =>  'You have accepted this invitation to '. $audition->title,
                     'status' => 'aceppted'
                 ];
-               
+
                 if ($notification->update($dataNotification)) {
                     $dataResponse = 'Invite Update';
                     $code = 200;
@@ -552,12 +554,12 @@ class AuditionsController extends Controller
             }
 
             if ($request->status === '0'){
-               
+
                 $dataNotification = [
                     'message' =>  'You have rejected this invitation to '. $audition->title,
                     'status' => 'rejected'
                 ];
-        
+
                 if ($notification->update($dataNotification)) {
                     $dataResponse = 'Invite Update';
                     $code = 200;

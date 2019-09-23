@@ -9,6 +9,8 @@ $factory->define(App\Models\Appointments::class, function (Faker $faker) {
         'length'=>($faker->numberBetween(1,6) * 10),
         'start' =>$faker->date('H'),
         'end' =>$faker->date('H'),
+        'round'=>1,
+        'status'=>true,
         'auditions_id'=>$faker->numberBetween(1,2),
     ];
 });

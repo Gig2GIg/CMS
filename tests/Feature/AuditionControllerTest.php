@@ -114,6 +114,8 @@ class AuditionControllerTest extends TestCase
                 'length' => $this->faker->time('i'),
                 'start' => $this->faker->time('H'),
                 'end' => $this->faker->time('H'),
+                'round'=> 1,
+                'status'=>true,
                 'slots' => [
                     [
                         'time' => $this->faker->time('i'),
