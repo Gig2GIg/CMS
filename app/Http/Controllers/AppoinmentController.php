@@ -22,4 +22,13 @@ class AppoinmentController extends Controller
           return response()->json(['data'=>[]],404);
       }
   }
+
+  public function createRound(Request $request){
+      try{
+
+      }catch (\Exception $exception){
+          $this->log->error($exception->getMessage());
+          return response()->json(['message'=>'Round not create ','data'=>[]],406);
+      }
+  }
 }

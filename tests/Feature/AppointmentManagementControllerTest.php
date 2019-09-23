@@ -55,9 +55,6 @@ class AppointmentManagementControllerTest extends TestCase
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 2]);
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 3]);
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 4]);
-
-
-
         $response = $this->json('GET',
             'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token);
 
@@ -69,6 +66,39 @@ class AppointmentManagementControllerTest extends TestCase
                 'status'
             ]]
         ]);
-
     }
+    public function test_get_rounds_from_audition_404(){
+        $response = $this->json('GET',
+            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token);
+        $response->assertStatus(404);
+        $response->assertJson([
+            'data'=>[]
+        ]);
+    }
+
+    public function test_create_new_round_in_appointment_200(){
+        $data = [
+            'slots'=>10,
+            'type'=>null,
+            'length'=>10,
+            'start'=>'10:00',
+            'end'=>'12:00',
+            'round'=>2,
+            'status'=>true,
+            'auditions_id'=>$this->auditionId
+        ];
+        $response = $this->json('POST',
+            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token,$data);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'message',
+            'data'=>[[
+                'id',
+                'round',
+                'status'
+            ]]
+        ]);
+    }
+
 }

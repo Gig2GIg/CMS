@@ -157,6 +157,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //rounds
     $router->get('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@getRounds']);
+    $router->post('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@createRound']);
 
 });
 
