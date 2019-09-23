@@ -13,7 +13,7 @@ class PushNotifications
         $this->log = new LogManger();   
     }
 
-    public function send($message, $user)
+    public static function send($message, $user)
     {
         try {
             fcm()
@@ -25,7 +25,7 @@ class PushNotifications
             ->send();
 
         } catch (NotificationException $exception) {
-            $this->log->error($exception->getMessage());
+            $log->error($exception->getMessage());
         }
     }
 }

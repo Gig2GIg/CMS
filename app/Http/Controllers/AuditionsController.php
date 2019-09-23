@@ -118,13 +118,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-                    $this->sendPushNotification(
-                        $audition,
-                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                    );
-                    $this->sendNotificationToContributors(
-                        $audition
-                    );
+                    $this->sendNotificationToContributors($audition);
                 }
                 DB::commit();
 
@@ -478,10 +472,7 @@ class AuditionsController extends Controller
                             $this->saveContributor($contrib, $audition);
                         }
                     }
-                    $this->sendPushNotification(
-                        $audition,
-                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                    );
+                    $this->sendNotificationToContributors($audition);
                 }
                 DB::commit();
 
@@ -501,7 +492,7 @@ class AuditionsController extends Controller
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
-            return response()->json(['data' => 'Data Not Update'], 406);
+            return response()->json(['data' => 'Data Not Updated'], 406);
         }
     }
 
