@@ -419,7 +419,7 @@ class AuditionManagementController extends Controller
             } else {
                 $data = $videoRepo->create([
                     'user_id' => $request->performer,
-                    'auditions_id' => $request->audition,
+                    'appointment_id' => $request->appointment_id,
                     'url' => $request->url,
                     'contributors_id' => $this->getUserLogging(),
                     'slot_id' => $request->slot_id,
@@ -464,7 +464,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-            $data = $videoRepo->findbyparam('auditions_id', $request->id)->get();
+            $data = $videoRepo->findbyparam('appointment_id', $request->id)->get();
             if ($data->count() > 0) {
                 $dataResponse = ['data' => AuditionVideosResource::collection($data)];
                 $code = 200;
@@ -603,12 +603,12 @@ class AuditionManagementController extends Controller
     {
         try {
 
-            
+
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
 
             foreach ($request->slots as $slot) {
-                
+
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
                 $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
 

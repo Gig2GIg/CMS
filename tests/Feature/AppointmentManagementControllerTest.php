@@ -77,10 +77,55 @@ class AppointmentManagementControllerTest extends TestCase
     }
 
     public function test_create_new_round_in_appointment_200(){
+
         $data = [
-            'slots'=>10,
-            'type'=>null,
+            'number_slots'=>10,
+            'type'=>1,
             'length'=>10,
+            'start'=>'10:00',
+            'end'=>'12:00',
+            'round'=>2,
+            'status'=>true,
+            'slots' => [
+                [
+                    'time' => $this->faker->time('i'),
+                    'status' => $this->faker->boolean(),
+                    'is_walk' => $this->faker->boolean()
+                ],
+                [
+                    'time' => $this->faker->time('i'),
+                    'status' => $this->faker->boolean(),
+                    'is_walk' => $this->faker->boolean()
+                ],
+                [
+                    'time' => $this->faker->time('i'),
+                    'status' => $this->faker->boolean(),
+                    'is_walk' => $this->faker->boolean()
+                ],
+                [
+                    'time' => $this->faker->time('i'),
+                    'status' => $this->faker->boolean(),
+                    'is_walk' => $this->faker->boolean()
+                ]
+            ]
+        ];
+        $response = $this->json('POST',
+            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token,$data);
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'message',
+            'data'=>[
+                'id',
+                'round',
+                'status'
+            ]
+        ]);
+    }
+
+    public function test_create_new_round_in_appointment_406(){
+        $data = [
+
             'start'=>'10:00',
             'end'=>'12:00',
             'round'=>2,
@@ -90,15 +135,31 @@ class AppointmentManagementControllerTest extends TestCase
         $response = $this->json('POST',
             'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token,$data);
 
-        $response->assertStatus(200);
+        $response->assertStatus(406);
         $response->assertJsonStructure([
             'message',
-            'data'=>[[
-                'id',
-                'round',
-                'status'
-            ]]
+            'data'=>[
+
+            ]
         ]);
     }
+    public function test_close_round_in_appointment(){
 
+        $appoinment=factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
+
+
+        $data=[
+            'status'=>false
+        ];
+        $response = $this->json('PUT',
+            'api/t/appointment/'.$appoinment->id.'?token=' . $this->token,$data);
+
+        $response->assertStatus(406);
+        $response->assertJsonStructure([
+            'message',
+            'data'=>[
+
+            ]
+        ]);
+    }
 }
