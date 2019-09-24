@@ -41,12 +41,8 @@ class MonitorManagerController extends Controller
 
                 $this->createNotification($audition, $request->title);
 
-                $this->sendPushNotification(
-                    $audition,
-                    'custom',
-                    null,
-                    $request->title
-                );
+                $this->sendCreateNotification($audition);
+                
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
                 $code = 406;
@@ -57,6 +53,21 @@ class MonitorManagerController extends Controller
 
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Update Not Publised'], 406);
+        }
+    }
+
+    public function sendCreateNotification($audition): void
+    {
+        try {            
+            $audition->contributors->each(function ($user_contributor) use ($audition) {               
+                $this->pushNotifications(
+                    'Audition '. $audition->title .' has been created',
+                    $user_contributor
+                );
+            });
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 

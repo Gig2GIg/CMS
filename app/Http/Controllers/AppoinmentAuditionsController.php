@@ -170,17 +170,7 @@ class AppoinmentAuditionsController extends Controller
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->auditions);
 
-            try {
-                $this->sendPushNotification(
-                    $audition,
-                    'check_in',
-                    $audition,
-                    null
-                );
-
-            } catch (NotificationException $exception) {
-                $this->log->error($exception->getMessage());
-            }
+            $this->sendStoreNotificationToContributors($audition);
 
             $dataResponse = new AppointmentResource($data);
             $code = 200;
@@ -190,6 +180,24 @@ class AppoinmentAuditionsController extends Controller
             $this->log->error("Line:".$exception->getLine()." ".$exception->getMessage()." ".$exception->getFile());
             return response()->json(['data' => 'Appointment not assigned'], 406);
         }
+    }
+
+    public function sendStoreNotificationToContributors($audition): void
+    {
+        try {
+            
+            $audition->contributors->each(function ($user_contributor) use ($audition) {
+               
+                $this->pushNotifications(
+                    'You have been registered for the audition '. $audition->title,
+                    $user_contributor
+                );
+            });
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
     }
 
     public function show(Request $request)
