@@ -541,6 +541,8 @@ class AuditionsController extends Controller
             $auditionRepo = new AuditionRepository( new Auditions());
             $audition = $auditionRepo->find($auditionContributorsData->auditions_id);
 
+            $this->sendInvitationNotification($audition);
+
             $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory());
             
             $notification = $notificationHistoryRepo->find($request->notification_id);
@@ -588,6 +590,18 @@ class AuditionsController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception);
             return response()->json(['data' => 'Error to process'], 406);
+        }
+    }
+
+    public function sendInvitationNotification($audition): void
+    {
+        try {            
+            $audition->contributors->each(function ($user_contributor) use ($audition) {               
+                $this->pushNotifications('You have been invited to audition '. $audition->title, $user_contributor);
+            });
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 
