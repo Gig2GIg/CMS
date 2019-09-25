@@ -365,10 +365,12 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
         Route::delete('/contributors/{id}','AuditionsController@deleteContributor');
         Route::delete('/slots/{id}','AppoinmentAuditionsController@deleteUserSlot');
+        Route::put('/auditions/banaudition/{id}', ['uses' => 'AuditionsController@updateBannedStatus']);
 
         //poner aqui endpoint
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
+        
     });
 });

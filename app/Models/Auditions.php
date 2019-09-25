@@ -22,7 +22,8 @@ class Auditions extends Model
         'contract',
         'production',
         'status',
-        'user_id'
+        'user_id',
+        'banned'
     ];
 
     public function media(){
