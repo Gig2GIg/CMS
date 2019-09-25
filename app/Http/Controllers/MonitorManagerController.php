@@ -39,7 +39,11 @@ class MonitorManagerController extends Controller
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionRepo->find($request->audition);
 
+                $userDirector = $audition->user;
+
                 $this->createNotification($audition, $request->title);
+
+                $this->saveCreateNotification($userDirector, $audition);
 
                 $this->sendCreateNotification($audition);
                 
@@ -59,14 +63,31 @@ class MonitorManagerController extends Controller
     public function sendCreateNotification($audition): void
     {
         try {            
-            $audition->contributors->each(function ($user_contributor) use ($audition) {               
+            $audition->user->each(function ($user_director) use ($audition) {               
                 $this->pushNotifications(
                     'Audition '. $audition->title .' has been created',
-                    $user_contributor
+                    $user_director
                 );
             });
             
         } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function saveCreateNotification($user, $audition): void
+    {
+        try {
+            if ($user instanceof User){
+                $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'create_audition',
+                    'status' => 'unread',
+                    'message'=> 'Audition '. $audition->title . ' has been created'
+                ]);
+            }
+
+        }catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
@@ -76,7 +97,7 @@ class MonitorManagerController extends Controller
         try {
             $notificationData = [
                 'title' => $title,
-                'code' => Str::random(12),
+                'code' => 'create_audition',
                 'type' => 'custom',
                 'notificationable_type' => 'auditions',
                 'notificationable_id' => $audition->id

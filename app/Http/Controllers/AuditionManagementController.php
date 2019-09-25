@@ -92,7 +92,9 @@ class AuditionManagementController extends Controller
                         $mail->sendManager($userManager->email, $dataMail);
                     }
 
-                    $this->sendSaveAuditionNotification($audition);
+                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
+
+                    $this->saveAuditionNotificationToUser($detailData, $audition);                    
 
                 }else{
                  $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -120,22 +122,31 @@ class AuditionManagementController extends Controller
 
     }
 
-    public function sendSaveAuditionNotification($audition): void
+    public function saveAuditionNotificationToUser($user, $audition): void
     {
         try {
-            
-            $audition->contributors->each(function ($user_contributor) use ($audition) {
-               
+            if ($user instanceof User){
+                    $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'upcoming_audition',
+                    'status' => 'unread',
+                    'message'=> 'You have been added to upcoming audition '. $audition->title
+                ]);
+            }
+        }catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function sendSaveAuditionNotificationToUser($user, $audition): void
+    {
+        try {            
                 $this->pushNotifications(
-                    'Audition '. $audition->title .' has been saved successfully.',
-                    $user_contributor
-                );
-            });
-            
+                    'You have been added to upcoming audition '. $audition->title, $user
+                );            
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
-
     }
 
     public function updateAudition(Request $request)
@@ -559,7 +570,8 @@ class AuditionManagementController extends Controller
         }
     }
     
-    public function alertSlotsEmpty($audition){
+    public function alertSlotsEmpty($audition)
+    {
         try {
             $available = true;
             $repoAppointments = new AppointmentRepository(new Appointments());
@@ -646,6 +658,8 @@ class AuditionManagementController extends Controller
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
 
+                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition);
+
                 $this->sendReorderAppointmentTimesNotification($audition);
             }
 
@@ -668,15 +682,36 @@ class AuditionManagementController extends Controller
 
     public function sendReorderAppointmentTimesNotification($audition): void
     {
-        try {            
-            $audition->contributors->each(function ($user_contributor) use ($audition) {               
-                $this->pushNotifications('Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved');
+        try {
+            $userRepo = new UserRepository(new User);
+
+            $audition->user_auditions->each(function ($user_audition) use ($audition) {
+                $user = $userRepo->find($user_audition['user_id']);               
+                $this->pushNotifications('Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved', 
+                $user_auditions);
             });
 
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
 
+    }
+
+    public function saveReorderAppointmentTimesNotificationToUser($user, $audition): void
+    {
+        try {
+            if ($user instanceof User){
+                $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'appointment_reorder',
+                    'status' => 'unread',
+                    'message'=> 'Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved'
+                ]);
+            }
+
+        }catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
     }
 
     public function bannedAuditions(Request $request)
@@ -707,6 +742,5 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => 'Error to process'], 406);
         }
     }
-
 
 }

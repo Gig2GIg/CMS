@@ -118,6 +118,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
+
                     $this->sendNotificationToContributors($audition);
                 }
                 DB::commit();
@@ -141,7 +142,6 @@ class AuditionsController extends Controller
     public function sendNotificationToContributors($audition): void
     {
         try {
-            
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                
                 $this->pushNotifications(
