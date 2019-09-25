@@ -77,4 +77,8 @@ class UserAuditionsRepository implements IUserAuditions
     }
 
 
+    public function all()
+    {
+        return $this->model->all();
+    }
 }

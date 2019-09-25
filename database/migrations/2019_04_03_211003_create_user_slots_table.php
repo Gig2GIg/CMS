@@ -17,7 +17,7 @@ class CreateUserSlotsTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->integer('slots_id')->unsigned()->nullable();
-            $table->integer('auditions_id')->unsigned();
+            $table->integer('appointment_id')->unsigned();
             $table->boolean('favorite')->default(false);
             $table->integer('roles_id')->unsigned()->nullable();
             $table->enum('status',['reserved', 'checked']);

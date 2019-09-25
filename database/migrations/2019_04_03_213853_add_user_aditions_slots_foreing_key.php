@@ -20,8 +20,8 @@ class AddUserAditionsSlotsForeingKey extends Migration
         });
 
         Schema::table('user_slots',function (Blueprint $table){
-            $table->foreign('auditions_id') ->references('id')
-                ->on('auditions')
+            $table->foreign('appointment_id') ->references('id')
+                ->on('appointments')
                 ->onDelete('cascade');
         });
 

@@ -106,6 +106,7 @@ class AuditionManagemenDirectorTest extends TestCase
 
     public function test_update_status_close_audition()
     {
+
         $response = $this->json('PUT', 'api/t/auditions/close/' . $this->auditionId . '?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJson(['data' => ['status' => 2]]);

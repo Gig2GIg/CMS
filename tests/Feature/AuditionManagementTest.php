@@ -34,7 +34,7 @@ class AuditionManagementTest extends TestCase
         $users->each(function ($item) use ($audition, $appointment) {
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
-                'auditions_id' => $audition->id,
+                'appointment_id' => $appointment->id,
                 'status' => 'reserved',
                 'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment->id])->id
 
@@ -44,7 +44,7 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('POST',
             'api/a/auditions/user?token=' . $this->token,
             [
-                'auditions' => $audition->id,
+                'appointment' => $appointment->id,
                 'rol' => factory(Roles::class)->create(['auditions_id' => $this->auditionId])->id,
                 'type' => 1
             ]);
@@ -61,7 +61,7 @@ class AuditionManagementTest extends TestCase
         $users->each(function ($item) use ($audition, $appointment) {
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
-                'auditions_id' => $audition->id,
+                'appointment_id' => $appointment->id,
                 'status' => 'reserved',
                 'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment->id])->id
 
@@ -70,7 +70,7 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('POST',
             'api/a/auditions/user?token=' . $this->token,
             [
-                'auditions' => $audition->id,
+                'appointment' => $appointment->id,
                 'rol' => $this->rolId,
                 'type' => 1
             ]);
@@ -88,7 +88,7 @@ class AuditionManagementTest extends TestCase
         $users->each(function ($item) use ($audition, $appointment) {
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
-                'auditions_id' => $audition->id,
+                'appointment_id' => $appointment->id,
                 'status' => 'reserved',
                 'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment->id])->id
 
@@ -104,7 +104,7 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('POST',
             'api/a/auditions/user?token=' . $this->token,
             [
-                'auditions' => $audition->id,
+                'appointment' => $appointment->id,
                 'rol' => $this->rolId,
                 'type' => 2
             ]);
@@ -120,7 +120,7 @@ class AuditionManagementTest extends TestCase
         $data = factory(UserAuditions::class)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
-            'auditions_id' => $this->auditionId,
+            'appointment_id' => $appoinment->id,
             'type' => 2,
         ]);
         $response = $this->json('PUT',
@@ -128,7 +128,7 @@ class AuditionManagementTest extends TestCase
             [
                 'slot' => [
                     'slot' => $slot->id,
-                    'auditions' => $this->auditionId,
+                    'appointment' => $appoinment->id,
                     'rol' => $data->rol_id
                 ]
             ]);
@@ -144,7 +144,7 @@ class AuditionManagementTest extends TestCase
         $data = factory(UserAuditions::class)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
-            'auditions_id' => $this->auditionId,
+            'appointment_id' => $appoinment->id,
             'type' => 2,
         ]);
         $response = $this->json('PUT',
@@ -169,17 +169,19 @@ class AuditionManagementTest extends TestCase
 
     public function test_auditions_upcomming()
     {
-
+        $appoinmet = factory(Appointments::class)->create([
+            'auditions_id'=>$this->auditionId
+        ]);
         factory(UserAuditions::class, 10)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
-            'auditions_id' => $this->auditionId,
+            'appointment_id' => $appoinmet->id,
             'type' => 1,
         ]);
         factory(UserAuditions::class, 5)->create([
             'user_id' => $this->userId,
             'rol_id' => factory(Roles::class)->create(['auditions_id' => $this->auditionId]),
-            'auditions_id' => $this->auditionId,
+            'appointment_id' => $appoinmet->id,
             'type' => 1,
             'slot_id' => factory(Slots::class)->create([
                 'appointment_id' => factory(Appointments::class)->create([
@@ -283,7 +285,7 @@ class AuditionManagementTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
-        $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
+        $audition->media()->create(['url' => $this->faker->url, 'type' => 6, 'name' => 'test']);
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id
         ]);

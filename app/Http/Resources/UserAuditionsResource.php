@@ -2,7 +2,11 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Repositories\AppointmentRepository;
+use App\Http\Repositories\ResourcesRepository;
 use App\Http\Repositories\SlotsRepository;
+use App\Models\Appointments;
+use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,9 +21,11 @@ class UserAuditionsResource extends JsonResource
      */
     public function toArray($request)
     {
+        $repoAppoinment = new AppointmentRepository(new Appointments());
+        $appoinmentData = $repoAppoinment->find($this->appointment_id);
         $dataHour = null;
-        $dataProduction = explode(",", $this->auditions->production);
-        $url_media = $this->auditions->resources
+        $dataProduction = explode(",", $appoinmentData->auditions->production);
+        $url_media = $appoinmentData->auditions->resources
             ->where('type', 'cover')
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
@@ -32,18 +38,18 @@ class UserAuditionsResource extends JsonResource
         }
         return [
             'id' => $this->id,
-            'auditions_id'=>$this->auditions_id,
+            'auditions_id'=>$appoinmentData->auditions->id,
             'rol'=> $this->rol_id,
             'rol_name'=>$rolanme[0] ?? null,
-            'id_user' => $this->auditions->user_id,
-            'title' => $this->auditions->title,
-            'date' => $this->auditions->date,
+            'id_user' => $appoinmentData->auditions->user_id,
+            'title' => $appoinmentData->auditions->title,
+            'date' => $appoinmentData->auditions->date,
             'hour' => $dataHour,
-            'union' => $this->auditions->union,
-            'contract' => $this->auditions->contract,
+            'union' => $appoinmentData->auditions->union,
+            'contract' => $appoinmentData->auditions->contract,
             'production' => $dataProduction,
             'media' => $url_media[0] ?? null,
-            'number_roles' => count($this->auditions->roles),
+            'number_roles' => count($appoinmentData->auditions->roles),
 
 
         ];

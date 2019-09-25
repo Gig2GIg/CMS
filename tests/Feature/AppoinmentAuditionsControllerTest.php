@@ -19,6 +19,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
     protected $userId;
     protected $userId2;
     protected $auditionId;
+    protected $appoinment;
     protected $rolId;
     protected $token;
     protected $token3;
@@ -92,7 +93,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
         // CREATED REQUEST UPCOMMING WIT WITH USER TYPE APP
         $user_audition = factory(UserAuditions::class)->create([
             'user_id' => $user2->id,
-            'auditions_id' => $audition->id,
+            'appointment_id' => $appoiment->id,
             'rol_id' =>  $rols->first()->id,
             'slot_id' => $slot->first()->id,
             'type' => 1
@@ -101,7 +102,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
          // CREATED UserSlots
          $user_slot = factory(UserSlots::class)->create([
             'user_id' => $user3->id,
-            'auditions_id' => $audition->id,
+            'appointment_id' => $appoiment->id,
             'roles_id' =>  $rols->first()->id,
             'slots_id' => $slot[3]->id,
 
@@ -113,6 +114,7 @@ class AppoinmentAuditionsControllerTest extends TestCase
         $this->userId2 = $user2->id;
         $this->userId3 = $user3->id;
         $this->auditionId = $audition->id;
+        $this->appoinment = $appoiment->id;
     }
 
 
