@@ -2,6 +2,7 @@ import Login from '@/pages/auth/Login';
 import Email from '@/pages/auth/password/Email';
 import Home from '@/pages/Home';
 import Auditions from '@/pages/Auditions';
+import AuditionsBanned from '@/pages/AuditionsBanned';
 import Performers from '@/pages/Performers';
 import Contributors from '@/pages/Contributors';
 import Marketplace from '@/pages/Marketplace';
@@ -25,6 +26,7 @@ export default [
   ...middleware('auth', [
     { path: '/home', alias: '/', title: 'Home', name: 'home', component: Home },
     { path: '/auditions', title: 'Auditions', name: 'auditions', component: Auditions },
+    { path: '/auditions-banned', title: 'Auditions Banned', name: 'auditions-banned', component: AuditionsBanned },
     { path: '/auditions/:id/performers', name: 'performers', component: Performers },
     { path: '/auditions/:id/contributors', name: 'contributors', component: Contributors },
     { path: '/marketplace', title: 'Marketplace Categories', name: 'marketplace', component: Marketplace },

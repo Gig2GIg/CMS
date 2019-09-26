@@ -9,6 +9,8 @@ export const FETCH_USER_FAILURE = '👱❌ Fetch User Failed';
 export const FETCH_AUDITIONS_SUCCESS = 'Fetch Auditions successful';
 export const FETCH_AUDITIONS_FAILURE = 'Fetch Auditions failed';
 export const DELETE_AUDITION = 'Delete Audition';
+export const ACCEPT_BAN = 'Ban Audition';
+export const REMOVE_BAN = 'Ban Audition';
 
 export const FETCH_CONTRIBUTORS_SUCCESS = 'Fetch Contributors successful';
 export const FETCH_CONTRIBUTORS_FAILURE = 'Fetch Contributors failed';

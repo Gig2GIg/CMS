@@ -337,10 +337,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
         $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+');
 
-//         AUDITIONS
-//        $router->get('/auditions',['uses'=>'AuditionsController@getall']);
-//        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-//        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+        // AUDITIONS
+        Route::get('/auditions-pending',['uses'=>'AuditionsController@getFullData']);
 
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
@@ -352,7 +350,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         // CONTENT SETTING TEXT
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
-
+                Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
+        
 
 
     });
