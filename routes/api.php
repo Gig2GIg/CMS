@@ -370,6 +370,13 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
+
+        // BLOGS
+        Route::post('blog/posts', ['uses'=>'PostsController@store']);
+        Route::get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
+        Route::get('forum/posts', ['uses'=>'PostsController@listForum']);
+
+
         
     });
 });

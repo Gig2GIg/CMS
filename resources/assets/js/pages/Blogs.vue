@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">Blogs</a>
+          <a href="#" aria-current="page">{{ $options.name }}</a>
         </li>
       </ul>
     </nav>
@@ -16,13 +16,12 @@
             :disabled="isLoading"
             @click="showCreateModal"
           >
-            Create Post
+            Create Blog
           </button>
         </div>
-
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="skills.length">
+            <div class="columns">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -42,24 +41,80 @@
               :per-page="perPage"
               :loading="isLoading"
               :paginated="!!filter.length"
+              :show-detail-icon="true"
+              detail-key="id"
+              detailed
+              hoverable
             >
               <template slot-scope="props">
-                <b-table-column field="name" label="Name" width="250" sortable>{{ props.row.name }}</b-table-column>
+                <b-table-column
+                  field="title"
+                  label="Title"
+                  width="250"
+                  sortable>{{ props.row.title }}</b-table-column>
 
-                <b-table-column field label sortable>{{ }}</b-table-column>
+                <b-table-column 
+                  field="date"
+                  label="Date"
+                  sortable>{{ props.row.date }}</b-table-column>
+
+                <b-table-column 
+                  field="banned"
+                  label="Banned"
+                  sortable>{{ props.row.banned }}</b-table-column>
+
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
+                    <div  v-if="props.row.banned == 'pending'">  
+                      <b-dropdown-item has-link >
+                        <a @click.prevent.stop="confirmAccept(props.row)">Accept</a>
+                      </b-dropdown-item>
+                    </div>
                     <b-dropdown-item has-link>
-                      <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
-                    </b-dropdown-item>
-                    <b-dropdown-item has-link>
-                      <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
+                      <a @click.prevent.stop="confirmDeleteBan(props.row)">Remove</a>
                     </b-dropdown-item>
                   </b-dropdown>
                 </b-table-column>
+              </template>
+
+              <template slot="detail" slot-scope="props">
+                <article class="media is-top">
+                  <div class="w-1/2 mx-4">
+                    <div class="mb-4">
+                      <img class="w-full" :src="props.row.z">
+                    </div>
+                    <div class="content">
+                      <p>
+                        <strong>Type:</strong>
+                        {{ props.row.type }}
+                      </p>
+                      <p>
+                        <strong>Description:</strong>
+                        <span v-html=" props.row.body"></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="w-1/2 mx-4">
+                    <div class="content">
+                      <p>
+                        <strong>Time ago:</strong>
+                        {{ props.row.time_ago }}
+                      </p>
+                    
+                      <p>
+                        <strong>By:</strong>
+                        {{ props.row.name }}
+                      </p>
+                      <div>
+                        <strong>Search To:</strong>
+                        <span> {{ props.row.search_to }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </article>
               </template>
 
               <template slot="empty">
@@ -77,26 +132,32 @@
         </div>
       </section>
     </transition>
+
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedSkill.id ? updateSkill() : createSkill()">
+      <form @submit.prevent="selectedBlog.id ? updateSkill() : createSkill()">
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">{{ modalTitle }} Skill</p>
+            <p class="modal-card-title">{{ modalTitle }} Blog</p>
           </header>
 
           <section class="modal-card-body">
             <b-field
-              label="Name"
-              :type="{'is-info': errors.has('name')}"
-              :message="errors.first('name')"
+              label="Title"
+              :type="{'is-info': errors.has('title')}"
+              :message="errors.first('title')"
             >
               <b-input
-                v-model="selectedSkill.name"
+                v-model="selectedBlog.name"
                 v-validate="'required|max:255'"
                 name="name"
                 autofocus
               />
             </b-field>
+               <div class="mb-6">
+              <label class="label">Body</label>
+              <ckeditor :editor="editor" v-model="selectedBlog.body" :config="editorConfig"></ckeditor>
+            </div>
+
           </section>
           <footer class="modal-card-foot">
             <button
@@ -105,7 +166,9 @@
               :disabled="isLoading"
               @click="isModalActive = false"
             >Close</button>
-            <button class="button is-primary" :disabled="isLoading">{{ modalTitle }} skill</button>
+            <button 
+              class="button is-primary"
+              :disabled="isLoading">{{ modalTitle }} blog</button>
           </footer>
         </div>
       </form>
@@ -114,64 +177,63 @@
 </template>
 
 <script>
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  name: "Skills",
+  name: "Blogs",
   data: () => ({
     loaded: false,
     perPage: 10,
     isModalActive: false,
-    selectedSkill: {},
+
+    selectedBlog: {},
     searchText: "",
+    
+    editor: ClassicEditor,
+    editorConfig: {}
   }),
   computed: {
-    ...mapState('skills', ['skills', 'isLoading']),
-    ...mapGetters('skills', ['search']),
+    ...mapState('blogs', ['blogs', 'isLoading']),
+    ...mapGetters('blogs', ['search']),
 
     filter: function() {
       return this.search(this.searchText);
     },
 
     modalTitle: function() {
-      return this.selectedSkill.id ? "Update" : "Create";
+      return this.selectedBlog.id ? "Update" : "Create";
     }
   },
   methods: {
-    ...mapActions('skills', ['fetch', 'store', 'update', 'destroy']),
+    ...mapActions('blogs', ['fetch', 'store', 'update', 'destroy']),
     ...mapActions('toast', ['showError']),
 
-    confirmDelete(skill) {
-      this.selectedSkill = skill;
+    confirmDelete(blogs) {
+      this.selectedblog = blog;
       this.$dialog.confirm({
-        message: `Are you sure you want to delete "${this.selectedSkill.name}"?`,
+        message: `Are you sure you want to delete "${this.selectedBlog.name}"?`,
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
-        onConfirm: this.deleteSkill,
+        onConfirm: this.selectedblog,
       });
     },
 
     showCreateModal() {
-      this.selectedSkill = {};
+      this.selectedBlog = {};
       this.isModalActive = true;
     },
 
-    showUpdateModal(skill) {
-      this.selectedSkill = Object.assign({}, skill);
+    showUpdateModal(blog) {
+      this.selectedBlog = Object.assign({}, blog);
       this.isModalActive = true;
     },
 
     async createSkill() {
       try {
-        let valid = await this.$validator.validateAll();
-
-        if (! valid) {
-          this.showError('Please check the fields.');
-          return;
-        }
-
-        await this.store(this.selectedSkill);
+       
+        await this.store(this.selectedBlog);
 
         this.isModalActive = false;
       } catch(e) {
@@ -187,7 +249,7 @@ export default {
           return;
         }
 
-        await this.update(this.selectedSkill);
+        await this.update(this.selectedBlog);
 
         this.isModalActive = false;
       } catch (e) {
@@ -196,7 +258,7 @@ export default {
     },
 
     async deleteSkill() {
-      await this.destroy(this.selectedSkill);
+      await this.destroy(this.selectedBlog);
     }
   },
 
