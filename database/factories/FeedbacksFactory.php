@@ -9,7 +9,7 @@ $factory->define(App\Models\Feedbacks::class, function (Faker $faker) {
         'dancing'
     ];
     return [
-        'auditions_id'=>$faker->numberBetween(1,2),
+        'appointment_id'=>$faker->numberBetween(1,2),
         'user_id'=>$faker->numberBetween(1,2),
         'evaluator_id'=>$faker->numberBetween(1,2),
         'evaluation'=>$faker->numberBetween(1,5),

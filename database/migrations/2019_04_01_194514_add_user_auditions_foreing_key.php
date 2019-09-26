@@ -41,7 +41,7 @@ class AddUserAuditionsForeingKey extends Migration
     {
         Schema::table('user_auditions', function (Blueprint $table) {
             $table->dropForeign('user_auditions_user_id_foreign');
-            $table->dropForeign('user_auditions_auditions_id_foreign');
+            $table->dropForeign('user_auditions_appointment_id_foreign');
             $table->dropForeign('user_auditions_rol_id_foreign');
 
         });

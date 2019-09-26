@@ -15,7 +15,7 @@ class CreateFeedbacksTable extends Migration
     {
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('auditions_id')->unsigned();
+            $table->integer('appointment_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('evaluator_id')->unsigned();
             $table->integer('evaluation')->unsigned();
@@ -23,7 +23,7 @@ class CreateFeedbacksTable extends Migration
             $table->boolean('callback');
             $table->enum('work', ['vocals', 'acting', 'dancing']);
             $table->boolean('favorite')->default(false);
-            $table->unique(['auditions_id','user_id','evaluator_id','slot_id']);
+            $table->unique(['appointment_id','user_id','evaluator_id','slot_id']);
             $table->timestamps();
         });
     }
