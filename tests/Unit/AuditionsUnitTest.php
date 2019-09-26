@@ -182,4 +182,14 @@ class AuditionsUnitTest extends TestCase
 
     }
 
+    public function test_update_banned_to_yes(){
+        $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+        $dataUpdate = [
+            'banned' => 'yes',
+        ];
+        $auditionsRepo = new AuditionRepository($data);
+        $audition = $auditionsRepo->update($dataUpdate);
+        $this->assertTrue($audition);   
+    }
+
 }

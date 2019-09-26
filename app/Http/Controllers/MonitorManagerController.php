@@ -82,6 +82,17 @@ class MonitorManagerController extends Controller
                 'notificationable_id' => $audition->id
             ];
 
+            $audition->userauditions->each(function ($useraudition) use ($message) {
+                $userRepo = new UserRepository(new User);
+                $user_result = $userRepo->find($useraudition->user_id);
+                $user_result->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => Str::random(12),
+                    'status' => 'unread',
+                    'message'=> 'Audition '. $audition->title .' has been created'
+                ]);
+            });
+
             if ($audition !== null) {
 
                 $notificationRepo = new NotificationRepository(new Notification());

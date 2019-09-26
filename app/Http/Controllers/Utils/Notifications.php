@@ -120,6 +120,7 @@ class Notifications
 
             if ($audition !== null || $user !== null ){
                 if ($to == 'MANY'){
+                    // Usar esta logica en MOnitor
                     if ($type == 'custom') {
                         $audition->userauditions->each(function ($useraudition) use ($title, $message, $type) {
                             $tomsg = !empty($message) ? $message:$title;
