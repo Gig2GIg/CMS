@@ -59,11 +59,11 @@
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
-
-                    <b-dropdown-item has-link>
-                      <a @click.prevent.stop="confirmAccept(props.row)">Accept</a>
-                    </b-dropdown-item>
-                    
+                    <div  v-if="props.row.banned == 'pending'">  
+                      <b-dropdown-item has-link >
+                        <a @click.prevent.stop="confirmAccept(props.row)">Accept</a>
+                      </b-dropdown-item>
+                    </div>
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmDeleteBan(props.row)">Remove</a>
                     </b-dropdown-item>
@@ -179,10 +179,6 @@ export default {
       });
     },
 
-  async acceptAudition() {
-      await this.accept(this.selectedAudition);
-    },
-  
     confirmDeleteBan(audition) {
         this.selectedAudition = audition;
 
@@ -201,6 +197,10 @@ export default {
       await this.removeBan(this.selectedAudition);
     },
 
+  async acceptAudition() {
+      await this.accept(this.selectedAudition);
+    },
+  
   },
 
   async created() {

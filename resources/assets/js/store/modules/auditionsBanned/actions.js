@@ -34,12 +34,12 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      await axios.put(`/api/cms/auditions/banaudition/${audition.id}`, {banned: 'yes'});
-      commit(types.ACCEPT_BAN, audition);
+      const {data} = await axios.put(`/api/cms/auditions/banaudition/${audition.id}`, {banned: 'yes'});
+      commit(types.ACCEPT_BAN, data);
 
       dispatch('toast/showMessage', 'Audition Ban.', { root: true });
     } catch(e) {
-      dispatch('toast/showError', 'Something went wrong.', { root: true });
+      dispatch('toast/showError', e, { root: true });
     } finally {
       dispatch('toggleSpinner');
     }
@@ -56,7 +56,7 @@ export default {
 
       dispatch('toast/showMessage', 'Audition removed Ban.', { root: true });
     } catch(e) {
-      dispatch('toast/showError', 'Something went wrong.', { root: true });
+      dispatch('toast/showError', e, { root: true });
     } finally {
       dispatch('toggleSpinner');
     }

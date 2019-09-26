@@ -585,7 +585,8 @@ class AuditionsController extends Controller
             $update = $updateRepo->update(['banned' => $banStatus,]);
             
             if ($update){
-                $dataResponse = ['data' => 'Data Updated'];
+                $responseData = new AuditionFullResponse($audition);
+                $dataResponse = ['data' =>  $responseData];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Updated'];

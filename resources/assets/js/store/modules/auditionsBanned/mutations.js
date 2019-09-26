@@ -1,4 +1,5 @@
 import * as types from '@/store/types';
+import Vue from 'vue'
 
 export default {
   [types.TOGGLE_SPINNER] (state) {
@@ -19,15 +20,17 @@ export default {
   },
 
   [types.ACCEPT_BAN] (state, audition) {
-   
-    let currenaudition = state.auditions.find(x => x.id == audition.id)
+
+    let currenaudition = state.auditions.find(x => x.id == audition.data.data.id)
     let index = state.auditions.indexOf(currenaudition);
+
+console.log( currenaudition);
+console.log( audition.data.data.banned);
 
     Vue.set(state.auditions, index, audition);
   },
 
   [types.REMOVE_BAN] (state, audition) {
-   
     let currentaudition = state.auditionsBanned.find(x => x.id == audition.id)
     let index = state.auditions.indexOf(currentaudition);
     Vue.set(state.auditions, index, audition);
