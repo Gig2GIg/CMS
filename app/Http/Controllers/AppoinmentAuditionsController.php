@@ -54,15 +54,15 @@ class AppoinmentAuditionsController extends Controller
                 $dataUser = $dataUserRepo->find($request->user);
             }
 
-           
+
             $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
             $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
 
             $userAudition = $userAuditions->where('user_id', $request->user)->first();
-           
+
             $userSlots = UserSlots::where('user_id',$request->user );
             $userSlot =   $userSlots->where('roles_id', $request->role_id)->first();
-    
+
             if (! is_null($userAudition)){
                if ($userAudition->slot_id){
                 $slotRepo =  new SlotsRepository(new Slots());
@@ -75,13 +75,13 @@ class AppoinmentAuditionsController extends Controller
                     'hour' => $slot->time,
                     'slot_id' => $slot->id
                 ];
-           
+
                 return response()->json(['data' => $dataResponse], 200);
                }
-                
+
             }
             if  (! is_null($userSlot->slots_id)) {
-              
+
                 $slotRepo =  new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($userSlot->slots_id);
                 $dataResponse = [
@@ -91,16 +91,16 @@ class AppoinmentAuditionsController extends Controller
                     'hour' => $slot->time,
                     'slot_id' => $slot->id
                 ];
-                
+
                 return response()->json(['data' => $dataResponse], 200);
             }
-            
+
             $dataResponse = [
                 'id' => $dataUser->id,
                 'image' => $dataUser->image->url,
                 'name' => $dataUser->details->first_name . " " . $dataUser->details->last_name
             ];
-       
+
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -135,13 +135,13 @@ class AppoinmentAuditionsController extends Controller
             $dataCompareExists = $dataSlotReserved
                 ->where('user_id', '=', $iduser)
                 ->where('roles_id', '=', $request->rol)
-                ->where('auditions_id', '=', $request->auditions)->first();
+                ->where('appointment_id', '=', $request->appointment_id)->first();
             $elementcount = $dataCompareExists ??  collect([]);
             if ($elementcount->count() == 0) {
                 $dataSave = new UserSlots();
                $data= $dataSave->create([
                     'user_id' => $iduser,
-                    'auditions_id' => $request->auditions,
+                    'appointment_id' => $request->appointment_id,
                     'slots_id' => $request->slot,
                     'roles_id' => $request->rol,
                     'status' => 2
@@ -167,14 +167,14 @@ class AppoinmentAuditionsController extends Controller
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($iduser);
 
-            $auditionRepo = new AuditionRepository(new Auditions());
-            $audition = $auditionRepo->find($request->auditions);
+            $appointmentRepo = new AppointmentRepository(new Appointments());
+            $appoinmentData = $appointmentRepo->find($request->appointment_id);
 
             try {
                 $this->sendPushNotification(
-                    $audition,
+                    $appoinmentData->auditions,
                     'check_in',
-                    $audition,
+                    $appoinmentData->auditions,
                     null
                 );
 
@@ -196,7 +196,7 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
-            $data = $dataRepo->findbyparam('auditions_id', $request->audition);
+            $data = $dataRepo->findbyparam('appointment_id', $request->audition);
             $res = $data->where('status','=','checked');
             $dataResponse = AppointmentResource::collection($res);
             return response()->json(['data' => $dataResponse], 200);
@@ -241,7 +241,7 @@ class AppoinmentAuditionsController extends Controller
         try {
             $dataRepo = new AppointmentRepository(new Appointments());
             $this->log->info($request->id);
-            $data = $dataRepo->findbyparam('auditions_id', $request->id);
+            $data = $dataRepo->find($request->id);
             $dataResponse = new AppointmentSlotsResource($data, 1);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
@@ -255,7 +255,7 @@ class AppoinmentAuditionsController extends Controller
         try {
             $dataRepo = new AppointmentRepository(new Appointments());
             $this->log->info($request->id);
-            $data = $dataRepo->findbyparam('auditions_id', $request->id);
+            $data = $dataRepo->find($request->id);
             $dataResponse = new AppointmentSlotsResource($data, 2);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
