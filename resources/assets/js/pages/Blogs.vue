@@ -147,9 +147,9 @@
               :message="errors.first('title')"
             >
               <b-input
-                v-model="selectedBlog.name"
+                v-model="selectedBlog.title"
                 v-validate="'required|max:255'"
-                name="name"
+                name="title"
                 autofocus
               />
             </b-field>
@@ -212,7 +212,7 @@ export default {
     confirmDelete(blogs) {
       this.selectedblog = blog;
       this.$dialog.confirm({
-        message: `Are you sure you want to delete "${this.selectedBlog.name}"?`,
+        message: `Are you sure you want to delete "${this.selectedBlog.title}"?`,
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
@@ -232,7 +232,7 @@ export default {
 
     async createSkill() {
       try {
-       
+       console.log(this.selectedBlog);
         await this.store(this.selectedBlog);
 
         this.isModalActive = false;

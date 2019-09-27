@@ -9,20 +9,21 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/forum/posts');
-      console.log(data);
+     
       commit(types.FETCH_SKILLS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_SKILLS_FAILURE);
     }
   },
 
-  async store({ dispatch, commit }, skill) {
+  async store({ dispatch, commit }, post) {
     try {
       dispatch('toggleSpinner');
 
       // Save changes
+      console.log(post.body);
+      const { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body});
       
-      const { data: { data } } = await axios.post('/api/cms/blog/posts', skill);
       commit(types.CREATE_SKILL, data);
 
       dispatch('toast/showMessage', 'Skill created.', { root: true });
