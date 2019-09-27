@@ -15,7 +15,7 @@ class CreateMonitorsTable extends Migration
     {
         Schema::create('monitors', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('auditions_id')->unsigned();
+            $table->integer('appointment_id')->unsigned();
             $table->string('title');
             $table->time('time');
             $table->timestamps();

@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace Test\Unit;
 
 use App\Http\Exceptions\CreateException;
@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\UserSlots;
 use App\Models\Slots;
 
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,7 @@ class TagsTest extends TestCase
 {
     protected $audition_id;
     protected $performance_id;
+    protected $appointmentId;
 
     public function setUp(): void
     {
@@ -30,8 +32,12 @@ class TagsTest extends TestCase
         $director = factory(User::class)->create();
         $performance = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id'=>$director->id]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition
+        ]);
         $this->audition_id = $audition->id;
         $this->performance_id = $performance->id;
+        $this->appointmentId = $appointment->id;
     }
 
     public function test_create_tags()
@@ -39,7 +45,7 @@ class TagsTest extends TestCase
 
         $data = [
             'title' => 'High',
-            'audition_id' => $this->audition_id,
+            'appointment_id' => $this->appointmentId,
             'user_id' => $this->performance_id
         ];
 
@@ -48,7 +54,7 @@ class TagsTest extends TestCase
         $tag = $tagRepo->create($data);
         $this->assertInstanceOf(Tags::class, $tag);
         $this->assertEquals($data['title'], $tag->title);
-        
+
     }
 
     /* @test */
@@ -56,7 +62,7 @@ class TagsTest extends TestCase
     {
         $data = [
             'title' => 'High',
-            'audition_id' => $this->audition_id,
+            'appointment_id' => $this->appointmentId,
             'user_id' => $this->performance_id
         ];
 

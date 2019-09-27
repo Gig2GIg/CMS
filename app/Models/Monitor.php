@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Monitor extends Model
 {
     protected $fillable =[
-      'auditions_id','title','time'
+      'appointment_id','title','time'
     ];
 }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Test\Unit;
 
@@ -19,6 +19,7 @@ class TagsControllerTest extends TestCase
     protected $userId;
     protected $audition_id;
     protected $performance_id;
+    protected $appointmentId;
 
 
     public function setUp(): void
@@ -43,7 +44,7 @@ class TagsControllerTest extends TestCase
 
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=> $performance->id,
-            'auditions_id'=> $audition->id,
+            'appointment_id' => $appoinment->id,
             'slots_id'=> $slot->id
         ]);
 
@@ -54,7 +55,7 @@ class TagsControllerTest extends TestCase
         ];
 
         $this->audition_id = $audition->id;
-
+        $this->appointmentId = $appoinment->id;
         $user = factory(User::class)->create([
                 'email' => 'token@test.com',
                 'password' => bcrypt('123456')]
@@ -76,12 +77,12 @@ class TagsControllerTest extends TestCase
 
     public function test_created_tags_201()
     {
-        
+
         $response = $this->json('POST',
-            'api/t/auditions/feedbacks/tags?token=' . $this->token, 
+            'api/t/auditions/feedbacks/tags?token=' . $this->token,
             [
                 'title' => 'high',
-                'audition_id' => $this->audition_id,
+                'appointment_id' => $this->appointmentId,
                 'user_id' => $this->performance_id
             ]);
 
@@ -90,12 +91,12 @@ class TagsControllerTest extends TestCase
 
     public function test_update_tags_201()
     {
-        
+
         $response = $this->json('POST',
-            'api/t/auditions/feedbacks/tags?token=' . $this->token, 
+            'api/t/auditions/feedbacks/tags?token=' . $this->token,
             [
                 'title' => 'high',
-                'audition_id' => $this->audition_id,
+                'appointment_id' => $this->appointmentId,
                 'user_id' => $this->performance_id
             ]);
 
@@ -105,34 +106,34 @@ class TagsControllerTest extends TestCase
 
     public function test_update_tags_from_array_200()
     {
-        
-        $tags = factory(Tags::class, 10)->create(['audition_id' => $this->audition_id, 'user_id' => $this->performance_id]);
+
+        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
 
        $data =  [
                     'tags' => [
                                 ['title' => 'UPDA', 'id' => $tags[0]->id],
                                 ['title' => 'UPDA','id' => $tags[1]->id],
-                                ['title' => 'NEW','id' => null, 'audition_id' => $this->audition_id,'user_id' => $this->performance_id]      
-                ] 
+                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id]
+                ]
             ];
 
         $response = $this->json('PUT',
-            'api/t/auditions/'. $this->audition_id .'/feedbacks/user/tags?token=' . $this->token, $data);
+            'api/t/auditions/'. $this->appointmentId .'/feedbacks/user/tags?token=' . $this->token, $data);
 
         $response->assertStatus(200);
     }
 
     public function test_update_tags_from_array_422()
     {
-        
-        $tags = factory(Tags::class, 10)->create(['audition_id' => $this->audition_id, 'user_id' => $this->performance_id]);
+
+        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
 
        $data =  [
                     'tags' => [
                                 ['title' => 'UPDA', 'id' => $tags[0]->id],
                                 ['title' => 'UPDA','id' => $tags[1]->id],
-                                ['title' => 'NEW','id' => null, 'audition_id' => $this->audition_id,'user_id' => $this->performance_id]      
-                ] 
+                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id]
+                ]
             ];
 
         $response = $this->json('PUT',
@@ -146,8 +147,8 @@ class TagsControllerTest extends TestCase
 
     public function test_delete_tags_200()
     {
-        
-        $tag = factory(Tags::class)->create(['audition_id' => $this->audition_id, 'user_id' => $this->performance_id]);
+
+        $tag = factory(Tags::class)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
         $response = $this->json('DELETE', 'api/t/auditions/feedbacks/tags/'. $tag->id. '/delete' .'?token=' . $this->token);
 
         $response->assertStatus(200);
@@ -155,17 +156,17 @@ class TagsControllerTest extends TestCase
 
     public function test_list_tags_by_user_200()
     {
-        
-        $tag = factory(Tags::class, 50)->create(['audition_id' => $this->audition_id, 'user_id' => $this->performance_id]);
 
-        $response = $this->json('GET', 'api/t/auditions/'. $this->audition_id. '/user/tags'. '?user_id='. $this->performance_id.'&token=' . $this->token);
+        $tag = factory(Tags::class, 50)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
+
+        $response = $this->json('GET', 'api/t/auditions/'. $this->appointmentId. '/user/tags'. '?user_id='. $this->performance_id.'&token=' . $this->token);
 
         $response->assertStatus(200);
-   
+
         $response->assertJsonStructure(['data' => [[
             'id',
             'title',
-            'audition_id',
+            'appointment_id',
             'user_id'
         ]]]);
     }

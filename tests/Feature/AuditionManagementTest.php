@@ -23,16 +23,17 @@ class AuditionManagementTest extends TestCase
 
     public function test_save_requested()
     {
-        $audition = factory(Auditions::class)->create(['user_id' => $this->userId]);
-        $users = factory(User::class, 7)->create();
-        $appointment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
-        factory(Slots::class)->create(['appointment_id'=>$appointment->id]);
-        $users->each(function ($item) use ($audition, $appointment) {
+        $audition2 = factory(Auditions::class)->create(['user_id' => $this->userId]);
+        $users2 = factory(User::class, 7)->create();
+        $appointment2 = factory(Appointments::class)->create(['auditions_id' => $audition2->id]);
+        $slot = factory(Slots::class)->create(['appointment_id'=>$appointment2->id]);
+        factory(Appointments::class, 10)->create(['auditions_id' => $audition2->id]);
+        $users2->each(function ($item) use ($audition2, $appointment2) {
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
-                'appointment_id' => $appointment->id,
+                'appointment_id' => $appointment2->id,
                 'status' => 'reserved',
-                'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment->id])->id
+                'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment2->id])->id
 
             ]);
         });
@@ -40,9 +41,9 @@ class AuditionManagementTest extends TestCase
         $response = $this->json('POST',
             'api/a/auditions/user?token=' . $this->token,
             [
-                'appointment' => $appointment->id,
-                'rol' => factory(Roles::class)->create(['auditions_id' => $this->auditionId])->id,
-                'type' => 2
+                'appointment' => $appointment2->id,
+                'rol' => factory(Roles::class)->create(['auditions_id' => $audition2->id])->id,
+                'type' =>2
             ]);
         $response->assertStatus(201);
         $response->assertJsonStructure(['data']);
@@ -69,7 +70,7 @@ class AuditionManagementTest extends TestCase
             'api/a/auditions/user?token=' . $this->token,
             [
                 'appointment' => $appointment->id,
-                'rol' => factory(Roles::class)->create(['auditions_id' => $this->auditionId])->id,
+                'rol' => factory(Roles::class)->create(['auditions_id' => $audition->id])->id,
                 'type' => 1
             ]);
         $response->assertStatus(201);

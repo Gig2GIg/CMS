@@ -626,22 +626,26 @@ class AuditionManagementController extends Controller
 
                 $user = $userRepo->find($slot['user_id']);
 
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($newUserSlot->auditions_id);
+                $appointmentRepo = new AppointmentRepository(new Appointments());
+                $appointment = $appointmentRepo->find($newUserSlot->appointment_id);
 
                 $slotRepo = new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($slot['slot_id']);
 
-                $dataMail = ['name' => $user->details->first_name, 'audition_title' => $audition->title, 'slot_time' => $slot->time];
+                $dataMail = [
+                    'name' => $user->details->first_name,
+                    'audition_title' => $appointment->auditions->title,
+                    'slot_time' => $slot->time
+                ];
 
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
 
                 $this->sendPushNotification(
-                    $audition,
+                    $appointment->auditions,
                     'cms_to_user',
                     $user,
-                    'Your appointment time to audition ' . '* ' . $audition->title . ' *' . ' is was moved'
+                    'Your appointment time to audition ' . '* ' . $appointment->auditions->title . ' *' . ' is was moved'
                 );
             }
 

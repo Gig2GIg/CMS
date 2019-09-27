@@ -147,13 +147,11 @@ class FeedBackController extends Controller
     {
         try {
             $repo = new FeedbackRepository(new Feedbacks());
-            $repoAudi = new AuditionRepository(new Auditions());
+            $repoAppointment = new AppointmentRepository(new Appointments());
+            $dataRepo = $repoAppointment->find($request->id);
+            $data = $repo->findbyparam('appointment_id', $request->id);
 
-            $dataAudi = $repoAudi->find($request->id);
-
-            $data = $repo->findbyparam('auditions_id', $request->id);
-
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataAudi->user_id)->first() ?? new Collection();
+            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataRepo->auditions->user_id)->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;

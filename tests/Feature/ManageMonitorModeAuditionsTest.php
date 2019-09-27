@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Monitor;
 use App\Models\Roles;
@@ -14,12 +15,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class ManageMonitorModeAuditionsTest extends TestCase
 {
     protected $auditionId;
+    protected $token;
+    protected $appointmentId;
 
     public function test_create_update_monitor_audition()
     {
 
         $response = $this->json('POST', 'api/t/monitor/updates?token=' . $this->token, [
-            'audition' => $this->auditionId,
+            'appointment' => $this->appointmentId,
             'title' => 'Checking open',
             'time' => $this->faker->time()
         ]);
@@ -29,8 +32,8 @@ class ManageMonitorModeAuditionsTest extends TestCase
 
     public function test_list_by_updates()
     {
-        factory(Monitor::class, 10)->create(['auditions_id' => $this->auditionId]);
-        $response = $this->json('GET', 'api/monitor/show/' . $this->auditionId . '?token=' . $this->token);
+        factory(Monitor::class, 10)->create(['appointment_id' => $this->appointmentId]);
+        $response = $this->json('GET', 'api/monitor/show/' . $this->appointmentId . '?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
             'id',
@@ -69,8 +72,11 @@ class ManageMonitorModeAuditionsTest extends TestCase
         $audition = factory(Auditions::class)->create([
             'user_id' => $user->id
         ]);
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition
+        ]);
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
-
+        $this->appointmentId = $appointment->id;
         $this->userId = $user->id;
         $this->auditionId = $audition->id;
     }
