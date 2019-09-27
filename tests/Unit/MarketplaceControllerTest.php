@@ -50,7 +50,8 @@ class MarketplaceControllerTest extends TestCase
             'email' => $this->faker->safeEmail(),
             'services' => $this->faker->paragraph(),
             'url_web'=> 'www.profesional.com',
-            'marketplace_category_id' => $marketplaceCategory->id
+            'marketplace_category_id' => $marketplaceCategory->id,
+            'featured' => 'yes'
         ];
 
         $marketplace_repo = new MarketplaceRepository(new Marketplace());

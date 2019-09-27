@@ -46,7 +46,8 @@ class MarketplaceControllerUnitTest extends TestCase
             'services' => 'wwewewewewe',
             'image_name' =>  'Some',
             'image_url'=>  'https://stackoverflow.com/questions/30878105/laravel-5-form-request-validation-returning-forbidden-error',
-            'url_web' => $this->faker->url
+            'url_web' => $this->faker->url,
+            'featured' => 'yes'
         ];
 
         $response = $this->json('POST',
