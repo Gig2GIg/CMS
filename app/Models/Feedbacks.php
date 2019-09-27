@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Feedbacks extends Model
 {
     protected $fillable = [
-        'auditions_id',
+        'appointment_id',
         'user_id',
         'evaluator_id',
         'evaluation',
@@ -17,7 +17,7 @@ class Feedbacks extends Model
         'slot_id',
         'comment'
     ];
- 
+
     public function tags(){
         return $this->hasMany(Tags::class, 'feedback_id');
     }

@@ -16,7 +16,7 @@ class CreateUserAuditionsTable extends Migration
         Schema::create('user_auditions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('auditions_id')->unsigned();
+            $table->integer('appointment_id')->unsigned();
             $table->integer('rol_id')->unsigned();
             $table->integer('slot_id')->unsigned()->nullable();
             $table->integer('type');

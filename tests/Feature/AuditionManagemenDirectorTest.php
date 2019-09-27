@@ -25,6 +25,7 @@ class AuditionManagemenDirectorTest extends TestCase
     protected $userId;
     protected $auditionId;
     protected $slot;
+    protected $token;
 
     public function test_auditions_upcomming_director()
     {
@@ -105,6 +106,7 @@ class AuditionManagemenDirectorTest extends TestCase
 
     public function test_update_status_close_audition()
     {
+
         $response = $this->json('PUT', 'api/t/auditions/close/' . $this->auditionId . '?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJson(['data' => ['status' => 2]]);
@@ -136,6 +138,7 @@ class AuditionManagemenDirectorTest extends TestCase
         $response->assertStatus(404);
         $response->assertJson(['data' => 'Not Found Data']);
     }
+
     public function test_audition_save_video_200()
     {
         $user = factory(User::class)->create();
@@ -144,12 +147,16 @@ class AuditionManagemenDirectorTest extends TestCase
             'user_id' => $user->id,
         ]);
 
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id' => $data->id
+        ]);
+
         $response = $this->json('POST',
             'api/t/auditions/video/save?token=' . $this->token, [
                 'url' => $this->faker->imageUrl(),
-                'audition' => $data->id,
+                'appointment_id' => $appointment->id,
                 'performer' => $user->id,
-                'slot_id'=>$this->slot->id
+                'slot_id' => $this->slot->id
             ]);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
@@ -163,17 +170,19 @@ class AuditionManagemenDirectorTest extends TestCase
         $data = factory(Auditions::class)->create([
             'user_id' => $user->id,
         ]);
-
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id' => $data->id
+        ]);
         $video = factory(AuditionVideos::class)->create([
             'user_id' => $user->id,
-            'auditions_id' => $data->id,
+            'appointment_id' => $appointment->id,
             'url' => $this->faker->imageUrl(),
             'contributors_id' => $this->userId,
-            'slot_id'=>$this->slot->id
+            'slot_id' => $this->slot->id
         ]);
 
         $response = $this->json('DELETE',
-            'api/t/auditions/video/delete/'.$video->id.'?token=' . $this->token);
+            'api/t/auditions/video/delete/' . $video->id . '?token=' . $this->token);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
 
@@ -182,21 +191,24 @@ class AuditionManagemenDirectorTest extends TestCase
     public function test_audition_list_video_200()
     {
         $user = factory(User::class, 10)->create();
-        $user->each(function ($element) {
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id' => $this->auditionId,
+        ]);
+        $user->each(function ($element) use ($appointment) {
             factory(UserDetails::class)->create([
                 'user_id' => $element->id
             ]);
 
             factory(AuditionVideos::class)->create([
                 'user_id' => $element->id,
-                'auditions_id' => $this->auditionId,
+                'appointment_id' => $appointment->id,
                 'url' => $this->faker->imageUrl(),
                 'contributors_id' => $this->userId,
-                'slot_id'=>$this->slot->id,
+                'slot_id' => $this->slot->id,
             ]);
         });
         $response = $this->json('GET',
-            'api/t/auditions/video/list/' . $this->auditionId . '?token=' . $this->token);
+            'api/t/auditions/video/list/' . $appointment->id . '?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[
             'id',
@@ -206,6 +218,7 @@ class AuditionManagemenDirectorTest extends TestCase
 
 
     }
+
     public function test_audition_contract_200()
     {
         $user = factory(User::class)->create();
@@ -243,7 +256,7 @@ class AuditionManagemenDirectorTest extends TestCase
         ]);
 
         $response = $this->json('DELETE',
-            'api/t/auditions/contract/delete/'.$contract->id.'?token=' . $this->token);
+            'api/t/auditions/contract/delete/' . $contract->id . '?token=' . $this->token);
         $response->assertStatus(200);
         //$response->assertJson(['data' => 'Not Found Data']);
 
@@ -253,24 +266,23 @@ class AuditionManagemenDirectorTest extends TestCase
     {
         $user = factory(User::class)->create();
 
-            $contract = factory(AuditionContract::class)->create([
-                'user_id' => $user->id,
-                'auditions_id' => $this->auditionId,
-                'url' => $this->faker->imageUrl(),
+        $contract = factory(AuditionContract::class)->create([
+            'user_id' => $user->id,
+            'auditions_id' => $this->auditionId,
+            'url' => $this->faker->imageUrl(),
 
 
-            ]);
+        ]);
 
         $response = $this->json('GET',
-            'api/t/auditions/contract/'.$user->id.'/' . $this->auditionId . '?token=' . $this->token);
+            'api/t/auditions/contract/' . $user->id . '/' . $this->auditionId . '?token=' . $this->token);
         $response->assertStatus(200);
-        $response->assertJsonStructure(['data'=>[
+        $response->assertJsonStructure(['data' => [
 
             "id",
             "user_id",
             "auditions_id",
             "url",
-
 
 
         ]
@@ -303,10 +315,10 @@ class AuditionManagemenDirectorTest extends TestCase
             'user_id' => $user->id
         ]);
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id,
+            'auditions_id' => $audition->id,
         ]);
         $this->slot = factory(Slots::class)->create([
-            'appointment_id'=>$appointment->id
+            'appointment_id' => $appointment->id
         ]);
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
         $rol = factory(Roles::class)->create([

@@ -10,7 +10,7 @@ class UserSlots extends Model
         'user_id',
         'slots_id',
         'status',
-        'auditions_id',
+        'appointment_id',
         'roles_id',
         'favorite',
         'status'

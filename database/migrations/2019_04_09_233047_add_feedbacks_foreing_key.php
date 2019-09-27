@@ -14,8 +14,8 @@ class AddFeedbacksForeingKey extends Migration
     public function up()
     {
         Schema::table('feedbacks', function (Blueprint $table) {
-            $table->foreign('auditions_id') ->references('id')
-                ->on('auditions')
+            $table->foreign('appointment_id') ->references('id')
+                ->on('appointments')
                 ->onDelete('cascade');
             $table->foreign('user_id') ->references('id')
                 ->on('users')
@@ -34,7 +34,7 @@ class AddFeedbacksForeingKey extends Migration
     public function down()
     {
         Schema::table('feedbacks', function (Blueprint $table) {
-            $table->dropForeign('feedbacks_auditions_id_foreign');
+            $table->dropForeign('feedbacks_appointment_id_foreign');
             $table->dropForeign('feedbacks_user_id_foreign');
             $table->dropForeign('feedbacks_evaluator_id_foreign');
         });

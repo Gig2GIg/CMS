@@ -16,7 +16,7 @@ class CreateAuditionVideosTable extends Migration
         Schema::create('audition_videos', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('auditions_id')->unsigned();
+            $table->integer('appointment_id')->unsigned();
             $table->string('url');
             $table->integer('contributors_id')->unsigned();
             $table->integer('slot_id')->unsigned();

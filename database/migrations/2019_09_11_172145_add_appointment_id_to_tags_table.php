@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAuditionIdToTagsTable extends Migration
+class AddAppointmentIdToTagsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,9 +14,9 @@ class AddAuditionIdToTagsTable extends Migration
     public function up()
     {
         Schema::table('tags', function (Blueprint $table) {
-            $table->integer('audition_id')->unsigned();
-            $table->foreign('audition_id') ->references('id')
-            ->on('auditions')
+            $table->integer('appointment_id')->unsigned();
+            $table->foreign('appointment_id') ->references('id')
+            ->on('appointments')
             ->onDelete('cascade');
 
             $table->integer('user_id')->unsigned();

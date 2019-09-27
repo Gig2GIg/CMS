@@ -10,4 +10,5 @@ interface IUserAuditions
     public function find($id);
     public function getByParam($col,$value);
     public function update(array $data);
+    public function all();
 }

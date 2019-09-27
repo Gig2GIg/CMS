@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\NotFoundException;
 
+use App\Http\Repositories\AppointmentRepository;
+use App\Models\Appointments;
 use App\Models\Tags;
 use App\Models\User;
 use App\Models\Auditions;
@@ -31,7 +33,7 @@ class TagsController extends Controller
         try {
             $data = [
                 'title'=>$request->title,
-                'audition_id'=>$request->audition_id,
+                'appointment_id'=>$request->appointment_id,
                 'user_id'=>$request->user_id
             ];
 
@@ -57,7 +59,7 @@ class TagsController extends Controller
         try {
             $repoTag = new TagsRepository(new Tags());
             $tag = $repoTag->find($request->id);
-            
+
 
             if ($tag->delete()) {
                 $dataResponse = ['data' => 'Tag removed'];
@@ -66,7 +68,7 @@ class TagsController extends Controller
                 $dataResponse = ['data' => 'Tag not removed'];
                 $code = 404;
             }
-      
+
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
@@ -82,24 +84,24 @@ class TagsController extends Controller
     {
         try {
             $repoTag = new TagsRepository(new Tags());
-            $repoAudition = new AuditionRepository(new Auditions());
-            $audition = $repoAudition->find($request->id);
-           
-            if (! is_null($audition)){
+            $repoAppointment = new AppointmentRepository(new Appointments());
+            $appointment = $repoAppointment->find($request->id);
+
+            if (! is_null($appointment)){
                 foreach ($request->tags as $tag_data) {
-              
+
                     $t = Tags::find($tag_data['id']);
-    
-                    if (! is_null($t)){   
+
+                    if (! is_null($t)){
                        $t->update([
                                 'title' => $tag_data['title']
-                        ]);     
+                        ]);
                     }
-    
+
                     if ( is_null($t) ){
                         $repoTag->create([
                                 'title' => $tag_data['title'],
-                                'audition_id' => $audition->id,
+                                'appointment_id' => $appointment->id,
                                 'user_id' => $tag_data['user_id']
                         ]);
                     }
@@ -111,10 +113,10 @@ class TagsController extends Controller
                 $dataResponse = ['data' => 'Audition Not Found'];
                 $code = 404;
             }
-          
 
-           
-           
+
+
+
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
@@ -126,8 +128,8 @@ class TagsController extends Controller
     public function listByUser(Request $request)
     {
         try {
-           
-            $tags = Tags::where('audition_id', $request->id)->get();
+
+            $tags = Tags::where('appointment_id', $request->id)->get();
 
             $userTags = $tags->where('user_id', $request->user_id);
 
@@ -138,7 +140,7 @@ class TagsController extends Controller
                 $dataResponse = ['data' => 'Not found'];
                 $code = 404;
             }
-      
+
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());

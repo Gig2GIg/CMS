@@ -8,7 +8,7 @@ class AuditionVideos extends Model
 {
     protected $fillable = [
         'user_id',
-        'auditions_id',
+        'appointment_id',
         'url',
         'contributors_id',
         'slot_id'

@@ -138,38 +138,16 @@ class AuditionsUnitTest extends TestCase
         $this->assertIsArray($data->toArray());
         $this->assertTrue($data->count() > 0);
     }
-
-    public function test_count_slots_not_avalibled(){
-        $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
-        $users = factory(User::class,10)->create();
-        $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
-        $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
-
-       $users->each(function ($item) use ($audition){
-          factory(UserSlots::class)->create([
-              'user_id' => $item->id,
-              'auditions_id'=>$audition->id,
-              'status'=>'reserved'
-          ]);
-       });
-
-
-        $element = new AuditionManagementController();
-
-        $this->assertFalse($element->alertSlotsEmpty($audition->id));
-
-
-    }
     public function test_count_slots_avalibled(){
         $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
         $users = factory(User::class,7)->create();
         $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
         $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
 
-        $users->each(function ($item) use ($audition){
+        $users->each(function ($item) use ($appointment){
             factory(UserSlots::class)->create([
                 'user_id' => $item->id,
-                'auditions_id'=>$audition->id,
+                'appointment_id'=>$appointment->id,
                 'status'=>'reserved'
             ]);
         });
@@ -177,10 +155,32 @@ class AuditionsUnitTest extends TestCase
 
         $element = new AuditionManagementController();
 
-        $this->assertTrue($element->alertSlotsEmpty($audition->id));
+        $this->assertTrue($element->alertSlotsEmpty($appointment->id));
 
 
     }
+    public function test_count_slots_not_avalibled(){
+        $audition = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
+        $users = factory(User::class,10)->create();
+        $appointment = factory(Appointments::class)->create(['auditions_id'=>$audition->id]);
+        $slots = factory(Slots::class,10)->create(['appointment_id'=>$appointment->id]);
+
+       $users->each(function ($item) use ($appointment){
+          factory(UserSlots::class)->create([
+              'user_id' => $item->id,
+              'appointment_id'=>$appointment->id,
+              'status'=>'reserved'
+          ]);
+       });
+
+
+        $element = new AuditionManagementController();
+
+        $this->assertFalse($element->alertSlotsEmpty($appointment->id));
+
+
+    }
+
 
     public function test_update_banned_to_yes(){
         $data = factory(Auditions::class)->create(['user_id'=>$this->user_id]);
@@ -189,7 +189,8 @@ class AuditionsUnitTest extends TestCase
         ];
         $auditionsRepo = new AuditionRepository($data);
         $audition = $auditionsRepo->update($dataUpdate);
-        $this->assertTrue($audition);   
+        $this->assertTrue($audition);
     }
+
 
 }
