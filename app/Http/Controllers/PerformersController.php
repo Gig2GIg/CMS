@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
+use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
+use App\Http\Repositories\TagsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Resources\PerformerFilterResource;
 use App\Http\Resources\PerformerResource;
+use App\Models\Appointments;
+use App\Models\Feedbacks;
 use App\Models\Performers;
+use App\Models\Tags;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
@@ -156,14 +161,14 @@ class PerformersController extends Controller
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $idReturn = $repoUserDetails->all()
                 ->whereIn('user_id', $repoPerformer);
-            if($union == 1) {
+            if ($union == 1) {
                 $idReturn = $idReturn->reject(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
                     return $count === 0;
                 });
             }
-            if($union == 0){
+            if ($union == 0) {
                 $idReturn = $idReturn->filter(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
@@ -182,5 +187,34 @@ class PerformersController extends Controller
         }
     }
 
+    public function getTags(Request $request)
+    {
+        try {
+            $dataRepo = new TagsRepository(new Tags());
+            $data = $dataRepo->findbyparam('setUser_id',$this->getUserLogging())->where('user_id',$request->user)->get();
+            return response()->json(['message' => 'tags by user', 'data' => $data], 200);
 
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+        }
+    }
+
+    public function getCommnents(Request $request)
+    {
+        try {
+            $dataRepo = new FeedbackRepository(new Feedbacks());
+            $data = $dataRepo->findbyparam('evaluator_id',$this->getUserLogging())->where('user_id',$request->user)->each(function($item){
+                return [
+                    'id'=>$item->id,
+                    'comment'=>$item->comment,
+                ];
+            });
+            return response()->json(['message' => 'comment by user', 'data' => $data], 200);
+
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+        }
+    }
 }

@@ -18,6 +18,7 @@ use App\Http\Repositories\TagsRepository;
 use App\Http\Repositories\AuditionRepository;
 
 use App\Http\Resources\TagsResource;
+
 class TagsController extends Controller
 {
     protected $log;
@@ -32,16 +33,17 @@ class TagsController extends Controller
     {
         try {
             $data = [
-                'title'=>$request->title,
-                'appointment_id'=>$request->appointment_id,
-                'user_id'=>$request->user_id
+                'title' => $request->title,
+                'appointment_id' => $request->appointment_id,
+                'user_id' => $request->user_id,
+                'setUser_id' => $this->getUserLogging(),
             ];
 
             $repoTag = new TagsRepository(new Tags());
             $tag = $repoTag->create($data);
 
             $dataResponse = [
-                'message' =>'Tag created',
+                'message' => 'Tag created',
                 'data' => $tag
             ];
             $code = 201;
@@ -78,43 +80,40 @@ class TagsController extends Controller
     }
 
 
-
-
-    public function updateFromArray( Request $request)
+    public function updateFromArray(Request $request)
     {
         try {
             $repoTag = new TagsRepository(new Tags());
             $repoAppointment = new AppointmentRepository(new Appointments());
             $appointment = $repoAppointment->find($request->id);
 
-            if (! is_null($appointment)){
+            if (!is_null($appointment)) {
                 foreach ($request->tags as $tag_data) {
 
                     $t = Tags::find($tag_data['id']);
 
-                    if (! is_null($t)){
-                       $t->update([
-                                'title' => $tag_data['title']
+                    if (!is_null($t)) {
+                        $t->update([
+                            'title' => $tag_data['title']
                         ]);
                     }
 
-                    if ( is_null($t) ){
+                    if (is_null($t)) {
                         $repoTag->create([
-                                'title' => $tag_data['title'],
-                                'appointment_id' => $appointment->id,
-                                'user_id' => $tag_data['user_id']
+                            'title' => $tag_data['title'],
+                            'appointment_id' => $appointment->id,
+                            'user_id' => $tag_data['user_id'],
+                            'setUser_id' => $this->getUserLogging(),
                         ]);
                     }
                 }
 
                 $dataResponse = ['data' => 'Tags updates'];
                 $code = 200;
-            }else{
+            } else {
                 $dataResponse = ['data' => 'Audition Not Found'];
                 $code = 404;
             }
-
-
 
 
             return response()->json($dataResponse, $code);
@@ -133,8 +132,8 @@ class TagsController extends Controller
 
             $userTags = $tags->where('user_id', $request->user_id);
 
-            if (! is_null($userTags )) {
-                $dataResponse = ['data' =>   TagsResource::collection($userTags)];
+            if (!is_null($userTags)) {
+                $dataResponse = ['data' => TagsResource::collection($userTags)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];

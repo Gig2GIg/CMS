@@ -15,14 +15,18 @@ class AddAppointmentIdToTagsTable extends Migration
     {
         Schema::table('tags', function (Blueprint $table) {
             $table->integer('appointment_id')->unsigned();
-            $table->foreign('appointment_id') ->references('id')
-            ->on('appointments')
-            ->onDelete('cascade');
+            $table->foreign('appointment_id')->references('id')
+                ->on('appointments')
+                ->onDelete('cascade');
 
             $table->integer('user_id')->unsigned();
-            $table->foreign('user_id') ->references('id')
-            ->on('users')
-            ->onDelete('cascade');
+            $table->foreign('user_id')->references('id')
+                ->on('users')
+                ->onDelete('cascade');
+            $table->integer('setUser_id')->unsigned();
+            $table->foreign('setUser_id')->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 
