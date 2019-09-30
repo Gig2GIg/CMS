@@ -26,7 +26,7 @@ export default {
       
       commit(types.CREATE_SKILL, data);
 
-      dispatch('toast/showMessage', 'Skill created.', { root: true });
+      dispatch('toast/showMessage', 'Blog created.', { root: true });
     } catch (e) {
       throw e;
     } finally {
@@ -34,7 +34,7 @@ export default {
     }
   },
 
-  async update({ dispatch, commit }, skill) {
+  async update({ dispatch, commit }, post) {
     try {
       dispatch('toggleSpinner');
 
@@ -42,7 +42,7 @@ export default {
       await axios.put(`/api/cms/skills/update/${skill.id}`, skill);
       commit(types.UPDATE_SKILL, skill);
 
-      dispatch('toast/showMessage', 'Skill updated.', { root: true });
+      dispatch('toast/showMessage', 'Blog updated.', { root: true });
     } catch (e) {
       throw e;
     } finally {
@@ -50,15 +50,15 @@ export default {
     }
   },
 
-  async destroy({ dispatch, commit }, skill) {
+  async destroy({ dispatch, commit }, post) {
     try {
       dispatch('toggleSpinner');
 
       // Delete skill
-      await axios.delete(`/api/cms/skills/delete/${skill.id}`);
-      commit(types.DELETE_SKILL, skill);
+      await axios.delete(`/api/cms/skills/delete/${post.id}`);
+      commit(types.DELETE_SKILL, post);
 
-      dispatch('toast/showMessage', 'Skill deleted.', { root: true });
+      dispatch('toast/showMessage', 'Blog deleted.', { root: true });
     } catch(e) {
       dispatch('toast/showError', 'Something went wrong.', { root: true });
     } finally {

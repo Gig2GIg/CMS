@@ -153,6 +153,26 @@
                 autofocus
               />
             </b-field>
+            <b-field
+              label="Category"
+              :type="{'is-danger': errors.has('topic')}"
+              :message="errors.first('topic')"
+            >
+              <b-select
+                name="topics"
+                v-model="selectedBlog.topic_id"
+                v-validate="'required'"
+                placeholder="Select a category"
+              >
+                <option
+                  v-for="topic in topics"
+                  :value="topic.id"
+                  :key="topic.id">
+                  {{ topic.title }}
+                </option>
+              </b-select>
+            </b-field>
+
                <div class="mb-6">
               <label class="label">Body</label>
               <ckeditor :editor="editor" v-model="selectedBlog.body" :config="editorConfig"></ckeditor>
@@ -195,6 +215,7 @@ export default {
   }),
   computed: {
     ...mapState('blogs', ['blogs', 'isLoading']),
+    ...mapState('topics', ['topics']),
     ...mapGetters('blogs', ['search']),
 
     filter: function() {
