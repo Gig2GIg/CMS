@@ -24,6 +24,7 @@ class TagsTest extends TestCase
     protected $audition_id;
     protected $performance_id;
     protected $appointmentId;
+    protected $directorId;
 
     public function setUp(): void
     {
@@ -38,6 +39,7 @@ class TagsTest extends TestCase
         $this->audition_id = $audition->id;
         $this->performance_id = $performance->id;
         $this->appointmentId = $appointment->id;
+        $this->directorId = $director->id;
     }
 
     public function test_create_tags()
@@ -46,7 +48,8 @@ class TagsTest extends TestCase
         $data = [
             'title' => 'High',
             'appointment_id' => $this->appointmentId,
-            'user_id' => $this->performance_id
+            'user_id' => $this->performance_id,
+            'setUser_id'=>$this->directorId,
         ];
 
         $tagRepo = new TagsRepository(new Tags());
@@ -63,7 +66,8 @@ class TagsTest extends TestCase
         $data = [
             'title' => 'High',
             'appointment_id' => $this->appointmentId,
-            'user_id' => $this->performance_id
+            'user_id' => $this->performance_id,
+            'setUser_id'=>$this->directorId
         ];
 
         $tagRepo = new TagsRepository(new Tags());
