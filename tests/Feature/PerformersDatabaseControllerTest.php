@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\UserRepository;
 use App\Models\Appointments;
+use App\Models\AuditionContract;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Credits;
@@ -269,7 +271,7 @@ class PerformersDatabaseControllerTest extends TestCase
 
     public function test_get_tags_by_user_logged_200()
     {
-        $data = factory(Auditions::class,10)->create([
+        $data = factory(Auditions::class, 10)->create([
             'user_id' => $this->testId,
         ]);
         $user1 = factory(User::class)->create();
@@ -283,18 +285,17 @@ class PerformersDatabaseControllerTest extends TestCase
                 factory(Tags::class, 10)->create([
                     'appointment_id' => $item2->id,
                     'user_id' => User::all()->random()->id,
-                    'setUser_id'=>$this->testId
+                    'setUser_id' => $this->testId
                 ]);
             });
         });
         $audition = factory(Auditions::class)->create(
-            ['user_id'=>$this->testId]
+            ['user_id' => $this->testId]
         );
         $dataContrib = factory(AuditionContributors::class)->create(['user_id' => $this->testId, 'auditions_id' => $audition->id]);
         $testappoinment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id,
+            'auditions_id' => $audition->id,
         ]);
-
 
 
         $response = $this->json('GET', 'api/t/performers/tags?token=' . $this->token, [
@@ -303,7 +304,7 @@ class PerformersDatabaseControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
                 [
                     'id',
                     'title'
@@ -328,6 +329,7 @@ class PerformersDatabaseControllerTest extends TestCase
                 factory(Tags::class, 10)->create([
                     'appointment_id' => $item2->id,
                     'user_id' => User::all()->random()->id,
+                    'setUser_id' => $this->testId,
                 ]);
             });
         });
@@ -338,33 +340,34 @@ class PerformersDatabaseControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
             ]
         ]);
     }
 
 
-    public function test_get_all_commenst_by_user(){
+    public function test_get_all_commenst_by_user()
+    {
 
         $user = factory(User::class)->create();
         $user1 = factory(User::class)->create();
-        factory(Auditions::class,10)->create([
-            'user_id'=>$user->id
+        factory(Auditions::class, 10)->create([
+            'user_id' => $user->id
         ]);
-       factory(Appointments::class,20)->create([
-            'auditions_id'=>Auditions::all()->random()->id,
+        factory(Appointments::class, 20)->create([
+            'auditions_id' => Auditions::all()->random()->id,
         ]);
-        $slots = factory(Slots::class,30)->create([
-            'appointment_id'=>Appointments::all()->random()->id
+        $slots = factory(Slots::class, 30)->create([
+            'appointment_id' => Appointments::all()->random()->id
         ]);
 
-        $slots->each(function($item) {
+        $slots->each(function ($item) {
             factory(Feedbacks::class)->create([
                 'user_id' => User::all()->random()->id,
                 'appointment_id' => Appointments::all()->random()->id,
                 'evaluator_id' => $this->testId,
                 'slot_id' => $item->id,
-                'comment'=>$this->faker->text(100),
+                'comment' => $this->faker->text(100),
             ]);
         });
         $response = $this->json('GET', 'api/t/performers/comments?token=' . $this->token, [
@@ -373,10 +376,87 @@ class PerformersDatabaseControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
+                [
+                    'id',
+                    'comment'
+                ]
             ]
         ]);
 
+    }
+
+    public function test_get_user_contracts_by_user_logged_200()
+    {
+        factory(User::class, 5)->create();
+        $user = factory(User::class)->create();
+        $auditions = factory(Auditions::class, 30)->create([
+            'user_id' => User::all()->random()->id,
+        ]);
+        $auditions2 = factory(Auditions::class,2)->create([
+            'user_id' => $this->testId,
+        ]);
+        $auditions->each(function ($item) use($user) {
+            factory(AuditionContract::class)->create([
+                'user_id' => $user->id,
+                'auditions_id' => $item->id,
+                'url' => $this->faker->url
+            ]);
+        });
+        $auditions2->each(function ($item2) use($user){
+            factory(AuditionContract::class)->create([
+                'user_id' => $user->id,
+                'auditions_id' =>$item2->id,
+            'url' => $this->faker->url
+        ]);
+        });
+
+
+
+        $response = $this->json('GET', 'api/t/performers/contracts?token=' . $this->token, [
+            'user' => $user->id
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'message',
+            'data' => [
+                [
+                    'id',
+                    'url'
+                ]
+            ]
+        ]);
+    }
+
+    public function test_get_user_contracts_by_user_logged_404()
+    {
+        factory(User::class, 5)->create();
+        $user = factory(User::class)->create();
+        $auditions = factory(Auditions::class, 30)->create([
+            'user_id' => User::all()->random()->id,
+        ]);
+        factory(Auditions::class)->create([
+            'user_id' => $this->testId,
+        ]);
+        $auditions->each(function ($item) use($user) {
+            factory(AuditionContract::class)->create([
+                'user_id' => $user->id,
+                'auditions_id' => $item->id,
+                'url' => $this->faker->url
+            ]);
+        });
+
+
+        $response = $this->json('GET', 'api/t/performers/contracts?token=' . $this->token, [
+            'user' =>999
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'message',
+            'data' => [
+
+            ]
+        ]);
     }
 
 }

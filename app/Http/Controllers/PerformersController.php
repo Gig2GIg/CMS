@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
+use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\TagsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
+use App\Http\Resources\CommentListResponse;
 use App\Http\Resources\PerformerFilterResource;
 use App\Http\Resources\PerformerResource;
 use App\Models\Appointments;
+use App\Models\AuditionContract;
+use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Performers;
 use App\Models\Tags;
@@ -192,7 +196,7 @@ class PerformersController extends Controller
         try {
             $dataRepo = new TagsRepository(new Tags());
             $data = $dataRepo->findbyparam('setUser_id',$this->getUserLogging())->where('user_id',$request->user)->get();
-            return response()->json(['message' => 'tags by user', 'data' => $data], 200);
+            return response()->json(['message' => 'tags by user', 'data' =>$data], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -204,13 +208,24 @@ class PerformersController extends Controller
     {
         try {
             $dataRepo = new FeedbackRepository(new Feedbacks());
-            $data = $dataRepo->findbyparam('evaluator_id',$this->getUserLogging())->where('user_id',$request->user)->each(function($item){
-                return [
-                    'id'=>$item->id,
-                    'comment'=>$item->comment,
-                ];
-            });
-            return response()->json(['message' => 'comment by user', 'data' => $data], 200);
+            $data = $dataRepo->findbyparam('evaluator_id',$this->getUserLogging())->where('user_id',$request->user)->get();
+
+            return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
+
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+        }
+    }
+
+    public function getContracts(Request $request)
+    {
+        try {
+            $dataRepo = new AuditionRepository(new Auditions());
+            $dataAuditions = $dataRepo->findbyparam('user_id',$this->getUserLogging())->unique();
+            $data = AuditionContract::whereIn('auditions_id',$dataAuditions)->get();
+
+            return response()->json(['message' => 'contracts by user', 'data' => $data], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

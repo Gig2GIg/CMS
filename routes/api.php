@@ -53,6 +53,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
     $router->get('/performers/tags', ['uses'=>'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses'=>'PerformersController@getCommnents']);
+    Route::get('/performers/contracts', ['uses'=>'PerformersController@getContracts']);
 
 
    //final cast
