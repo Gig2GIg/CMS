@@ -43,12 +43,6 @@ export const CREATE_TOPIC = 'Create Topic';
 export const UPDATE_TOPIC = 'Update Topic';
 export const DELETE_TOPIC = 'Delete Topic';
 
-export const FETCH_TOPICS_SUCCESS = 'Fetch Topics successful';
-export const FETCH_TOPICS_FAILURE = 'Fetch Topics failed';
-export const CREATE_TOPIC = 'Create Topic';
-export const UPDATE_TOPIC = 'Update Topic';
-export const DELETE_TOPIC = 'Delete Topic';
-
 
 export const FETCH_VENDORS_SUCCESS = 'Fetch Vendors successful';
 export const FETCH_VENDORS_FAILURE = 'Fetch Vendors failed';

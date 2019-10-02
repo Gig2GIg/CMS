@@ -13,6 +13,7 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/topics');
+      console.log(data);
       commit(types.FETCH_TOPICS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_TOPICS_FAILURE);

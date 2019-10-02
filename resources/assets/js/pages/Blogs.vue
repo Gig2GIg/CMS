@@ -154,7 +154,7 @@
               />
             </b-field>
             <b-field
-              label="Category"
+              label="Topic"
               :type="{'is-danger': errors.has('topic')}"
               :message="errors.first('topic')"
             >
@@ -162,7 +162,7 @@
                 name="topics"
                 v-model="selectedBlog.topic_id"
                 v-validate="'required'"
-                placeholder="Select a category"
+                placeholder="Select a topic"
               >
                 <option
                   v-for="topic in topics"
