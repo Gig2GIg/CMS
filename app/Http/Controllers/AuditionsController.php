@@ -146,9 +146,7 @@ class AuditionsController extends Controller
     {
         return [
             'title' => $request->title,
-            'date' => $this->toDate->transformDate($request->date),
-            'time' => $request->time,
-            'location' => json_encode($request->location),
+
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'personal_information'=>$request->personal_information,
@@ -206,6 +204,9 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
+            'date' => $this->toDate->transformDate($request->date),
+            'time' => $request->time,
+            'location' => json_encode($request->location),
             'slots' => $request['appointment']['spaces'],
             'type' => $request['appointment']['type'],
             'length' => $request['appointment']['length'],
@@ -585,7 +586,7 @@ class AuditionsController extends Controller
             $audition = $auditionRepo->find($request->id);
             $updateRepo = new AuditionRepository($audition);
             $update = $updateRepo->update(['banned' => $banStatus,]);
-            
+
             if ($update){
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
@@ -593,11 +594,11 @@ class AuditionsController extends Controller
                 $dataResponse = ['data' => 'Data Not Updated'];
                 $code = 406;
             }
-            return response()->json(['data' => $dataResponse], $code);            
+            return response()->json(['data' => $dataResponse], $code);
         }
         catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Data Not Updated'], 406);
-        }            
+        }
     }
 }
