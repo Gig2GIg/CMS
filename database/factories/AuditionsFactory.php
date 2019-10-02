@@ -25,14 +25,7 @@ $factory->define(App\Models\Auditions::class, function (Faker $faker) {
     $randNumber1 = rand(0,3);
     return [
         'title' => $faker->colorName." ".$faker->domainWord,
-        'date' => $faker->date(),
-        'time' => $faker->time(),
-        'location' => json_encode([
-            "latitude"=> $faker->latitude,
-            "latitudeDelta"=> $faker->latitude,
-            "longitude"=>$faker->longitude,
-            "longitudeDelta"=>$faker->longitude,
-        ]),
+
         'description' => 'Sed tempora itaque iusto. Praesentium explicabo',
         'url' => $faker->url(),
         'personal_information'=>'Sed tempora itaque iusto. Praesentium explicabo',

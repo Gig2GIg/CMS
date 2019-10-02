@@ -27,10 +27,7 @@ $media = new Resources();
         return [
             'id' => $this->id,
             'title' => $this->title,
-            "date" => $this->date,
             'create'=>$this->created_at,
-            "time" => $this->time,
-            "location" => $this->location,
             "description" => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,
