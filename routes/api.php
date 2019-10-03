@@ -115,8 +115,6 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
     $router->delete('/auditions/feeback/recommendations-marketplaces/{id}/delete/',['uses'=>'RecommendationsController@delete']);
 
-
-
     // AUDITIONS FEEDBACK
     $router->get('/auditions/{id}/feedbacks/details',['uses'=>'FeedBackController@feedbackDetailsByUser']);
 
@@ -166,8 +164,14 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->post('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@createRound']);
     $router->put('/appointment/{appointment_id}',['uses'=>'AppoinmentController@updateRound']);
 
+    // ROLES
+    $router->get('/roles', ['uses' => 'RolesController@getRoles']);
+    $router->post('/roles/create', ['uses' => 'RolesController@createRole']);
+    $router->delete('/roles/{id}/delete', ['uses' => 'RolesController@deleteRole']);
+
     //GET slots by appointment id
     $router->get('/appointments/{appointment_id}/slots',['uses'=>'AppoinmentController@getSlots']);
+
 
 });
 
