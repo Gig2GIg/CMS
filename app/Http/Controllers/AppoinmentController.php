@@ -2,16 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Models\Appointments;
 use App\Models\Slots;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class AppoinmentController extends Controller
 {
-  public function getRounds(Request $request){
+    /**
+     * @var ManageDates
+     */
+    protected $toDate;
+
+
+
+    public function getRounds(Request $request){
       try{
           $repo = new AppointmentRepository(new Appointments());
           $data = $repo->findbyparam('auditions_id',$request->audition_id)->get();
@@ -26,9 +35,13 @@ class AppoinmentController extends Controller
   }
 
   public function createRound(Request $request){
+        $this->toDate = new ManageDates();
       try{
         $repo = new AppointmentRepository(new Appointments());
         $appointment = [
+            'date' => $this->toDate->transformDate($request->date),
+            'time' => $request->time,
+            'location' => json_encode($request->location),
             'slots'=>$request->number_slots,
             'type'=>$request->type,
             'length'=>$request->length,
@@ -38,6 +51,9 @@ class AppoinmentController extends Controller
             'status'=>true,
             'auditions_id'=>$request->audition_id,
         ];
+        if(is_null($request->slots)){
+            throw new \Exception('Not Slots to process');
+        }
         $data = $repo->create($appointment);
 
           foreach ($request['slots'] as $slot) {
@@ -45,8 +61,6 @@ class AppoinmentController extends Controller
               $slotsRepo = new SlotsRepository(new Slots());
               $slotsRepo->create($dataSlots);
           }
-
-
         return response()->json(['message'=>'Round Create','data'=>$data],200);
       }catch (\Exception $exception){
           $this->log->error($exception->getMessage());
@@ -57,7 +71,7 @@ class AppoinmentController extends Controller
     public function updateRound(Request $request){
         try{
             $repo = new AppointmentRepository(new Appointments());
-            $data = $repo->find($request->id);
+            $data = $repo->find($request->appointment_id);
             $update = $data->update(['status'=>$request->status]);
             return response()->json(['message'=>'Round Create','data'=>$data],200);
         }catch (\Exception $exception){
@@ -76,5 +90,20 @@ class AppoinmentController extends Controller
             'is_walk' => $slot['is_walk'],
         ];
 
+    }
+
+    public function getSlots(Request $request){
+        try{
+            $repo = new AppointmentRepository(new Appointments());
+            $repoData = $repo->find($request->appointment_id);
+            $data= $repoData->slot->sortBy('time');
+            if($data->count()===0){
+                throw new NotFoundException('Not found data');
+            }
+           return response()->json(['message'=>'list by slots','data'=>$data],200);
+        }catch (\Exception $exception){
+            $this->log->error($exception->getMessage());
+            return response()->json(['message'=>'Not found data','data'=>[]],404);
+        }
     }
 }

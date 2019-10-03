@@ -24,6 +24,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/remember/admin', ['uses' => 'UserController@sendPasswordAdmin']);
     $router->post('/users/create',['uses'=>'UserController@store']);
 
+
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
@@ -50,6 +51,11 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
+    $router->get('/performers/tags', ['uses'=>'PerformersController@getTags']);
+    Route::get('/performers/comments', ['uses'=>'PerformersController@getCommnents']);
+    Route::get('/performers/contracts', ['uses'=>'PerformersController@getContracts']);
+
+
    //final cast
     $router->post('finalcast',['uses'=>'FinalCastController@add']);
     $router->get('finalcast/{audition_id}/audition',['uses'=>'FinalCastController@list']);
@@ -158,7 +164,10 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     //rounds
     $router->get('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@getRounds']);
     $router->post('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@createRound']);
-    $router->put('/appointment/{appointment_id}',['uses'=>'AppoinmentController@updateRound']);
+    $router->put('/appointment/{appointment_id}/rounds',['uses'=>'AppoinmentController@updateRound']);
+
+    //GET slots by appointment id
+    $router->get('/appointments/{appointment_id}/slots',['uses'=>'AppoinmentController@getSlots']);
 
 });
 
@@ -376,6 +385,6 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
-        
+
     });
 });

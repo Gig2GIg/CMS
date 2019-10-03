@@ -21,33 +21,7 @@ class AuditionManagementTest extends TestCase
     protected $rolId;
     protected $token;
 
-    public function test_save_requested()
-    {
-        $audition2 = factory(Auditions::class)->create(['user_id' => $this->userId]);
-        $users2 = factory(User::class, 7)->create();
-        $appointment2 = factory(Appointments::class)->create(['auditions_id' => $audition2->id]);
-        $slot = factory(Slots::class)->create(['appointment_id'=>$appointment2->id]);
-        factory(Appointments::class, 10)->create(['auditions_id' => $audition2->id]);
-        $users2->each(function ($item) use ($audition2, $appointment2) {
-            factory(UserSlots::class)->create([
-                'user_id' => $item->id,
-                'appointment_id' => $appointment2->id,
-                'status' => 'reserved',
-                'slots_id' => factory(Slots::class)->create(['appointment_id' => $appointment2->id])->id
 
-            ]);
-        });
-
-        $response = $this->json('POST',
-            'api/a/auditions/user?token=' . $this->token,
-            [
-                'appointment' => $appointment2->id,
-                'rol' => factory(Roles::class)->create(['auditions_id' => $audition2->id])->id,
-                'type' =>2
-            ]);
-        $response->assertStatus(201);
-        $response->assertJsonStructure(['data']);
-    }
 
     public function test_save_upcoming_audition_avaliable()
     {

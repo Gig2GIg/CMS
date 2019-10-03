@@ -73,5 +73,23 @@ class SlotTest extends TestCase
         $slots->find(2345);
     }
 
+    public function test_get_slots_by_appointment(){
+        $user = factory(User::class)->create();
+        $audition = factory(Auditions::class)->create([
+            'user_id'=>$user->id
+        ]);
+
+        $appointment = factory(Appointments::class)->create([
+            'auditions_id'=>$audition->id
+        ]);
+        factory(Slots::class,10)->create(
+            ['appointment_id'=>$appointment->id]
+        );
+        $repo = new SlotsRepository(new Slots());
+        $repoData = $repo->findbyparam('appointment_id',$appointment->id);
+
+        $this->assertTrue($repoData->count() >0 );
+    }
+
 
 }
