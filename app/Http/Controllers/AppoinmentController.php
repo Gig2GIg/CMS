@@ -73,10 +73,10 @@ class AppoinmentController extends Controller
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
             $update = $data->update(['status'=>$request->status]);
-            return response()->json(['message'=>'Round Create','data'=>$data],200);
+            return response()->json(['message'=>'Round close','data'=>$data],200);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['message'=>'Round not create ','data'=>[]],406);
+            return response()->json(['message'=>'Round not close ','data'=>[]],406);
         }
     }
 
