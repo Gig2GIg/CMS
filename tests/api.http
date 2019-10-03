@@ -3,7 +3,21 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "user@g2g.com",
+    "email": "admin@g2g.com",
     "password":"123456"
 }
+###
+
+
+GET http://g2gdev.test/api/t/performers/tags
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nMmdkZXYudGVzdFwvYXBpXC9sb2dpbiIsImlhdCI6MTU2OTg2NDQzMSwiZXhwIjo5NTc5ODAxODI5MSwibmJmIjoxNTY5ODY0NDMxLCJqdGkiOiIxaU5UbzQ1eGRpQld3ckRlIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidHlwZSI6IjEifQ.kQxzPgErR1Ax-4GLr4wGHrwE5odRvA_P_mtpww-UYUE
+###
+
+
+GET http://g2gdev.test/api/t/performers/commnets
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nMmdkZXYudGVzdFwvYXBpXC9sb2dpbiIsImlhdCI6MTU2OTg2NDQzMSwiZXhwIjo5NTc5ODAxODI5MSwibmJmIjoxNTY5ODY0NDMxLCJqdGkiOiIxaU5UbzQ1eGRpQld3ckRlIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidHlwZSI6IjEifQ.kQxzPgErR1Ax-4GLr4wGHrwE5odRvA_P_mtpww-UYUE
 ###

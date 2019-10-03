@@ -86,9 +86,9 @@ class AuditionManagementController extends Controller
                     $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ?? '';
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $appoinmetRepo = new AppointmentRepository(new Appointments());
-                    $appointmentId = $appoinmetRepo->find($request->appointment)->id;
+                    $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
                     $auditionRepo = new AuditionRepository(new Auditions());
-                    $audition = $auditionRepo->find($appointmentId);
+                    $audition = $auditionRepo->find($auditionsId);
                     $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
                     if (isset($userManager->email) !== null && isset($userManager->notifications)) {
                         $mail = new SendMail();
@@ -265,30 +265,10 @@ class AuditionManagementController extends Controller
     public function getPassedMangement()
     {
         try {
-            $this->collection = new Collection();
-            $dataAuditions = new AuditionRepository(new Auditions());
-            $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
+            $data = $this->getPassedAuditions();
 
-            $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
-            $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
-
-            $dataContri->each(function ($item) {
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audiData = $auditionRepo->find($item['auditions_id']);
-                if ($audiData->status == 2) {
-                    $this->collection->push($audiData);
-                }
-            });
-
-
-            $data->each(function ($item) {
-                if ($item['status'] == 2) {
-                    $this->collection->push($item);
-                }
-            });
-
-            if ($this->collection->count() > 0) {
-                $dataResponse = ['data' => AuditionResponse::collection($this->collection)];
+            if ($data->count() > 0) {
+                $dataResponse = ['data' => AuditionResponse::collection($data)];
                 $code = 200;
             } else {
                 throw new Exception('Not Found Data');
@@ -695,6 +675,32 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Error to process'], 406);
         }
+    }
+
+    public function getPassedAuditions()
+    {
+        $collection = new Collection();
+        $dataAuditions = new AuditionRepository(new Auditions());
+        $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
+
+        $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
+        $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
+
+        $dataContri->each(function ($item) use ($collection) {
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audiData = $auditionRepo->find($item['auditions_id']);
+            if ($audiData->status == 2) {
+                $collection->push($audiData);
+            }
+        });
+
+
+        $data->each(function ($item) use ($collection){
+            if ($item['status'] == 2) {
+                $collection->push($item);
+            }
+        });
+        return $collection;
     }
 
 

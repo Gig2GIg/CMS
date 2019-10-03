@@ -9,6 +9,9 @@ class Appointments extends Model
 {
     protected $fillable =[
         'slots',
+        'date',
+        'time',
+        'location',
         'type',
         'length',
         'start',

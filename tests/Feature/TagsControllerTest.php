@@ -107,13 +107,13 @@ class TagsControllerTest extends TestCase
     public function test_update_tags_from_array_200()
     {
 
-        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
+        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id,'setUser_id'=>$this->userId]);
 
        $data =  [
                     'tags' => [
                                 ['title' => 'UPDA', 'id' => $tags[0]->id],
                                 ['title' => 'UPDA','id' => $tags[1]->id],
-                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id]
+                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id,'setUser_id'=>$this->userId]
                 ]
             ];
 
@@ -126,13 +126,13 @@ class TagsControllerTest extends TestCase
     public function test_update_tags_from_array_422()
     {
 
-        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
+        $tags = factory(Tags::class, 10)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id,'setUser_id'=>$this->userId]);
 
        $data =  [
                     'tags' => [
                                 ['title' => 'UPDA', 'id' => $tags[0]->id],
                                 ['title' => 'UPDA','id' => $tags[1]->id],
-                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id]
+                                ['title' => 'NEW','id' => null, 'appointment_id' => $this->appointmentId,'user_id' => $this->performance_id,'setUser_id'=>$this->userId]
                 ]
             ];
 
@@ -148,7 +148,7 @@ class TagsControllerTest extends TestCase
     public function test_delete_tags_200()
     {
 
-        $tag = factory(Tags::class)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
+        $tag = factory(Tags::class)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id,'setUser_id'=>$this->userId]);
         $response = $this->json('DELETE', 'api/t/auditions/feedbacks/tags/'. $tag->id. '/delete' .'?token=' . $this->token);
 
         $response->assertStatus(200);
@@ -157,7 +157,7 @@ class TagsControllerTest extends TestCase
     public function test_list_tags_by_user_200()
     {
 
-        $tag = factory(Tags::class, 50)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id]);
+        $tag = factory(Tags::class, 50)->create(['appointment_id' => $this->appointmentId, 'user_id' => $this->performance_id,'setUser_id'=>$this->userId]);
 
         $response = $this->json('GET', 'api/t/auditions/'. $this->appointmentId. '/user/tags'. '?user_id='. $this->performance_id.'&token=' . $this->token);
 
