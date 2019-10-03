@@ -19,6 +19,7 @@ class AuditionResourceFind extends JsonResource
     {
 $roles = new Roles();
 $countRoles = $roles->where('auditions_id',$this->id)->count();
+
 $media = new Resources();
         $url_media=$media
             ->where('type','cover')

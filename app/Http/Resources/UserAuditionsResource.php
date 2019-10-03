@@ -43,7 +43,7 @@ class UserAuditionsResource extends JsonResource
             'rol_name'=>$rolanme[0] ?? null,
             'id_user' => $appoinmentData->auditions->user_id,
             'title' => $appoinmentData->auditions->title,
-            'date' => $appoinmentData->auditions->date,
+            'date' => $appoinmentData->date,
             'hour' => $dataHour,
             'union' => $appoinmentData->auditions->union,
             'contract' => $appoinmentData->auditions->contract,

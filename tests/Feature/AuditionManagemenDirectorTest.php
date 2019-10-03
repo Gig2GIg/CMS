@@ -34,6 +34,11 @@ class AuditionManagemenDirectorTest extends TestCase
         $data = factory(Auditions::class, 10)->create([
             'user_id' => $this->userId,
         ]);
+        $data->each(function ($item){
+           factory(Appointments::class)->create([
+               'auditions_id'=>$item->id
+           ]);
+        });
         $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
         $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $this->userId, 'auditions_id' => $data[0]->id]);
         $response = $this->json('GET',
@@ -58,6 +63,11 @@ class AuditionManagemenDirectorTest extends TestCase
         $data = factory(Auditions::class, 10)->create([
             'user_id' => $this->userId,
         ]);
+        $data->each(function ($item){
+            factory(Appointments::class)->create([
+                'auditions_id'=>$item->id
+            ]);
+        });
         $dataRol = factory(Roles::class, 10)->create(['auditions_id' => $data[0]->id]);
         $dataContrib = factory(AuditionContributors::class, 10)->create(['user_id' => $this->userId, 'auditions_id' => $data[0]->id]);
         $response = $this->json('GET',

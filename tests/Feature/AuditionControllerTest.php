@@ -191,7 +191,7 @@ class AuditionControllerTest extends TestCase
         $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
         $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
-        $audition2 = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $audition2 = factory(Auditions::class)->create(['user_id' => $user->id,'status'=>false]);
         $roles2 = factory(Roles::class)->create(['auditions_id' => $audition2->id]);
         $appoinments2 = factory(Appointments::class)->create(['auditions_id' => $audition2->id]);
         $slot2 = factory(Slots::class)->create(['appointment_id' => $appoinments2->id]);
