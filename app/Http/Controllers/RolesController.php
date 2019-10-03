@@ -2,84 +2,86 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Utils\LogManger;
+use App\Http\Exceptions\NotFoundException;
+use App\Http\Repositories\RolesRepository;
+use App\Http\Resources\RolesResource;
 use App\Models\Roles;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class RolesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+
+    public function createRole(Request $request)
     {
-        //
+        try
+        {
+            $data = [
+                'name' => $request->name,
+                'description' => $request->description,
+                'auditions_id' => $request->auditions_id
+            ];
+
+            $rolesRepository =  new RolesRepository(new Roles);
+            $roles = $rolesRepository->create($data);
+
+            $response = ['data' => 'Skill created'];
+            $code = 201;
+
+            return response()->json($response, $code);
+        }
+        catch(\Exception $ex) 
+        {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 500);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getRoles(Roles $roles)
     {
-        //
+        $rolesRepository = new RolesRepository(new Roles);
+        $data = $rolesRepository->all();
+
+        if ($data->count() > 0) 
+        {
+            $dataResponse = ['data' => RolesResource::collection($data)];
+            $code = 200;
+        } 
+        else 
+        {
+            $dataResponse = ['data' => 'Data Not Found'];
+            $code = 404;
+        }
+
+        return response()->json($dataResponse, $code);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function deleteRole(Request $request)
     {
-        //
-    }
+        try {
+            $rolesRepository = new RolesRepository(new Roles());
+            $role = $rolesRepository->find($request->id);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Roles  $roles
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Roles $roles)
-    {
-        //
-    }
+            if ($role->delete()) 
+            {
+                $dataResponse = ['data' => 'Role removed'];
+                $code = 200;
+            } 
+            else 
+            {
+                $dataResponse = ['data' => 'Role not removed'];
+                $code = 404;
+            }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Roles  $roles
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Roles $roles)
-    {
-        //
-    }
+            return response()->json($dataResponse, $code);
+        } 
+        catch (\Exception $ex) 
+        {
+            $this->log->error($ex->getMessage());
+            return response()->json(['error' => 'ERROR'], 422);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Roles  $roles
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Roles $roles)
-    {
-        //
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Roles  $roles
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Roles $roles)
-    {
-        //
-    }
+    
 }
