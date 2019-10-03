@@ -170,7 +170,7 @@ class AppointmentManagementControllerTest extends TestCase
             'status'=>false
         ];
         $response = $this->json('PUT',
-            'api/t/appointment/'.$appoinment->id.'?token=' . $this->token,$data);
+            'api/t/appointment/'.$appoinment->id.'/rounds?token=' . $this->token,$data);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
