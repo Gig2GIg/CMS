@@ -23,7 +23,8 @@ class MarketplaceResource extends JsonResource
             'phone_number'=>$this->phone_number,
             'services'=>$this->services,
             'image' => $this->image,
-            'url_web' => $this->url_web
+            'url_web' => $this->url_web,
+            'featured' => $this->featured
         ];
     }
 }

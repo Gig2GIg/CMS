@@ -46,6 +46,7 @@ class MarketplaceController extends Controller
     {
         if ($request->json())
         {
+            
             $marketplaceData = [
                 'title' => $request->title,
                 'address' => $request->address,
@@ -53,7 +54,8 @@ class MarketplaceController extends Controller
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
                 'marketplace_category_id' => $marketplaceCategory->id,
-                'url_web' => $request->url_web
+                'url_web' => $request->url_web,
+                'featured' => $request->featured
             ];
 
             $marketplace = new MarketplaceRepo(new Marketplace);
@@ -100,6 +102,51 @@ class MarketplaceController extends Controller
             return response()->json(['data' => "Not found Data"], 404);
         }
     }
+
+    public function makeFeatured(Request $request)
+    {
+        try {
+            if ($request->json()) {
+
+                $marketplaceData = [
+                    'featured' => 'yes'
+                ];
+
+                $marketplace = new MarketplaceRepo(new Marketplace());
+                $marketplace_result = $marketplace->find($request->id);
+                $marketplace_result->update($marketplaceData);
+
+                return response()->json(['data' => new MarketplaceResource($marketplace_result)]);
+            } else {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Not found Data"], 404);
+        }
+    }
+
+    public function makeNotFeatured(Request $request)
+    {
+        try {
+            if ($request->json()) {
+
+                $marketplaceData = [
+                    'featured' => 'no'
+                ];
+
+                $marketplace = new MarketplaceRepo(new Marketplace());
+                $marketplace_result = $marketplace->find($request->id);
+                $marketplace_result->update($marketplaceData);
+
+                return response()->json(['data' => new MarketplaceResource($marketplace_result)]);
+            } else {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+        } catch (NotFoundException $e) {
+            return response()->json(['data' => "Not found Data"], 404);
+        }
+    }
+
 
     public function getMarkeplace(): ?\Illuminate\Http\JsonResponse
     {

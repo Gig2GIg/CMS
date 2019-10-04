@@ -56,6 +56,8 @@
                 >{{ props.row.title }}</b-table-column>
 
                 <b-table-column field="phone_number" label="Contact" sortable>{{ props.row.phone_number }}</b-table-column>
+                <b-table-column field="featured" label="Featured" sortable>{{ props.row.featured }}</b-table-column>
+
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
@@ -67,6 +69,16 @@
                     <b-dropdown-item has-link>
                       <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
                     </b-dropdown-item>
+                    <div v-if="props.row.featured == 'no'">
+                      <b-dropdown-item has-link>
+                      <a @click.prevent.stop="confirmFeatured(props.row)">Make Featured</a>
+                    </b-dropdown-item>
+                    </div>
+                     <div v-else>
+                      <b-dropdown-item has-link>
+                      <a @click.prevent.stop="confirmNotFeatured(props.row)">Make Not Featured</a>
+                    </b-dropdown-item>
+                    </div>
                   </b-dropdown>
                 </b-table-column>
               </template>
@@ -97,6 +109,10 @@
                       <p>
                         <strong>Services:</strong>
                         <span v-html=" props.row.services"></span>
+                      </p>
+                      <p>
+                        <strong>Featured:</strong>
+                        <span v-html=" props.row.featured"></span>
                       </p>
                     </div>
                   </div>
@@ -167,6 +183,26 @@
                   :value="category.id"
                   :key="category.id">
                   {{ category.name }}
+                </option>
+              </b-select>
+            </b-field>
+
+            <b-field
+              label="Featured"
+              :type="{'is-danger': errors.has('featured')}"
+              :message="errors.first('featured')"
+            >
+              <b-select
+                name="featured"
+                v-model="selectedVendor.featured"
+                v-validate="'required'"
+                placeholder="Select a "
+              >
+                <option
+                  v-for="f in ['yes', 'no']"
+                  :value="f"
+                  :key="f">
+                  {{ f }}
                 </option>
               </b-select>
             </b-field>
@@ -285,7 +321,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy']),
+    ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy', 'updateFeatured', 'updateNotFeatured']),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(vendor) {
@@ -298,6 +334,29 @@ export default {
         onConfirm: this.deleteVendor,
       });
     },
+
+  confirmFeatured(vendor) {
+      this.selectedVendor = vendor;
+      this.$dialog.confirm({
+        message: `Are you sure you want to make featured  "${this.selectedVendor.title}"?`,
+        confirmText: "Yes, I'm sure",
+        type: 'is-success',
+        hasIcon: true,
+        onConfirm: this.makeFaturedVendor,
+      });
+    },
+
+  confirmNotFeatured(vendor) {
+      this.selectedVendor = vendor;
+      this.$dialog.confirm({
+        message: `Are you sure you want to make not featured  "${this.selectedVendor.title}"?`,
+        confirmText: "Yes, I'm sure",
+        type: 'is-success',
+        hasIcon: true,
+        onConfirm: this.makeFaturedNotVendor,
+      });
+    },
+
 
     showCreateModal() {
       this.selectedFile = {};
@@ -319,6 +378,15 @@ export default {
       this.selectedFile.extension = file.name.split(".").pop();
       this.selectedFile.preview = URL.createObjectURL(file);
     },
+
+    async makeFaturedVendor() {
+      await this.updateFeatured(this.selectedVendor);
+    },
+
+   async makeFaturedNotVendor() {
+      await this.updateNotFeatured(this.selectedVendor);
+    },
+
 
     async createVendor() {
       try {

@@ -320,7 +320,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
-
+        
         //marketplace by category
         Route::prefix('marketplace_categories')->group(function () use ($router) {
             $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
@@ -332,6 +332,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+');
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+');
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+');
+        $router->post('/marketplaces/{id}/featured','MarketplaceController@makeFeatured')->where('id', '[0-9]+');
+        $router->post('/marketplaces/{id}/not-featured','MarketplaceController@makeNotFeatured')->where('id', '[0-9]+');
 
         //TYPE PRODUCTS
         $router->get('/type-products', 'TypeProductsController@getAll');
