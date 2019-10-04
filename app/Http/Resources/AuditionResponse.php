@@ -43,7 +43,7 @@ class AuditionResponse extends JsonResource
             $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
         }else{
 
-            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->sortBy('created_at')->first();
+            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->first();
         }
         Log::info($appointmentData->toArray());
         $location = isset($appointmentData->location) ?$appointmentData->location:'{}';
