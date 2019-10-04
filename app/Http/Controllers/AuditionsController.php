@@ -158,6 +158,7 @@ class AuditionsController extends Controller
             'contract' => $request->contract,
             'production' => $request->production,
             'status' => false,
+            'online'=>$request->online ?? false,
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];

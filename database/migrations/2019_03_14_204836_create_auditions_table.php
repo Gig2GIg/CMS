@@ -28,6 +28,7 @@ class CreateAuditionsTable extends Migration
             $table->string('contract');
             $table->string('production');
             $table->boolean('status');
+            $table->boolean('online')->default(false);
             $table->integer('user_id')->unsigned();
             $table->timestamps();
         });

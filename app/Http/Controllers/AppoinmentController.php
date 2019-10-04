@@ -35,6 +35,13 @@ class AppoinmentController extends Controller
   }
 
   public function createRound(Request $request){
+        $repoClosedA = new AppointmentRepository(new Appointments());
+        $repoDataA = $repoClosedA->findbyparam('auditions_id',$request->audition_id);
+        if($repoDataA->count() > 0){
+            $repoDataA->update([
+               'status'=>false,
+            ]);
+        }
         $this->toDate = new ManageDates();
       try{
         $repo = new AppointmentRepository(new Appointments());

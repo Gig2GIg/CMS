@@ -38,14 +38,15 @@ class AuditionResponse extends JsonResource
         $data = $userDataRepo->findbyparam('user_id',$this->user_id);
         $repoA = new AppointmentRepository(new Appointments());
 
-        if($this->status){
+        if($this->status!=2){
 
             $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
         }else{
 
-            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->first();
+            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->sortBy('created_at')->first();
         }
-
+        Log::info($appointmentData->toArray());
+        $location = isset($appointmentData->location) ?$appointmentData->location:'{}';
         return [
             'id' => $this->id,
             'id_user'=>$this->user_id,
@@ -54,7 +55,7 @@ class AuditionResponse extends JsonResource
             "date" => $appointmentData->date ?? null,
             'create'=>$this->created_at,
             "time" => $appointmentData->time ?? null,
-            "location" => json_decode($appointmentData->location) ?? null,
+            "location" => json_decode($location),
             "description" => $this->description,
             "url" => $this->url,
             'personal_information'=>$this->personal_information,
