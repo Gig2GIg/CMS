@@ -38,6 +38,7 @@ class UserAuditionsResource extends JsonResource
         }
         return [
             'id' => $this->id,
+            'appointment'=>$appoinmentData->id,
             'auditions_id'=>$appoinmentData->auditions->id,
             'rol'=> $this->rol_id,
             'rol_name'=>$rolanme[0] ?? null,
@@ -50,8 +51,6 @@ class UserAuditionsResource extends JsonResource
             'production' => $dataProduction,
             'media' => $url_media[0] ?? null,
             'number_roles' => count($appoinmentData->auditions->roles),
-
-
         ];
     }
 }
