@@ -115,10 +115,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-                    $this->sendPushNotification(
-                        $audition,
-                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                    );
+                    $this->sendStoreNotificationToContributors($audition);
                 }
                 DB::commit();
 
@@ -137,6 +134,20 @@ class AuditionsController extends Controller
         }
     }
 
+    public function sendStoreNotificationToContributors($audition): void
+    {
+        try {           
+            $audition->contributors->each(function ($user_contributor) use ($audition) {
+                $this->pushNotifications(
+                    'You have been registered for the audition '. $audition->title,
+                    $user_contributor
+                );
+            });            
+
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
 
     /**
      * @param $request
@@ -569,6 +580,8 @@ class AuditionsController extends Controller
 
             $notification = $notificationHistoryRepo->find($request->notification_id);
 
+            $this->sendInviteNotificationToContributors($audition);
+
             $data = [
                 'status' => $request->status
             ];
@@ -612,6 +625,21 @@ class AuditionsController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception);
             return response()->json(['data' => 'Error to process'], 406);
+        }
+    }
+
+    public function sendInviteNotificationToContributors($audition): void
+    {
+        try {           
+            $audition->contributors->each(function ($user_contributor) use ($audition) {
+                $this->pushNotifications(
+                    'You have been invited for the audition '. $audition->title,
+                    $user_contributor
+                );
+            });            
+
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 

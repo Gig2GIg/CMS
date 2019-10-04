@@ -41,14 +41,17 @@ class MonitorManagerController extends Controller
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointment = $appointmentRepo->find($request->appointment);
 
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($appointment->auditions_id);
+
+                $userDirector = $audition->user;
+
                 $this->createNotification($appointment->auditions, $request->title);
 
-//                $this->sendPushNotification(
-//                    $appointment->auditions,
-//                    'custom',
-//                    null,
-//                    $request->title
-//                );
+                $this->saveCreateNotification($userDirector, $audition);
+
+                $this->sendCreateNotification($audition);
+
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
                 $code = 406;
@@ -60,6 +63,38 @@ $this->log->error($exception->getLine());
 $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Update Not Publised'], 406);
+        }
+    }
+
+   public function sendCreateNotification($audition): void
+    {
+        try {            
+            $audition->user->each(function ($user_director) use ($audition) {               
+                $this->pushNotifications(
+                    'Audition '. $audition->title .' has been created',
+                    $user_director
+                );
+            });
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function saveCreateNotification($user, $audition): void
+    {
+        try {
+            if ($user instanceof User){
+                $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'create_audition',
+                    'status' => 'unread',
+                    'message'=> 'Audition '. $audition->title . ' has been created'
+                ]);
+            }
+
+        }catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 
