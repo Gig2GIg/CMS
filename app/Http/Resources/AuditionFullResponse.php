@@ -3,9 +3,11 @@
 namespace App\Http\Resources;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\Appointments;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
@@ -34,16 +36,16 @@ class AuditionFullResponse extends JsonResource
         $this->roles->each(function($item){
             $item->image;
         });
-        $appoinment = $this->appointment;
+        $repoA = new AppointmentRepository(new Appointments());;
         $dataProduction = explode(',',$this->production);
-        if($this->status){
-            $appoinment = $this->appointment->where('status',true)->first();
+        if($this->status != 2){
+            $appoinment = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
         }else{
-            $appoinment = $this->appointment->first();
+            $appoinment = $repoA->findbyparam('auditions_id',$this->id)->first();
         }
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
-
+        $location = isset($appointmentData->location) ? $appoinment->location:'{}';
         $appoinmentResponse =  ['general' => $this->appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
@@ -51,7 +53,7 @@ class AuditionFullResponse extends JsonResource
             'date' => $appoinment->date ?? null,
             'time' => $appoinment->time ?? null,
             'create'=>$this->created_at,
-            'location' => json_decode($appoinment->location) ?? null,
+            'location' => $location,
             'description' => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,
@@ -66,6 +68,7 @@ class AuditionFullResponse extends JsonResource
             'cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=','cover')->get()[0]['url'] ?? null,
             'id_cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=','cover')->get()[0]['id'] ?? null,
             'status' => $this->status,
+            'online'=>$this->online,
             'user_id' => $this->user_id,
             'director' => $this->user->load('details'),
             'agency'=>$dataUserDet->agency_name ?? null,

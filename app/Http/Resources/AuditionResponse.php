@@ -45,7 +45,6 @@ class AuditionResponse extends JsonResource
 
             $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->first();
         }
-        Log::info($appointmentData->toArray());
         $location = isset($appointmentData->location) ?$appointmentData->location:'{}';
         return [
             'id' => $this->id,
@@ -67,6 +66,7 @@ class AuditionResponse extends JsonResource
             "contract" => $this->contract,
             "production" => $dataProduction,
             "status" => $this->status,
+            "online"=>$this->online,
             "user_id" => $this->user_id,
             "cover" => $url_media[0] ??null,
             "number_roles" => $count,
