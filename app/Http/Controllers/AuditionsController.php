@@ -158,6 +158,7 @@ class AuditionsController extends Controller
             'contract' => $request->contract,
             'production' => $request->production,
             'status' => false,
+            'online'=>$request->online ?? false,
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];
@@ -269,6 +270,7 @@ class AuditionsController extends Controller
             $user = new UserRepository(new User());
             $email = new SendMail();
             $dataUser = $user->findbyparam('email', $contrib['email']);
+            
             if ($dataUser !== null) {
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
@@ -482,6 +484,41 @@ class AuditionsController extends Controller
             return response()->json(['data' => 'Data Not Update'], 406);
         }
     }
+
+    public function addContruibuitor(Request $request)
+    {
+
+        $auditionFilesData = [];
+        try {
+        
+            $auditionRepo = new AuditionRepository(new Auditions());
+            $audition = $auditionRepo->find($request->id);
+
+            if (isset($request['contributors'])) {
+                foreach ($request['contributors'] as $contrib) {
+                        $this->saveContributor($contrib, $audition);
+                }
+
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                );
+
+                $dataResponse = 'Contruibuitors Add';
+                $code = 200;
+                return response()->json(['data' => $dataResponse], $code);
+            }
+          
+        } catch (NotFoundException $exception) {
+            return response()->json(['data' => 'Data Not Found'], 404);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            $this->log->error($exception->getLine());
+            DB::rollBack();
+            return response()->json(['data' => 'Data Not Update'], 406);
+        }
+    }
+
 
     public function findby(Request $request)
     {

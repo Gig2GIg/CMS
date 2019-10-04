@@ -3,14 +3,18 @@
 namespace App\Http\Resources;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use DemeterChain\A;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class AuditionResponse extends JsonResource
@@ -32,15 +36,26 @@ class AuditionResponse extends JsonResource
             ->pluck('url');
         $userDataRepo = new UserDetailsRepository(new UserDetails());
         $data = $userDataRepo->findbyparam('user_id',$this->user_id);
+        $repoA = new AppointmentRepository(new Appointments());
+
+        if($this->status!=2){
+
+            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
+        }else{
+
+            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->first();
+        }
+        Log::info($appointmentData->toArray());
+        $location = isset($appointmentData->location) ?$appointmentData->location:'{}';
         return [
             'id' => $this->id,
             'id_user'=>$this->user_id,
             'agency'=>$data->agency_name ?? null,
             "title" => $this->title,
-            "date" => $this->date,
+            "date" => $appointmentData->date ?? null,
             'create'=>$this->created_at,
-            "time" => $this->time,
-            "location" => json_decode($this->location),
+            "time" => $appointmentData->time ?? null,
+            "location" => json_decode($location),
             "description" => $this->description,
             "url" => $this->url,
             'personal_information'=>$this->personal_information,

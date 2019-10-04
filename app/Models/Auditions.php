@@ -19,6 +19,7 @@ class Auditions extends Model
         'contract',
         'production',
         'status',
+        'online',
         'user_id',
         'banned'
     ];
