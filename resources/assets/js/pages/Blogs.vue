@@ -79,7 +79,7 @@
                       </b-dropdown-item>
                     </div>
                     <b-dropdown-item has-link>
-                      <a @click.prevent.stop="deleteBlog(props.row)">Remove</a>
+                      <a @click.prevent.stop="confirmDelete(props.row)">Delete</a>
                     </b-dropdown-item>
                   </b-dropdown>
                 </b-table-column>
@@ -290,14 +290,14 @@ export default {
     ...mapActions('blogs', ['fetch', 'store', 'update', 'destroy']),
     ...mapActions('toast', ['showError']),
 
-    confirmDelete(blogs) {
-      this.selectedblog = blog;
+    confirmDelete(blog) {
+      this.selectedBlog = blog;
       this.$dialog.confirm({
         message: `Are you sure you want to delete "${this.selectedBlog.title}"?`,
         confirmText: "Yes, I'm sure",
         type: 'is-success',
         hasIcon: true,
-        onConfirm: this.selectedblog,
+        onConfirm: this.deleteBlog,
       });
     },
 
@@ -310,6 +310,8 @@ export default {
       this.selectedBlog = Object.assign({}, blog);
       this.isModalActive = true;
     },
+
+    
 
     async createBlog() {
       try {
@@ -324,7 +326,6 @@ export default {
 
     async updateBlog() {
       try {
-        console.log(this.selectedBlog);
 
         await this.update(this.selectedBlog);
 

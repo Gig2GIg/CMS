@@ -52,7 +52,8 @@ export default {
   async destroy({ dispatch, commit }, post) {
     try {
       dispatch('toggleSpinner');
-
+      console.log('ActioN========');
+      console.log(post)
       // Delete skill
       await axios.delete(`/api/cms/forum/posts/${post.id}/delete`);
       commit(types.DELETE_BLOG, post);
