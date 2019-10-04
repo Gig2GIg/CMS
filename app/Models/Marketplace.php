@@ -13,7 +13,8 @@ class Marketplace extends Model
         'title',
         'phone_number',
         'marketplace_category_id',
-        'url_web'
+        'url_web',
+        'featured'
     ];
 
     public function category(){

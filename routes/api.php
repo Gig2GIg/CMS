@@ -320,7 +320,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
-
+        
         //marketplace by category
         Route::prefix('marketplace_categories')->group(function () use ($router) {
             $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
@@ -332,6 +332,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->put('/marketplaces/update/{id}','MarketplaceController@updateMarkeplace')->where('id', '[0-9]+');
         $router->delete('/marketplaces/delete/{id}','MarketplaceController@deleteMarkeplace')->where('id', '[0-9]+');
         $router->get('/marketplaces/show/{id}','MarketplaceController@getMarkeplace')->where('id', '[0-9]+');
+        $router->post('/marketplaces/{id}/featured','MarketplaceController@makeFeatured')->where('id', '[0-9]+');
+        $router->post('/marketplaces/{id}/not-featured','MarketplaceController@makeNotFeatured')->where('id', '[0-9]+');
 
         //TYPE PRODUCTS
         $router->get('/type-products', 'TypeProductsController@getAll');
@@ -356,10 +358,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->post('/send-notifications', 'NotificationsController@sendNotifications');
         $router->post('/send-notifications/users/{id}', 'NotificationsController@sendNotificationToUser')->where('id', '[0-9]+');
 
-//         AUDITIONS
-//        $router->get('/auditions',['uses'=>'AuditionsController@getall']);
-//        $router->get('/auditions/{id}',['uses'=>'AuditionsController@get']);
-//        $router->get('/auditions/{id}/contributors',['uses'=>'AuditionsController@show_contributors']);
+        // AUDITIONS
+        Route::get('/auditions-pending',['uses'=>'AuditionsController@getFullData']);
 
         // SUBCRIBERS
         $router->get('/subcribers-payments','SubcribersController@payments');
@@ -371,7 +371,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         // CONTENT SETTING TEXT
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
-
+                Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
+        
 
 
     });
@@ -390,6 +391,14 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
         Route::get('/subscriptions',['uses'=>'SubscriptionController@getallSubscription']);
         Route::post('/subscriptions/users',['uses'=>'SubscriptionController@updateSubscriptionForUser']);
+
+        // BLOGS
+        Route::post('blog/posts', ['uses'=>'PostsController@store']);
+        Route::get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
+        Route::get('forum/posts', ['uses'=>'PostsController@listForum']);
+        Route::put('forum/posts/{id}', ['uses'=>'PostsController@update']);
+        Route::delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
+        
 
     });
 });

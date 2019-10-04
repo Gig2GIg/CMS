@@ -12,6 +12,7 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/marketplaces');
+    
       commit(types.FETCH_VENDORS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_VENDORS_FAILURE);
@@ -31,9 +32,9 @@ export default {
 
       vendor.image_name = imageName;
       vendor.image_url = await image.ref.getDownloadURL();
-
+   
       // Save changes
-      const { data: { data } } = await axios.post('/api/cms/marketplaces/create', vendor);
+      const { data: { data } } = await axios.post(`/api/cms/marketplace_categories/${vendor.marketplace_category_id}/marketplaces/create`, vendor);
       commit(types.CREATE_VENDOR, data);
 
       dispatch('toast/showMessage', 'Vendor created.', { root: true });
@@ -93,4 +94,36 @@ export default {
       dispatch('toggleSpinner');
     }
   },
+
+  async updateFeatured({ dispatch, commit }, vendor ) {
+    try {
+      dispatch('toggleSpinner');
+
+      // Save changes
+      const { data: { data } } = await axios.post(`/api/cms/marketplaces/${vendor.id}/featured`);
+      commit(types.UPDATE_VENDOR, data);
+
+      dispatch('toast/showMessage', 'Vendor updated.', { root: true });
+    } catch (e) {
+      throw e;
+    } finally {
+      dispatch('toggleSpinner');
+    }
+  },
+
+  async updateNotFeatured({ dispatch, commit }, vendor ) {
+    try {
+      dispatch('toggleSpinner');
+
+      // Save changes
+      const { data: { data } } = await axios.post(`/api/cms/marketplaces/${vendor.id}/not-featured`);
+      commit(types.UPDATE_VENDOR, data);
+
+      dispatch('toast/showMessage', 'Vendor updated.', { root: true });
+    } catch (e) {
+      throw e;
+    } finally {
+      dispatch('toggleSpinner');
+    }
+  }
 };
