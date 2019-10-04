@@ -179,6 +179,8 @@ class AuditionManagementController extends Controller
 
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
+            $this->log->error($exception->getLine());
+            $this->log->error($exception->getTraceAsString());
             return response()->json(['data' => 'Not Found Data'], 404);
         }
     }

@@ -156,6 +156,21 @@ class AuditionManagementTest extends TestCase
                 ])->id,
             ]),
         ]);
+        $fac = factory(Appointments::class)->create([
+            'auditions_id' => $this->auditionId,
+            'status'=>false
+        ]);
+        factory(UserAuditions::class)->create([
+            'user_id' => $this->userId,
+            'rol_id' => factory(Roles::class)->create(['auditions_id' => $this->auditionId]),
+            'appointment_id' => $fac->id,
+            'type' => 1,
+            'slot_id' => factory(Slots::class)->create([
+                'appointment_id' => factory(Appointments::class)->create([
+                    'auditions_id' => $this->auditionId
+                ])->id,
+            ]),
+        ]);
         $response = $this->json('GET',
             'api/a/auditions/user/upcoming?token=' . $this->token);
         $response->assertStatus(200);
