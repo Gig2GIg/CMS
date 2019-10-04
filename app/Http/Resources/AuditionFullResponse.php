@@ -44,6 +44,7 @@ class AuditionFullResponse extends JsonResource
         $appoinmentResponse =  ['general' => $appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
+            'appointment_id'=>$appointment->id,
             'title' => $this->title,
             'date' => $appoinment->date ?? null,
             'time' => $appoinment->time ?? null,
