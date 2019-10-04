@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
@@ -10,6 +11,7 @@ use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\FeedbackResource;
+use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Performers;
@@ -39,7 +41,7 @@ class FeedBackController extends Controller
             $slotExits = false;
 
             $data = [
-                'auditions_id' => $request->auditions,
+                'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user, //id usuario que recibe evaluacion
                 'evaluator_id' => $request->evaluator,//id de usuario que da feecback,
                 'evaluation' => $request->evaluation,
@@ -53,9 +55,9 @@ class FeedBackController extends Controller
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);
             if ($data->id) {
-                $auditionsRepo = new AuditionRepository(new Auditions());
-                $auditionsData = $auditionsRepo->find($request->auditions);
-                if($auditionsData->user_id === $request->evaluator) {
+                $appointmentRepo = new AppointmentRepository(new Appointments());
+                $appointmentData = $appointmentRepo->find($request->appointment_id);
+                if($appointmentData->auditions->user_id === $request->evaluator) {
                     $slotRepo = new UserSlotsRepository(new UserSlots());
                     $slotData = $slotRepo->findbyparam('slots_id', $request->slot_id)->first();
                     if(isset($slotData)) {
@@ -99,7 +101,7 @@ class FeedBackController extends Controller
 
 
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
-            $feedbacks = $feedbackRepo->findbyparam('auditions_id', $request->id);
+            $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
             $feedback = $feedbacks->where('user_id', $request->user_id)->first();
 
             $update = $feedback->update($data);
@@ -123,7 +125,7 @@ class FeedBackController extends Controller
     {
         try {
             $repo = new FeedbackRepository(new Feedbacks());
-            $data = $repo->findbyparam('auditions_id', $request->audition);
+            $data = $repo->findbyparam('appointment_id', $request->appointment_id);
             $dataPre = $data->where('user_id', '=', $request->performer)->get();
 
             if ($dataPre->count() > 0) {
@@ -145,13 +147,11 @@ class FeedBackController extends Controller
     {
         try {
             $repo = new FeedbackRepository(new Feedbacks());
-            $repoAudi = new AuditionRepository(new Auditions());
+            $repoAppointment = new AppointmentRepository(new Appointments());
+            $dataRepo = $repoAppointment->find($request->id);
+            $data = $repo->findbyparam('appointment_id', $request->id);
 
-            $dataAudi = $repoAudi->find($request->id);
-
-            $data = $repo->findbyparam('auditions_id', $request->id);
-
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataAudi->user_id)->first() ?? new Collection();
+            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataRepo->auditions->user_id)->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
@@ -173,7 +173,7 @@ class FeedBackController extends Controller
         try {
             $repoFeedback = new FeedbackRepository(new Feedbacks());
 
-            $feedbacks = $repoFeedback->findbyparam('auditions_id', $request->id);
+            $feedbacks = $repoFeedback->findbyparam('appointment_id', $request->id);
 
             $feedbacksEvaluator = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->get();
 

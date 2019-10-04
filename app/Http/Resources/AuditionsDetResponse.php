@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Repositories\AppointmentRepository;
+use App\Models\Appointments;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AuditionsDetResponse extends JsonResource
@@ -14,12 +16,15 @@ class AuditionsDetResponse extends JsonResource
      */
     public function toArray($request)
     {
+        $repoAppoinment = new AppointmentRepository(new Appointments());
+        $appoinmentData = $repoAppoinment->find($this->appointment_id);
         return [
             'user_id' => $this->user_id,
-            'audition_id' => $this->auditions_id,
-            'title' => $this->auditions->title,
-            'date' => $this->auditions->date,
-            'time' => $this->auditions->time,
+            'auditions_id' => $appoinmentData->auditions->id,
+            'appointment_id'=>$this->appointment_id,
+            'title' => $appoinmentData->auditions->title,
+            'date' => $appoinmentData->auditions->date,
+            'time' => $appoinmentData->auditions->time,
             'slot_reserved'=>$this->slot_id,
             'create'=>$this->created_at,
         ];

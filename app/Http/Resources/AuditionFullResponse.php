@@ -34,9 +34,13 @@ class AuditionFullResponse extends JsonResource
         $this->roles->each(function($item){
             $item->image;
         });
-        $dataProduction = explode(',',$this->production);
-
         $appoinment = $this->appointment;
+        $dataProduction = explode(',',$this->production);
+        if($this->status){
+            $appoinment = $this->appointment->where('status',true)->first();
+        }else{
+            $appoinment = $this->appointment->first();
+        }
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
 
@@ -44,10 +48,10 @@ class AuditionFullResponse extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'date' => $this->date,
-            'time' => $this->time,
+            'date' => $appoinment->date ?? null,
+            'time' => $appoinment->time ?? null,
             'create'=>$this->created_at,
-            'location' => json_decode($this->location),
+            'location' => json_decode($appoinment->location) ?? null,
             'description' => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,

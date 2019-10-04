@@ -14,8 +14,8 @@ class AddMonitoAuditiosForeingKey extends Migration
     public function up()
     {
         Schema::table('monitors',function (Blueprint $table){
-            $table->foreign('auditions_id') ->references('id')
-                ->on('auditions')
+            $table->foreign('appointment_id') ->references('id')
+                ->on('appointments')
                 ->onDelete('cascade');
         });
     }
@@ -28,7 +28,7 @@ class AddMonitoAuditiosForeingKey extends Migration
     public function down()
     {
         Schema::table('monitors', function (Blueprint $table) {
-            $table->dropForeign('monitors_auditions_id_foreign');
+            $table->dropForeign('monitors_appointment_id_foreign');
 
         });
     }

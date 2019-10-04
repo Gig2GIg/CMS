@@ -35,7 +35,7 @@ class FeedBackControllerTest extends TestCase
         ]);
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
         $work = [
@@ -44,7 +44,7 @@ class FeedBackControllerTest extends TestCase
             'dancing',
         ];
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
-            'auditions' => $this->auditionId,//$this->auditionId,
+            'appointment_id' => $appoinment->id,//round id is given by appoinmnet,
             'user' => $user->id,//$user->id, //id usuario que recibe evaluacion
             'evaluator' => $this->userId, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -79,7 +79,7 @@ class FeedBackControllerTest extends TestCase
 
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
 
@@ -90,7 +90,7 @@ class FeedBackControllerTest extends TestCase
         ];
 
         $feedback = factory(Feedbacks::class)->create([
-            'auditions_id' => $this->auditionId,//$this->auditionId,
+            'appointment_id' => $appoinment->id,//$this->auditionId,
             'user_id' => $user->id,//$user->id, //id usuario que recibe evaluacion
             'evaluator_id' => $user2->id, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -101,7 +101,7 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
 
-        $response= $this->json('PUT', 'api/t/auditions/'.$this->auditionId  .'/feedbacks/update?token=' . $this->token, [
+        $response= $this->json('PUT', 'api/t/auditions/'.$appoinment->id  .'/feedbacks/update?token=' . $this->token, [
             'user_id' => $user->id,
             'evaluation' => $this->faker->numberBetween(1, 5),
             'callback' => $this->faker->boolean(),
@@ -129,7 +129,7 @@ class FeedBackControllerTest extends TestCase
 
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
 
@@ -140,7 +140,7 @@ class FeedBackControllerTest extends TestCase
         ];
 
         $feedback = factory(Feedbacks::class)->create([
-            'auditions_id' => $this->auditionId,//$this->auditionId,
+            'appointment_id' => $appoinment->id,//$this->auditionId,
             'user_id' => $user->id,//$user->id, //id usuario que recibe evaluacion
             'evaluator_id' => $this->userId, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -151,7 +151,7 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
 
-        $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?user_id='.$user->id .'&token=' . $this->token);
+        $response= $this->json('GET', 'api/t/auditions/'. $appoinment->id .'/feedbacks/details?user_id='.$user->id .'&token=' . $this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [
@@ -180,7 +180,7 @@ class FeedBackControllerTest extends TestCase
 
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
 
@@ -191,7 +191,7 @@ class FeedBackControllerTest extends TestCase
         ];
 
         $feedback = factory(Feedbacks::class)->create([
-            'auditions_id' => $this->auditionId,//$this->auditionId,
+            'appointment_id' => $appoinment->id,//$this->auditionId,
             'user_id' => $user->id,//$user->id, //id usuario que recibe evaluacion
             'evaluator_id' => $this->userId, //$this->userId,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -202,7 +202,7 @@ class FeedBackControllerTest extends TestCase
             'comment' => $this->faker->text()
         ]);
 
-        $response= $this->json('GET', 'api/t/auditions/'. $this->auditionId .'/feedbacks/details?user_id='. '3000' .'&token=' . $this->token);
+        $response= $this->json('GET', 'api/t/auditions/'. $appoinment->id .'/feedbacks/details?user_id='. '3000' .'&token=' . $this->token);
 
         $response->assertStatus(404);
 
@@ -224,7 +224,7 @@ class FeedBackControllerTest extends TestCase
         ]);
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
         $work = [
@@ -233,7 +233,7 @@ class FeedBackControllerTest extends TestCase
             'dancing',
         ];
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
-            'auditions' => $this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'user' => $user->id, //id usuario que recibe evaluacion
             'evaluator' => $user2->id,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -260,7 +260,7 @@ class FeedBackControllerTest extends TestCase
         ]);
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
         $work = [
@@ -274,7 +274,7 @@ class FeedBackControllerTest extends TestCase
             'uuid' => Str::uuid()->toString(),
         ]);
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
-            'auditions' => $this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'user' => $user->id, //id usuario que recibe evaluacion
             'evaluator' => $user2->id,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -304,12 +304,12 @@ class FeedBackControllerTest extends TestCase
         ]);
         factory(Feedbacks::class)->create([
             'user_id'=>$user->id,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appointment->id,
             'evaluator_id'=>$this->userId,
             'slot_id'=>$slot->id,
         ]);
         $response = $this->json('GET', 'api/t/feedbacks/list?token=' . $this->token,[
-            'audition'=>$this->auditionId,
+            'appointment_id'=>$appointment->id,
             'performer'=>$user->id
         ]);
         $response->assertStatus(200);
@@ -337,11 +337,11 @@ class FeedBackControllerTest extends TestCase
         ]);
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
         $feedback =  factory(Feedbacks::class)->create([
-            'auditions_id' => $this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'user_id' => $user->id, //id usuario que recibe evaluacion
             'evaluator_id' => $user2->id,//id de usuario que da feecback,
                'slot_id'=>$slot->id
@@ -352,7 +352,7 @@ class FeedBackControllerTest extends TestCase
             'dancing',
         ];
         $response = $this->json('POST', 'api/t/feedbacks/add?token=' . $this->token, [
-            'auditions' => $this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'user' => $user->id, //id usuario que recibe evaluacion
             'evaluator' => $user2->id,//id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),

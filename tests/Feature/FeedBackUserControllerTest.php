@@ -32,7 +32,7 @@ class FeedBackUserControllerTest extends TestCase
             'user_id'=>$user->id,
         ]);
         $appoinment = factory(Appointments::class)->create([
-            'auditions_id'=>$this->auditionId
+            'auditions_id'=>$audition->id
         ]);
 
         $slot = factory(Slots::class)->create([
@@ -40,7 +40,7 @@ class FeedBackUserControllerTest extends TestCase
         ]);
         $slot_user = factory(UserSlots::class)->create([
             'user_id'=>$this->userId,
-            'auditions_id'=>$this->auditionId,
+            'appointment_id'=>$appoinment->id,
             'slots_id'=>$slot->id
         ]);
         $work = [
@@ -49,7 +49,7 @@ class FeedBackUserControllerTest extends TestCase
             'dancing',
         ];
         $feed = factory(Feedbacks::class)->create([
-            'auditions_id' => $audition->id,
+            'appointment_id'=>$appoinment->id,
             'user_id' => $this->userId, //id usuario que recibe evaluacion
             'evaluator_id' =>$user->id, //id de usuario que da feecback,
             'evaluation' => $this->faker->numberBetween(1, 5),
@@ -59,7 +59,7 @@ class FeedBackUserControllerTest extends TestCase
             'favorite' => $this->faker->boolean()
         ]);
 
-        $response = $this->json('GET','api/a/feedbacks/final/'.$audition->id.'?token=' . $this->token);
+        $response = $this->json('GET','api/a/feedbacks/final/'.$appoinment->id.'?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [
             'auditions_id',

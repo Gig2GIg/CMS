@@ -24,6 +24,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/remember/admin', ['uses' => 'UserController@sendPasswordAdmin']);
     $router->post('/users/create',['uses'=>'UserController@store']);
 
+
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
@@ -35,6 +36,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@store']);
     $router->get('/appointments/auditions',['uses'=>'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@show']);
+
 
     $router->get('/appointments/show/{id}/walk',['uses'=>'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk',['uses'=>'AppoinmentAuditionsController@showListNotWalk']);
@@ -49,6 +51,11 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
+    $router->get('/performers/tags', ['uses'=>'PerformersController@getTags']);
+    Route::get('/performers/comments', ['uses'=>'PerformersController@getCommnents']);
+    Route::get('/performers/contracts', ['uses'=>'PerformersController@getContracts']);
+
+
    //final cast
     $router->post('finalcast',['uses'=>'FinalCastController@add']);
     $router->get('finalcast/{audition_id}/audition',['uses'=>'FinalCastController@list']);
@@ -85,6 +92,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
+    $router->post('auditions/{id}/contributors',['uses'=>'AuditionsController@addContruibuitor']);
 
     //auditions BANNED
     $router->post('/auditions/banned',['uses'=>'AuditionManagementController@bannedAuditionsFromCms']);
@@ -107,8 +115,6 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->put('/auditions/{id}/feeback/recommendations-marketplaces/update',['uses'=>'RecommendationsController@updateFromArray']);
     $router->get('/auditions/{audition}/feeback/recommendations-marketplaces-by-user',['uses'=>'RecommendationsController@listByUser']);
     $router->delete('/auditions/feeback/recommendations-marketplaces/{id}/delete/',['uses'=>'RecommendationsController@delete']);
-
-
 
     // AUDITIONS FEEDBACK
     $router->get('/auditions/{id}/feedbacks/details',['uses'=>'FeedBackController@feedbackDetailsByUser']);
@@ -153,6 +159,19 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     // TOPICS
     $router->get('/topics','TopicsController@list');
+
+    //rounds
+    $router->get('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@getRounds']);
+    $router->post('/appointment/{audition_id}/rounds',['uses'=>'AppoinmentController@createRound']);
+    $router->put('/appointment/{appointment_id}/rounds',['uses'=>'AppoinmentController@updateRound']);
+
+    // ROLES
+    $router->get('/roles', ['uses' => 'RolesController@getRoles']);
+    $router->post('/roles/create', ['uses' => 'RolesController@createRole']);
+    $router->delete('/roles/{id}/delete', ['uses' => 'RolesController@deleteRole']);
+
+    //GET slots by appointment id
+    $router->get('/appointments/{appointment_id}/slots',['uses'=>'AppoinmentController@getSlots']);
 
 
 });
@@ -378,5 +397,6 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::put('forum/posts/{id}', ['uses'=>'PostsController@update']);
         Route::delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
         
+
     });
 });

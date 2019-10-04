@@ -30,7 +30,7 @@ class ManageAppointmentControllerTest extends TestCase
         ]);
         $useSlot = factory(UserSlots::class)->create([
             'user_id'=>$user->id,
-            'auditions_id'=>$audition->id,
+            'appointment_id'=>$appoinment->id,
             'roles_id'=>$rol->id,
             'status'=>2,
 
@@ -39,7 +39,7 @@ class ManageAppointmentControllerTest extends TestCase
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
             'slot' => $slot->id,
             'user' => $user->id,
-            'auditions' => $audition->id,
+            'appointment_id'=>$appoinment->id,
             'rol'=>$rol->id
         ]);
 
@@ -64,7 +64,7 @@ class ManageAppointmentControllerTest extends TestCase
         $response = $this->json('POST', 'api/appointments/auditions?token=' . $this->token, [
             'slot' => $slot->id,
             'email' => $user->email,
-            'auditions' => $audition->id,
+            'appointment_id'=>$appoinment->id,
             'rol'=>$rol->id
         ]);
 
@@ -82,7 +82,7 @@ class ManageAppointmentControllerTest extends TestCase
         $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class,10)->create(['appointment_id' => $appoinment->id]);
-        $response = $this->json('GET','api/appointments/show/'.$audition->id.'/notwalk?token='.$this->token);
+        $response = $this->json('GET','api/appointments/show/'.$appoinment->id.'/notwalk?token='.$this->token);
         $response->assertStatus(200);
     }
     public function test_get_slots_by_audition_type_walk(){
@@ -92,7 +92,7 @@ class ManageAppointmentControllerTest extends TestCase
         $user->image()->create(['url' => $this->faker->url,'name'=>'test']);
         $appoinment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
         $slot = factory(Slots::class,10)->create(['appointment_id' => $appoinment->id]);
-        $response = $this->json('GET','api/appointments/show/'.$audition->id.'/walk?token='.$this->token);
+        $response = $this->json('GET','api/appointments/show/'.$appoinment->id.'/walk?token='.$this->token);
         $response->assertStatus(200);
     }
 
@@ -110,12 +110,12 @@ class ManageAppointmentControllerTest extends TestCase
         factory(UserSlots::class,5)->create([
             'user_id'=>$user->id,
             'slots_id'=>$slot->id,
-            'auditions_id'=>$audition->id,
+            'appointment_id'=>$appoinment->id,
             'roles_id'=>$rol->id,
             'status'=>'checked'
         ]);
 
-        $response = $this->json('GET', 'api/appointments/auditions/'.$audition->id.'?token=' . $this->token);
+        $response = $this->json('GET', 'api/appointments/auditions/'.$appoinment->id.'?token=' . $this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['data' => [[

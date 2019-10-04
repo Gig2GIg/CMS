@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\MonitorRepository;
+use App\Models\Appointments;
 use App\Models\Monitor;
 use App\Models\Auditions;
 use App\Models\Notifications\Notification;
@@ -28,7 +30,7 @@ class MonitorManagerController extends Controller
         try {
             $repo = new MonitorRepository(new Monitor());
             $data = $repo->create([
-                'auditions_id' => $request->audition,
+                'appointment_id' => $request->appointment,
                 'title' => $request->title,
                 'time' => $request->time
             ]);
@@ -36,17 +38,17 @@ class MonitorManagerController extends Controller
                 $dataResponse = ['data' => 'Update Publised'];
                 $code = 201;
 
-                $auditionRepo = new AuditionRepository(new Auditions());
-                $audition = $auditionRepo->find($request->audition);
+                $appointmentRepo = new AppointmentRepository(new Appointments());
+                $appointment = $appointmentRepo->find($request->appointment);
 
-                $this->createNotification($audition, $request->title);
+                $this->createNotification($appointment->auditions, $request->title);
 
-                $this->sendPushNotification(
-                    $audition,
-                    'custom',
-                    null,
-                    $request->title
-                );
+//                $this->sendPushNotification(
+//                    $appointment->auditions,
+//                    'custom',
+//                    null,
+//                    $request->title
+//                );
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
                 $code = 406;
@@ -54,7 +56,8 @@ class MonitorManagerController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-
+$this->log->error($exception->getLine());
+$this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Update Not Publised'], 406);
         }
@@ -87,7 +90,7 @@ class MonitorManagerController extends Controller
     {
         try {
             $repo = new MonitorRepository(new Monitor());
-            $data = $repo->findbyparam('auditions_id', $request->id)->get();
+            $data = $repo->findbyparam('appointment_id', $request->id)->get();
 
             if ($data->count() > 0) {
                 $dataResponse = ['data' => $data];

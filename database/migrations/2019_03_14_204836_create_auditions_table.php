@@ -16,9 +16,7 @@ class CreateAuditionsTable extends Migration
         Schema::create('auditions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('title');
-            $table->date('date');
-            $table->time('time');
-            $table->text('location');
+
             $table->text('description');
             $table->string('url');
             $table->text('personal_information');
@@ -30,6 +28,7 @@ class CreateAuditionsTable extends Migration
             $table->string('contract');
             $table->string('production');
             $table->boolean('status');
+            $table->boolean('online')->default(false);
             $table->integer('user_id')->unsigned();
             $table->timestamps();
         });

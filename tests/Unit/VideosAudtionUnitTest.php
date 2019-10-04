@@ -31,28 +31,29 @@ class VideosAudtionUnitTest extends TestCase
     {
         $contributors = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
-            'user_id'=>$contributors->id,
+            'user_id' => $contributors->id,
         ]);
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id,
+            'auditions_id' => $audition->id,
         ]);
         $slot = factory(Slots::class)->create([
-           'appointment_id'=>$appointment->id
+            'appointment_id' => $appointment->id
         ]);
         $repo = new AuditionVideosRepository(New AuditionVideos());
 
         $data = [
-            'user_id'=>$this->userId,
-            'contributors_id'=>$contributors->id,
-            'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id,
-            'slot_id'=>$slot->id
+            'user_id' => $this->userId,
+            'contributors_id' => $contributors->id,
+            'url' => $this->faker->imageUrl(),
+            'appointment_id' => $appointment->id,
+            'slot_id' => $slot->id
         ];
         $videoaudition = $repo->create($data);
         $this->assertInstanceOf(AuditionVideos::class, $videoaudition);
 
 
     }
+
     public function test_create_audition_video_exception()
     {
         $this->expectException(CreateException::class);
@@ -60,25 +61,27 @@ class VideosAudtionUnitTest extends TestCase
         $video = $repo->create([]);
         $this->assertInstanceOf(AuditionVideos::class, $video);
     }
-    public function test_videos_show(){
+
+    public function test_videos_show()
+    {
         $contributors = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
-            'user_id'=>$contributors->id,
+            'user_id' => $contributors->id,
         ]);
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id,
+            'auditions_id' => $audition->id,
         ]);
         $slot = factory(Slots::class)->create([
-            'appointment_id'=>$appointment->id
+            'appointment_id' => $appointment->id
         ]);
         $resource = new Resources();
 
         $vid = factory(AuditionVideos::class)->create([
-            'user_id'=>$this->userId,
-            'contributors_id'=>$contributors->id,
-            'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id,
-            'slot_id'=>$slot->id
+            'user_id' => $this->userId,
+            'contributors_id' => $contributors->id,
+            'url' => $this->faker->imageUrl(),
+            'appointment_id' => $appointment->id,
+            'slot_id' => $slot->id
         ]);
 
         $videoRepo = new AuditionVideosRepository(new AuditionVideos());
@@ -86,29 +89,30 @@ class VideosAudtionUnitTest extends TestCase
         $this->assertInstanceOf(AuditionVideos::class, $data);
     }
 
-    public function test_videos_show_list(){
+    public function test_videos_show_list()
+    {
         $contributors = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
-            'user_id'=>$contributors->id,
+            'user_id' => $contributors->id,
         ]);
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id,
+            'auditions_id' => $audition->id,
         ]);
         $slot = factory(Slots::class)->create([
-            'appointment_id'=>$appointment->id
+            'appointment_id' => $appointment->id
         ]);
         $resource = new Resources();
 
-        $vid = factory(AuditionVideos::class,3)->create([
-            'user_id'=>$this->userId,
-            'contributors_id'=>$contributors->id,
-            'url'=>$this->faker->imageUrl(),
-            'auditions_id'=>$audition->id,
-           'slot_id'=>$slot->id
+        $vid = factory(AuditionVideos::class, 3)->create([
+            'user_id' => $this->userId,
+            'contributors_id' => $contributors->id,
+            'url' => $this->faker->imageUrl(),
+            'appointment_id' => $appointment->id,
+            'slot_id' => $slot->id
         ]);
 
         $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-        $data = $videoRepo->findbyparam('auditions_id',$audition->id);
+        $data = $videoRepo->findbyparam('appointment_id', $appointment->id);
         $this->assertTrue($data->get()->count() > 2);
     }
 

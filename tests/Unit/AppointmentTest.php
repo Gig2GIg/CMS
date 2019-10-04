@@ -14,15 +14,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AppointmentTest extends TestCase
 {
- 
+
     protected $auditions_id;
 
     public function setUp(): void
     {
         parent::setUp();
         $user = factory(User::class)->create();
-        $audition = factory(Auditions::class)->create(['user_id'=>$user->id]);
-        $this->auditions_id= $audition->id;
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $this->auditions_id = $audition->id;
     }
 
     public function test_create_appointment()
@@ -35,9 +35,7 @@ class AppointmentTest extends TestCase
         $this->assertEquals($data['length'], $appointment->length);
     }
 
-   
 
-  
     public function test_find_appointment()
     {
         $data = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
@@ -47,6 +45,7 @@ class AppointmentTest extends TestCase
         $this->assertEquals($found->slots, $data->slots);
         $this->assertEquals($found->length, $data->length);
     }
+
     public function test_delete_appointment()
     {
         $data = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
@@ -54,6 +53,7 @@ class AppointmentTest extends TestCase
         $delete = $appointmentRepo->delete();
         $this->assertTrue($delete);
     }
+
     public function test_all_appointment()
     {
         factory(Appointments::class, 5)->create(['auditions_id' => $this->auditions_id]);
@@ -61,6 +61,30 @@ class AppointmentTest extends TestCase
         $data = $appointment->all();
         $this->assertIsArray($data->toArray());
         $this->assertTrue($data->count() > 2);
+    }
+
+    public function test_update_appointment()
+    {
+        $appointment = factory(Appointments::class)->create(['auditions_id' => $this->auditions_id]);
+        $appointmentData = new AppointmentRepository(new Appointments());
+        $data = $appointmentData->find($appointment->id);
+        $update = $data->update([
+            'status' => !$appointment->status
+        ]);
+        $this->assertTrue($update);
+    }
+
+    public function test_get_rounds_of_appointmenst()
+    {
+        factory(Appointments::class)->create(['auditions_id' => $this->auditions_id, 'round' => 1]);
+        factory(Appointments::class)->create(['auditions_id' => $this->auditions_id, 'round' => 2]);
+        factory(Appointments::class)->create(['auditions_id' => $this->auditions_id, 'round' => 3]);
+        factory(Appointments::class)->create(['auditions_id' => $this->auditions_id, 'round' => 4]);
+        $appointmentData = new AppointmentRepository(new Appointments());
+        $data = $appointmentData->findbyparam('auditions_id',$this->auditions_id)->get();
+        $this->assertIsArray($data->toArray());
+        $this->assertTrue($data->count() > 2);
+
     }
 
     public function test_create_appointment_exception()
@@ -77,7 +101,6 @@ class AppointmentTest extends TestCase
         $appointment->find(2345);
     }
 
-   
 
     public function test_delete_appointment_null_exception()
     {
