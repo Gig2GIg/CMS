@@ -36,24 +36,19 @@ class AuditionFullResponse extends JsonResource
         $this->roles->each(function($item){
             $item->image;
         });
-        $repoA = new AppointmentRepository(new Appointments());;
         $dataProduction = explode(',',$this->production);
-        if($this->status != 2){
-            $appoinment = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
-        }else{
-            $appoinment = $repoA->findbyparam('auditions_id',$this->id)->first();
-        }
+        $appointment = $this->appointment()->latest()->first();
         $slotsData = new SlotsRepository(new Slots());
-        $slots = $slotsData->findbyparam('appointment_id',$appoinment->id)->get();
-        $location = isset($appointmentData->location) ? $appoinment->location:'{}';
-        $appoinmentResponse =  ['general' => $this->appointment, 'slots' => $slots];
+        $slots = $slotsData->findbyparam('appointment_id',$appointment->id)->get();
+//        $location = isset($appointmentData->location) ? $appointment->location:'';
+        $appoinmentResponse =  ['general' => $appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
             'title' => $this->title,
             'date' => $appoinment->date ?? null,
             'time' => $appoinment->time ?? null,
             'create'=>$this->created_at,
-            'location' => $location,
+            'location' =>$appointment->location,
             'description' => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,

@@ -35,26 +35,18 @@ class AuditionResponse extends JsonResource
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
         $userDataRepo = new UserDetailsRepository(new UserDetails());
-        $data = $userDataRepo->findbyparam('user_id',$this->user_id);
-        $repoA = new AppointmentRepository(new Appointments());
 
-        if($this->status!=2){
+        $appointment = $this->appointment()->latest()->first();
 
-            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->where('status',true)->first();
-        }else{
-
-            $appointmentData = $repoA->findbyparam('auditions_id',$this->id)->first();
-        }
-        $location = isset($appointmentData->location) ?$appointmentData->location:'{}';
         return [
             'id' => $this->id,
             'id_user'=>$this->user_id,
             'agency'=>$data->agency_name ?? null,
             "title" => $this->title,
-            "date" => $appointmentData->date ?? null,
+            "date" => $appointment->date ?? null,
             'create'=>$this->created_at,
-            "time" => $appointmentData->time ?? null,
-            "location" => json_decode($location),
+            "time" => $appointment->time ?? null,
+            "location" => json_decode($appointment->location),
             "description" => $this->description,
             "url" => $this->url,
             'personal_information'=>$this->personal_information,
