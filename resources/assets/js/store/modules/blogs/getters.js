@@ -1,3 +1,3 @@
 export default {
-  search: state => term => state.skills.search(term)
+  search: state => term => state.blogs.search(term)
 };

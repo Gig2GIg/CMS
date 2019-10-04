@@ -3,7 +3,7 @@
     <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li class="is-active">
-          <a href="#" aria-current="page">{{ $options.name }}</a>
+          <a href="#" aria-current="page">{{ $options.title }}</a>
         </li>
       </ul>
     </nav>
@@ -21,7 +21,7 @@
         </div>
         <div class="card">
           <div class="card-content">
-            <div class="columns">
+            <div class="columns"  v-if="blogs">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -56,25 +56,30 @@
                 <b-table-column 
                   field="date"
                   label="Date"
-                  sortable>{{ props.row.date }}</b-table-column>
+                  sortable>{{ props.row.created_at }}</b-table-column>
 
                 <b-table-column 
-                  field="banned"
-                  label="Banned"
-                  sortable>{{ props.row.banned }}</b-table-column>
+                  field="type"
+                  label="Type"
+                  sortable>{{ props.row.type }}</b-table-column>
+
+                <b-table-column 
+                  field="search_to"
+                  label="Search to"
+                  sortable>{{ props.row.search_to }}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
                     </button>
-                    <div  v-if="props.row.banned == 'pending'">  
+                    <div >  
                       <b-dropdown-item has-link >
-                        <a @click.prevent.stop="confirmAccept(props.row)">Accept</a>
+                          <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
                       </b-dropdown-item>
                     </div>
                     <b-dropdown-item has-link>
-                      <a @click.prevent.stop="confirmDeleteBan(props.row)">Remove</a>
+                      <a @click.prevent.stop="deleteBlog(props.row)">Remove</a>
                     </b-dropdown-item>
                   </b-dropdown>
                 </b-table-column>
@@ -84,7 +89,7 @@
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
                     <div class="mb-4">
-                      <img class="w-full" :src="props.row.z">
+                      <img class="w-full" :src="props.row.url_media">
                     </div>
                     <div class="content">
                       <p>
@@ -92,7 +97,7 @@
                         {{ props.row.type }}
                       </p>
                       <p>
-                        <strong>Description:</strong>
+                        <strong>Body:</strong>
                         <span v-html=" props.row.body"></span>
                       </p>
                     </div>
@@ -134,7 +139,7 @@
     </transition>
 
     <b-modal :active.sync="isModalActive" has-modal-card :canCancel="!isLoading">
-      <form @submit.prevent="selectedBlog.id ? updateSkill() : createSkill()">
+      <form @submit.prevent="selectedBlog.id ? updateBlog() : createBlog()">
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">{{ modalTitle }} Blog</p>
@@ -150,6 +155,18 @@
                 v-model="selectedBlog.title"
                 v-validate="'required|max:255'"
                 name="title"
+                autofocus
+              />
+            </b-field>
+            <b-field
+              label="URl Media"
+              :type="{'is-info': errors.has('url_media')}"
+              :message="errors.first('url_media')"
+            >
+              <b-input
+                v-model="selectedBlog.url_media"
+                v-validate="'required|max:255'"
+                name="url_media"
                 autofocus
               />
             </b-field>
@@ -173,7 +190,48 @@
               </b-select>
             </b-field>
 
-               <div class="mb-6">
+            <b-field
+              label="type"
+              :type="{'is-danger': errors.has('type')}"
+              :message="errors.first('type')"
+            >
+              <b-select
+                name="types"
+                v-model="selectedBlog.type"
+                v-validate="'required'"
+                placeholder="Select a type"
+              >
+                <option
+                  v-for="type in ['blog', 'forum']"
+                  :value="type"
+                  :key="type">
+                  {{ type }}
+                </option>
+              </b-select>
+            </b-field>
+
+
+            <b-field
+              label="Search to"
+              :type="{'is-danger': errors.has('type')}"
+              :message="errors.first('type')"
+            >
+              <b-select
+                name="search_to"
+                v-model="selectedBlog.search_to"
+                v-validate="'required'"
+                placeholder="Select a search to"
+              >
+                <option
+                  v-for="to in ['performance', 'director', 'both']"
+                  :value="to"
+                  :key="to">
+                  {{ to }}
+                </option>
+              </b-select>
+            </b-field>
+
+            <div class="mb-6">
               <label class="label">Body</label>
               <ckeditor :editor="editor" v-model="selectedBlog.body" :config="editorConfig"></ckeditor>
             </div>
@@ -206,10 +264,12 @@ export default {
     loaded: false,
     perPage: 10,
     isModalActive: false,
+    
 
     selectedBlog: {},
     searchText: "",
     
+
     editor: ClassicEditor,
     editorConfig: {}
   }),
@@ -251,9 +311,9 @@ export default {
       this.isModalActive = true;
     },
 
-    async createSkill() {
+    async createBlog() {
       try {
-       console.log(this.selectedBlog);
+    
         await this.store(this.selectedBlog);
 
         this.isModalActive = false;
@@ -262,13 +322,9 @@ export default {
       }
     },
 
-    async updateSkill() {
+    async updateBlog() {
       try {
-        let valid = await this.$validator.validateAll();
-        if (!valid) {
-          this.showError("Please check the fields.");
-          return;
-        }
+        console.log(this.selectedBlog);
 
         await this.update(this.selectedBlog);
 
@@ -278,7 +334,8 @@ export default {
       }
     },
 
-    async deleteSkill() {
+    async deleteBlog() {
+      console.log(this.selectedBlog);
       await this.destroy(this.selectedBlog);
     }
   },

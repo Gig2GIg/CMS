@@ -375,8 +375,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::post('blog/posts', ['uses'=>'PostsController@store']);
         Route::get('blog/posts', ['uses'=>'PostsController@listPostToPerformance']);
         Route::get('forum/posts', ['uses'=>'PostsController@listForum']);
-
-
+        Route::put('forum/posts/{id}', ['uses'=>'PostsController@update']);
+        Route::delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
         
     });
 });

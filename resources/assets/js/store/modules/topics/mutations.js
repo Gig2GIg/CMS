@@ -6,27 +6,27 @@ export default {
     state.isLoading = !state.isLoading;
   },
 
-  [types.FETCH_TOPICS_SUCCESS] (state, categories) {
-    state.categories = categories;
+  [types.FETCH_TOPICS_SUCCESS] (state, topics) {
+    state.topics = topics;
   },
 
   [types.FETCH_TOPICS_FAILURE] (state) {
-    state.categories = [];
+    state.topics = [];
   },
 
-  [types.CREATE_TOPIC] (state, category) {
-    state.categories.push(category);
+  [types.CREATE_TOPIC] (state, topic) {
+    state.topics.push(topic);
   },
 
-  [types.UPDATE_TOPIC] (state, category) {
-    let currentSkill = state.categories.find(x => x.id === category.id);
-    let index = state.categories.indexOf(currentSkill);
+  [types.UPDATE_TOPIC] (state, topic) {
+    let current = state.topic.find(x => x.id === topic.id);
+    let index = state.topics.indexOf(current);
 
-    Vue.set(state.categories, index, category);
+    Vue.set(state.topics, index, topic);
   },
 
-  [types.DELETE_TOPIC] (state, category) {
-    let index = state.categories.indexOf(category);
-    state.categories.splice(index, 1);
+  [types.DELETE_TOPIC] (state, topic) {
+    let index = state.topics.indexOf(topic);
+    state.topics.splice(index, 1);
   },
 };

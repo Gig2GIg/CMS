@@ -13,7 +13,7 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/topics');
-      console.log(data);
+      
       commit(types.FETCH_TOPICS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_TOPICS_FAILURE);
@@ -26,6 +26,7 @@ export default {
 
       // Save changes
       const { data: { data } } = await axios.post('/api/cms/topics/create', topic);
+      
       commit(types.CREATE_TOPIC, data);
 
       dispatch('toast/showMessage', 'Topic created.', { root: true });

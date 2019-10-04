@@ -9,10 +9,10 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/forum/posts');
-     
-      commit(types.FETCH_SKILLS_SUCCESS, data);
+     console.log(data);
+      commit(types.FETCH_BLOGS_SUCCESS, data);
     } catch (e) {
-      commit(types.FETCH_SKILLS_FAILURE);
+      commit(types.FETCH_BLOGS_FAILURE);
     }
   },
 
@@ -21,10 +21,9 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      console.log(post.body);
-      const { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body});
+      const { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body, topic_ids: [{id: post.topic_id}], type: post.type, url_media: post.url_media, search_to: post.search_to});
       
-      commit(types.CREATE_SKILL, data);
+      commit(types.CREATE_BLOG, data);
 
       dispatch('toast/showMessage', 'Blog created.', { root: true });
     } catch (e) {
@@ -39,8 +38,8 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      await axios.put(`/api/cms/skills/update/${skill.id}`, skill);
-      commit(types.UPDATE_SKILL, skill);
+      await axios.put(`/api/cms/forum/posts/${post.id}`, { title: post.title, body: post.body, topic_ids: [{id: post.topic_id}], type: post.type, url_media: post.url_media, search_to: post.search_to});
+      commit(types.UPDATE_BLOG, post);
 
       dispatch('toast/showMessage', 'Blog updated.', { root: true });
     } catch (e) {
@@ -55,8 +54,8 @@ export default {
       dispatch('toggleSpinner');
 
       // Delete skill
-      await axios.delete(`/api/cms/skills/delete/${post.id}`);
-      commit(types.DELETE_SKILL, post);
+      await axios.delete(`/api/cms/forum/posts/${post.id}/delete`);
+      commit(types.DELETE_BLOG, post);
 
       dispatch('toast/showMessage', 'Blog deleted.', { root: true });
     } catch(e) {
@@ -66,3 +65,4 @@ export default {
     }
   },
 };
+

@@ -23,10 +23,6 @@ export default {
 
     let currenaudition = state.auditions.find(x => x.id == audition.data.data.id)
     let index = state.auditions.indexOf(currenaudition);
-
-console.log( currenaudition);
-console.log( audition.data.data.banned);
-
     Vue.set(state.auditions, index, audition);
   },
 
