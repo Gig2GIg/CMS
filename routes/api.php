@@ -92,6 +92,7 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->get('/auditions/invite-accept/{id}',['uses'=>'AuditionsController@updateInviteContribuidor']);
     $router->put('/auditions/document/shareable/{id}',['uses'=>'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots',['uses'=>'AuditionManagementController@reorderAppointmentTimes']);
+    $router->post('auditions/{id}/contributors',['uses'=>'AuditionsController@addContruibuitor']);
 
     //auditions BANNED
     $router->post('/auditions/banned',['uses'=>'AuditionManagementController@bannedAuditionsFromCms']);
