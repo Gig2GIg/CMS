@@ -9,6 +9,8 @@ export const FETCH_USER_FAILURE = '👱❌ Fetch User Failed';
 export const FETCH_AUDITIONS_SUCCESS = 'Fetch Auditions successful';
 export const FETCH_AUDITIONS_FAILURE = 'Fetch Auditions failed';
 export const DELETE_AUDITION = 'Delete Audition';
+export const ACCEPT_BAN = 'Accept Ban Audition';
+export const REMOVE_BAN = 'Remove Ban Audition';
 
 export const FETCH_CONTRIBUTORS_SUCCESS = 'Fetch Contributors successful';
 export const FETCH_CONTRIBUTORS_FAILURE = 'Fetch Contributors failed';
@@ -34,6 +36,20 @@ export const FETCH_CATEGORIES_FAILURE = 'Fetch Categories failed';
 export const CREATE_CATEGORY = 'Create Category';
 export const UPDATE_CATEGORY = 'Update Category';
 export const DELETE_CATEGORY = 'Delete Category';
+
+export const FETCH_TOPICS_SUCCESS = 'Fetch Topics successful';
+export const FETCH_TOPICS_FAILURE = 'Fetch Topics failed';
+export const CREATE_TOPIC = 'Create Topic';
+export const UPDATE_TOPIC = 'Update Topic';
+export const DELETE_TOPIC = 'Delete Topic';
+
+export const FETCH_BLOGS_SUCCESS = 'Fetch Blogs successful';
+export const FETCH_BLOGS_FAILURE = 'Fetch Blogs failed';
+export const CREATE_BLOG = 'Create Blog';
+export const UPDATE_BLOG = 'Update Blog';
+export const DELETE_BLOG = 'Delete Blog';
+
+
 
 export const FETCH_VENDORS_SUCCESS = 'Fetch Vendors successful';
 export const FETCH_VENDORS_FAILURE = 'Fetch Vendors failed';

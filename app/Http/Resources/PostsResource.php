@@ -32,7 +32,8 @@ class PostsResource extends JsonResource
             'url_media' => $this->url_media,
             'name' => $user->details->first_name,
             'time_ago' => $this->created_at->diffForHumans(),
-            'search_to' => $this->search_to
+            'search_to' => $this->search_to,
+            'type' => $this->type
         ];
     }
 }

@@ -20,12 +20,14 @@ class CreatePostTopicsTable extends Migration
             $table->bigInteger('post_id')->unsigned();
             $table->foreign('post_id')
             ->references('id')
-            ->on('posts');
+            ->on('posts')
+            ->onDelete('cascade');
 
             $table->bigInteger('topic_id')->unsigned();
             $table->foreign('topic_id')
             ->references('id')
-            ->on('topics');
+            ->on('topics')
+            ->onDelete('cascade');
         });
     }
 

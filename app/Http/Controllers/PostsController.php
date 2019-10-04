@@ -99,8 +99,7 @@ class PostsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $repoPost = new PostsRepository(new Posts());
-            $post = $repoPost->find($request->id);
+            $post = Posts::find($request->id);
 
             if ($post->delete()) {
                 $dataResponse = ['data' => 'Post removed'];

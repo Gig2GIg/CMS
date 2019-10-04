@@ -71,7 +71,8 @@ class AuditionFullResponse extends JsonResource
             'roles' => $this->roles,
             'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','!=','cover')->get(),
             'apointment' => $appoinmentResponse,
-            'contributors' => $this->contributors
+            'contributors' => $this->contributors,
+            'banned' => $this->banned
         ];
     }
 }
