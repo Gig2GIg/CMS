@@ -264,7 +264,7 @@ class AuditionsController extends Controller
                 'code' => Str::random(12),
                 'user_id' => $audition->user_id,
                 'message' => 'You have been invited to audition '.$audition->title,
-                'custom_data' => $userContributor,
+                'custom_data' => $userContributor->id,
                 'status' => 'unread'
             ];
 
@@ -273,7 +273,9 @@ class AuditionsController extends Controller
                 $notificationRepo->create($notificationData);
 
                 $notificationHistoryRepo = new NotificationHistoryRepository(New NotificationHistory);
-                $notificationHistoryRepo->create($notificationHistoryData);
+                $notificationLog = $notificationHistoryRepo->create($notificationHistoryData);
+
+                $this->log->info("Notification History " . $notificationLog);
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -522,11 +524,6 @@ class AuditionsController extends Controller
                 foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                 }
-
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                );
 
                 $dataResponse = 'Contruibuitors Add';
                 $code = 200;
