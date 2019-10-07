@@ -110,13 +110,13 @@ class AuditionsController extends Controller
                     $slotsRepo = new SlotsRepository(new Slots());
                     $slotsRepo->create($dataSlots);
                 }
-                $this->createNotification($audition);
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
                     $this->sendStoreNotificationToContributors($audition);
                 }
+
                 DB::commit();
 
                 $responseData = ['data' => ['message' => 'Auditions create']];
@@ -247,7 +247,7 @@ class AuditionsController extends Controller
 
     }
 
-    public function createNotification($audition): void
+    public function createNotification($audition, $userContributor): void
     {
         try {
 
@@ -259,9 +259,21 @@ class AuditionsController extends Controller
                 'notificationable_id' => $audition->id
             ];
 
+            $notificationHistoryData = [
+                'title' => $audition->title,
+                'code' => Str::random(12),
+                'user_id' => $audition->user_id,
+                'message' => 'You have been invited to audition '.$audition->title,
+                'custom_data' => $userContributor,
+                'status' => 'unread'
+            ];
+
             if ($audition !== null) {
                 $notificationRepo = new NotificationRepository(new Notification());
                 $notificationRepo->create($notificationData);
+
+                $notificationHistoryRepo = new NotificationHistoryRepository(New NotificationHistory);
+                $notificationHistoryRepo->create($notificationHistoryData);
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -287,6 +299,7 @@ class AuditionsController extends Controller
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'],$audition->title);
+                $this->createNotification($audition, $contributors);
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
             }
