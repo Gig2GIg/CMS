@@ -10,8 +10,9 @@ class UserAuditions extends Model
         'user_id','appointment_id','type','rol_id','slot_id'
     ];
 
-    public function auditions(){
-        return $this->belongsTo(Auditions::class);
+    public function appointments(){
+        return $this->belongsTo(Appointments::class);
     }
+
 
 }

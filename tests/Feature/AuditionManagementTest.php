@@ -139,13 +139,13 @@ class AuditionManagementTest extends TestCase
         $appoinmet = factory(Appointments::class)->create([
             'auditions_id'=>$this->auditionId
         ]);
-        factory(UserAuditions::class, 10)->create([
+        factory(UserAuditions::class, 2)->create([
             'user_id' => $this->userId,
             'rol_id' => $this->rolId,
             'appointment_id' => $appoinmet->id,
             'type' => 1,
         ]);
-        factory(UserAuditions::class, 5)->create([
+        factory(UserAuditions::class, 2)->create([
             'user_id' => $this->userId,
             'rol_id' => factory(Roles::class)->create(['auditions_id' => $this->auditionId]),
             'appointment_id' => $appoinmet->id,
