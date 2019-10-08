@@ -31,7 +31,7 @@ class MarketplaceControllerUnitTest extends TestCase
             'password' => '123456',
         ]);
 
-    $this->token = $response->json('token'); 
+    $this->token = $response->json('token');
     }
 
     public function test_create_marketplace_201()
@@ -41,6 +41,7 @@ class MarketplaceControllerUnitTest extends TestCase
         $data = [
             'address' => 'sdsdsdsdsd',
             'title' => 'sdsdsdsd',
+            'featured'=>false,
             'phone_number' => '343434343434',
             'email' => $this->faker->safeEmail(),
             'services' => 'wwewewewewe',
@@ -52,7 +53,7 @@ class MarketplaceControllerUnitTest extends TestCase
         $response = $this->json('POST',
             'api/cms/marketplace_categories/'. $marketplace_category->id.'/marketplaces/create?token=' . $this->token,
             $data);
-        
+
         $response->assertStatus(201);
     }
 
@@ -73,7 +74,7 @@ class MarketplaceControllerUnitTest extends TestCase
         'api/cms/marketplaces/show/' . $marketplaceCategory->id . '?token=' . $this->token);
         $response->assertStatus(200);
     }
-   
+
     public function test_show_all_marketplace_200()
     {
         $marketplaceCategory = factory(Marketplace::class, 10)->create();
