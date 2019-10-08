@@ -171,11 +171,13 @@ class AppoinmentAuditionsController extends Controller
             $appoinmentData = $appointmentRepo->find($request->appointment_id);
 
             try {
+
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
                 $this->sendStoreNotificationToUser($user, $audition);
                 $this->saveStoreNotificationToUser($user, $audition);       
+
 
             } catch (NotificationException $exception) {
                 $this->log->error( $exception->getMessage());
@@ -203,7 +205,7 @@ class AppoinmentAuditionsController extends Controller
                         ]);
                         $this->log->info('saveStoreNotificationToUser:: ', $history);
                     }
-        
+
                 }catch (NotFoundException $exception) {
                     $this->log->error($exception->getMessage());
                 }
@@ -211,8 +213,8 @@ class AppoinmentAuditionsController extends Controller
 
     public function sendStoreNotificationToUser($user, $audition): void
     {
-        try {            
-                $this->pushNotifications('You have been registered for the audition '. $audition->title, $user);            
+        try {
+                $this->pushNotifications('You have been registered for the audition '. $audition->title, $user);
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }

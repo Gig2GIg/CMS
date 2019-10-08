@@ -56,14 +56,14 @@ class RolesControllerTest extends TestCase
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
         factory(Roles::class, 2)->create(['auditions_id' => $audition->id]);
-        
+
         $response = $this->json('GET', 'api/t/roles?token=' . $this->token);
 
         $response->assertStatus(200);
         $dataj = json_decode($response->content(), true);
         $count = count($dataj['data']);
         $this->assertTrue($count > 0);
-    
+
         $response->assertJsonStructure(['data' => [[
             "id",
             "name",
