@@ -63,6 +63,7 @@ class RolesControllerTest extends TestCase
         $dataj = json_decode($response->content(), true);
         $count = count($dataj['data']);
         $this->assertTrue($count > 0);
+
         $response->assertJsonStructure(['data' => [[
             "id",
             "name",
