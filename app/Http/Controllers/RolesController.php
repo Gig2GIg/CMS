@@ -26,7 +26,7 @@ class RolesController extends Controller
             $rolesRepository =  new RolesRepository(new Roles);
             $roles = $rolesRepository->create($data);
 
-            $response = ['data' => 'Skill created'];
+            $response = ['data' => 'Role created'];
             $code = 201;
 
             return response()->json($response, $code);

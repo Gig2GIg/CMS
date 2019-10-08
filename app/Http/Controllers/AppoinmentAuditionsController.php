@@ -171,13 +171,8 @@ class AppoinmentAuditionsController extends Controller
             $appoinmentData = $appointmentRepo->find($request->appointment_id);
 
             try {
-                $this->sendPushNotification(
-                    $appoinmentData->auditions,
-                    'check_in',
-                    $appoinmentData->auditions,
-                    null
-                );
-
+                $this->sendStoreNotificationToContributors($audition);
+                $this->saveStoreNotificationToUser($user, $audition);             
             } catch (NotificationException $exception) {
                 $this->log->error($exception->getMessage());
             }
@@ -189,6 +184,32 @@ class AppoinmentAuditionsController extends Controller
         } catch (\Exception $exception) {
             $this->log->error("Line:".$exception->getLine()." ".$exception->getMessage()." ".$exception->getFile());
             return response()->json(['data' => 'Appointment not assigned'], 406);
+        }
+    }
+
+    public function saveStoreNotificationToUser($user, $audition): void
+        {
+                try {
+                    if ($user instanceof User){
+                            $user->notification_history()->create([
+                            'title' => $audition->title,
+                            'code' => 'check_in',
+                            'status' => 'unread',
+                            'message'=> 'You have been registered for the audition '. $audition->title
+                        ]);
+                    }
+        
+                }catch (NotFoundException $exception) {
+                    $this->log->error($exception->getMessage());
+                }
+            }
+
+    public function sendStoreNotificationToUser($user, $audition): void
+    {
+        try {            
+                $this->pushNotifications('You have been registered for the audition '. $audition->title, $user);            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 

@@ -94,11 +94,11 @@ class AuditionManagementController extends Controller
                         $mail = new SendMail();
                         $mail->sendManager($userManager->email, $dataMail);
                     }
-                    $this->sendPushNotification(
-                        $audition,
-                        'upcoming_audition',
-                        $detailData
-                    );
+                    
+                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
+
+                    $this->saveAuditionNotificationToUser($detailData, $audition); 
+
                 } else {
                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                     $dataSlotRepo->create([
@@ -123,6 +123,33 @@ class AuditionManagementController extends Controller
             return response()->json(['error' => $message], $code);
         }
 
+    }
+
+   public function saveAuditionNotificationToUser($user, $audition): void
+    {
+        try {
+            if ($user instanceof User){
+                    $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'upcoming_audition',
+                    'status' => 'unread',
+                    'message'=> 'You have been added to upcoming audition '. $audition->title
+                ]);
+            }
+        }catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function sendSaveAuditionNotificationToUser($user, $audition): void
+    {
+        try {            
+                $this->pushNotifications(
+                    'You have been added to upcoming audition '. $audition->title, $user
+                );            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
     }
 
     public function updateAudition(Request $request)
@@ -623,12 +650,9 @@ class AuditionManagementController extends Controller
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
 
-                $this->sendPushNotification(
-                    $appointment->auditions,
-                    'cms_to_user',
-                    $user,
-                    'Your appointment time to audition ' . '* ' . $appointment->auditions->title . ' *' . ' is was moved'
-                );
+                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition);
+
+                $this->sendReorderAppointmentTimesNotification($audition);
             }
 
             if ($userSlotRepo) {
@@ -645,6 +669,40 @@ class AuditionManagementController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception);
             return response()->json(['data' => 'Unprocesable Entity'], 422);
+        }
+    }
+
+    public function sendReorderAppointmentTimesNotification($audition): void
+    {
+        try {
+            $userRepo = new UserRepository(new User);
+
+            $audition->user_auditions->each(function ($user_audition) use ($audition) {
+                $user = $userRepo->find($user_audition['user_id']);               
+                $this->pushNotifications('Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved', 
+                $user_auditions);
+            });
+
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+
+    }
+
+    public function saveReorderAppointmentTimesNotificationToUser($user, $audition): void
+    {
+        try {
+            if ($user instanceof User){
+                $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'appointment_reorder',
+                    'status' => 'unread',
+                    'message'=> 'Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved'
+                ]);
+            }
+
+        }catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 
