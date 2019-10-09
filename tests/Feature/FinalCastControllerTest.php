@@ -115,9 +115,6 @@ class FinalCastControllerTest extends TestCase
         $rol = factory(Roles::class)->create([
             'auditions_id' => $audition->id,
         ]);
-        $rol1 = factory(Roles::class)->create([
-            'auditions_id' => $audition->id,
-        ]);
         $cast = factory(FinalCast::class)->create([
             'audition_id' => $audition->id,
             'performer_id' => factory(User::class)->create()->id,
@@ -127,8 +124,7 @@ class FinalCastControllerTest extends TestCase
         $user2 = factory(User::class)->create();
 
         $response = $this->json('put', 'api/t/finalcast/'.$cast->id.'?token=' . $this->token,[
-            'performer_id'=>$user2->id,
-            'rol_id'=>$rol1->id,
+            'performer_id'=>$user2->id
         ]);
         $response->assertStatus(200);
         $response->assertJson(['data' => true]);

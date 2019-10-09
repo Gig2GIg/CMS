@@ -48,7 +48,7 @@ class FinalCastController extends Controller
             $repo = new FinalCastRepository(new FinalCast());
             $data = $repo->find($request->id);
 
-            $update = $data->update(['user_id'=>$request->performer_id,'rol_id'=>$request->rol_id]);
+            $update = $data->update(['user_id'=>$request->performer_id]);
            if(!$update){
                throw new Exception('performer in final cast list not updated');
            }
