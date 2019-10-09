@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Appointments;
 use App\Models\Auditions;
+use App\Models\Feedbacks;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -163,8 +164,29 @@ class AppointmentManagementControllerTest extends TestCase
     }
     public function test_close_round_in_appointment(){
 
+        $users = factory(User::class,5)->create();
         $appoinment=factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
+        $users->each(function ($item) use ($appoinment){
+            factory(UserAuditions::class)->create([
+                'user_id'=>$item->id,
+                'appointment_id'=>$appoinment->id,
+                'type'=>1,
+                'rol_id' =>factory(Roles::class)->create([
+                    'auditions_id'=>$this->auditionId,
+                ])
+            ]);
+        });
 
+        $users->each(function ($item) use($appoinment){
+            factory(Feedbacks::class)->create([
+               'appointment_id'=> $appoinment->id,
+                'user_id'=>$item->id,
+                'evaluator_id'=>$this->testId,
+                'slot_id'=>factory(Slots::class)->create([
+                  'appointment_id'=>$appoinment->id,
+                ])
+            ]);
+        });
 
         $data=[
             'status'=>false
