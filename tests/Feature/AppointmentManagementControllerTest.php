@@ -51,50 +51,54 @@ class AppointmentManagementControllerTest extends TestCase
     }
 
 
-    public function test_get_rounds_from_audition_200(){
+    public function test_get_rounds_from_audition_200()
+    {
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 2]);
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 3]);
         factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 4]);
         $response = $this->json('GET',
-            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token);
+            'api/t/appointment/' . $this->auditionId . '/rounds?token=' . $this->token);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
-            'data'=>[[
+            'data' => [[
                 'id',
                 'round',
                 'status'
             ]]
         ]);
     }
-    public function test_get_rounds_from_audition_404(){
+
+    public function test_get_rounds_from_audition_404()
+    {
         $response = $this->json('GET',
-            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token);
+            'api/t/appointment/' . $this->auditionId . '/rounds?token=' . $this->token);
         $response->assertStatus(404);
         $response->assertJson([
-            'data'=>[]
+            'data' => []
         ]);
     }
 
-    public function test_create_new_round_in_appointment_200(){
+    public function test_create_new_round_in_appointment_200()
+    {
 
         $data = [
             'date' => '10-20-2019',
             'time' => '10:00',
             'location' => json_encode([
-                "latitude"=> $this->faker->latitude,
-                "latitudeDelta"=> $this->faker->latitude,
-                "longitude"=>$this->faker->longitude,
-                "longitudeDelta"=>$this->faker->longitude,
+                "latitude" => $this->faker->latitude,
+                "latitudeDelta" => $this->faker->latitude,
+                "longitude" => $this->faker->longitude,
+                "longitudeDelta" => $this->faker->longitude,
             ]),
-            'number_slots'=>10,
-            'type'=>1,
-            'length'=>10,
-            'start'=>'10:00',
-            'end'=>'12:00',
-            'round'=>2,
-            'status'=>true,
+            'number_slots' => 10,
+            'type' => 1,
+            'length' => 10,
+            'start' => '10:00',
+            'end' => '12:00',
+            'round' => 2,
+            'status' => true,
             'slots' => [
                 [
                     'time' => $this->faker->time('i'),
@@ -119,12 +123,12 @@ class AppointmentManagementControllerTest extends TestCase
             ]
         ];
         $response = $this->json('POST',
-            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token,$data);
+            'api/t/appointment/' . $this->auditionId . '/rounds?token=' . $this->token, $data);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
                 'id',
                 'round',
                 'status'
@@ -132,94 +136,100 @@ class AppointmentManagementControllerTest extends TestCase
         ]);
     }
 
-    public function test_create_new_round_in_appointment_406(){
+    public function test_create_new_round_in_appointment_406()
+    {
         $data = [
-            'number_slots'=>10,
+            'number_slots' => 10,
             'date' => '10-20-2019',
             'time' => '10:00',
-            'type'=>1,
-            'length'=>10,
+            'type' => 1,
+            'length' => 10,
             'location' => json_encode([
-                "latitude"=> $this->faker->latitude,
-                "latitudeDelta"=> $this->faker->latitude,
-                "longitude"=>$this->faker->longitude,
-                "longitudeDelta"=>$this->faker->longitude,
+                "latitude" => $this->faker->latitude,
+                "latitudeDelta" => $this->faker->latitude,
+                "longitude" => $this->faker->longitude,
+                "longitudeDelta" => $this->faker->longitude,
             ]),
-            'start'=>'10:00',
-            'end'=>'12:00',
-            'round'=>2,
-            'status'=>true,
-            'auditions_id'=>$this->auditionId
+            'start' => '10:00',
+            'end' => '12:00',
+            'round' => 2,
+            'status' => true,
+            'auditions_id' => $this->auditionId
         ];
         $response = $this->json('POST',
-            'api/t/appointment/'.$this->auditionId.'/rounds?token=' . $this->token,$data);
+            'api/t/appointment/' . $this->auditionId . '/rounds?token=' . $this->token, $data);
 
         $response->assertStatus(406);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
 
             ]
         ]);
     }
-    public function test_close_round_in_appointment(){
 
-        $users = factory(User::class,5)->create();
-        $appoinment=factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
-        $users->each(function ($item) use ($appoinment){
+    public function test_close_round_in_appointment()
+    {
+
+        $users = factory(User::class, 5)->create();
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
+        $users->each(function ($item) use ($appoinment) {
             factory(UserAuditions::class)->create([
-                'user_id'=>$item->id,
-                'appointment_id'=>$appoinment->id,
-                'type'=>1,
-                'rol_id' =>factory(Roles::class)->create([
-                    'auditions_id'=>$this->auditionId,
+                'user_id' => $item->id,
+                'appointment_id' => $appoinment->id,
+                'type' => 1,
+                'rol_id' => factory(Roles::class)->create([
+                    'auditions_id' => $this->auditionId,
                 ])
             ]);
         });
 
-        $users->each(function ($item) use($appoinment){
+        $users->each(function ($item) use ($appoinment) {
             factory(Feedbacks::class)->create([
-               'appointment_id'=> $appoinment->id,
-                'user_id'=>$item->id,
-                'evaluator_id'=>$this->testId,
-                'slot_id'=>factory(Slots::class)->create([
-                  'appointment_id'=>$appoinment->id,
+                'appointment_id' => $appoinment->id,
+                'user_id' => $item->id,
+                'evaluator_id' => $this->testId,
+                'favorite' => false,
+                'slot_id' => factory(Slots::class)->create([
+                    'appointment_id' => $appoinment->id,
+
                 ])
             ]);
         });
 
-        $data=[
-            'status'=>false
+        $data = [
+            'status' => false
         ];
         $response = $this->json('PUT',
-            'api/t/appointment/'.$appoinment->id.'/rounds?token=' . $this->token,$data);
+            'api/t/appointment/' . $appoinment->id . '/rounds?token=' . $this->token, $data);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
 
             ]
         ]);
     }
 
-    public function test_get_all_slots_by_appointment_200(){
+    public function test_get_all_slots_by_appointment_200()
+    {
         $user = factory(User::class)->create();
         $audition = factory(Auditions::class)->create([
-            'user_id'=>$user->id
+            'user_id' => $user->id
         ]);
 
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition->id
+            'auditions_id' => $audition->id
         ]);
-        factory(Slots::class,10)->create(
-            ['appointment_id'=>$appointment->id]
+        factory(Slots::class, 10)->create(
+            ['appointment_id' => $appointment->id]
         );
-        $response = $this->json('GET','api/t/appointments/'.$appointment->id.'/slots?token='.$this->token);
+        $response = $this->json('GET', 'api/t/appointments/' . $appointment->id . '/slots?token=' . $this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'message',
-            'data'=>[
+            'data' => [
                 [
                     'id',
                     'time'
