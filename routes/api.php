@@ -51,7 +51,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
-    $router->get('/performers/tags', ['uses'=>'PerformersController@getTags']);
+    Route::get('/performers/tags', ['uses'=>'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses'=>'PerformersController@getCommnents']);
     Route::get('/performers/contracts', ['uses'=>'PerformersController@getContracts']);
 
@@ -320,7 +320,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('/marketplace_categories/show/{id}','MarketplaceCategoriesController@getMarkeplaceCategory');
         $router->delete('/marketplace_categories/delete/{id}','MarketplaceCategoriesController@deleteMarkeplaceCategory');
         $router->put('/marketplace_categories/update/{id}','MarketplaceCategoriesController@updateMarkeplaceCategory');
-        
+
         //marketplace by category
         Route::prefix('marketplace_categories')->group(function () use ($router) {
             $router->get('/{marketplaceCategory}/marketplaces', 'MarketplaceController@getAllMarketplaceByCategory')->where('id', '[0-9]+');
@@ -372,7 +372,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         $router->get('content-settings', 'ContentSettingController@getAllContentSetting');
         $router->put('/content-settings/update','ContentSettingController@update');
                 Route::get('/auditions',['uses'=>'AuditionsController@getFullData']);
-        
+
 
 
     });
@@ -398,7 +398,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('forum/posts', ['uses'=>'PostsController@listForum']);
         Route::put('forum/posts/{id}', ['uses'=>'PostsController@update']);
         Route::delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
-        
+
 
     });
 });
