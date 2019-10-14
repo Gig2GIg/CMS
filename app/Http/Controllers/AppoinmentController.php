@@ -47,6 +47,7 @@ class AppoinmentController extends Controller
                 'status' => false,
             ]);
         }
+        $lastid = $repoDataA->orderBy('id','desc')->first();
         $this->toDate = new ManageDates();
         try {
             $repo = new AppointmentRepository(new Appointments());
@@ -67,6 +68,17 @@ class AppoinmentController extends Controller
                 throw new \Exception('Not Slots to process');
             }
             $data = $repo->create($appointment);
+            $repoFeeadback = Feedbacks::all()
+                ->where('appointment_id', $lastid->id)
+                ->where('favorite', true);
+
+            if($repoFeeadback->count() >0){
+                $repoFeeadback->each(function($item) use ($data){
+                   $item->update(['appointment_id'=>$data->id]);
+                });
+            }
+
+
 
             foreach ($request['slots'] as $slot) {
                 $dataSlots = $this->dataToSlotsProcess($data, $slot);

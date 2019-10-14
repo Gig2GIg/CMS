@@ -82,6 +82,32 @@ class AppointmentManagementControllerTest extends TestCase
 
     public function test_create_new_round_in_appointment_200()
     {
+        $users = factory(User::class, 5)->create();
+
+        factory(Appointments::class,10)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
+        $appoinment = factory(Appointments::class)->create(['auditions_id' => $this->auditionId, 'round' => 1]);
+        $users->each(function ($item) use ($appoinment) {
+            factory(UserAuditions::class)->create([
+                'user_id' => $item->id,
+                'appointment_id' => $appoinment->id,
+                'type' => 1,
+                'rol_id' => factory(Roles::class)->create([
+                    'auditions_id' => $this->auditionId,
+                ])
+            ]);
+        });
+
+        $users->each(function ($item) use ($appoinment) {
+            factory(Feedbacks::class)->create([
+                'appointment_id' => $appoinment->id,
+                'user_id' => $item->id,
+                'evaluator_id' => $this->testId,
+                'slot_id' => factory(Slots::class)->create([
+                    'appointment_id' => $appoinment->id,
+
+                ])
+            ]);
+        });
 
         $data = [
             'date' => '10-20-2019',
