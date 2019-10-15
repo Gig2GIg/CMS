@@ -14,7 +14,6 @@ use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Resources\CommentListResponse;
 use App\Http\Resources\PerformerFilterResource;
 use App\Http\Resources\PerformerResource;
-use App\Models\Appointments;
 use App\Models\AuditionContract;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
@@ -25,7 +24,6 @@ use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use mysql_xdevapi\Collection;
 
 class PerformersController extends Controller
 {
@@ -124,30 +122,31 @@ class PerformersController extends Controller
     public function filter(Request $request)
     {
         try {
-            if (isset($request->union) && $request->base) {
-                $dataResponse = $this->filterBaseUnion($request->base, $request->union);
-            } else if ($request->base) {
-                $dataResponse = $this->filterBase($request->base);
+            $repo = new PerformerRepository(new Performers());
+            $repoPerformer = $repo->findbyparam('director_id', $this->getUserLogging())->get()->pluck('performer_id')->toArray();
+            $base = $this->filterBase($request->base, $repoPerformer);
+            $dataResponse = $base;
+            if (isset($request->union)) {
+                $dataResponse = $this->filterUnion($request->union, $dataResponse);
             }
+            if (isset($request->gender)) {
 
-
+                $dataResponse = $this->filterGender($request->gender, $dataResponse);
+            }
             return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
         } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Data not Found'], 404);
         }
     }
 
 
-    public function filterBase($value)
+    public function filterBase($value, array $data)
     {
         try {
-            $repo = new PerformerRepository(new Performers());
-            $repoPerformer = $repo->findbyparam('director_id', $this->getUserLogging())->get()->pluck('performer_id')->toArray();
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
-
-
-            $data = $repoUserDetails->all()->whereIn('user_id', $repoPerformer);
-            return $data->reject(function ($element) use ($value) {
+            $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
+            return $collectionFind->reject(function ($element) use ($value) {
                 return mb_strpos($element->last_name, $value) === false;
             });
 
@@ -157,33 +156,30 @@ class PerformersController extends Controller
         }
     }
 
-    public function filterBaseUnion($value, $union)
+    public function filterUnion($union, $userDetails)
     {
         try {
-            $repo = new PerformerRepository(new Performers());
-            $repoPerformer = $repo->findbyparam('director_id', $this->getUserLogging())->get()->pluck('performer_id')->toArray();
-            $repoUserDetails = new UserDetailsRepository(new UserDetails());
-            $idReturn = $repoUserDetails->all()
-                ->whereIn('user_id', $repoPerformer);
+            $dataFilter = null;
             if ($union == 1) {
-                $idReturn = $idReturn->reject(function ($element) {
+                $dataFilter = $userDetails->reject(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
                     return $count === 0;
                 });
             }
             if ($union == 0) {
-                $idReturn = $idReturn->filter(function ($element) {
+                $dataFilter = $userDetails->filter(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
                     return $count === 0;
                 });
             }
 
-            return $idReturn->reject(function ($element) use ($value) {
-                return mb_strpos($element->last_name, $value) === false;
-            });
+            if ($union == 2) {
+                $dataFilter = $userDetails;
+            }
 
+            return $dataFilter;
 
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
@@ -191,6 +187,18 @@ class PerformersController extends Controller
         }
     }
 
+    public function filterGender($gender, $userDetails)
+    {
+        try {
+            $dataFilter = $userDetails->filter(function ($element) use ($gender) {
+                return $element->gender == $gender;
+            });
+            return $dataFilter;
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            return collect();
+        }
+    }
     public function getTags(Request $request)
     {
         try {

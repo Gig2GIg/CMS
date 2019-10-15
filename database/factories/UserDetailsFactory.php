@@ -23,5 +23,6 @@ $factory->define(UserDetails::class,function (Faker $faker){
         'profesion'=>$faker->jobTitle(),
         'stage_name'=>$faker->title(),
         'zip'=>$faker->numberBetween(1000,10000),
+        'gender'=>$faker->numberBetween(1,3),
     ];
 });
