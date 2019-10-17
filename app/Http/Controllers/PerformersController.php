@@ -233,9 +233,13 @@ class PerformersController extends Controller
         $this->log->info($request);
         try {
             $dataRepo = new AuditionRepository(new Auditions());
+
             $dataAuditions = $dataRepo->findbyparam('user_id',$this->getUserLogging())->unique();
+            $this->log->info("AUDITIONS::".$dataAuditions);
             $dataTemp = AuditionContract::whereIn('auditions_id',$dataAuditions)->get();
+            $this->log->info("CONTRACTS::".$dataTemp);
             $data = $dataTemp->where('user_id',$request->user);
+            $this->log->info("CONTRACTS USER::".$data);
 
             return response()->json(['message' => 'contracts by user', 'data' => $data], 200);
 
