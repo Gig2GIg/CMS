@@ -20,9 +20,9 @@ class CreateAuditionsTable extends Migration
             $table->text('description');
             $table->string('url');
             $table->text('personal_information');
-            $table->string('phone');
-            $table->string('email');
-            $table->string('other_info');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->string('other_info')->nullable();
             $table->text('additional_info');
             $table->string('union');
             $table->string('contract');

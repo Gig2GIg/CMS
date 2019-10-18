@@ -136,13 +136,13 @@ class AuditionsController extends Controller
 
     public function sendStoreNotificationToContributors($audition): void
     {
-        try {           
+        try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
                     'You have been registered for the audition '. $audition->title,
                     $user_contributor
                 );
-            });            
+            });
 
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -161,9 +161,9 @@ class AuditionsController extends Controller
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'personal_information'=>$request->personal_information,
-            'phone'=>$request->phone,
-            'email'=>$request->email,
-            'other_info'=>$request->other_info,
+            'phone'=>$request->phone,//null
+            'email'=>$request->email, //null
+            'other_info'=>$request->other_info, //null
             'additional_info'=>$request->additional_info,
             'union' => $request->union,
             'contract' => $request->contract,
@@ -216,9 +216,9 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($request->date),
-            'time' => $request->time,
-            'location' => json_encode($request->location),
+            'date' => $this->toDate->transformDate($request->date),//null
+            'time' => $request->time,//null
+            'location' => json_encode($request->location),//null
             'slots' => $request['appointment']['spaces'],
             'type' => $request['appointment']['type'],
             'length' => $request['appointment']['length'],
@@ -295,7 +295,7 @@ class AuditionsController extends Controller
             $user = new UserRepository(new User());
             $email = new SendMail();
             $dataUser = $user->findbyparam('email', $contrib['email']);
-            
+
             if ($dataUser !== null) {
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
@@ -516,7 +516,7 @@ class AuditionsController extends Controller
 
         $auditionFilesData = [];
         try {
-        
+
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
 
@@ -529,7 +529,7 @@ class AuditionsController extends Controller
                 $code = 200;
                 return response()->json(['data' => $dataResponse], $code);
             }
-          
+
         } catch (NotFoundException $exception) {
             return response()->json(['data' => 'Data Not Found'], 404);
         } catch (\Exception $exception) {
@@ -640,13 +640,13 @@ class AuditionsController extends Controller
 
     public function sendInviteNotificationToContributors($audition): void
     {
-        try {           
+        try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
                     'You have been invited for the audition '. $audition->title,
                     $user_contributor
                 );
-            });            
+            });
 
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());

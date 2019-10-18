@@ -9,6 +9,7 @@ use App\Models\Auditions;
 use App\Models\Credits;
 use App\Models\Educations;
 use App\Models\Feedbacks;
+use App\Models\Notifications\NotificationHistory;
 use App\Models\Performers;
 use App\Models\Roles;
 use App\Models\Slots;
