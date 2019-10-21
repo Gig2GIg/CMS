@@ -23,21 +23,23 @@ class AuditionRequest extends ApiRequest
      */
     public function rules()
     {
+
+
         return [
-            'title'=>'required',
+            'title' => 'required',
 //            'date'=>'required',
 //            'time'=>'required',
             //'location'=>'required',
-            'description'=>'required',
-            'url'=>'required',
-            'cover'=>'required',
+            'description' => 'required',
+            'url' => 'required',
+            'cover' => 'required',
             'union',
             'contract',
             'production',
             'status',
             'dates',
-            'roles'=>'required|array',
-            'appointment'=>'required',
+            'roles' => 'required|array',
+            'appointment' => 'required',
 //            'contributors'=>'required|array',
 //            'media'=>'required|array'
         ];

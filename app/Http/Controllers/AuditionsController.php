@@ -75,7 +75,7 @@ class AuditionsController extends Controller
                             'url' => $file['url'],
                             'type' => $file['type'],
                             'name' => $file['name'],
-                            'share'=>$file['share']
+                            'share' => $file['share']
                         ];
                     }
                 }
@@ -83,13 +83,13 @@ class AuditionsController extends Controller
                     'url' => $request->cover,
                     'type' => 'cover',
                     'name' => $request->cover_name,
-                    'share'=>'no'
+                    'share' => 'no'
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'],'shareable'=>$file['share']]);
+                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
                 }
                 foreach ($request['dates'] as $date) {
                     $audition->dates()->create($this->dataDatesToProcess($date));
@@ -98,17 +98,19 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->create($roldata);
-                    $imageUrl = $roles['cover'] ?? App::make('url')->to('/').'/images/roles.png';
+                    $imageUrl = $roles['cover'] ?? App::make('url')->to('/') . '/images/roles.png';
                     $imageName = $roles['name_cover'] ?? 'default';
                     $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
                 }
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointment = $appointmentRepo->create($dataAppoinment);
-                foreach ($request['appointment']['slots'] as $slot) {
-                    $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
-                    $slotsRepo = new SlotsRepository(new Slots());
-                    $slotsRepo->create($dataSlots);
+                if (!$request->online) {
+                    foreach ($request['appointment']['slots'] as $slot) {
+                        $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
+                        $slotsRepo = new SlotsRepository(new Slots());
+                        $slotsRepo->create($dataSlots);
+                    }
                 }
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
@@ -139,7 +141,7 @@ class AuditionsController extends Controller
         try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
-                    'You have been registered for the audition '. $audition->title,
+                    'You have been registered for the audition ' . $audition->title,
                     $user_contributor
                 );
             });
@@ -160,16 +162,16 @@ class AuditionsController extends Controller
 
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
-            'personal_information'=>$request->personal_information,
-            'phone'=>$request->phone,//null
-            'email'=>$request->email, //null
-            'other_info'=>$request->other_info, //null
-            'additional_info'=>$request->additional_info,
+            'personal_information' => $request->personal_information,
+            'phone' => $request->phone,//null
+            'email' => $request->email, //null
+            'other_info' => $request->other_info, //null
+            'additional_info' => $request->additional_info,
             'union' => $request->union,
             'contract' => $request->contract,
             'production' => $request->production,
             'status' => false,
-            'online'=>$request->online ?? false,
+            'online' => $request->online ?? false,
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];
@@ -224,8 +226,8 @@ class AuditionsController extends Controller
             'length' => $request['appointment']['length'],
             'start' => $request['appointment']['start'],
             'end' => $request['appointment']['end'],
-            'status'=>$request['appointment']['status'],
-            'round'=>$request['appointment']['round'],
+            'status' => true,
+            'round' => 1,
         ];
 
     }
@@ -263,7 +265,7 @@ class AuditionsController extends Controller
                 'title' => $audition->title,
                 'code' => Str::random(12),
                 'user_id' => $audition->user_id,
-                'message' => 'You have been invited to audition '.$audition->title,
+                'message' => 'You have been invited to audition ' . $audition->title,
                 'custom_data' => $userContributor->id,
                 'status' => 'unread'
             ];
@@ -300,7 +302,7 @@ class AuditionsController extends Controller
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
-                $send = $email->sendContributor($contrib['email'],$audition->title);
+                $send = $email->sendContributor($contrib['email'], $audition->title);
                 $this->createNotification($audition, $contributors);
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
@@ -480,7 +482,7 @@ class AuditionsController extends Controller
 
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
-                        if(!isset($contrib['id'])) {
+                        if (!isset($contrib['id'])) {
                             $this->saveContributor($contrib, $audition);
                         }
                     }
@@ -522,7 +524,7 @@ class AuditionsController extends Controller
 
             if (isset($request['contributors'])) {
                 foreach ($request['contributors'] as $contrib) {
-                        $this->saveContributor($contrib, $audition);
+                    $this->saveContributor($contrib, $audition);
                 }
 
                 $dataResponse = 'Contruibuitors Add';
@@ -551,7 +553,7 @@ class AuditionsController extends Controller
             } else {
                 return $this->find->findByProductionAndMulty($request);
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
 
             return response()->json(['error' => 'Not Found'], 404);
@@ -583,7 +585,7 @@ class AuditionsController extends Controller
             $repo = new AuditionContributorsRepository(new AuditionContributors());
             $auditionContributorsData = $repo->find($request->id);
 
-            $auditionRepo = new AuditionRepository( new Auditions());
+            $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($auditionContributorsData->auditions_id);
 
             $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory());
@@ -598,10 +600,10 @@ class AuditionsController extends Controller
 
             $invite = $auditionContributorsData->update($data);
 
-            if ($request->status === '1'){
+            if ($request->status === '1') {
 
                 $dataNotification = [
-                    'message' =>  'You have accepted this invitation to '. $audition->title,
+                    'message' => 'You have accepted this invitation to ' . $audition->title,
                     'status' => 'aceppted'
                 ];
 
@@ -614,10 +616,10 @@ class AuditionsController extends Controller
                 }
             }
 
-            if ($request->status === '0'){
+            if ($request->status === '0') {
 
                 $dataNotification = [
-                    'message' =>  'You have rejected this invitation to '. $audition->title,
+                    'message' => 'You have rejected this invitation to ' . $audition->title,
                     'status' => 'rejected'
                 ];
 
@@ -643,7 +645,7 @@ class AuditionsController extends Controller
         try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
-                    'You have been invited for the audition '. $audition->title,
+                    'You have been invited for the audition ' . $audition->title,
                     $user_contributor
                 );
             });
@@ -655,24 +657,23 @@ class AuditionsController extends Controller
 
     public function updateBannedStatus(Request $request)
     {
-        try{
+        try {
             $auditionRepo = new AuditionRepository(new Auditions());
             $banStatus = $request->banned;
             $audition = $auditionRepo->find($request->id);
             $updateRepo = new AuditionRepository($audition);
             $update = $updateRepo->update(['banned' => $banStatus,]);
 
-            if ($update){
+            if ($update) {
                 $responseData = new AuditionFullResponse($audition);
-                $dataResponse = ['data' =>  $responseData];
+                $dataResponse = ['data' => $responseData];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Updated'];
                 $code = 406;
             }
             return response()->json(['data' => $dataResponse], $code);
-        }
-        catch (Exception $exception) {
+        } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Data Not Updated'], 406);
         }
