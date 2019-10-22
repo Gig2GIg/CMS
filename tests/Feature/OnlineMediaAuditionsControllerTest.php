@@ -51,7 +51,7 @@ class OnlineMediaAuditionsControllerTest extends TestCase
             'name'=>'audition-test'
         ];
 
-        $response = $this->json('POST','api/a/online/media?token='.$this->token,$data);
+        $response = $this->json('POST','api/a/media/online?token='.$this->token,$data);
         $response->assertStatus(201);
         $response->assertJsonStructure(
             [
@@ -84,7 +84,7 @@ class OnlineMediaAuditionsControllerTest extends TestCase
             'appointment_id'=>$appointment->id
         ];
 
-        $response = $this->json('GET','api/online/media?token='.$this->token,$data);
+        $response = $this->json('GET','api/media/online?token='.$this->token,$data);
         $response->assertStatus(200);
         $response->assertJsonStructure(
             [
@@ -114,7 +114,7 @@ class OnlineMediaAuditionsControllerTest extends TestCase
 
 
 
-        $response = $this->json('GET','api/online/media/'.$appointment->id.'/round?token='.$this->token);
+        $response = $this->json('GET','api/media/online/'.$appointment->id.'/round?token='.$this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(
             [
@@ -143,7 +143,7 @@ class OnlineMediaAuditionsControllerTest extends TestCase
 
 
 
-        $response = $this->json('GET','api/online/media/'.$media->id.'?token='.$this->token);
+        $response = $this->json('GET','api/media/online/'.$media->id.'?token='.$this->token);
         $response->assertStatus(200);
         $response->assertJsonStructure(
             [

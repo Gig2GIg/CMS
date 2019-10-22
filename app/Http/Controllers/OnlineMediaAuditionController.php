@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
+use App\Http\Repositories\MediaOnlineRepository;
 use App\Models\OnlineMediaAudition;
 use Illuminate\Http\Request;
-use Tests\Unit\MediaOnlineRepository;
 
 class OnlineMediaAuditionController extends Controller
 {

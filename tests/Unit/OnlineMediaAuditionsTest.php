@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Http\Repositories\MediaOnlineRepository;
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\OnlineMediaAudition;

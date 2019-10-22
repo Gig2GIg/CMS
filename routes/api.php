@@ -48,9 +48,9 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->delete('media/manager/{id}',['uses'=>'MediaManagerController@delete']);
     $router->get('/performers/auditions/{audition}',['uses'=>'AppoinmentAuditionsController@showCms']);
 
-    Route::get('online/media',['uses'=>'OnlineMediaAuditionController@listByUser']);
-    Route::get('online/media/{appointment_id}/round',['uses'=>'OnlineMediaAuditionController@listByRound']);
-    Route::get('online/media/{id}',['uses'=>'OnlineMediaAuditionController@get']);
+    Route::get('media/online',['uses'=>'OnlineMediaAuditionController@listByUser']);
+    Route::get('media/online/{appointment_id}/round',['uses'=>'OnlineMediaAuditionController@listByRound']);
+    Route::get('media/online/{id}',['uses'=>'OnlineMediaAuditionController@get']);
 
 });
 $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function () use ($router) {
@@ -181,6 +181,8 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
+    //media online submission
+    $router->post('media/online',['uses'=>'OnlineMediaAuditionController@create']);
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
     $router->get('/users/settings',['uses'=>'UserSettingsController@list']);
@@ -300,8 +302,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_performance']);
     $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 
-    //media online submission
-    $router->post('online/media',['uses'=>'OnlineMediaAuditionController@create']);
+
 });
 
 

@@ -1,7 +1,5 @@
 <?php
-
-
-namespace Tests\Unit;
+namespace App\Http\Repositories;
 
 
 use App\Http\Controllers\Utils\LogManger;
