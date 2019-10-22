@@ -38,6 +38,7 @@ class UserAuditionsResource extends JsonResource
             'id' => $this->id,
             'appointment_id'=>$this->appointment_id,
             'auditions_id'=>$dataRepo->auditions->id,
+            'online'=>$dataRepo->auditions->online,
             'rol'=> $this->rol_id,
             'rol_name'=>$rolanme[0] ?? null,
             'id_user' => $dataRepo->auditions->user_id,

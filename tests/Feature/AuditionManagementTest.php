@@ -50,6 +50,21 @@ class AuditionManagementTest extends TestCase
         $response->assertStatus(201);
         $response->assertJsonStructure(['data']);
     }
+    public function test_save_upcoming_audition_avaliable_online()
+    {
+        $audition = factory(Auditions::class)->create(['user_id' => $this->userId]);
+        $appointment = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
+        $response = $this->json('POST',
+            'api/a/auditions/user?token=' . $this->token,
+            [
+                'appointment' => $appointment->id,
+                'rol' => factory(Roles::class)->create(['auditions_id' => $audition->id])->id,
+                'type' => 1,
+                'online'=>true,
+            ]);
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['data']);
+    }
 
     public function test_save_upcoming_audition_not_avaliable()
     {

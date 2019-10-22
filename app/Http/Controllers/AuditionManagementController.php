@@ -58,95 +58,37 @@ class AuditionManagementController extends Controller
 
     public function saveUserAudition(Request $request)
     {
-
-        try {
-            if (!$this->alertSlotsEmpty($request->appointment)) {
-                throw new Exception('all the spaces of this audition have been reserved', 10);
-            }
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
-            $data = [
-                'user_id' => $this->getUserLogging(),
-                'appointment_id' => $request->appointment,
-                'rol_id' => $request->rol,
-                'type' => $request->type,
-            ];
-            $userAudi = new UserAuditions();
-            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
-                ->where('appointment_id', '=', $data['appointment_id'])
-                ->where('rol_id', '=', $data['rol_id'])
-                ->get();
-            if ($datacompare->count() > 0) {
-                return response()->json(['data' => 'You already registered'], 406);
-            } else {
-                $data = $userAuditions->create($data);
-                if ($request->type === 2) {
-                    $user = new UserManagerRepository(new UserManager());
-                    $userData = new UserRepository(new User());
-                    $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ?? '';
-                    $userManager = $user->findbyparam('user_id', $this->getUserLogging());
-                    $appoinmetRepo = new AppointmentRepository(new Appointments());
-                    $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
-                    $auditionRepo = new AuditionRepository(new Auditions());
-                    $audition = $auditionRepo->find($auditionsId);
-                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
-                    if (isset($userManager->email) !== null && isset($userManager->notifications)) {
-                        $mail = new SendMail();
-                        $mail->sendManager($userManager->email, $dataMail);
-                    }
-                    
-                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
-
-                    $this->saveAuditionNotificationToUser($detailData, $audition); 
-
-                } else {
-                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                    $dataSlotRepo->create([
-                        'user_id' => $this->getUserLogging(),
-                        'appointment_id' => $request->appointment,
-                        'slots_id' => null,
-                        'roles_id' => $request->rol,
-                        'status' => 1
-                    ]);
-
-                }
-            }
-            return response()->json(['data' => 'Audition Saved'], 201);
-        } catch (Exception $exception) {
-            $this->log->error($exception->getMessage());
-            $message = $exception->getMessage();
-            $code = 406;
-            if ($exception->getCode() !== 10) {
-                $message = 'Not Saved';
-            }
-
-            return response()->json(['error' => $message], $code);
+        if (!$request->online) {
+            return $this->registerNotOnline($request);
         }
+
+        return $this->registerOnline($request);
+
 
     }
 
-   public function saveAuditionNotificationToUser($user, $audition): void
+    public function saveAuditionNotificationToUser($user, $audition): void
     {
         try {
-            if ($user instanceof User){
-                    $user->notification_history()->create([
+            if ($user instanceof User) {
+                $user->notification_history()->create([
                     'title' => $audition->title,
                     'code' => 'upcoming_audition',
                     'status' => 'unread',
-                    'message'=> 'You have been added to upcoming audition '. $audition->title
+                    'message' => 'You have been added to upcoming audition ' . $audition->title
                 ]);
             }
-        }catch (NotFoundException $exception) {
+        } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
 
     public function sendSaveAuditionNotificationToUser($user, $audition): void
     {
-        try {            
-                $this->pushNotifications(
-                    'You have been added to upcoming audition '. $audition->title, $user
-                );            
+        try {
+            $this->pushNotifications(
+                'You have been added to upcoming audition ' . $audition->title, $user
+            );
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -678,9 +620,9 @@ class AuditionManagementController extends Controller
             $userRepo = new UserRepository(new User);
 
             $audition->user_auditions->each(function ($user_audition) use ($audition) {
-                $user = $userRepo->find($user_audition['user_id']);               
-                $this->pushNotifications('Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved', 
-                $user_auditions);
+                $user = $userRepo->find($user_audition['user_id']);
+                $this->pushNotifications('Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
+                    $user_auditions);
             });
 
         } catch (NotFoundException $exception) {
@@ -692,16 +634,16 @@ class AuditionManagementController extends Controller
     public function saveReorderAppointmentTimesNotificationToUser($user, $audition): void
     {
         try {
-            if ($user instanceof User){
+            if ($user instanceof User) {
                 $user->notification_history()->create([
                     'title' => $audition->title,
                     'code' => 'appointment_reorder',
                     'status' => 'unread',
-                    'message'=> 'Your appointment to audition ' . '* '. $audition->title . ' *'. ' has been moved'
+                    'message' => 'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved'
                 ]);
             }
 
-        }catch (NotFoundException $exception) {
+        } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
@@ -755,7 +697,7 @@ class AuditionManagementController extends Controller
         });
 
 
-        $data->each(function ($item) use ($collection){
+        $data->each(function ($item) use ($collection) {
             if ($item['status'] == 2) {
                 $collection->push($item);
             }
@@ -763,5 +705,116 @@ class AuditionManagementController extends Controller
         return $collection;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function registerNotOnline(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            if (!$this->alertSlotsEmpty($request->appointment)) {
+                throw new Exception('all the spaces of this audition have been reserved', 10);
+            }
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            $data = [
+                'user_id' => $this->getUserLogging(),
+                'appointment_id' => $request->appointment,
+                'rol_id' => $request->rol,
+                'type' => $request->type,
+            ];
+            $userAudi = new UserAuditions();
+            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
+                ->where('appointment_id', '=', $data['appointment_id'])
+                ->where('rol_id', '=', $data['rol_id'])
+                ->get();
+            if ($datacompare->count() > 0) {
+                return response()->json(['data' => 'You already registered'], 406);
+            } else {
+                $data = $userAuditions->create($data);
+                if ($request->type === 2) {
+                    $user = new UserManagerRepository(new UserManager());
+                    $userData = new UserRepository(new User());
+                    $detailData = $userData->find($this->getUserLogging());
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ?? '';
+                    $userManager = $user->findbyparam('user_id', $this->getUserLogging());
+                    $appoinmetRepo = new AppointmentRepository(new Appointments());
+                    $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
+                    $auditionRepo = new AuditionRepository(new Auditions());
+                    $audition = $auditionRepo->find($auditionsId);
+                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
+                    if (isset($userManager->email) !== null && isset($userManager->notifications)) {
+                        $mail = new SendMail();
+                        $mail->sendManager($userManager->email, $dataMail);
+                    }
 
+                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
+
+                    $this->saveAuditionNotificationToUser($detailData, $audition);
+
+                } else {
+                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                    $dataSlotRepo->create([
+                        'user_id' => $this->getUserLogging(),
+                        'appointment_id' => $request->appointment,
+                        'slots_id' => null,
+                        'roles_id' => $request->rol,
+                        'status' => 1
+                    ]);
+
+                }
+            }
+            return response()->json(['data' => 'Audition Saved'], 201);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            $message = $exception->getMessage();
+            $code = 406;
+            if ($exception->getCode() !== 10) {
+                $message = 'Not Saved';
+            }
+
+            return response()->json(['error' => $message], $code);
+        }
+    }
+
+    public function registerOnline(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            $data = [
+                'user_id' => $this->getUserLogging(),
+                'appointment_id' => $request->appointment,
+                'rol_id' => $request->rol,
+                'type' => $request->type,
+            ];
+            $userAudi = new UserAuditions();
+            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
+                ->where('appointment_id', '=', $data['appointment_id'])
+                ->where('rol_id', '=', $data['rol_id'])
+                ->get();
+            if ($datacompare->count() > 0) {
+                return response()->json(['data' => 'You already registered'], 406);
+            } else {
+                $data = $userAuditions->create($data);
+                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                $dataSlotRepo->create([
+                    'user_id' => $this->getUserLogging(),
+                    'appointment_id' => $request->appointment,
+                    'slots_id' => factory(Slots::class)->create([
+                        'appointment_id' => $request->appointment,
+                        'time' => "00:00",
+                        'status' => false,
+                    ])->id,
+                    'roles_id' => $request->rol,
+                    'status' =>2
+                ]);
+            }
+            return response()->json(['data' => 'Audition Saved'], 201);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            $message = $exception->getMessage();
+            $code = 406;
+            return response()->json(['error' => $message], $code);
+        }
+    }
 }
