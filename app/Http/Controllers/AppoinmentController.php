@@ -40,56 +40,11 @@ class AppoinmentController extends Controller
 
     public function createRound(Request $request)
     {
-        $repoClosedA = new AppointmentRepository(new Appointments());
-        $repoDataA = $repoClosedA->findbyparam('auditions_id', $request->audition_id);
-        if ($repoDataA->count() > 0) {
-            $repoDataA->update([
-                'status' => false,
-            ]);
+        if(!$request->online){
+            return $this->notOnlineSubmision($request);
         }
-        $lastid = $repoDataA->orderBy('id','desc')->first();
-        $this->toDate = new ManageDates();
-        try {
-            $repo = new AppointmentRepository(new Appointments());
-            $appointment = [
-                'date' => $this->toDate->transformDate($request->date),
-                'time' => $request->time,
-                'location' => json_encode($request->location),
-                'slots' => $request->number_slots,
-                'type' => $request->type,
-                'length' => $request->length,
-                'start' => $request->start,
-                'end' => $request->end,
-                'round' => $request->round,
-                'status' => true,
-                'auditions_id' => $request->audition_id,
-            ];
-            if (is_null($request->slots)) {
-                throw new \Exception('Not Slots to process');
-            }
-            $data = $repo->create($appointment);
-            $repoFeeadback = Feedbacks::all()
-                ->where('appointment_id', $lastid->id)
-                ->where('favorite', true);
 
-            if($repoFeeadback->count() >0){
-                $repoFeeadback->each(function($item) use ($data){
-                   $item->update(['appointment_id'=>$data->id]);
-                });
-            }
-
-
-
-            foreach ($request['slots'] as $slot) {
-                $dataSlots = $this->dataToSlotsProcess($data, $slot);
-                $slotsRepo = new SlotsRepository(new Slots());
-                $slotsRepo->create($dataSlots);
-            }
-            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
-        } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
-        }
+        return $this->onlineSubmision($request);
     }
 
     public function updateRound(Request $request)
@@ -145,6 +100,108 @@ class AppoinmentController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => 'Not found data', 'data' => []], 404);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws NotFoundException
+     */
+    public function notOnlineSubmision(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $repoClosedA = new AppointmentRepository(new Appointments());
+        $repoDataA = $repoClosedA->findbyparam('auditions_id', $request->audition_id);
+        if ($repoDataA->count() > 0) {
+            $repoDataA->update([
+                'status' => false,
+            ]);
+        }
+        $lastid = $repoDataA->orderBy('id', 'desc')->first();
+        $this->toDate = new ManageDates();
+        try {
+            $repo = new AppointmentRepository(new Appointments());
+            $appointment = [
+                'date' => $this->toDate->transformDate($request->date),
+                'time' => $request->time,
+                'location' => json_encode($request->location),
+                'slots' => $request->number_slots,
+                'type' => $request->type,
+                'length' => $request->length,
+                'start' => $request->start,
+                'end' => $request->end,
+                'round' => $request->round,
+                'status' => true,
+                'auditions_id' => $request->audition_id,
+            ];
+            if (is_null($request->slots)) {
+                throw new \Exception('Not Slots to process');
+            }
+            $data = $repo->create($appointment);
+            $repoFeeadback = Feedbacks::all()
+                ->where('appointment_id', $lastid->id)
+                ->where('favorite', true);
+
+            if ($repoFeeadback->count() > 0) {
+                $repoFeeadback->each(function ($item) use ($data) {
+                    $item->update(['appointment_id' => $data->id]);
+                });
+            }
+
+
+            foreach ($request['slots'] as $slot) {
+                $dataSlots = $this->dataToSlotsProcess($data, $slot);
+                $slotsRepo = new SlotsRepository(new Slots());
+                $slotsRepo->create($dataSlots);
+            }
+            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+        }
+    }
+
+    public function onlineSubmision(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $repoClosedA = new AppointmentRepository(new Appointments());
+        $repoDataA = $repoClosedA->findbyparam('auditions_id', $request->audition_id);
+        if ($repoDataA->count() > 0) {
+            $repoDataA->update([
+                'status' => false,
+            ]);
+        }
+        $lastid = $repoDataA->orderBy('id', 'desc')->first();
+        $this->toDate = new ManageDates();
+        try {
+            $repo = new AppointmentRepository(new Appointments());
+            $appointment = [
+                'date' => $this->toDate->transformDate($request->date),
+                'time' => $request->time,
+                'location' => json_encode($request->location),
+                'slots' => $request->number_slots,
+                'type' => $request->type,
+                'length' => $request->length,
+                'start' => $request->start,
+                'end' => $request->end,
+                'round' => $request->round,
+                'status' => true,
+                'auditions_id' => $request->audition_id,
+            ];
+            $data = $repo->create($appointment);
+            $repoFeeadback = Feedbacks::all()
+                ->where('appointment_id', $lastid->id)
+                ->where('favorite', true);
+
+            if ($repoFeeadback->count() > 0) {
+                $repoFeeadback->each(function ($item) use ($data) {
+                    $item->update(['appointment_id' => $data->id]);
+                });
+            }
+
+            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
         }
     }
 }
