@@ -16,6 +16,7 @@ class OnlineMediaAuditionController extends Controller
             $data=[
                 'type'=>$request->type,
                 'url'=>$request->url,
+                'thumbnail'=>$request->thumbnail,
                 'name'=>$request->name,
                 'appointment_id'=>$request->appointment_id,
                 'performer_id'=>$this->getUserLogging()

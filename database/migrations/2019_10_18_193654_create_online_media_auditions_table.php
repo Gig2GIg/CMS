@@ -16,7 +16,8 @@ class CreateOnlineMediaAuditionsTable extends Migration
         Schema::create('online_media_auditions', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('url');
+            $table->text('url');
+            $table->text('thumbnail')->nullable();
             $table->enum('type',['video','doc']);
             $table->integer('appointment_id')->unsigned();
             $table->integer('performer_id')->unsigned();

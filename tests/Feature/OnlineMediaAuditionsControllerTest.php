@@ -48,6 +48,7 @@ class OnlineMediaAuditionsControllerTest extends TestCase
             'appointment_id' => factory(Appointments::class)->create(['auditions_id' => $audition])->id,
             'type'=>'video',
             'url'=>'http://test/video/user.mp4',
+            'thumbnail'=>'http://test/video/user.png',
             'name'=>'audition-test'
         ];
 

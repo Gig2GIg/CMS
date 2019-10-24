@@ -10,6 +10,7 @@ class OnlineMediaAudition extends Model
         'appointment_id',
         'performer_id',
         'url',
+        'thumbnail',
         'type',
         'name'
     ];
