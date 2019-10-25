@@ -81,7 +81,7 @@ class AppoinmentController extends Controller
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
             'number' => $slot['number'] ?? null,
-            'status' => $slot['status'],
+            'status' => false,
             'is_walk' => $slot['is_walk'],
         ];
 
