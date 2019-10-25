@@ -58,9 +58,9 @@ class AppoinmentAuditionsController extends Controller
             $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
             $userAuditions = $userAuditionRepo->getByParam('rol_id', $request->role_id);
 
-            $userAudition = $userAuditions->where('user_id', $request->user)->first();
+            $userAudition = $userAuditions->where('user_id', $request->user)->where('appointment_id',$request->appointment_id)->first();
 
-            $userSlots = UserSlots::where('user_id',$request->user );
+            $userSlots = UserSlots::where('user_id',$request->user)->where('appointment_id',$request->appointment_id);
             $userSlot =   $userSlots->where('roles_id', $request->role_id)->first();
 
             if (! is_null($userAudition)){
@@ -176,7 +176,7 @@ class AppoinmentAuditionsController extends Controller
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
                 $this->sendStoreNotificationToUser($user, $audition);
-                $this->saveStoreNotificationToUser($user, $audition);       
+                $this->saveStoreNotificationToUser($user, $audition);
 
 
             } catch (NotificationException $exception) {
