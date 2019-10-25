@@ -110,6 +110,7 @@ class AppoinmentController extends Controller
      */
     public function notOnlineSubmision(Request $request): \Illuminate\Http\JsonResponse
     {
+        $this->log->info("CREATE ROUND::". $request);
         $repoClosedA = new AppointmentRepository(new Appointments());
         $repoDataA = $repoClosedA->findbyparam('auditions_id', $request->audition_id);
         if ($repoDataA->count() > 0) {
@@ -118,6 +119,8 @@ class AppoinmentController extends Controller
             ]);
         }
         $lastid = $repoDataA->orderBy('id', 'desc')->first();
+        $this->log->info("CREATE ROUND LAST ID APPO");
+          $this->log->info($lastid);
         $this->toDate = new ManageDates();
         try {
             $repo = new AppointmentRepository(new Appointments());
@@ -138,6 +141,8 @@ class AppoinmentController extends Controller
                 throw new \Exception('Not Slots to process');
             }
             $data = $repo->create($appointment);
+            $this->log->info("CREATE ROUUND NEW ROUND DATA");
+             $this->log->info($data);
             $repoFeeadback = Feedbacks::all()
                 ->where('appointment_id', $lastid->id)
                 ->where('favorite', true);
