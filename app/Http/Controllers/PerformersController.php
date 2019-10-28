@@ -144,11 +144,14 @@ class PerformersController extends Controller
     public function filterBase($value, array $data)
     {
         try {
+            $name = explode(' ',$value);
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
-            return $collectionFind->reject(function ($element) use ($value) {
-                return mb_strpos($element->last_name, $value) === false;
-            });
+            $filteFirstName =  $collectionFind->where('first_name',$name[0]);
+
+            return $filteFirstName->where('last_name',$name[1]);
+
+
 
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
@@ -190,9 +193,14 @@ class PerformersController extends Controller
     public function filterGender($gender, $userDetails)
     {
         try {
-            $dataFilter = $userDetails->filter(function ($element) use ($gender) {
-                return $element->gender == $gender;
-            });
+            if($gender === 'ANY'){
+                $dataFilter = $userDetails;
+            }else {
+
+                $dataFilter = $userDetails->filter(function ($element) use ($gender) {
+                    return $element->gender == $gender;
+                });
+            }
             return $dataFilter;
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
@@ -238,7 +246,7 @@ class PerformersController extends Controller
             $dataTemp = AuditionContract::all()->whereIn('auditions_id',$dataAuditions->pluck('id'));
             $data = $dataTemp->where('user_id',$request->user);
 
-            return response()->json(['message' => 'contracts by user', 'data' => $data], 200);
+            return response()->json(['message' => 'contracts by user', 'data' => $data->toArray()], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

@@ -156,6 +156,23 @@ class PerformersDatabaseControllerTest extends TestCase
     public function test_talent_filter()
     {
         $users = factory(User::class, 15)->create();
+        $userTest = factory(User::class)->create();
+        $userTest->image()->create(['type' => 'cover', 'url' => $this->faker->imageUrl(), 'name' => $this->faker->word()]);
+        $detuser = factory(\App\Models\UserDetails::class)->create([
+            'user_id' => $userTest->id,
+            'type' => 2,
+            'gender' => 'male',
+            'first_name' => $this->faker->firstName(),
+            'last_name' => $this->faker->lastName(),
+        ]);
+        factory(Educations::class, 3)->create(['user_id' => $userTest->id]);
+        factory(Credits::class, 4)->create(['user_id' => $userTest->id]);
+        factory(UserAparence::class)->create(['user_id' => $userTest->id]);
+        factory(Performers::class)->create([
+            'performer_id' => $userTest->id,
+            'director_id' => $this->testId,
+            'uuid' => $this->faker->uuid,
+        ]);
 
         $users->each(function ($item) {
             $item->image()->create(['type' => 'cover', 'url' => $this->faker->imageUrl(), 'name' => $this->faker->word()]);
@@ -175,7 +192,7 @@ class PerformersDatabaseControllerTest extends TestCase
         });
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e'
+            'base' => $detuser->first_name . ' ' . $detuser->last_name
         ]);
 
         $response->assertStatus(200);
@@ -209,9 +226,9 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
-
+        $testUser = UserDetails::all()->random();
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
             'union' => 1
         ]);
 
@@ -249,9 +266,10 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
+        $testUser = UserDetails::all()->random();
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
             'union' => 0
         ]);
 
@@ -288,9 +306,10 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
+        $testUser = UserDetails::all()->random();
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
             'union' => 2
         ]);
 
@@ -328,10 +347,11 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
-
+        $testUser = UserDetails::all()->random();
+        $testUser->update(['gender' => 'male']);
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
-            'gender' => 'male'
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
+            'gender' => $testUser->gender,
         ]);
 
         $response->assertStatus(200);
@@ -367,9 +387,11 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
+        $testUser = UserDetails::all()->random();
+        $testUser->update(['gender' => 'female']);
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
             'gender' => 'female'
         ]);
 
@@ -406,10 +428,11 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
+        $testUser = UserDetails::all()->random();
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
-            'gender' => 'other'
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
+            'gender' => 'ANY'
         ]);
 
         $response->assertStatus(200);
@@ -445,10 +468,14 @@ class PerformersDatabaseControllerTest extends TestCase
             ]);
 
         });
-
+        $testUser = UserDetails::all()->random();
+        $testUser->update(['gender' => 'male']);
+        factory(UserUnionMembers::class)->create([
+            'user_id' => $testUser->user_id
+        ]);
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => 'e',
-            'gender' => 'other',
+            'base' => $testUser->first_name . ' ' . $testUser->last_name,
+            'gender' => $testUser->gender,
             'union' => '1'
         ]);
 
