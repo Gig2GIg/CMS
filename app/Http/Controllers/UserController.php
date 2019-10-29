@@ -117,6 +117,7 @@ class UserController extends Controller
         $userDetails = new UserDetailsRepository(new UserDetails());
         try {
             $userDetails->create($userDataDetails);
+            $this->create_setting(['AUDITIONS','CONTRIBUTORS'],$id);
             return true;
         } catch (CreateException $e) {
             $this->log->error($e->getMessage());

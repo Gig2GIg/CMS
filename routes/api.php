@@ -27,6 +27,8 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+    $router->get('/users/settings',['uses'=>'UserSettingsController@list']);
+    $router->put('/users/settings/{id}',['uses'=>'UserSettingsController@update']);
     $router->post('/auditions/findby',['uses'=>'AuditionsController@findby']);
     $router->get('/skills/show',['uses'=>'SkillsController@list']);
     //auditions
@@ -185,8 +187,7 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->post('media/online',['uses'=>'OnlineMediaAuditionController@create']);
     //auditions routes
     $router->get('/users/show/{id}',['uses'=>'UserController@show']);
-    $router->get('/users/settings',['uses'=>'UserSettingsController@list']);
-    $router->put('/users/settings/{id}',['uses'=>'UserSettingsController@update']);
+
     $router->put('/users/update/{id}',['uses'=>'UserController@update']);
     $router->post('/auditions/user',['uses'=>'AuditionManagementController@saveUserAudition']);
     $router->get('/auditions/user/upcoming',['uses'=>'AuditionManagementController@getUpcoming']);
