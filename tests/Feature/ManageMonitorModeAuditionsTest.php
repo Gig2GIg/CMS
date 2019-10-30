@@ -7,6 +7,7 @@ use App\Models\Auditions;
 use App\Models\Monitor;
 use App\Models\Roles;
 use App\Models\User;
+use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -20,7 +21,13 @@ class ManageMonitorModeAuditionsTest extends TestCase
 
     public function test_create_update_monitor_audition()
     {
-
+        factory(UserAuditions::class, 10)->create(
+            [
+                'user_id' => factory(User::class)->create()->id,
+                'appointment_id' => $this->appointmentId,
+                'rol_id' => factory(Roles::class)->create(['auditions_id'=>$this->auditionId])->id
+            ]
+        );
         $response = $this->json('POST', 'api/t/monitor/updates?token=' . $this->token, [
             'appointment' => $this->appointmentId,
             'title' => 'Checking open',
@@ -73,7 +80,7 @@ class ManageMonitorModeAuditionsTest extends TestCase
             'user_id' => $user->id
         ]);
         $appointment = factory(Appointments::class)->create([
-            'auditions_id'=>$audition
+            'auditions_id' => $audition
         ]);
         $audition->media()->create(['url' => $this->faker->url, 'type' => 4, 'name' => 'test']);
         $this->appointmentId = $appointment->id;

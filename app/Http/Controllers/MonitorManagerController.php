@@ -50,7 +50,13 @@ class MonitorManagerController extends Controller
 
                 $this->saveCreateNotification($userDirector, $audition);
 
-                $this->sendCreateNotification($audition);
+//                $this->sendCreateNotification($audition);
+                $this->sendPushNotification(
+                    $appointment,
+                    'custom',
+                    null,
+                    $request->title
+                );
 
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
@@ -68,14 +74,14 @@ $this->log->error($exception->getFile());
 
    public function sendCreateNotification($audition): void
     {
-        try {            
-            $audition->user->each(function ($user_director) use ($audition) {               
+        try {
+            $audition->user->each(function ($user_director) use ($audition) {
                 $this->pushNotifications(
                     'Audition '. $audition->title .' has been created',
                     $user_director
                 );
             });
-            
+
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
