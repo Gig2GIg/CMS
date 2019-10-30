@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminsTableSeeder::class);
         $this->call(MarketplacesSeeder::class);
         $this->call(TalentDataBaseSeeder::class);
+        $this->call(MarkerplaceFeaturedListingSeeder::class);
+
 
     }
 }
