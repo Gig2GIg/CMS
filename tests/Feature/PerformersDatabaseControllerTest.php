@@ -157,12 +157,21 @@ class PerformersDatabaseControllerTest extends TestCase
     {
         $users = factory(User::class, 15)->create();
         $userTest = factory(User::class)->create();
+        $userTest2 = factory(User::class)->create();
         $userTest->image()->create(['type' => 'cover', 'url' => $this->faker->imageUrl(), 'name' => $this->faker->word()]);
+        $userTest2->image()->create(['type' => 'cover', 'url' => $this->faker->imageUrl(), 'name' => $this->faker->word()]);
         $detuser = factory(\App\Models\UserDetails::class)->create([
             'user_id' => $userTest->id,
             'type' => 2,
             'gender' => 'male',
             'first_name' => 'Juan',
+            'last_name' => 'Juarez',
+        ]);
+        $detuser2 = factory(\App\Models\UserDetails::class)->create([
+            'user_id' => $userTest2->id,
+            'type' => 2,
+            'gender' => 'male',
+            'first_name' => 'Pascal',
             'last_name' => 'Juarez',
         ]);
         factory(Educations::class, 3)->create(['user_id' => $userTest->id]);
@@ -173,7 +182,11 @@ class PerformersDatabaseControllerTest extends TestCase
             'director_id' => $this->testId,
             'uuid' => $this->faker->uuid,
         ]);
-
+        factory(Performers::class)->create([
+            'performer_id' => $userTest2->id,
+            'director_id' => $this->testId,
+            'uuid' => $this->faker->uuid,
+        ]);
         $users->each(function ($item) {
             $item->image()->create(['type' => 'cover', 'url' => $this->faker->imageUrl(), 'name' => $this->faker->word()]);
             factory(\App\Models\UserDetails::class)->create([
@@ -192,7 +205,7 @@ class PerformersDatabaseControllerTest extends TestCase
         });
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' =>'Juan juarez'
+            'base' =>'ju'
         ]);
 
         $response->assertStatus(200);

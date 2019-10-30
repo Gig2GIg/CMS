@@ -144,17 +144,25 @@ class PerformersController extends Controller
     public function filterBase($value, array $data)
     {
         try {
+            $collection = collect();
             $name = explode(' ',$value);
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
             if(count($name) == 1) {
-                $filteFirstName = $collectionFind->reject(function ($item) use ($name) {
+                $nameColl=$collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
                 });
 
-                return $filteFirstName->reject(function ($item) use ($name) {
+                $nameColl->each(function ($element) use ($collection){
+                   $collection->push($element);
+                });
+               $apeColl = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->last_name, $name[0]) === false;
                 });
+                $apeColl->each(function ($element) use ($collection){
+                    $collection->push($element);
+                });
+              return $collection->unique('id');
             }else{
                 $filteFirstName = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
