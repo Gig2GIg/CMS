@@ -147,10 +147,23 @@ class PerformersController extends Controller
             $name = explode(' ',$value);
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
-            $filteFirstName =  $collectionFind->where('first_name',$name[0]);
+            if(count($name) == 1) {
+                $filteFirstName = $collectionFind->reject(function ($item) use ($name) {
+                    return mb_strripos($item->first_name, $name[0]) === false;
+                });
 
-            return $filteFirstName->where('last_name',$name[1]);
+                return $filteFirstName->reject(function ($item) use ($name) {
+                    return mb_strripos($item->last_name, $name[0]) === false;
+                });
+            }else{
+                $filteFirstName = $collectionFind->reject(function ($item) use ($name) {
+                    return mb_strripos($item->first_name, $name[0]) === false;
+                });
 
+                return $filteFirstName->reject(function ($item) use ($name) {
+                    return mb_strripos($item->last_name, $name[1]) === false;
+                });
+            }
 
 
         } catch (\Exception $e) {

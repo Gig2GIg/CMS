@@ -162,8 +162,8 @@ class PerformersDatabaseControllerTest extends TestCase
             'user_id' => $userTest->id,
             'type' => 2,
             'gender' => 'male',
-            'first_name' => $this->faker->firstName(),
-            'last_name' => $this->faker->lastName(),
+            'first_name' => 'Juan',
+            'last_name' => 'Juarez',
         ]);
         factory(Educations::class, 3)->create(['user_id' => $userTest->id]);
         factory(Credits::class, 4)->create(['user_id' => $userTest->id]);
@@ -192,7 +192,7 @@ class PerformersDatabaseControllerTest extends TestCase
         });
 
         $response = $this->post('api/t/performers/filter?token=' . $this->token, [
-            'base' => $detuser->first_name . ' ' . $detuser->last_name
+            'base' =>'Juan juarez'
         ]);
 
         $response->assertStatus(200);
