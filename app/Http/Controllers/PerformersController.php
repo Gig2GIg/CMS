@@ -24,12 +24,16 @@ use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Hashids\Hashids;
 
 class PerformersController extends Controller
 {
     public function add(Request $request)
     {
         $message = null;
+        $hasid = new Hashids('g2g');
+        $dateHash = new \DateTime();
+        $dataTime =  $dateHash->getTimestamp();
         try {
             $repo = new PerformerRepository(new Performers());
             $data = $repo->findbyparam('uuid', $request->code)->first();
@@ -40,7 +44,7 @@ class PerformersController extends Controller
                 $register = [
                     'performer_id' => $data->performer_id,
                     'director_id' => $this->getUserLogging(),
-                    'uuid' => Str::uuid()->toString(),
+                    'uuid' => $hasid->encode($data->performer_id,$dataTime),
                 ];
                 $repo2 = new PerformerRepository(new Performers());
                 $create = $repo->create($register);

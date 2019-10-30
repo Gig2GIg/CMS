@@ -9,15 +9,16 @@
     "license": "MIT",
     "require": {
         "php": "^7.1.3",
+        "ext-json": "*",
         "barryvdh/laravel-cors": "^0.11.3",
         "fideloper/proxy": "^4.0",
+        "hashids/hashids": "^4.0",
         "kawankoding/laravel-fcm": "^0.1.3",
         "laravel/cashier": "^9.2",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
         "sendgrid/sendgrid": "^7.2",
-        "tymon/jwt-auth": "dev-develop",
-      "ext-json": "*"
+        "tymon/jwt-auth": "dev-develop"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

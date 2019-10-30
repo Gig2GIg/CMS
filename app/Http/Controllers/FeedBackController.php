@@ -18,6 +18,7 @@ use App\Models\Performers;
 use App\Models\Slots;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -198,6 +199,9 @@ class FeedBackController extends Controller
 
     function addTalenteToDatabase($performer_id){
         try {
+            $hasid = new Hashids('g2g');
+            $dateHash = new \DateTime();
+            $dataTime =  $dateHash->getTimestamp();
             $repo = new PerformerRepository(new Performers());
             $dataRepo = $repo->findbyparam('director_id',$this->getUserLogging())->get();
             $count = $dataRepo->where('performer_id',$performer_id)->count();
@@ -207,7 +211,7 @@ class FeedBackController extends Controller
             $register = [
                 'performer_id' => $performer_id,
                 'director_id' => $this->getUserLogging(),
-                'uuid' => Str::uuid()->toString(),
+                'uuid' => $hasid->encode($performer_id,$dataTime),
             ];
 
             $repo->create($register);
