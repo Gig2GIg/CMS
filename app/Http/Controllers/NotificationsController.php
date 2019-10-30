@@ -25,46 +25,46 @@ class NotificationsController extends Controller
     {
         $this->middleware('jwt');
     }
-    
+
 
     public function getHistory(Request $request)
     {
         try {
-        
+
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($this->getUserLogging());
 
             $count = count($user->notification_history);
             if ($count > 0) {
-                $responseData = NoficationsResource::collection($user->notification_history);
+                $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
                 return response()->json(['data' => $responseData], 200);
             } else {
                 return response()->json(['data' => "Not found Data"], 404);
-            }   
+            }
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);  
+            return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
     public function readHistory(Request $request)
     {
         try {
-        
+
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($this->getUserLogging());
 
             $count = count($user->notification_history);
-          
+
             foreach ($user->notification_history as $notification) {
                 $notification->update(['status' => 'read']);
             }
-     
-            $responseData = NoficationsResource::collection($user->notification_history);
+
+            $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
 
             return response()->json(['data' => 'Success'], 204);
-             
+
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);  
+            return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -79,15 +79,15 @@ class NotificationsController extends Controller
 
             $userRepo = new UserRepository(new User());
             $userResult = $userRepo->find($this->getUserLogging());
-            
+
             if ($userResult->update($data)) {
                 return response()->json([], 204);
             } else {
                 return response()->json(['data' => "Record not  created"], 422);
-            }   
-        
+            }
+
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);  
+            return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -95,7 +95,7 @@ class NotificationsController extends Controller
     {
         try {
             $repo = new NotificationHistoryRepository(new NotificationHistory());
-        
+
             $data = $repo->find($request->id)->delete();
 
             if ($data) {
