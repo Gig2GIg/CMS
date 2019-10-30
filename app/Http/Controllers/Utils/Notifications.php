@@ -153,14 +153,14 @@ class Notifications
                             $userRepo = new UserRepository(new User);
                             $tomsg = !empty($message) ? $message : $title;
                             $user_result = $userRepo->find($contributor->user_id);
-                            $history = $user_result->notification_history()->create([
-                                'title' => $audition->title,
-                                'code' => $type,
-                                'status' => 'unread',
-                                'custom_data' => $contributor->id,
-                                'message' => $tomsg
-                            ]);
-                            $log->info($history);
+//                            $history = $user_result->notification_history()->create([
+//                                'title' => $audition->title,
+//                                'code' => $type,
+//                                'status' => 'unread',
+//                                'custom_data' => $contributor->id,
+//                                'message' => $tomsg
+//                            ]);
+//                            $log->info($history);
                             fcm()
                                 ->to([$user_result->pushkey])
                                 ->notification([
