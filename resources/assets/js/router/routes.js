@@ -14,6 +14,7 @@ import Payments from '@/pages/Payments';
 import Blogs from '@/pages/Blogs';
 import Settings from '@/pages/Settings';
 import NotFound from '@/pages/errors/404';
+import FeaturedListing from '@/pages/FeaturedListing';
 
 export default [
   // Guest routes.
@@ -37,6 +38,7 @@ export default [
     { path: '/payments', title: 'Payments', name: 'payments', component: Payments },
     { path: '/settings', title: 'Settings', name: 'settings', component: Settings },
     { path: '/blogs', title: 'Blogs', name: 'blogs', component: Blogs },
+    { path: '/featured-listing', title: 'Marketplace Featured Listing', name: 'featured-listing', component: FeaturedListing },
 
   ]),
 

@@ -176,10 +176,6 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
 
     //GET slots by appointment id
     $router->get('/appointments/{appointment_id}/slots',['uses'=>'AppoinmentController@getSlots']);
-
-
-
-
 });
 
 $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function () use ($router) {
@@ -303,7 +299,8 @@ $router->group(['prefix'=>'a','middleware' => ['jwt.auth','acl:2']], function ()
     $router->get('blog/posts/order_by', ['uses'=>'PostsController@sort_post_by_param_to_performance']);
     $router->post('marketplaces/create', ['uses'=>'MarketplaceController@store']);
 
-
+  //FEATURED LISTING
+    $router->post('marketplace-featured-listing/create', ['uses'=>'MarketplaceFeaturedListingController@store']);
 });
 
 
@@ -408,6 +405,8 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::put('forum/posts/{id}', ['uses'=>'PostsController@update']);
         Route::delete('forum/posts/{id}/delete', ['uses'=>'PostsController@delete']);
 
+        //FEATURED LISTING
+        Route::get('marketplace-featured-listing', ['uses'=>'MarketplaceFeaturedListingController@getAllFeaturedListing']);
 
     });
 });
