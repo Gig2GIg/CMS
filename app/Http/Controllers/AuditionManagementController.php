@@ -217,7 +217,7 @@ class AuditionManagementController extends Controller
             });
 
             if ($this->collection->count() > 0) {
-                $dataResponse = ['data' => AuditionResponse::collection($this->collection->unique())];
+                $dataResponse = ['data' => AuditionResponse::collection($this->collection->sortByDesc('created_at')->unique())];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => []];
