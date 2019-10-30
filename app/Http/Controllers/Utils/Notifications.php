@@ -162,7 +162,7 @@ class Notifications
                             ]);
                             $log->info($history);
                             fcm()
-                                ->to([$contributor->pushkey])
+                                ->to([$user_result->pushkey])
                                 ->notification([
                                     'title' => $title,
                                     'body' => $message,
