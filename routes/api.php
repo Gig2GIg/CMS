@@ -68,10 +68,10 @@ $router->group(['prefix'=>'t','middleware' => ['jwt.auth','acl:1']], function ()
     $router->delete('finalcast/{id}',['uses'=>'FinalCastController@delete']);
 
     //performers db
-    $router->post('performers/add',['uses'=>'PerformersController@add']);
+    Route::post('performers/add',['uses'=>'PerformersController@add']);
     $router->post('performers/code',['uses'=>'PerformersController@shareCode']);
     $router->get('performers/list',['uses'=>'PerformersController@list']);
-    $router->post('performers/filter',['uses'=>'PerformersController@filter']);
+    Route::post('performers/filter',['uses'=>'PerformersController@filter']);
     //user routes
     $router->post('/me', ['uses' => 'AuthController@me']);
     $router->get('/users',['uses'=>'UserController@getAll']);
