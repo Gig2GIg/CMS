@@ -46,9 +46,9 @@ class MonitorManagerController extends Controller
 
                 $userDirector = $audition->user;
 
-                $this->createNotification($appointment->auditions, $request->title);
+//                $this->createNotification($appointment->auditions, $request->title);
 
-                $this->saveCreateNotification($userDirector, $audition);
+//                $this->saveCreateNotification($userDirector, $audition);
 
 //                $this->sendCreateNotification($audition);
                 $this->sendPushNotification(
