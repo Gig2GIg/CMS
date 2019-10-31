@@ -33,7 +33,7 @@ class AddForeignKeysOnlineMediaAuditions extends Migration
     {
         Schema::table('online_media_auditions', function (Blueprint $table) {
             $table->dropForeign('online_media_auditions_appointment_id_foreign');
-            $table->dropForeign('online_media_auditions_user_id_foreign');
+            $table->dropForeign('online_media_auditions_performer_id_foreign');
 
         });
     }
