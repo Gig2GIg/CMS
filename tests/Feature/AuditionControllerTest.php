@@ -517,6 +517,20 @@ class AuditionControllerTest extends TestCase
         $this->assertTrue($count > 0);
     }
 
+    public function test_find_by_filter_production_any(){
+        $user = factory(User::class)->create();
+
+        $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
+        $response = $this->json('POST',
+            'api/auditions/findby?token=' . $this->token,[
+
+                'production'=>'any'
+            ]);
+        $count = $this->count($response);
+        $response->assertStatus(200);
+        $this->assertTrue($count > 0);
+    }
+
     public function test_accept_invite_contribuitor(){
         $user = factory(User::class)->create();
 
