@@ -74,7 +74,7 @@ class AuditionsFindController extends Controller
             $elementResponse = new Collection();
 
 
-            if (isset($request->production) &&  $request->production != 'any') {
+            if (isset($request->production) &&  $request->production != 'ANY') {
 
                 $split_elements = explode(',', $request->production);
                 foreach ($split_elements as $item) {
