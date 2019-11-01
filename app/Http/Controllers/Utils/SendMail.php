@@ -119,9 +119,12 @@ class SendMail
                 $data['sender'],
                 $data['performer'],
                 $data['code']);
-
+            $contentpush = sprintf('%s has shared %s with you! Add them to your Talent Database with code: %s. ',
+                $data['sender'],
+                $data['performer'],
+                $data['code']);
             $email->addContent("text/html", $content);
-            $push->sendPushNotification(null,'cms_to_user',$user,$content);
+            $push->sendPushNotification(null,'cms_to_user',$user,$contentpush);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
             $response = $sendgrid->send($email);
@@ -137,13 +140,13 @@ class SendMail
         }
     }
 
-    
+
     public function sendPerformance($user, $data)
     {
         try {
             $push = new NotificationManagementController();
             $email = new Mail();
-            
+
             $email->setFrom(env('SUPPORT_EMAIL'));
             $email->setSubject('Your appointment time to audition'.  $data['audition_title'] . 'is update');
             $email->addTo($user->email);
