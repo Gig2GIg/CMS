@@ -11,7 +11,7 @@ class PushNotifications
 
     public function __construct()
     {
-        $this->log = new LogManger();   
+        $this->log = new LogManger();
     }
 
     public static function send($message, $user)
@@ -20,7 +20,7 @@ class PushNotifications
             fcm()
             ->to([$user->pushkey])
             ->notification([
-                'message' => $message,
+                'title' => $message,
                 'body'  => $message,
             ])
             ->send();
