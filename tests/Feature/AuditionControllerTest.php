@@ -469,13 +469,14 @@ class AuditionControllerTest extends TestCase
 
     public function test_find_by_filter_all_params(){
         $user = factory(User::class)->create();
-        factory(Auditions::class)->create([
+        $audi = factory(Auditions::class)->create([
             'title'=>'ordinary people',
             'union'=>'any',
             'contract'=>'unpaid',
             'production'=>'film,tv&video',
             'user_id'=>$user->id
         ]);
+        factory(Roles::class)->create(['auditions_id'=>$audi->id]);
         $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
         $response = $this->json('POST',
             'api/auditions/findby?token=' . $this->token,[

@@ -45,6 +45,7 @@ $media = new Resources();
             "user_id" => $this->user_id,
             "cover" => $url_media[0] ??null,
             "number_roles" => $countRoles,
+            "roles" =>$this->roles
         ];
     }
 
