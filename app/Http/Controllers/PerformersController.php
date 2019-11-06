@@ -30,24 +30,27 @@ class PerformersController extends Controller
 {
     public function add(Request $request)
     {
+        $$this->log->info("REQUEST ADD PERFORMER FOR CODE");
+        $this->log->info($request);
         $message = null;
         $hasid = new Hashids('g2g');
         $dateHash = new \DateTime();
-        $dataTime =  $dateHash->getTimestamp();
+        $dataTime = $dateHash->getTimestamp();
         try {
             $repo = new PerformerRepository(new Performers());
             $data = $repo->findbyparam('uuid', $request->code)->first();
-
+            $this->log->info($data);
             if ($data->director_id == $this->getUserLogging()) {
                 $message = 'This user exits in your data base';
             } else {
                 $register = [
                     'performer_id' => $data->performer_id,
                     'director_id' => $this->getUserLogging(),
-                    'uuid' => $hasid->encode($data->performer_id,$dataTime),
+                    'uuid' => $hasid->encode($data->performer_id, $dataTime),
                 ];
                 $repo2 = new PerformerRepository(new Performers());
                 $create = $repo->create($register);
+                $this->log->info($create);
                 $message = 'Add User OK';
             }
             return response()->json(['data' => $message]);
@@ -149,25 +152,25 @@ class PerformersController extends Controller
     {
         try {
             $collection = collect();
-            $name = explode(' ',$value);
+            $name = explode(' ', $value);
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
-            if(count($name) == 1) {
-                $nameColl=$collectionFind->reject(function ($item) use ($name) {
+            if (count($name) == 1) {
+                $nameColl = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
                 });
 
-                $nameColl->each(function ($element) use ($collection){
-                   $collection->push($element);
-                });
-               $apeColl = $collectionFind->reject(function ($item) use ($name) {
-                    return mb_strripos($item->last_name, $name[0]) === false;
-                });
-                $apeColl->each(function ($element) use ($collection){
+                $nameColl->each(function ($element) use ($collection) {
                     $collection->push($element);
                 });
-              return $collection->unique('id');
-            }else{
+                $apeColl = $collectionFind->reject(function ($item) use ($name) {
+                    return mb_strripos($item->last_name, $name[0]) === false;
+                });
+                $apeColl->each(function ($element) use ($collection) {
+                    $collection->push($element);
+                });
+                return $collection->unique('id');
+            } else {
                 $filteFirstName = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
                 });
@@ -218,9 +221,9 @@ class PerformersController extends Controller
     public function filterGender($gender, $userDetails)
     {
         try {
-            if($gender === 'ANY'){
+            if ($gender === 'ANY') {
                 $dataFilter = $userDetails;
-            }else {
+            } else {
 
                 $dataFilter = $userDetails->filter(function ($element) use ($gender) {
                     return $element->gender == $gender;
@@ -232,12 +235,13 @@ class PerformersController extends Controller
             return collect();
         }
     }
+
     public function getTags(Request $request)
     {
         try {
             $dataRepo = new TagsRepository(new Tags());
-            $data = $dataRepo->findbyparam('setUser_id',$this->getUserLogging())->where('user_id',$request->user)->get();
-            return response()->json(['message' => 'tags by user', 'data' =>$data], 200);
+            $data = $dataRepo->findbyparam('setUser_id', $this->getUserLogging())->where('user_id', $request->user)->get();
+            return response()->json(['message' => 'tags by user', 'data' => $data], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -249,7 +253,7 @@ class PerformersController extends Controller
     {
         try {
             $dataRepo = new FeedbackRepository(new Feedbacks());
-            $data = $dataRepo->findbyparam('evaluator_id',$this->getUserLogging())->where('user_id',$request->user)->get();
+            $data = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->get();
 
             return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
 
@@ -267,9 +271,9 @@ class PerformersController extends Controller
         try {
             $dataRepo = new AuditionRepository(new Auditions());
 
-            $dataAuditions = $dataRepo->findbyparam('user_id',$this->getUserLogging())->unique();
-            $dataTemp = AuditionContract::all()->whereIn('auditions_id',$dataAuditions->pluck('id'));
-            $data = $dataTemp->where('user_id',$request->user);
+            $dataAuditions = $dataRepo->findbyparam('user_id', $this->getUserLogging())->unique();
+            $dataTemp = AuditionContract::all()->whereIn('auditions_id', $dataAuditions->pluck('id'));
+            $data = $dataTemp->where('user_id', $request->user);
 
             return response()->json(['message' => 'contracts by user', 'data' => $data->toArray()], 200);
 
