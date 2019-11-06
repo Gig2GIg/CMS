@@ -30,7 +30,7 @@ class PerformersController extends Controller
 {
     public function add(Request $request)
     {
-        $$this->log->info("REQUEST ADD PERFORMER FOR CODE");
+        $this->log->info("REQUEST ADD PERFORMER FOR CODE");
         $this->log->info($request);
         $message = null;
         $hasid = new Hashids('g2g');
