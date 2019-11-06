@@ -7,7 +7,7 @@ class NotificationSettingSeeder extends Seeder
     public function run()
     {
         DB::table('notification_settings')->insert([
-            'code' => 'autidion_update',
+            'code' => 'audition_update',
             'label'=> 'Audition Updates',
             'status' => 'on'
         ]);
@@ -41,7 +41,7 @@ class NotificationSettingSeeder extends Seeder
         ]);
 
         DB::table('notification_settings')->insert([
-            'code' => 'autidion_request',
+            'code' => 'audition_request',
             'label'=>'Audition Request',
             'status' => 'on'
         ]);
