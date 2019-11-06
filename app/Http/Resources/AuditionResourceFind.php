@@ -26,6 +26,9 @@ $media = new Resources();
             ->where('resource_id',$this->id)
             ->where('resource_type','App\Models\Auditions')
             ->pluck('url');
+        $this->roles->each(function($item){
+            $item->image;
+        });
         return [
             'id' => $this->id,
             'title' => $this->title,

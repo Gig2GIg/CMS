@@ -476,7 +476,8 @@ class AuditionControllerTest extends TestCase
             'production'=>'film,tv&video',
             'user_id'=>$user->id
         ]);
-        factory(Roles::class)->create(['auditions_id'=>$audi->id]);
+        $rol = factory(Roles::class)->create(['auditions_id'=>$audi->id]);
+        $rol->image()->create(['type'=>6,'url'=>$this->faker->imageUrl(),'name'=>'test']);
         $audition = factory(Auditions::class,40)->create(['user_id' => $user->id]);
         $response = $this->json('POST',
             'api/auditions/findby?token=' . $this->token,[

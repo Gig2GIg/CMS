@@ -61,15 +61,22 @@ class AuditionFullResponse extends JsonResource
             'union' => $this->union,
             'contract' => $this->contract,
             'production' => $dataProduction,
-            'cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=','cover')->get()[0]['url'] ?? null,
-            'id_cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','=','cover')->get()[0]['id'] ?? null,
+            'cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')
+                    ->where('type','=','cover')
+                    ->get()[0]['url'] ?? null,
+            'id_cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')
+                    ->where('type','=','cover')
+                    ->get()[0]['id'] ?? null,
             'status' => $this->status,
             'online'=>$this->online,
             'user_id' => $this->user_id,
             'director' => $this->user->load('details'),
             'agency'=>$dataUserDet->agency_name ?? null,
             'roles' => $this->roles,
-            'media' => $this->resources()->where('resource_type','=','App\Models\Auditions')->where('type','!=','cover')->get(),
+            'media' => $this->resources()
+                ->where('resource_type','=','App\Models\Auditions')
+                ->where('type','!=','cover')
+                ->get(),
             'apointment' => $appoinmentResponse,
             'contributors' => $this->contributors,
             'banned' => $this->banned
