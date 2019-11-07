@@ -94,7 +94,7 @@ class PerformersDatabaseControllerTest extends TestCase
             'user_id' => $director->id,
             'type' => 1
         ]);
-        $sharedDirector = factory(User::class)->create(['email' => 'alphyon21@gmail.com']);
+        $sharedDirector = factory(User::class)->create(['email' => 'jose.chavarria@elaniin.com']);
         factory(UserDetails::class)->create([
             'user_id' => $sharedDirector->id,
             'type' => 1

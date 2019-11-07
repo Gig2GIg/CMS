@@ -39,8 +39,12 @@ class PerformersController extends Controller
         try {
             $repo = new PerformerRepository(new Performers());
             $data = $repo->findbyparam('uuid', $request->code)->first();
+
+            $count = $data->where('director_id',$this->getUserLogging())
+                ->where('performer_id',$data->performer_id);
+
             $this->log->info($data);
-            if ($data->director_id == $this->getUserLogging()) {
+            if ($count->count() > 0) {
                 $message = 'This user exits in your data base';
             } else {
                 $register = [
