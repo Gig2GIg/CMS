@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Models\Marketplace;
 use App\Models\MarketplaceCategory;
 use Tests\TestCase;
 
@@ -30,13 +31,17 @@ class MarketplaceCategoryControllerTest extends TestCase
             'password' => '123456',
         ]);
 
-        $this->token = $response->json('access_token'); 
+        $this->token = $response->json('access_token');
     }
 
 
     public function test_all_marketplace_category_200()
     {
         $marketplaceCategory = factory(MarketplaceCategory::class, 5)->create();
+        factory(Marketplace::class)->create([
+            'featured'=>'yes',
+            'marketplace_category_id'=>MarketplaceCategory::all()->random()->id
+        ]);
 
         $response = $this->json('GET',
             'api/a/marketplace_categories'. '?token=' . $this->token);
