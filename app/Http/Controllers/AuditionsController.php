@@ -121,7 +121,7 @@ class AuditionsController extends Controller
 
                 DB::commit();
 
-                $responseData = ['data' => ['message' => 'Auditions create']];
+                $responseData = ['data' => ['message' => 'Auditions create', 'data'=>$audition]];
                 $code = 201;
             } else {
                 $responseData = ['error' => 'Unauthorized'];
