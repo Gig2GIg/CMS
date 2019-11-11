@@ -65,19 +65,19 @@ class MonitorManagerController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-$this->log->error($exception->getLine());
-$this->log->error($exception->getFile());
+            $this->log->error($exception->getLine());
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Update Not Publised'], 406);
         }
     }
 
-   public function sendCreateNotification($audition): void
+    public function sendCreateNotification($audition): void
     {
         try {
             $audition->user->each(function ($user_director) use ($audition) {
                 $this->pushNotifications(
-                    'Audition '. $audition->title .' has been created',
+                    'Audition ' . $audition->title . ' has been created',
                     $user_director
                 );
             });
@@ -90,16 +90,16 @@ $this->log->error($exception->getFile());
     public function saveCreateNotification($user, $audition): void
     {
         try {
-            if ($user instanceof User){
+            if ($user instanceof User) {
                 $user->notification_history()->create([
                     'title' => $audition->title,
                     'code' => 'create_audition',
                     'status' => 'unread',
-                    'message'=> 'Audition '. $audition->title . ' has been created'
+                    'message' => 'Audition ' . $audition->title . ' has been created'
                 ]);
             }
 
-        }catch (NotFoundException $exception) {
+        } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }

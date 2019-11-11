@@ -68,7 +68,7 @@ class FeedBackController extends Controller
                     }
                 }
                 $this->addTalenteToDatabase($request->user);
-                $dataResponse = ['data' => 'Feedback add', 'feedback_id' => $data->id];
+                $dataResponse = ['data' => 'Feedback saved successfully', 'feedback_id' => $data->id];
                 $code = 201;
 
             } else {

@@ -34,6 +34,7 @@ class MarketplaceCategoriesController extends Controller
         if ($count !== 0) {
             $responseData = MarketplaceCategoryResource::collection($data->all());
             return response()->json([
+                'featured_image'=>$market->image,
                 'featured'=>$market,
                 'data' => $responseData
             ], 200);

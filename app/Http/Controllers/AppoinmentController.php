@@ -67,7 +67,7 @@ class AppoinmentController extends Controller
                         });
                     }
                 }
-                return response()->json(['message' => 'Round close', 'data' => $data], 200);
+                return response()->json(['message' => 'Round closed successfully', 'data' => $data], 200);
             }
         }catch(\Exception $exception){
                 $this->log->error($exception->getMessage());
