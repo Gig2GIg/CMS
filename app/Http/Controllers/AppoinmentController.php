@@ -60,7 +60,8 @@ class AppoinmentController extends Controller
                 if($repoFeeadback->count() >= 0){
                     $idsFeedback = $repoFeeadback->pluck('user_id');
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
-                    $dataUserAuditions = $repoUserAuditions->all()->whereNotIn('user_id', $idsFeedback)->where('appointment_id',$request->appointment_id);
+                    $dataUserAuditions = $repoUserAuditions->all()->whereNotIn('user_id', $idsFeedback)
+                        ->where('appointment_id',$request->appointment_id);
                     if ($dataUserAuditions->count() > 0) {
                         $dataUserAuditions->each(function ($element) {
                             $element->update(['type' => 3]);

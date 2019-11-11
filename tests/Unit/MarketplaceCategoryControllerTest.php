@@ -38,9 +38,15 @@ class MarketplaceCategoryControllerTest extends TestCase
     public function test_all_marketplace_category_200()
     {
         $marketplaceCategory = factory(MarketplaceCategory::class, 5)->create();
-        factory(Marketplace::class)->create([
+
+        $market = factory(Marketplace::class)->create([
             'featured'=>'yes',
             'marketplace_category_id'=>MarketplaceCategory::all()->random()->id
+        ]);
+
+        $market->image()->create([
+            'name'=>'test',
+            'url'=>$this->faker->url,
         ]);
 
         $response = $this->json('GET',

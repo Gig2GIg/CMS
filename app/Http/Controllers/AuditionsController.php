@@ -16,6 +16,8 @@ use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\Notification\NotificationHistoryRepository;
 
@@ -36,6 +38,8 @@ use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
 
+use App\Models\UserAuditions;
+use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -346,6 +350,13 @@ class AuditionsController extends Controller
     public function getall()
     {
         $data = new AuditionRepository(new Auditions());
+        $repoDetails = new UserDetailsRepository(new UserDetails());
+        $repoData = $repoDetails->findbyparam('user_id'.$this->getUserLogging());
+        if($repoData->type == 2){
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $dataUserAuditions = $repoUserAuditions->getByParam('user_id',$this->getUserLogging());
+        }
+
         $count = count($data->all());
         if ($count !== 0) {
             $responseData = AuditionResponse::collection($data->all()->sortBy('created_at'));
