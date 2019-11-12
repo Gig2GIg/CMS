@@ -347,6 +347,10 @@ class AuditionControllerTest extends TestCase
     public function test_show_audition_with_register_200()
     {
         $user = factory(User::class)->create();
+        $randomAuditions = factory(Auditions::class,10)->create(['user_id' => $user->id]);
+        $randomAuditions->each(function ($item){
+            factory(Appointments::class)->create(['auditions_id' => $item->id]);
+        });
         $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
         $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
         $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
@@ -358,13 +362,54 @@ class AuditionControllerTest extends TestCase
         factory(UserAuditions::class)->create([
             'appointment_id' => $appoinments->id,
             'user_id' => $this->testId,
-            'rol_id'=>factory(Roles::class)->create(['auditions_id'=>$audition->id])->id
+            'rol_id'=>factory(Roles::class)->create(['auditions_id'=>$audition->id])->id,
+            'type'=>3
         ]);
+
+        factory(UserAuditions::class)->create([
+            'appointment_id' => $appoinments2->id,
+            'user_id' => $this->testId,
+            'rol_id'=>factory(Roles::class)->create(['auditions_id'=>$audition->id])->id,
+            'type'=>3
+        ]);
+
         $response = $this->json('GET',
             'api/auditions/show?token=' . $this->token);
         $response->assertStatus(200);
     }
+    public function test_show_audition_with_register_rounds_200()
+    {
+        $user = factory(User::class)->create();
+        $randomAuditions = factory(Auditions::class,10)->create(['user_id' => $user->id]);
+        $randomAuditions->each(function ($item){
+            factory(Appointments::class)->create(['auditions_id' => $item->id,'round'=>$this->faker->numberBetween(1,5)]);
+        });
+        $audition = factory(Auditions::class)->create(['user_id' => $user->id]);
+        $roles = factory(Roles::class)->create(['auditions_id' => $audition->id]);
+        $appoinments = factory(Appointments::class)->create(['auditions_id' => $audition->id]);
+        $slot = factory(Slots::class)->create(['appointment_id' => $appoinments->id]);
+        $audition2 = factory(Auditions::class)->create(['user_id' => $user->id, 'status' => false]);
+        $roles2 = factory(Roles::class)->create(['auditions_id' => $audition2->id]);
+        $appoinments2 = factory(Appointments::class)->create(['auditions_id' => $audition2->id]);
+        $slot2 = factory(Slots::class)->create(['appointment_id' => $appoinments2->id]);
+        factory(UserAuditions::class)->create([
+            'appointment_id' => $appoinments->id,
+            'user_id' => $this->testId,
+            'rol_id'=>factory(Roles::class)->create(['auditions_id'=>$audition->id])->id,
+            'type'=>3
+        ]);
 
+        factory(UserAuditions::class)->create([
+            'appointment_id' => $appoinments2->id,
+            'user_id' => $this->testId,
+            'rol_id'=>factory(Roles::class)->create(['auditions_id'=>$audition->id])->id,
+            'type'=>3
+        ]);
+
+        $response = $this->json('GET',
+            'api/auditions/show?token=' . $this->token);
+        $response->assertStatus(200);
+    }
 
     public function test_show_all_audition_404()
     {
