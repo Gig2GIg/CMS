@@ -357,10 +357,10 @@ class AuditionsController extends Controller
 
         $repoAppoRound = new AppointmentRepository(new Appointments());
         $dataRepoRound = $repoAppoRound->all()
-            ->where('status',true)
+            ->where('status', true)
             ->pluck('auditions_id');
 
-        $dataTemp->all()->whereIn('id',$dataRepoRound)->each(function ($item) use ($data){
+        $dataTemp->all()->whereIn('id', $dataRepoRound)->each(function ($item) use ($data) {
             $data->push($item);
         });
 
@@ -369,15 +369,15 @@ class AuditionsController extends Controller
         $dataAuditions = $dataUserrepo->where('type', '=', '3');
         $idAuditions = new Collection();
         $dataAuditions->each(function ($item) use ($idAuditions) {
-           $repoAppoinmets = new AppointmentRepository(new Appointments());
-           $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
-           $audirepo = new AuditionRepository(new Auditions());
-           $idAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
+            $repoAppoinmets = new AppointmentRepository(new Appointments());
+            $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
+            $audirepo = new AuditionRepository(new Auditions());
+            $idAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
 
         });
         $repoFeedback = new FeedbackRepository(new Feedbacks());
-        $dataFeedBackRepo = $repoFeedback->findbyparam('user_id',$this->getUserLogging());
-        $dataFeedBackRepo = $dataFeedBackRepo->get()->where('favorite',true);
+        $dataFeedBackRepo = $repoFeedback->findbyparam('user_id', $this->getUserLogging());
+        $dataFeedBackRepo = $dataFeedBackRepo->get()->where('favorite', true);
 
         $idFeedAuditions = new Collection();
         $dataFeedBackRepo->each(function ($item) use ($idFeedAuditions) {
@@ -392,24 +392,24 @@ class AuditionsController extends Controller
         $dataInclude = $idFeedAuditions->pluck('id')->unique();
         $count = count($data->all());
         if ($count !== 0) {
-            if($dataExclude->count() > 0){
-                $data = $data->whereNotIn('id',$dataExclude);
+            if ($dataExclude->count() > 0) {
+                $data = $data->whereNotIn('id', $dataExclude);
             }
 
-            if($dataInclude->count() > 0){
+            if ($dataInclude->count() > 0) {
                 $repoAuditionsExtra = new AuditionRepository(new Auditions());
-                $repoAuditionsExtraData = $repoAuditionsExtra->all()->whereIn('id',$dataInclude);
-                $repoAuditionsExtraData->each(function ($item) use ($data){
-                   $data->push($item);
+                $repoAuditionsExtraData = $repoAuditionsExtra->all()->whereIn('id', $dataInclude);
+                $repoAuditionsExtraData->each(function ($item) use ($data) {
+                    $data->push($item);
                 });
             }
             $dataTemp2 = new AuditionRepository(new Auditions());
             $repoAppoRound1 = new AppointmentRepository(new Appointments());
             $dataRepoRound1 = $repoAppoRound1->all()
-                ->where('status',true)
-                ->where('round',1)
+                ->where('status', true)
+                ->where('round', 1)
                 ->pluck('auditions_id');
-            $dataTemp2->all()->whereIn('id',$dataRepoRound1)->each(function ($item) use ($data){
+            $dataTemp2->all()->whereIn('id', $dataRepoRound1)->each(function ($item) use ($data) {
                 $data->push($item);
             });
 
@@ -509,7 +509,8 @@ class AuditionsController extends Controller
     public
     function update(AuditionEditRequest $request)
     {
-
+        $this->log->info("UPDATE AUDITION");
+        $this->log->info($request);
         $auditionFilesData = [];
         try {
             if (isset($request['media'])) {
