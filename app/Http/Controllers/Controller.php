@@ -25,6 +25,7 @@ class Controller extends BaseController
     {
         $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
+
     }
 
     public function getDataToken()

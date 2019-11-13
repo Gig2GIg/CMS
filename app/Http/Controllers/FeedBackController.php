@@ -174,20 +174,20 @@ class FeedBackController extends Controller
         try {
             $repoFeedback = new FeedbackRepository(new Feedbacks());
 
-            $feedbacks = $repoFeedback->findbyparam('appointment_id', $request->id);
-
-            $feedbacksEvaluator = $feedbacks->where('evaluator_id','=', $this->getUserLogging())->get();
-
-            $feedbackUser= $feedbacksEvaluator->where('user_id', $request->user_id)->first();
+            $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
+            ->where('evaluator_id',$this->getUserLogging())->where('user_id',$request->user_id);
 
 
-            if (! is_null($feedbackUser)) {
-                $dataResponse = ['data' => new FeedbackResource($feedbackUser)];
-                $code = 200;
-            } else {
-                $dataResponse = ['data' => 'Data Not Found'];
-                $code = 404;
+
+
+            if ($feedbacks->count() == 0) {
+                throw new \Exception('Data not found');
             }
+
+
+                $dataResponse = ['data' => $feedbacks];
+                $code = 200;
+
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {

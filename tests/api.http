@@ -1,26 +1,400 @@
+
+### CREATE NORMAL USER
+POST {{host}}users/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "test2@gmail.com",
+  "password": "123456",
+  "type": "2",
+  "first_name": "Juan",
+  "last_name": "perez",
+  "name": "Test User",
+  "agency_name": " super starts",
+  "address": "First Street #123",
+  "city": "New York",
+  "state": "1",
+  "birth": "1980-05-24",
+  "url": "www.google.com",
+  "location": "12,33334 - 23,00000",
+  "stage_name": "test",
+  "profesion": "test",
+  "zip": "00000",
+  "union_member": [
+    {
+      "name": "test1"
+    },
+    {
+      "name": "test2"
+    }
+  ],
+  "image": "http://test.test/dgfjsgjfhgj/image.jpg",
+  "resource_name": "test"
+}
+
+### CREATE ADMIN USER
+POST {{host}}users/create
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456",
+  "type": "1",
+  "first_name": "Jose",
+  "last_name": "Chavarria",
+  "name": "Test User",
+  "agency_name": " super starts",
+  "address": "First Street #123",
+  "city": "New York",
+  "state": "1",
+  "birth": "1980-05-24",
+  "url": "www.google.com",
+  "location": "12,33334 - 23,00000",
+  "stage_name": "test",
+  "profesion": "test",
+  "zip": "00000",
+  "union_member": [
+    {
+      "name": "test1"
+    },
+    {
+      "name": "test2"
+    }
+  ],
+  "image": "http://test.test/dgfjsgjfhgj/image.jpg",
+  "resource_name": "test"
+}
+
+### LOGIN NORM USER
 POST {{host}}login
 Content-Type: application/json
 Accept: application/json
 
 {
-    "email": "test@gmail.com",
-    "password":"123456"
+  "email": "test2@gmail.com",
+  "password": "123456"
 }
-#> {%
-#client.global.set("auth_token", response.body.json.token);
-#%}
+> {%
+client.global.set("auth_token", response.body.access_token);
+%}
+
+
 ###
 
 
-GET http://g2gdev.test/api/t/performers/tags
+### LOGIN ADMIN USER
+POST {{host}}login
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nMmdkZXYudGVzdFwvYXBpXC9sb2dpbiIsImlhdCI6MTU2OTg2NDQzMSwiZXhwIjo5NTc5ODAxODI5MSwibmJmIjoxNTY5ODY0NDMxLCJqdGkiOiIxaU5UbzQ1eGRpQld3ckRlIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidHlwZSI6IjEifQ.kQxzPgErR1Ax-4GLr4wGHrwE5odRvA_P_mtpww-UYUE
+
+{
+  "email": "admin@gmail.com",
+  "password": "123456"
+}
+> {%
+client.global.set("admin_auth_token", response.body.access_token);
+%}
+
+
+### CREATE AUDITIONS
+POST {{host}}t/auditions/create
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "title": "audition Test 2",
+  "date": "2019-04-02T21:06:21.479Z",
+  "time": "4",
+  "location": {
+    "latitude": "123124214",
+    "latitudeDelta": "123124214667",
+    "longitude": "43535345",
+    "longitudeDelta": "43535335446445"
+  },
+  "description": "Sed tempora itaque iusto. Praesentium explicabo pariatur vero quis deserunt assumenda qui. Libero at omnis illo incidunt nihil quam.",
+  "additional_info": "sdsdsd",
+  "url": "http://jacobs.org/autem-consequatur-et-et-maxime-veniam.html",
+  "personal_information": "director of varios productions",
+  "phone": "21433342334",
+  "email": "infoprodcuton@test.com",
+  "other_info": "Aditional information",
+  "cover": "https://lorempixel.com/640/480/?58229",
+  "cover_name": "cover",
+  "union": "any",
+  "contract": "any",
+  "production": "theather, musical",
+  "status": true,
+  "round": 1,
+  "dates": [
+    {
+      "to": "2019-04-02T21:06:21.479Z",
+      "from": "2019-05-02T21:06:21.479Z",
+      "type": 1
+    },
+    {
+      "to": "2019-03-02T21:06:21.479Z",
+      "from": "2019-04-02T21:06:21.479Z",
+      "type": 2
+    }
+  ],
+  "roles": [
+    {
+      "name": "Willie Wonka",
+      "description": "Ipsum in minima unde veniam eos ut unde. Hic error fugit in consequatur necessitatibus vel reprehenderit. Voluptatem laboriosam non quos praesentium ducimus id et.",
+      "cover": "https://lorempixel.com/640/480/?86366",
+      "name_cover": "willie"
+    },
+    {
+      "name": "Charly",
+      "description": "Ea illo dignissimos aut et in nobis consequatur. Nihil alias ab est totam esse corrupti. Suscipit quaerat culpa minus consequatur.",
+      "cover": "https://lorempixel.com/640/480/?26340",
+      "name_cover": "chraly"
+    },
+    {
+      "name": "Mama de Charly",
+      "description": "Ea illo dignissimos aut et in nobis consequatur. Nihil alias ab est totam esse corrupti. Suscipit quaerat culpa minus consequatur.",
+      "cover": "https://lorempixel.com/640/480/?26340",
+      "name_cover": "mama"
+    },
+    {
+      "name": "papa de Charly",
+      "description": "Ea illo dignissimos aut et in nobis consequatur. Nihil alias ab est totam esse corrupti. Suscipit quaerat culpa minus consequatur.",
+      "cover": "https://lorempixel.com/640/480/?26340",
+      "name_cover": "papa"
+    },
+    {
+      "name": "umpa lumpa",
+      "description": "Ea illo dignissimos aut et in nobis consequatur. Nihil alias ab est totam esse corrupti. Suscipit quaerat culpa minus consequatur.",
+      "cover": "https://lorempixel.com/640/480/?26340",
+      "name_cover": "papa"
+    }
+  ],
+  "appointment": {
+    "spaces": 5,
+    "type": 1,
+    "length": "20",
+    "start": "10:00",
+    "end": "12:00",
+    "slots": [
+      {
+        "time": "10:00",
+        "number": null,
+        "status": false,
+        "is_walk": true
+      },
+      {
+        "time": "10:20",
+        "number": null,
+        "status": false,
+        "is_walk": true
+      },
+      {
+        "time": "10:40",
+        "number": null,
+        "status": false,
+        "is_walk": true
+      },
+      {
+        "time": "11:00",
+        "number": null,
+        "status": false,
+        "is_walk": false
+      },
+      {
+        "time": "11:20",
+        "number": null,
+        "status": false,
+        "is_walk": false
+      },
+      {
+        "time": "11:40",
+        "number": null,
+        "status": false,
+        "is_walk": false
+      }
+    ]
+  },
+  "contributors": [
+    {
+      "email": "table1@gmail.com"
+    },
+    {
+      "email": "table2@test.com",
+      "status": false
+    }
+  ],
+  "media": [
+    {
+      "url": "http://baumbach.com/repellat-voluptatem-excepturi-quam-et-dolores-officiis-eius",
+      "type": 1,
+      "name": "test1",
+      "share": "yes"
+    },
+    {
+      "url": "http://gibson.biz/voluptatem-ipsam-expedita-aut",
+      "type": 2,
+      "name": "test2",
+      "share": "yes"
+    },
+    {
+      "url": "http://www.murphy.net/fugit-explicabo-doloremque-quam-sed-iusto",
+      "type": 3,
+      "name": "test3",
+      "share": "no"
+    }
+  ]
+}
+
 ###
 
-
-GET http://g2gdev.test/api/t/performers/commnets
+### SHOW BASE INFO OF AUDITIONS
+GET {{host}}auditions/show
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9nMmdkZXYudGVzdFwvYXBpXC9sb2dpbiIsImlhdCI6MTU2OTg2NDQzMSwiZXhwIjo5NTc5ODAxODI5MSwibmJmIjoxNTY5ODY0NDMxLCJqdGkiOiIxaU5UbzQ1eGRpQld3ckRlIiwic3ViIjoxLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3IiwidHlwZSI6IjEifQ.kQxzPgErR1Ax-4GLr4wGHrwE5odRvA_P_mtpww-UYUE
+Authorization: Bearer {{auth_token}}
+
+###
+
+### GET FULL DETAILS OF AUDITION
+GET {{host}}auditions/show/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+### RESERVED PARTICIPATION BY ROL
+### IN AUDITON WITHOUT HOUR OF PARTICIPATION
+POST {{host}}a/auditions/user
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "appointment": 1,
+  "rol": 1,
+  "type": 1
+}
+
+###
+
+### GET LIST OF CONFIRMATED PARTICIPANTS IN AUDITION
+GET {{host}}appointments/auditions/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+###
+
+### GET SLOTS BY ROUND
+GET {{host}}t/appointments/1/slots
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+###
+
+###
+### CHECKING SLOT TO PARTICPATE IN AUDITION
+POST {{host}}appointments/auditions
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "slot": 7,
+  "user": 2,
+  "appointment_id": 2,
+  "rol": 1
+}
+
+###
+### GET LIST OF FEEDBACKS BY AUDITIONS
+POST {{host}}t/feedbacks/add
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "appointment_id": 3,
+  "user": 1,
+  "evaluator": 2,
+  "evaluation": 4,
+  "callback": true,
+  "work": "vocals",
+  "favorite": false,
+  "slot_id": 10,
+  "comment": "sdsdsdsdsds"
+}
+
+###
+### GET FEEDBACK BY ID USER
+GET {{host}}t/auditions/4/feedbacks/details?user_id=1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+###
+### CLOSE ROUND
+PUT {{host}}t/appointment/3/rounds
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "status": false
+}
+
+###
+
+### CREATE ROUND BY AUDITION
+POST {{host}}t/appointment/1/rounds
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+	"date": "2019-04-02T21:06:21.479Z",
+    "time": "4",
+    "location": {
+        "latitude": "123124214",
+        "latitudeDelta": "123124214667",
+        "longitude": "43535345",
+        "longitudeDelta": "43535335446445"
+    },
+	"number_slots":10,
+	"type":1,
+	"length":10,
+	"start":"8:00",
+	"end":"16:00",
+	"round":4,
+	"status":true,
+	"slots":[
+		{
+			"time":"8:00",
+			"status":true,
+			"is_walk":false
+		},
+			{
+			"time":"8:10",
+			"status":true,
+			"is_walk":false
+		},
+			{
+			"time":"8:20",
+			"status":true,
+			"is_walk":false
+		}
+		]
+}
+
+###
+
+#### LIST ROUNDS BY AUDITION
+GET {{host}}t/appointment/1/rounds
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
 ###

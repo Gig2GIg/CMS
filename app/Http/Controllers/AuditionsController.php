@@ -352,7 +352,7 @@ class AuditionsController extends Controller
         $data = new AuditionRepository(new Auditions());
 
         $repoAppoRound = new AppointmentRepository(new Appointments());
-        $dataRepoRound = $repoAppoRound->all()->where('round',1)->pluck('auditions_id');
+        $dataRepoRound = $repoAppoRound->all()->where('round',1)->where('status',true)->pluck('auditions_id');
         $data = $data->all()->whereIn('id',$dataRepoRound);
 
         $userAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -371,7 +371,7 @@ class AuditionsController extends Controller
         $count = count($data->all());
         if ($count !== 0) {
             if($dataExclude->count() > 0){
-                $data->whereNotIn('id',$dataExclude);
+                $data = $data->whereNotIn('id',$dataExclude);
             }
             $data = $data->sortBy('created_at');
             $responseData = AuditionResponse::collection($data);
@@ -385,8 +385,7 @@ class AuditionsController extends Controller
         return response()->json($dataResponse, $code);
     }
 
-    public
-    function getFullData(Request $request)
+    public function getFullData(Request $request)
     {
         try {
             $data = new AuditionRepository(new Auditions());
