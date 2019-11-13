@@ -194,15 +194,15 @@ class AppoinmentController extends Controller
                 'auditions_id' => $request->audition_id,
             ];
             $data = $repo->create($appointment);
-            $repoFeeadback = Feedbacks::all()
-                ->where('appointment_id', $lastid->id)
-                ->where('favorite', true);
-
-            if ($repoFeeadback->count() > 0) {
-                $repoFeeadback->each(function ($item) use ($data) {
-                    $item->update(['appointment_id' => $data->id]);
-                });
-            }
+//            $repoFeeadback = Feedbacks::all()
+//                ->where('appointment_id', $lastid->id)
+//                ->where('favorite', true);
+//
+//            if ($repoFeeadback->count() > 0) {
+//                $repoFeeadback->each(function ($item) use ($data) {
+//                    $item->update(['appointment_id' => $data->id]);
+//                });
+//            }
 
             return response()->json(['message' => 'Round Create', 'data' => $data], 200);
         } catch (\Exception $exception) {
