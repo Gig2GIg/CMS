@@ -41,6 +41,7 @@ class AuditionResponse extends JsonResource
         return [
             'id' => $this->id,
             'appointment_id'=>$appointment->id,
+            'round'=>$appointment->round,
             'id_user'=>$this->user_id,
             'agency'=>$data->agency_name ?? null,
             "title" => $this->title,

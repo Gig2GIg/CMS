@@ -358,8 +358,8 @@ class AuditionsController extends Controller
         $repoAppoRound = new AppointmentRepository(new Appointments());
         $dataRepoRound = $repoAppoRound->all()
             ->where('status',true)
-            ->where('round','1')
             ->pluck('auditions_id');
+
         $dataTemp->all()->whereIn('id',$dataRepoRound)->each(function ($item) use ($data){
             $data->push($item);
         });
@@ -403,8 +403,15 @@ class AuditionsController extends Controller
                    $data->push($item);
                 });
             }
-
-
+            $dataTemp2 = new AuditionRepository(new Auditions());
+            $repoAppoRound1 = new AppointmentRepository(new Appointments());
+            $dataRepoRound1 = $repoAppoRound1->all()
+                ->where('status',true)
+                ->where('round',1)
+                ->pluck('auditions_id');
+            $dataTemp2->all()->whereIn('id',$dataRepoRound1)->each(function ($item) use ($data){
+                $data->push($item);
+            });
 
             $data = $data->sortBy('created_at')->unique();
             $responseData = AuditionResponse::collection($data);

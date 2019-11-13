@@ -73,7 +73,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "test@gmail.com",
+  "email": "test3@gmail.com",
   "password": "123456"
 }
 > {%
