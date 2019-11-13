@@ -13,6 +13,7 @@ use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\AuditionsDatesRepository;
+use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
@@ -31,6 +32,7 @@ use App\Http\Resources\ContributorsResource;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\Feedbacks;
 use App\Models\Notifications\Notification;
 use App\Models\Notifications\NotificationHistory;
 use App\Models\Resources;
@@ -46,6 +48,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use PhpOption\Tests\Repository;
 
 class AuditionsController extends Controller
 {
@@ -349,11 +352,17 @@ class AuditionsController extends Controller
      */
     public function getall()
     {
-        $data = new AuditionRepository(new Auditions());
+        $data = new Collection();
+        $dataTemp = new AuditionRepository(new Auditions());
 
         $repoAppoRound = new AppointmentRepository(new Appointments());
-        $dataRepoRound = $repoAppoRound->all()->where('round',1)->where('status',true)->pluck('auditions_id');
-        $data = $data->all()->whereIn('id',$dataRepoRound);
+        $dataRepoRound = $repoAppoRound->all()
+            ->where('status',true)
+            ->where('round','1')
+            ->pluck('auditions_id');
+        $dataTemp->all()->whereIn('id',$dataRepoRound)->each(function ($item) use ($data){
+            $data->push($item);
+        });
 
         $userAuditions = new UserAuditionsRepository(new UserAuditions());
         $dataUserrepo = $userAuditions->getByParam('user_id', $this->getUserLogging());
@@ -366,14 +375,38 @@ class AuditionsController extends Controller
            $idAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
 
         });
+        $repoFeedback = new FeedbackRepository(new Feedbacks());
+        $dataFeedBackRepo = $repoFeedback->findbyparam('user_id',$this->getUserLogging());
+        $dataFeedBackRepo = $dataFeedBackRepo->get()->where('favorite',true);
 
-        $dataExclude = $idAuditions->pluck('id');
+        $idFeedAuditions = new Collection();
+        $dataFeedBackRepo->each(function ($item) use ($idFeedAuditions) {
+            $repoAppoinmets = new AppointmentRepository(new Appointments());
+            $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
+            $audirepo = new AuditionRepository(new Auditions());
+            $idFeedAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
+
+        });
+
+        $dataExclude = $idAuditions->pluck('id')->unique();
+        $dataInclude = $idFeedAuditions->pluck('id')->unique();
         $count = count($data->all());
         if ($count !== 0) {
             if($dataExclude->count() > 0){
                 $data = $data->whereNotIn('id',$dataExclude);
             }
-            $data = $data->sortBy('created_at');
+
+            if($dataInclude->count() > 0){
+                $repoAuditionsExtra = new AuditionRepository(new Auditions());
+                $repoAuditionsExtraData = $repoAuditionsExtra->all()->whereIn('id',$dataInclude);
+                $repoAuditionsExtraData->each(function ($item) use ($data){
+                   $data->push($item);
+                });
+            }
+
+
+
+            $data = $data->sortBy('created_at')->unique();
             $responseData = AuditionResponse::collection($data);
             $dataResponse = ['data' => $responseData];
             $code = 200;

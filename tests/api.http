@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "test2@gmail.com",
+  "email": "test3@gmail.com",
   "password": "123456",
   "type": "2",
   "first_name": "Juan",
@@ -73,7 +73,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "test2@gmail.com",
+  "email": "test@gmail.com",
   "password": "123456"
 }
 > {%
@@ -105,7 +105,7 @@ Accept: application/json
 Authorization: Bearer {{admin_auth_token}}
 
 {
-  "title": "audition Test 2",
+  "title": "audition Test 3",
   "date": "2019-04-02T21:06:21.479Z",
   "time": "4",
   "location": {
@@ -396,5 +396,17 @@ GET {{host}}t/appointment/1/rounds
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{admin_auth_token}}
+
+###
+POST {{host}}t/monitor/updates
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{admin_auth_token}}
+
+{
+  "appointment":1,
+  "title": "empieza el check in para personas que llegan sin registro previo",
+  "time": "11:00"
+}
 
 ###

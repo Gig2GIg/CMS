@@ -144,15 +144,15 @@ class AppoinmentController extends Controller
             $data = $repo->create($appointment);
             $this->log->info("CREATE ROUUND NEW ROUND DATA");
              $this->log->info($data);
-            $repoFeeadback = Feedbacks::all()
-                ->where('appointment_id', $lastid->id)
-                ->where('favorite', true);
-
-            if ($repoFeeadback->count() > 0) {
-                $repoFeeadback->each(function ($item) use ($data) {
-                    $item->update(['appointment_id' => $data->id]);
-                });
-            }
+//            $repoFeeadback = Feedbacks::all()
+//                ->where('appointment_id', $lastid->id)
+//                ->where('favorite', true);
+//
+//            if ($repoFeeadback->count() > 0) {
+//                $repoFeeadback->each(function ($item) use ($data) {
+//                    $item->update(['appointment_id' => $data->id]);
+//                });
+//            }
 
 
             foreach ($request['slots'] as $slot) {
