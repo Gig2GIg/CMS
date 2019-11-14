@@ -80,7 +80,8 @@ class PerformersController extends Controller
             if (is_null($dataPerfomer)) {
                 throw new NotFoundException('Shared code not found', 404);
             }
-            $sender = sprintf('%s %s', $dataSender->details->first_name ?? '', $dataSender->details->last_name ?? '');
+            $lastName = is_null($dataSender->details->last_name) ? '' : $dataSender->details->last_name;
+            $sender = sprintf('%s %s', $dataSender->details->first_name ?? '',$lastName );
             $performer = sprintf('%s %s', $dataPerfomer->details->first_name ?? '', $dataPerfomer->details->last_name ?? '');
             $data = [
                 'sender' => $sender,
