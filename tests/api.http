@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "test3@gmail.com",
+  "email": "alphyon21@gmail.com",
   "password": "123456",
   "type": "2",
   "first_name": "Juan",
@@ -355,38 +355,38 @@ Accept: application/json
 Authorization: Bearer {{admin_auth_token}}
 
 {
-	"date": "2019-04-02T21:06:21.479Z",
-    "time": "4",
-    "location": {
-        "latitude": "123124214",
-        "latitudeDelta": "123124214667",
-        "longitude": "43535345",
-        "longitudeDelta": "43535335446445"
+  "date": "2019-04-02T21:06:21.479Z",
+  "time": "4",
+  "location": {
+    "latitude": "123124214",
+    "latitudeDelta": "123124214667",
+    "longitude": "43535345",
+    "longitudeDelta": "43535335446445"
+  },
+  "number_slots": 10,
+  "type": 1,
+  "length": 10,
+  "start": "8:00",
+  "end": "16:00",
+  "round": 4,
+  "status": true,
+  "slots": [
+    {
+      "time": "8:00",
+      "status": true,
+      "is_walk": false
     },
-	"number_slots":10,
-	"type":1,
-	"length":10,
-	"start":"8:00",
-	"end":"16:00",
-	"round":4,
-	"status":true,
-	"slots":[
-		{
-			"time":"8:00",
-			"status":true,
-			"is_walk":false
-		},
-			{
-			"time":"8:10",
-			"status":true,
-			"is_walk":false
-		},
-			{
-			"time":"8:20",
-			"status":true,
-			"is_walk":false
-		}
-		]
+    {
+      "time": "8:10",
+      "status": true,
+      "is_walk": false
+    },
+    {
+      "time": "8:20",
+      "status": true,
+      "is_walk": false
+    }
+  ]
 }
 
 ###
@@ -404,9 +404,18 @@ Accept: application/json
 Authorization: Bearer {{admin_auth_token}}
 
 {
-  "appointment":1,
+  "appointment": 1,
   "title": "empieza el check in para personas que llegan sin registro previo",
   "time": "11:00"
+}
+
+###
+POST {{host}}remember
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "alphyon21@gmail.com"
 }
 
 ###

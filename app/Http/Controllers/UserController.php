@@ -102,7 +102,7 @@ class UserController extends Controller
         $userDataDetails = [
             'type' => $request->type,
             'first_name' => $dataName[0] ?? "null",
-            'last_name' => $dataName[1] ?? "null",
+            'last_name' => $dataName[1] ?? "",
             'address' => $request->address,
             'city' => $request->city,
             'state' => $request->state,
