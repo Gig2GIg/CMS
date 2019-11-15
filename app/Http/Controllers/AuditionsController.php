@@ -276,7 +276,7 @@ class AuditionsController extends Controller
 
             $notificationHistoryData = [
                 'title' => $audition->title,
-                'code' => Str::random(12),
+                'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
                 'user_id' => $audition->user_id,
                 'message' => 'You have been invited to audition ' . $audition->title,
                 'custom_data' => $userContributor->id,
@@ -317,12 +317,12 @@ class AuditionsController extends Controller
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
                 $this->createNotification($audition, $contributors);
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                    $dataUser->id,
-                    'You have been invited for the audition ' . $audition->title
-                );
+//                $this->sendPushNotification(
+//                    $audition,
+//                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+//                    $dataUser->id,
+//                    'You have been invited for the audition ' . $audition->title
+//                );
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
             }
