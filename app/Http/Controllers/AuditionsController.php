@@ -123,7 +123,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-//                    $this->sendStoreNotificationToContributors($audition);
+                    $this->sendStoreNotificationToContributors($audition);
                 }
 
                 DB::commit();
