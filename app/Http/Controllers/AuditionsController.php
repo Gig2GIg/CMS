@@ -277,7 +277,7 @@ class AuditionsController extends Controller
             $notificationHistoryData = [
                 'title' => $audition->title,
                 'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                'user_id' => $audition->user_id,
+                'user_id' => $userContributor->id,
                 'message' => 'You have been invited to audition ' . $audition->title,
                 'custom_data' => $userContributor->id,
                 'status' => 'unread'
