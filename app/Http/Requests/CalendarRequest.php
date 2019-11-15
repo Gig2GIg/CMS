@@ -21,8 +21,8 @@ class CalendarRequest extends ApiRequest
             'production_type' => 'required|string|max:100',
             'event_type'=>'required',
             'project_name' => 'required|string',
-            'start_date' => 'required|date_format:m-d',
-            'end_date' => 'required|date_format:m-d'
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d'
         ];
     }
 }

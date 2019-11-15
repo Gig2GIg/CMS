@@ -45,8 +45,8 @@ class CalendarControllerTest extends TestCase
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
             'event_type'=>$this->faker->numberBetween(1,2),
-            'start_date' => Carbon::now()->format('m-d'),
-            'end_date' => Carbon::tomorrow()->format('m-d'),
+            'start_date' => Carbon::now()->format('Y-m-d'),
+            'end_date' => Carbon::tomorrow()->format('Y-m-d'),
             'user_id' => $this->user_id
         ];
 
@@ -151,8 +151,8 @@ class CalendarControllerTest extends TestCase
             'production_type' => $this->faker->name,
             'project_name' => $this->faker->name,
             'event_type'=>$this->faker->numberBetween(1,2),
-            'start_date' => \Carbon\Carbon::now()->format('m-d'),
-            'end_date' => \Carbon\CarbonImmutable::now()->add(6,'day')->format('m-d'),
+            'start_date' => \Carbon\Carbon::now()->format('Y-m-d'),
+            'end_date' => \Carbon\CarbonImmutable::now()->add(6,'day')->format('Y-m-d'),
         ];
 
         $calendar = factory(Calendar::class)->create();

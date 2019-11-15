@@ -29,7 +29,7 @@ class CalendarController extends Controller
         $count = count($user_repo->calendars());
 
         if ($count !== 0) {
-            $data =$user_repo->calendars();
+            $data = $user_repo->calendars();
             $responseData = CalendarResource::collection($data);
 
             $dataResponse = ['data' => $responseData];
@@ -72,7 +72,7 @@ class CalendarController extends Controller
      */
     public function store(CalendarRequest $request)
     {
-        if($request->json()){
+        try {
 
             $calendarRepo = new CalendarRepository(new Calendar());
 
@@ -81,19 +81,20 @@ class CalendarController extends Controller
             $year = $now->year;
             $dt = $now->toDateString();
 
-            $start_date = $year . "-" . $request->start_date;
-            $end_date = $year . "-" . $request->end_date;
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
             $user_id = Auth::user()->id;
 
-            if($start_date < $dt ||  $end_date < $dt){
+
+            if ($start_date < $dt || $end_date < $dt) {
                 return response()->json(['error' => "Can't use past dates"], 422);
-              // End date must be greater than start date
-            } else if($end_date < $start_date){
+                // End date must be greater than start date
+            } else if ($end_date < $start_date) {
                 return response()->json(['error' => "End date must be greater than start date"], 422);
             }
 
             // Verify if the range of dates is available
-            $count = $calendarRepo->betweenDates($start_date,$end_date,$user_id);
+            $count = $calendarRepo->betweenDates($start_date, $end_date, $user_id);
             if ($count > 0) {
                 return response()->json(['error' => "Date range is occupied"], 422);
             }
@@ -101,7 +102,7 @@ class CalendarController extends Controller
             $data = [
                 'production_type' => $request->production_type,
                 'project_name' => $request->project_name,
-                'event_type'=>$request->event_type,
+                'event_type' => $request->event_type,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'user_id' => $user_id,
@@ -111,12 +112,13 @@ class CalendarController extends Controller
 
             $responseData = ['data' => new CalendarResource($calendar)];
             $code = 201;
-        }else{
-            $responseData = ['error' => 'Unauthorized'];
-            $code = 401;
-        }
 
-        return response()->json($responseData, $code);
+
+            return response()->json($responseData, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception);
+            return response()->json(['data' => 'Error process event'], 422);
+        }
     }
 
     /**
@@ -163,23 +165,23 @@ class CalendarController extends Controller
                 $year = $now->year;
                 $dt = $now->toDateString();
 
-                $start_date = $year . "-" . $request->start_date;
-                $end_date = $year . "-" . $request->end_date;
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
                 $user_id = Auth::user()->id;
 
-                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
-                    if($start_date < $dt ||  $end_date < $dt){
+                if ($calendar->start_date != $start_date || $calendar->end_date != $end_date) {
+                    if ($start_date < $dt || $end_date < $dt) {
                         return response()->json(['error' => "Can't use past dates"], 422);
                     }
                 }
 
                 // End date must be greater than start date
-                if($end_date < $start_date){
+                if ($end_date < $start_date) {
                     return response()->json(['error' => "End date must be greater than start date"], 422);
                 }
 
-                if($calendar->start_date != $start_date || $calendar->end_date != $end_date){
-                    $count = $calendarRepo->betweenDates($start_date,$end_date,$user_id,$event_id);
+                if ($calendar->start_date != $start_date || $calendar->end_date != $end_date) {
+                    $count = $calendarRepo->betweenDates($start_date, $end_date, $user_id, $event_id);
                     if ($count > 0) {
                         return response()->json(['error' => "Date range is occupied"], 422);
                     }
@@ -188,7 +190,7 @@ class CalendarController extends Controller
                 $data = [
                     'production_type' => $request->production_type,
                     'project_name' => $request->project_name,
-                    'event_type'=>$request->event_typ,
+                    'event_type' => $request->event_typ,
                     'start_date' => $start_date,
                     'end_date' => $end_date
                 ];
