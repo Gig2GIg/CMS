@@ -52,7 +52,7 @@ class MarketplaceCategoriesController extends Controller
                 'featured_image' => $market_featured == null ?  [] : $market_featured->image->url,
                 'vendor_featured' => $market_featured,
                 'vendors' => MarketplaceResource::collection($repo->all()),
-                'marketplaces_categories' => $responseData
+                'data' => $responseData
             ], 200);
         } else {
             return response()->json(['data' => "Not found Data"], 404);
