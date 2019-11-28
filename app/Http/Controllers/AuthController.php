@@ -9,12 +9,11 @@ use App\Models\User;
 use Carbon\Carbon;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-
 class AuthController extends Controller
 {
     /**
      * Create a new AuthController instance.
-     *
+     *  Test
      * @return void
      */
     public function __construct()
@@ -34,20 +33,20 @@ class AuthController extends Controller
             $expiration = Carbon::now()->addDays(7)->timestamp;
             $userData = new UserRepository(new User());
             $user = $userData->findbyparam('email', request('email'));
-            $details = isset($user->details) ? $user->details:null;
+            $details = isset($user->details) ? $user->details : null;
             $payload = [
-                'type' => $details['type']
+                'type' => $details['type'],
             ];
 
             JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
-            
-          $dataResponse = new UserResource($user);
 
-            return $this->respondWithToken($token, $expiration,$dataResponse);
-        }catch (NotFoundException $exception){
+            $dataResponse = new UserResource($user);
+
+            return $this->respondWithToken($token, $expiration, $dataResponse);
+        } catch (NotFoundException $exception) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
@@ -91,13 +90,13 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function respondWithToken($token, $expiration,$data)
+    protected function respondWithToken($token, $expiration, $data)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => $expiration,
-            'data'=> $data
+            'data' => $data,
         ]);
     }
 }
