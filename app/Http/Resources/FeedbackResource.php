@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Http\Repositories\UserRepository;
 use App\Models\User;
+use App\Models\Appointments;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FeedbackResource extends JsonResource
@@ -16,14 +17,13 @@ class FeedbackResource extends JsonResource
      */
     public function toArray($request)
     {
-
         $userRepo = new UserRepository(new User());
+        $round = Appointments::select('round')->where('id',$this->appointment_id)->first();
         $userData = $userRepo->find($this->evaluator_id);
-
         $name = $userData->details->first_name . " " . $userData->details->last_name;
         return [
             'id'=>$this->id,
-            'auditions_id'=>$this-> auditions_id,
+            'auditions_id'=>$this->auditions_id,
             'user_id' =>$this->user_id,
             'evaluator_id'=>$this->evaluator_id,
             'evaluator_name'=>$name,
@@ -32,6 +32,7 @@ class FeedbackResource extends JsonResource
             'work'=>$this->work,
             'favorite'=>$this->favorite,
             'comment'=>$this->comment,
+            'round' => $round->round,
         ];
     }
 }
