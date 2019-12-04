@@ -20,7 +20,8 @@ class UserAuditionsResource extends JsonResource
     public function toArray($request)
     {
         $repoAppointment = new AppointmentRepository(new Appointments());
-        $dataRepo = $repoAppointment->find($this->appointment_id);
+        $dataRepo = $repoAppointment->find($this->appointment_id);       
+        $round = Appointments::select('round')->where('id',$this->appointment_id)->first();
         $dataHour = null;
         $dataProduction = explode(",", $dataRepo->auditions->production);
         $url_media = $dataRepo->auditions->resources
@@ -37,6 +38,7 @@ class UserAuditionsResource extends JsonResource
         return [
             'id' => $this->id,
             'appointment_id'=>$this->appointment_id,
+            'appointment_id'=>$this->appointment_id,
             'auditions_id'=>$dataRepo->auditions->id,
             'online'=>$dataRepo->auditions->online,
             'rol'=> $this->rol_id,
@@ -50,8 +52,7 @@ class UserAuditionsResource extends JsonResource
             'production' => $dataProduction,
             'media' => $url_media[0] ?? null,
             'number_roles' => count($dataRepo->auditions->roles),
-
-
+            'round' => $round->round,
         ];
     }
 }
