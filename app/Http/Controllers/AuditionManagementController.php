@@ -75,7 +75,7 @@ class AuditionManagementController extends Controller
                     'title' => $audition->title,
                     'code' => 'upcoming_audition',
                     'status' => 'unread',
-                    'message' => 'You have been added to upcoming audition ' . $audition->title
+                    'message' => 'You have been added to the audition ' . $audition->title
                 ]);
             }
         } catch (NotFoundException $exception) {
@@ -87,7 +87,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $this->pushNotifications(
-                'You have been added to upcoming audition ' . $audition->title,
+                'You have been added to the audition ' . $audition->title,
                 $user
             );
         } catch (NotFoundException $exception) {
@@ -134,17 +134,32 @@ class AuditionManagementController extends Controller
     public function getUpcoming()
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            // $dataAuditions = $data->sortByDesc('created_at');
+            // $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
 
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            $dataAuditions = DB::table('appointments')
+                // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
+                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at')
+                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                // ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->where('UA.user_id', $this->getUserLogging())
+                // ->where('UA.type', 1)
+                // ->where('F.user_id', $this->getUserLogging())
+                // ->where('F.favorite', 1)
+                // ->where('appointments.status', 1)
+                ->get();
 
-            $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
+
+            // print_r($dataAuditions);
+            // die;
+
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             } else {
                 $dataResponse = ['data' => []];
             }
-
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -157,9 +172,21 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            $data = DB::table('appointments')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status')
+                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->where('UA.user_id', $this->getUserLogging())
+                ->where('F.user_id', $this->getUserLogging())
+                // ->where('F.favorite', 1)
+                // ->where('appointments.status', 1)
+                ->get()->sortByDesc('created_at');
+
+            // print_r($data);
+            // die;
 
             // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
             // if ($dataAuditions->count() > 0) {
@@ -167,13 +194,14 @@ class AuditionManagementController extends Controller
             // } else {
             //     $dataResponse = ['data' => []];
             // }
-
+            // print_r($data);
+            // die;
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
                 $dataResponse = ['data' => []];
             }
-            
+
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -415,7 +443,7 @@ class AuditionManagementController extends Controller
     public function listVideos(Request $request)
     {
         try {
-            $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+            $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
             $data = $videoRepo->findbyparam('appointment_id', $request->id)->get();
             if ($data->count() > 0) {
                 $dataResponse = ['data' => AuditionVideosResource::collection($data)];
