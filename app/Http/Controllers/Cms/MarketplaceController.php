@@ -81,6 +81,7 @@ class MarketplaceController extends Controller
                     'address' => $request->address,
                     'services' => $request->services,
                     'email' => $request->email,
+                    'marketplace_category_id' => $request->marketplace_category_id,
                     'phone_number' => $request->phone_number
                 ];
 
