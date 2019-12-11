@@ -30,25 +30,43 @@ class MarketplaceCategoriesController extends Controller
             $market = $repo->all()
                 ->where('featured', 'yes')
                 ->sortByDesc('updated_at')
-                ->first()
-                ->get();
-            $image = $market[0]->image->get()->pluck('url')->first();
+                ->first();
+
             $data = new MarketplaceCategoryRepo(new MarketplaceCategory);
             $count = count($data->all());
+
             if ($count !== 0) {
                 $responseData = MarketplaceCategoryResource::collection($data->all());
+            }
+            if ($market != null && !empty($market)) {
+                $market = $market->get();
+       
+                
+                $market_cat =MarketplaceCategory::find($market[0]->marketplace_category_id);
+                $market[0]->marketplace_category_name = $market_cat->name;
+                $market[0]->marketplace_category_description = $market_cat->description;
+            
+                $image = $market[0]->image->get()->pluck('url')->first();
+
+                if ($count !== 0) {
+                    return response()->json([
+                        'featured_image' => $image,
+                        'featured' => $market,
+                        'data' => $responseData
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'data' => $responseData
+                    ], 200);
+                }
+            } else {
                 return response()->json([
-                    'featured_image' => $image,
-                    'featured' => $market,
                     'data' => $responseData
                 ], 200);
-            } else {
-                return response()->json(['data' => "Not found Data"], 404);
             }
-        }catch (\Exception $exception){
-            $this->log->error($exception->getMessage());
+        } catch (\Exception $exception) {
+                     // $this->log->error($exception->getMessage());
             return response()->json(['data' => "Not found Data"], 404);
         }
     }
-
 }
