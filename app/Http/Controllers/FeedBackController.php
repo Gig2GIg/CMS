@@ -149,7 +149,9 @@ class FeedBackController extends Controller
             $dataRepo = $repoAppointment->find($request->id);
             $data = $repo->findbyparam('appointment_id', $request->id);
 
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id', '=', $dataRepo->auditions->user_id)->first() ?? new Collection();
+            $dataPre = $data->where('user_id', '=', $this->getUserLogging())
+            // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
+            ->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
