@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: alphyon
@@ -17,39 +18,42 @@ class AuditionResourceFind extends JsonResource
 {
     public function toArray($request)
     {
-$roles = new Roles();
-$countRoles = $roles->where('auditions_id',$this->id)->count();
+        $roles = new Roles();
+        $countRoles = $roles->where('auditions_id', $this->id)->count();
 
-$media = new Resources();
-        $url_media=$media
-            ->where('type','cover')
-            ->where('resource_id',$this->id)
-            ->where('resource_type','App\Models\Auditions')
+        $media = new Resources();
+        $url_media = $media
+            ->where('type', 'cover')
+            ->where('resource_id', $this->id)
+            ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
-        $this->roles->each(function($item){
+        // $this->roles->each(function ($item) {
+        //     $item->image;
+        // });
+        $roles->each(function ($item) {
             $item->image;
         });
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'create'=>$this->created_at,
+            'create' => $this->created_at,
             "description" => $this->description,
             'url' => $this->url,
-            'personal_information'=>$this->personal_information,
-            'additional_info'=>$this->additional_info,
-            'phone'=>$this->phone,
-            'email'=>$this->email,
-            'other_info'=>$this->other_info,
+            'personal_information' => $this->personal_information,
+            'additional_info' => $this->additional_info,
+            'phone' => $this->phone,
+            'email' => $this->email,
+            'other_info' => $this->other_info,
             "union" => $this->union,
             "contract" => $this->contract,
-            "production" => explode(',',$this->production),
+            "production" => explode(',', $this->production),
             "status" => $this->status,
-            "online"=>$this->online,
+            "online" => $this->online,
             "user_id" => $this->user_id,
-            "cover" => $url_media[0] ??null,
+            "cover" => $url_media[0] ?? null,
             "number_roles" => $countRoles,
-            "roles" =>$this->roles
+            "roles" => $roles
+            // "roles" => $this->roles
         ];
     }
-
 }
