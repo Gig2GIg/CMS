@@ -20,8 +20,7 @@ class AuditionVideosController extends Controller
 
         try {
 
-            $isOnline = DB::table('auditions')
-                // ->find($audition_id)
+            $isOnline = DB::table('auditions')              
                 ->where('id', $audition_id)
                 ->value('online');
 

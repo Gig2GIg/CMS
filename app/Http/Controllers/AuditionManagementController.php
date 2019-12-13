@@ -426,10 +426,22 @@ class AuditionManagementController extends Controller
 
     public function deleteVideo(Request $request)
     {
+
+        $isOnline = DB::table('auditions')
+            ->where('id', $request->audition_id)
+            ->value('online');       
         try {
-            $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
-            $delvideo = $videoRepo->find($request->id);
-            $data = $delvideo->delete();
+
+            if ($isOnline) {  
+                $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());              
+                $delvideo = $videoRepo->find($request->id);
+                $data = $delvideo->delete();                
+            } else {
+                $videoRepo = new AuditionVideosRepository(new AuditionVideos());                
+                $delvideo = $videoRepo->find($request->id);
+                $data = $delvideo->delete();
+            }
+
             if ($data) {
                 $dataResponse = ['data' => 'Video deleted'];
                 $code = 200;
@@ -437,6 +449,7 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => 'Video not deleted'];
                 $code = 406;
             }
+            
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());

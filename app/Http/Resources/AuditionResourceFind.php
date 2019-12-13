@@ -19,6 +19,7 @@ class AuditionResourceFind extends JsonResource
     public function toArray($request)
     {
         $roles = new Roles();
+        $roles_data = $roles->where('auditions_id', $this->id)->get();
         $countRoles = $roles->where('auditions_id', $this->id)->count();
 
         $media = new Resources();
@@ -27,12 +28,19 @@ class AuditionResourceFind extends JsonResource
             ->where('resource_id', $this->id)
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
+
         // $this->roles->each(function ($item) {
         //     $item->image;
         // });
-        $roles->each(function ($item) {
+
+        // $roles->each(function ($item) {
+        //     $item->image;
+        // });
+
+        $roles = $roles_data->each(function ($item) {
             $item->image;
         });
+
         return [
             'id' => $this->id,
             'title' => $this->title,

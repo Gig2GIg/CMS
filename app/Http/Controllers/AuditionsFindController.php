@@ -84,7 +84,6 @@ class AuditionsFindController extends Controller
                     foreach ($query as $items) {
                         $elementResponse->push($items);
                     }
-
                 }
 
             }else{
@@ -107,11 +106,10 @@ class AuditionsFindController extends Controller
                 $code = 200;
             }
 
-
             return response()->json($dataResponse, $code);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json( ['error' => 'Not Found'], 404);
+            return response()->json( ['error' => ' catch Not Found'], 404);
         }
 
     }
