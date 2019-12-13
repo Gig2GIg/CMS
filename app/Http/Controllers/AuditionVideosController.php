@@ -15,27 +15,46 @@ use stdClass;
 
 class AuditionVideosController extends Controller
 {
-
-
-
     public function getVideos($audition_id, $round_id)
     {
+
         try {
+
+            $isOnline = DB::table('auditions')
+                // ->find($audition_id)
+                ->where('id', $audition_id)
+                ->value('online');
+
             $AppointmentIds = DB::table('appointments')
                 ->where('auditions_id', $audition_id)
                 ->where('round', $round_id)
                 ->pluck('appointments.id');
 
-            $AuditionVideos = DB::table('online_media_auditions AS OMA')
-                // ->select('OMA.id', 'OMA.name', 'OMA.url', 'OMA.performer_id', 'UD.first_name', 'UD.user_id', 'R.url AS image')
-                ->select('OMA.id', 'OMA.name', 'OMA.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'US.slots_id', 'US.favorite', 'US.roles_id')
-                ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'OMA.performer_id')
-                ->leftJoin('resources AS R', 'R.id', '=', 'OMA.performer_id')
-                ->leftJoin('user_slots AS US', 'US.user_id', '=', 'OMA.performer_id')
-                ->where('OMA.type', 'video')
-                ->whereIn('OMA.appointment_id', $AppointmentIds)
-                ->get();
-        
+            if ($isOnline) {
+                $AuditionVideos = DB::table('online_media_auditions AS OMA')
+                    ->select('OMA.id', 'OMA.name', 'OMA.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'US.slots_id', 'US.favorite', 'US.roles_id')
+                    ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'OMA.performer_id')
+                    ->leftJoin('resources AS R', 'R.id', '=', 'OMA.performer_id')
+                    ->leftJoin('user_slots AS US', 'US.user_id', '=', 'OMA.performer_id')
+                    ->where('OMA.type', 'video')
+                    ->whereIn('OMA.appointment_id', $AppointmentIds)
+                    ->get();
+            } else {
+                $AuditionVideos = DB::table('audition_videos AS AV')
+                    ->select('AV.id', 'AV.name', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'AV.slot_id AS slots_id', 'US.favorite', 'US.roles_id')
+                    // ->select('AV.id', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image',  'US.slots_id',   'US.favorite', 'US.roles_id', 'AV.appointment_id', 'AV.contributors_id', 'AV.slot_id')
+                    ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'AV.user_id')
+                    ->leftJoin('resources AS R', 'R.id', '=', 'AV.user_id')
+
+                    ->leftJoin('user_slots AS US', function ($join) {
+                        $join->on('US.user_id', '=', 'AV.user_id')
+                            ->on('US.slots_id', '=', 'AV.slot_id');
+                    })
+                    // ->leftJoin('user_slots AS US', 'US.user_id', '=', 'AV.user_id')             
+                    ->whereIn('AV.appointment_id', $AppointmentIds)
+                    ->get();
+            }
+
             /**
              * TODO:
              * Handle an empty array
@@ -56,7 +75,7 @@ class AuditionVideosController extends Controller
                     $video->performer->image = $video->image;
                     $result[] = $video;
                 }
-            }            
+            }
 
             if ($AuditionVideos->count() == 0) {
                 // throw new NotFoundException('Not Found Data');
