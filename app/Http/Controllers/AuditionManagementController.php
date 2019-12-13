@@ -391,6 +391,7 @@ class AuditionManagementController extends Controller
 
     public function saveVideo(Request $request)
     {
+        // dd($request);
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
             $toData = $videoRepo->findbyparam('slot_id', $request->slot_id);
@@ -400,6 +401,7 @@ class AuditionManagementController extends Controller
                 $code = 406;
             } else {
                 $data = $videoRepo->create([
+                    'name' => $request->name,
                     'user_id' => $request->performer,
                     'appointment_id' => $request->appointment_id,
                     'url' => $request->url,
@@ -416,6 +418,7 @@ class AuditionManagementController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => 'Not processable'], 406);
         }

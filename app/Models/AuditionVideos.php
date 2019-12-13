@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AuditionVideos extends Model
 {
     protected $fillable = [
+        'name',
         'user_id',
         'appointment_id',
         'url',
