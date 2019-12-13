@@ -181,7 +181,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
 $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], function () use ($router) {
     //media online submission
     $router->post('media/online', ['uses' => 'OnlineMediaAuditionController@create']);
-    $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);
+    // $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);
     //auditions routes
     $router->get('/users/show/{id}', ['uses' => 'UserController@show']);
 
