@@ -38,17 +38,16 @@ class CreditsController extends Controller
             $credits = $repo->create($data);
 
             $dataResponse = [
-                'message'=>'Credits created',
-                'data' =>$credits
+                'message' => 'Credits created',
+                'data' => $credits
             ];
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 500);
+            return response()->json(['error' => trans('messages.error')], 500);
+            // return response()->json(['error' => 'ERROR'], 500);
         }
-
-
     }
 
     /**
@@ -66,7 +65,8 @@ class CreditsController extends Controller
             $code = 200;
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -78,18 +78,17 @@ class CreditsController extends Controller
      */
     public function getAll(Credits $credits)
     {
-            $repo = new CreditsRepository(new Credits());
-            $data = $repo->findbyparam('user_id',$this->getUserLogging())->get();
-            if ($data->count() > 0) {
-                $dataResponse = ['data' => CreditsResource::collection($data)];
-                $code = 200;
-            } else {
-                $dataResponse = ['data' => 'Not Found Data'];
-                $code = 404;
-            }
+        $repo = new CreditsRepository(new Credits());
+        $data = $repo->findbyparam('user_id', $this->getUserLogging())->get();
+        if ($data->count() > 0) {
+            $dataResponse = ['data' => CreditsResource::collection($data)];
+            $code = 200;
+        } else {
+            $dataResponse = ['data' => 'Not Found Data'];
+            $code = 404;
+        }
 
-            return response()->json($dataResponse, $code);
-
+        return response()->json($dataResponse, $code);
     }
 
     /**
@@ -122,7 +121,8 @@ class CreditsController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -148,7 +148,8 @@ class CreditsController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 }

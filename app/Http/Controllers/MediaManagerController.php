@@ -43,7 +43,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
@@ -63,7 +64,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
@@ -89,7 +91,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
@@ -113,7 +116,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
@@ -142,7 +146,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
     public function getbyuser(Request $request)
@@ -181,7 +186,8 @@ class MediaManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 }

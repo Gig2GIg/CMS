@@ -63,7 +63,8 @@ class AuditionsFindController extends Controller
             return response()->json($dataResponse, $code);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json( ['error' => 'Not Found'], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
         }
 
     }
@@ -109,7 +110,9 @@ class AuditionsFindController extends Controller
             return response()->json($dataResponse, $code);
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json( ['error' => ' catch Not Found'], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+
         }
 
     }

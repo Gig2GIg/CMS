@@ -18,14 +18,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-
-       protected $log;
+    protected $log;
 
     public function __construct()
     {
         $this->middleware('jwt', ['except' => []]);
         $this->log = new LogManger();
-
     }
 
     public function getDataToken()
@@ -33,7 +31,7 @@ class Controller extends BaseController
         $log = new LogManger();
         $payload = auth()->payload();
 
-// then you can access the claims directly e.g.
+        // then you can access the claims directly e.g.
 
         $log->info($payload);
     }
@@ -43,8 +41,8 @@ class Controller extends BaseController
         return Auth::user()->getAuthIdentifier();
     }
 
-//use to send notifications
-    public function sendPushNotification($audition= null, $type , $user = null, $title = null, $message = null)
+    //use to send notifications
+    public function sendPushNotification($audition = null, $type, $user = null, $title = null, $message = null)
     {
         SendNotifications::send(
             $audition,
@@ -63,5 +61,4 @@ class Controller extends BaseController
             $user
         );
     }
-
 }
