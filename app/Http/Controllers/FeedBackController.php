@@ -77,7 +77,9 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Feedback not add'], 406);
+            return response()->json(['data' => trans('messages.feedback_not_add')], 406);
+            // return response()->json(['data' => 'Feedback not add'], 406);
+            
         }
     }
 
@@ -115,7 +117,8 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Feedback not update'], 422);
+            return response()->json(['data' => trans('messages.feedback_not_update')], 422);
+            // return response()->json(['data' => 'Feedback not update'], 422);
         }
     }
 
@@ -137,7 +140,8 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
 
@@ -162,8 +166,9 @@ class FeedBackController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            $this->log->error($exception->getMessage());    
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
 
@@ -186,7 +191,8 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 

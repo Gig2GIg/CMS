@@ -34,7 +34,8 @@ class RolesController extends Controller
         catch(\Exception $ex) 
         {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 500);
+            // return response()->json(['error' => 'ERROR'], 500);
+            return response()->json(['error' => trans('messages.error')], 500);
         }
     }
 
@@ -79,7 +80,8 @@ class RolesController extends Controller
         catch (\Exception $ex) 
         {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
 
     }

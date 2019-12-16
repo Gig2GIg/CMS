@@ -40,12 +40,12 @@ class MarketplaceCategoriesController extends Controller
             }
             if ($market != null && !empty($market)) {
                 $market = $market->get();
-       
-                
-                $market_cat =MarketplaceCategory::find($market[0]->marketplace_category_id);
+
+
+                $market_cat = MarketplaceCategory::find($market[0]->marketplace_category_id);
                 $market[0]->marketplace_category_name = $market_cat->name;
                 $market[0]->marketplace_category_description = $market_cat->description;
-            
+
                 $image = $market[0]->image->get()->pluck('url')->first();
 
                 if ($count !== 0) {
@@ -65,8 +65,9 @@ class MarketplaceCategoriesController extends Controller
                 ], 200);
             }
         } catch (\Exception $exception) {
-                     // $this->log->error($exception->getMessage());
-            return response()->json(['data' => "Not found Data"], 404);
+            // $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 }

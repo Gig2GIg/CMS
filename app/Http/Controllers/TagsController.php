@@ -50,7 +50,8 @@ class TagsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
 
     }
@@ -74,7 +75,8 @@ class TagsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
 
     }
@@ -119,7 +121,8 @@ class TagsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
 
     }
@@ -143,7 +146,8 @@ class TagsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
 
     }

@@ -123,7 +123,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-//                    $this->sendStoreNotificationToContributors($audition);
+                    //                    $this->sendStoreNotificationToContributors($audition);
                 }
 
                 DB::commit();
@@ -139,7 +139,8 @@ class AuditionsController extends Controller
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
-            return response()->json(['error' => 'Unprocessable '], 406);
+            return response()->json(['error' => trans('messages.not_processable')], 406);
+            // return response()->json(['error' => 'Unprocessable '], 406);
         }
     }
 
@@ -147,10 +148,10 @@ class AuditionsController extends Controller
     {
         try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
-//                $this->pushNotifications(
-//                    'You have been registered for the audition ' . $audition->title,
-//                    $user_contributor
-//                );
+                //                $this->pushNotifications(
+                //                    'You have been registered for the audition ' . $audition->title,
+                //                    $user_contributor
+                //                );
                 $this->sendPushNotification(
                     $audition,
                     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
@@ -158,7 +159,6 @@ class AuditionsController extends Controller
                     'You have been invited for the audition ' . $audition->title
                 );
             });
-
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -176,7 +176,7 @@ class AuditionsController extends Controller
             self::DESCRIPTION => $request->description,
             'url' => $request->url,
             'personal_information' => $request->personal_information,
-            'phone' => $request->phone,//null
+            'phone' => $request->phone, //null
             'email' => $request->email, //null
             'other_info' => $request->other_info, //null
             'additional_info' => $request->additional_info,
@@ -188,7 +188,6 @@ class AuditionsController extends Controller
             'user_id' => Auth::user()->getAuthIdentifier(),
 
         ];
-
     }
 
     /**
@@ -204,7 +203,6 @@ class AuditionsController extends Controller
             'type' => $date['type'],
 
         ];
-
     }
 
     /**
@@ -219,7 +217,6 @@ class AuditionsController extends Controller
             'name' => $roles['name'],
             self::DESCRIPTION => $roles[self::DESCRIPTION],
         ];
-
     }
 
     /**
@@ -231,9 +228,9 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($request->date),//null
-            'time' => $request->time,//null
-            'location' => json_encode($request->location),//null
+            'date' => $this->toDate->transformDate($request->date), //null
+            'time' => $request->time, //null
+            'location' => json_encode($request->location), //null
             'slots' => $request['appointment']['spaces'],
             'type' => $request['appointment']['type'],
             'length' => $request['appointment']['length'],
@@ -242,7 +239,6 @@ class AuditionsController extends Controller
             'status' => true,
             'round' => 1,
         ];
-
     }
 
     /**
@@ -259,7 +255,6 @@ class AuditionsController extends Controller
             'status' => $slot['status'],
             'is_walk' => $slot['is_walk'],
         ];
-
     }
 
     public function createNotification($audition, $userContributor): void
@@ -287,7 +282,7 @@ class AuditionsController extends Controller
                 $notificationRepo = new NotificationRepository(new Notification());
                 $notificationRepo->create($notificationData);
 
-                $notificationHistoryRepo = new NotificationHistoryRepository(New NotificationHistory);
+                $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory);
                 $notificationLog = $notificationHistoryRepo->create($notificationHistoryData);
 
                 $this->log->info("Notification History " . $notificationLog);
@@ -295,7 +290,6 @@ class AuditionsController extends Controller
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
-
     }
 
     /**
@@ -329,7 +323,6 @@ class AuditionsController extends Controller
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
-
     }
 
     /**
@@ -344,7 +337,6 @@ class AuditionsController extends Controller
             'auditions_id' => $audition->id,
             'status' => true
         ];
-
     }
 
     /**
@@ -373,7 +365,6 @@ class AuditionsController extends Controller
             $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
             $audirepo = new AuditionRepository(new Auditions());
             $idAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
-
         });
         $repoFeedback = new FeedbackRepository(new Feedbacks());
         $dataFeedBackRepo = $repoFeedback->findbyparam('user_id', $this->getUserLogging());
@@ -385,7 +376,6 @@ class AuditionsController extends Controller
             $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
             $audirepo = new AuditionRepository(new Auditions());
             $idFeedAuditions->push($audirepo->find($dataRepoAppo->auditions_id));
-
         });
 
         $dataExclude = $idAuditions->pluck('id')->unique();
@@ -417,7 +407,6 @@ class AuditionsController extends Controller
             $responseData = AuditionResponse::collection($data);
             $dataResponse = ['data' => $responseData];
             $code = 200;
-
         } else {
             $dataResponse = ['data' => "Not found Data"];
             $code = 404;
@@ -434,22 +423,19 @@ class AuditionsController extends Controller
                 $responseData = AuditionFullResponse::collection($data->all()->sortByDesc('created_at'));
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
-
             } else {
-                $dataResponse = ['data' => "Not found Data"];
+                $dataResponse = ['data' => trans('messages.data_not_found')];
+                // $dataResponse = ['data' => "Not found Data"];
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
-
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => 'Not Found'], 404);
-
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
         }
-
     }
 
-    public
-    function get(Request $request)
+    public function get(Request $request)
     {
         try {
             $audition = new AuditionRepository(new Auditions());
@@ -464,26 +450,20 @@ class AuditionsController extends Controller
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
-
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => 'Not Found'], 404);
-
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
         }
-
     }
 
-    public
-    function deleteContributor($id)
+    public function deleteContributor($id)
     {
         AuditionContributors::find($id)->delete();
-
-        return response()->json([
-            'status' => 'Success',
-        ]);
+        // return response()->json(['status' => 'Success',]);
+        return response()->json(['status' => trans('messages.success')]);
     }
 
-    public
-    function show_contributors(Request $request)
+    public function show_contributors(Request $request)
     {
         try {
             $audition = new AuditionRepository(new Auditions());
@@ -498,16 +478,13 @@ class AuditionsController extends Controller
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
-
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => 'Not Found'], 404);
-
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
         }
-
     }
 
-    public
-    function update(AuditionEditRequest $request)
+    public function update(AuditionEditRequest $request)
     {
         $this->log->info("UPDATE AUDITION");
         $this->log->info($request);
@@ -578,8 +555,6 @@ class AuditionsController extends Controller
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
-
-
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
                 $code = 404;
@@ -587,17 +562,18 @@ class AuditionsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
-            return response()->json(['data' => 'Data Not Found'], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
-            return response()->json(['data' => 'Data Not Update'], 406);
+            return response()->json(['data' => trans('messages.data_not_update')], 406);
+            // return response()->json(['data' => 'Data Not Update'], 406);
         }
     }
 
-    public
-    function addContruibuitor(Request $request)
+    public function addContruibuitor(Request $request)
     {
 
         $auditionFilesData = [];
@@ -609,27 +585,26 @@ class AuditionsController extends Controller
             if (isset($request['contributors'])) {
                 foreach ($request['contributors'] as $contrib) {
                     $this->saveContributor($contrib, $audition);
-
                 }
 
-                $dataResponse = 'Contruibuitors Add';
-                $code = 200;
-                return response()->json(['data' => $dataResponse], $code);
+                // $dataResponse = 'Contruibuitors Add';
+                // $code = 200;
+                return response()->json(['data' => trans('messages.contruibuitors_add')], 200);
+                // return response()->json(['data' => $dataResponse], $code);
             }
-
         } catch (NotFoundException $exception) {
-            return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
-            return response()->json(['data' => 'Data Not Update'], 406);
+            return response()->json(['data' => trans('messages.data_not_update')], 406);
+            // return response()->json(['data' => 'Data Not Update'], 406);
         }
     }
 
-
-    public
-    function findby(Request $request)
+    public function findby(Request $request)
     {
 
         try {
@@ -641,34 +616,27 @@ class AuditionsController extends Controller
             }
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-
-            return response()->json(['error' => 'Not Found'], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
         }
     }
 
-    public
-    function media(MediaRequest $request, Auditions $audition)
+    public function media(MediaRequest $request, Auditions $audition)
     {
         $repository = new AuditionRepository($audition);
         $data = $repository->findMediaByParams($request->type);
 
         return response()->json(['data' => $data]);
-
     }
 
-    public
-    function destroy($audition)
+    public function destroy($audition)
     {
         Auditions::find($audition)->delete();
-
-        return response()->json([
-            'status' => 'Success',
-        ]);
+        return response()->json(['status' => trans('messages.success')]);
+        // return response()->json(['status' => 'Success',]);
     }
 
-
-    public
-    function updateInviteContribuidor(Request $request)
+    public function updateInviteContribuidor(Request $request)
     {
         try {
             $repo = new AuditionContributorsRepository(new AuditionContributors());
@@ -722,15 +690,14 @@ class AuditionsController extends Controller
             }
 
             return response()->json(['data' => $dataResponse], $code);
-
         } catch (\Exception $exception) {
             $this->log->error($exception);
-            return response()->json(['data' => 'Error to process'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Error to process'], 406);
         }
     }
 
-    public
-    function sendInviteNotificationToContributors($audition): void
+    public function sendInviteNotificationToContributors($audition): void
     {
         try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
@@ -739,14 +706,12 @@ class AuditionsController extends Controller
                     $user_contributor
                 );
             });
-
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
 
-    public
-    function updateBannedStatus(Request $request)
+    public function updateBannedStatus(Request $request)
     {
         try {
             $auditionRepo = new AuditionRepository(new Auditions());
@@ -766,7 +731,8 @@ class AuditionsController extends Controller
             return response()->json(['data' => $dataResponse], $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Updated'], 406);
+            // return response()->json(['data' => 'Data Not Updated'], 406);
+            return response()->json(['data' => trans('messages.data_not_update')], 406);
         }
     }
 }
