@@ -21,7 +21,6 @@ class AuditionVideosController extends Controller
         try {
 
             $isOnline = DB::table('auditions')
-                // ->find($audition_id)
                 ->where('id', $audition_id)
                 ->value('online');
 
@@ -34,9 +33,11 @@ class AuditionVideosController extends Controller
                 $AuditionVideos = DB::table('online_media_auditions AS OMA')
                     ->select('OMA.id', 'OMA.name', 'OMA.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'US.slots_id', 'US.favorite', 'US.roles_id')
                     ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'OMA.performer_id')
-                    ->leftJoin('resources AS R', 'R.id', '=', 'OMA.performer_id')
+                    ->leftJoin('resources AS R', 'R.resource_id', '=', 'OMA.performer_id')
                     ->leftJoin('user_slots AS US', 'US.user_id', '=', 'OMA.performer_id')
                     ->where('OMA.type', 'video')
+                    ->where('R.type', 'cover')
+                    ->where('R.resource_type', '=', 'App\Models\User')
                     ->whereIn('OMA.appointment_id', $AppointmentIds)
                     ->get();
             } else {
@@ -44,13 +45,13 @@ class AuditionVideosController extends Controller
                     ->select('AV.id', 'AV.name', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'AV.slot_id AS slots_id', 'US.favorite', 'US.roles_id')
                     // ->select('AV.id', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image',  'US.slots_id',   'US.favorite', 'US.roles_id', 'AV.appointment_id', 'AV.contributors_id', 'AV.slot_id')
                     ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'AV.user_id')
-                    ->leftJoin('resources AS R', 'R.id', '=', 'AV.user_id')
-
+                    ->leftJoin('resources AS R', 'R.resource_id', '=', 'AV.user_id')
                     ->leftJoin('user_slots AS US', function ($join) {
                         $join->on('US.user_id', '=', 'AV.user_id')
                             ->on('US.slots_id', '=', 'AV.slot_id');
                     })
-                    // ->leftJoin('user_slots AS US', 'US.user_id', '=', 'AV.user_id')             
+                    ->where('R.type', 'cover')
+                    ->where('R.resource_type', '=', 'App\Models\User')
                     ->whereIn('AV.appointment_id', $AppointmentIds)
                     ->get();
             }
@@ -79,7 +80,8 @@ class AuditionVideosController extends Controller
 
             if ($AuditionVideos->count() == 0) {
                 // throw new NotFoundException('Not Found Data');
-                return response()->json(['data' => [], 'message' => 'Not Found Data'], 400);
+                // return response()->json(['data' => [], 'message' => 'Not Found Data'], 400);
+                return response()->json(['data' => [], 'message' => trans('messages.data_not_found')], 400);
             }
             return response()->json(['data' => $result], 200);
         } catch (\Exception $exception) {

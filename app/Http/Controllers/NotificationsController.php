@@ -39,10 +39,12 @@ class NotificationsController extends Controller
                 $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
                 return response()->json(['data' => $responseData], 200);
             } else {
-                return response()->json(['data' => "Not found Data"], 404);
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
+                // return response()->json(['data' => "Not found Data"], 404);
             }
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -61,10 +63,11 @@ class NotificationsController extends Controller
 
             $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
 
-            return response()->json(['data' => 'Success'], 204);
+            return response()->json(['data' =>trans('messages.success')], 204);
 
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -83,11 +86,13 @@ class NotificationsController extends Controller
             if ($userResult->update($data)) {
                 return response()->json([], 204);
             } else {
-                return response()->json(['data' => "Record not  created"], 422);
+                // return response()->json(['data' => "Record not created"], 422);
+                return response()->json(['data' => trans('messages.record_not_created')], 422);
             }
 
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -108,7 +113,9 @@ class NotificationsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+
         }
     }
 

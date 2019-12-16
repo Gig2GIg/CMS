@@ -40,14 +40,16 @@ class AuthController extends Controller
 
             JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => trans('messages.unauthorized')], 401);
+                // return response()->json(['error' => 'Unauthorized'], 401);
             }
 
             $dataResponse = new UserResource($user);
 
             return $this->respondWithToken($token, $expiration, $dataResponse);
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => trans('messages.unauthorized')], 401);
+            // return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
 
@@ -70,7 +72,8 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        // return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => trans('messages.successfully_logged_out')]);
     }
 
     /**
