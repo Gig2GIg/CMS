@@ -68,7 +68,8 @@ class MonitorManagerController extends Controller
             $this->log->error($exception->getLine());
             $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Update Not Publised'], 406);
+            return response()->json(['data' => trans('messages.update_not_publised')], 406);
+            // return response()->json(['data' => 'Update Not Publised'], 406);
         }
     }
 
@@ -143,7 +144,8 @@ class MonitorManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -172,7 +174,8 @@ class MonitorManagerController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 }

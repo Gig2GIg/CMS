@@ -27,12 +27,12 @@ class NotificationManagementController extends Controller
         $this->middleware('jwt');
         $this->log = new LogManger();
     }
-    
+
 
     public function getAll(Request $request)
     {
         try {
-        
+
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($this->getUserLogging());
 
@@ -41,11 +41,13 @@ class NotificationManagementController extends Controller
                 $responseData = NoficationSettingUserResource::collection($user->notification_settings);
                 return response()->json(['data' => $responseData], 200);
             } else {
-                return response()->json(['data' => "Not found Data"], 404);
-            }   
+                // return response()->json(['data' => "Not found Data"], 404);
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
+            }
         } catch (NotFoundException $e) {
-$this->log->error($e->getMessage());
-            return response()->json(['data' => "Not found Data"], 404);  
+            $this->log->error($e->getMessage());
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -62,16 +64,16 @@ $this->log->error($e->getMessage());
 
             $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
             $notificationSettingUserResult = $notificationSettingUserRepo->find($request->id);
-    
+
             if ($notificationSettingUserResult->update($data)) {
                 return response()->json([], 204);
             } else {
-                return response()->json(['data' => "Not found Data"], 422);
-            }   
-        
+                return response()->json(['data' => trans('messages.data_not_found')], 422);
+                // return response()->json(['data' => "Not found Data"], 422);
+            }
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);  
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
-
 }

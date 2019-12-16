@@ -70,11 +70,13 @@ class AppoinmentController extends Controller
                         });
                     }
                 }
-                return response()->json(['message' => 'Round closed successfully', 'data' => $data], 200);
+                return response()->json(['message' => trans('messages.round_closed_successfully'), 'data' => $data], 200);
+                // return response()->json(['message' => 'Round closed successfully', 'data' => $data], 200);
             }
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Round not close ', 'data' => []], 406);
+            return response()->json(['message' => trans('messages.round_not_close'), 'data' => []], 406);
+            // return response()->json(['message' => 'Round not close ', 'data' => []], 406);
         }
     }
 
@@ -87,7 +89,6 @@ class AppoinmentController extends Controller
             'status' => false,
             'is_walk' => $slot['is_walk'],
         ];
-
     }
 
     public function getSlots(Request $request)
@@ -99,10 +100,12 @@ class AppoinmentController extends Controller
             if ($data->count() === 0) {
                 throw new NotFoundException('Not found data');
             }
-            return response()->json(['message' => 'list by slots', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.list_by_slots'), 'data' => $data], 200);
+            // return response()->json(['message' => 'list by slots', 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Not found data', 'data' => []], 404);
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => []], 404);
+            // return response()->json(['message' => 'Not found data', 'data' => []], 404);
         }
     }
 
@@ -149,7 +152,7 @@ class AppoinmentController extends Controller
             // echo($data);die;
             $this->log->info("CREATE ROUUND NEW ROUND DATA");
             $this->log->info($data);
-//            $repoFeeadback = Feedbacks::all()
+            //            $repoFeeadback = Feedbacks::all()
             //                ->where('appointment_id', $lastid->id)
             //                ->where('favorite', true);
             //
@@ -159,7 +162,7 @@ class AppoinmentController extends Controller
             //                });
             //            }
 
-// Check is it for next round or not
+            // Check is it for next round or not
             if ($request->round > 1) {
                 $AuditionId = $request->audition_id;
 
@@ -203,9 +206,7 @@ class AppoinmentController extends Controller
                                     'roles_id' => $auditionRoleId,
                                     'status' => 1,
                                 ]);
-
                             }
-
                         }
                     }
                 }
@@ -216,7 +217,8 @@ class AppoinmentController extends Controller
                 $slotsRepo = new SlotsRepository(new Slots());
                 $slotsRepo->create($dataSlots);
             }
-            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+            // return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.round_create'), 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => $exception->getMessage(), 'data' => []], 406);
@@ -319,13 +321,12 @@ class AppoinmentController extends Controller
                                 // $testDebug['after'] = "After";
                                 // $testDebug['UserAudition'] = $UserAudition;
                             }
-
                         }
                     }
                 }
             }
 
-//            $repoFeeadback = Feedbacks::all()
+            //            $repoFeeadback = Feedbacks::all()
             //                ->where('appointment_id', $lastid->id)
             //                ->where('favorite', true);
             //
@@ -335,10 +336,12 @@ class AppoinmentController extends Controller
             //                });
             //            }
 
-            return response()->json(['message' => 'Round create', 'data' => $data], 200);
+            // return response()->json(['message' => 'Round create', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.round_create'), 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+            return response()->json(['message' => trans('messages.round_not_create'), 'data' => []], 406);
+            // return response()->json(['message' => 'Round not create ', 'data' => []], 406);
         }
     }
 }
