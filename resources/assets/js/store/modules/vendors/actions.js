@@ -12,7 +12,7 @@ export default {
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/marketplaces');
-    
+
       commit(types.FETCH_VENDORS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_VENDORS_FAILURE);
@@ -32,7 +32,7 @@ export default {
 
       vendor.image_name = imageName;
       vendor.image_url = await image.ref.getDownloadURL();
-   
+
       // Save changes
       const { data: { data } } = await axios.post(`/api/cms/marketplace_categories/${vendor.marketplace_category_id}/marketplaces/create`, vendor);
       commit(types.CREATE_VENDOR, data);
@@ -80,18 +80,27 @@ export default {
     try {
       dispatch('toggleSpinner');
 
-      // Delete image
-      await firebase.storage().ref(`vendors/${vendor.image.name}`).delete();
-
       // Delete vendor
       await axios.delete(`/api/cms/marketplaces/delete/${vendor.id}`);
-      commit(types.DELETE_VENDOR, vendor);
 
       dispatch('toast/showMessage', 'Vendor deleted.', { root: true });
     } catch(e) {
       dispatch('toast/showError', 'Something went wrong.', { root: true });
     } finally {
       dispatch('toggleSpinner');
+    }
+  },
+
+  async destroyFirebase({ dispatch, commit }, vendor) {
+    try {
+      dispatch('toggleSpinner');
+      // Delete image
+      await firebase.storage().ref(`vendors/${vendor.image.name}`).delete();
+      commit(types.DELETE_VENDOR, vendor);
+    } catch(e) {
+      //
+    } finally {
+      // 
     }
   },
 
