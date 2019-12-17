@@ -18,7 +18,9 @@ class Appointments extends Model
         'end',
         'round',
         'status',
-        'auditions_id'
+        'auditions_id',
+        'group_no',
+        'is_group_open'
     ];
 
     public function slot(){
