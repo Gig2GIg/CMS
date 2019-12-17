@@ -29,7 +29,8 @@ class TypeProductsController extends Controller
            $responseData = TypeProductsResource::collection($data->all());
            return response()->json(['data' => $responseData], 200);
        } else {
-           return response()->json(['data' => "Not found Data"], 404);
+        //    return response()->json(['data' => "Not found Data"], 404);
+           return response()->json(['data' => trans('messages.data_not_found')], 404);
        }   
     }
 }

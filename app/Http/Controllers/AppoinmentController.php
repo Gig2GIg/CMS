@@ -6,13 +6,16 @@ use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Repositories\UserSlotsRepository;
 use App\Models\Appointments;
 use App\Models\Feedbacks;
+use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\UserAuditions;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\UserSlots;
 use Illuminate\Http\Request;
 
 class AppoinmentController extends Controller
@@ -21,7 +24,6 @@ class AppoinmentController extends Controller
      * @var ManageDates
      */
     protected $toDate;
-
 
     public function getRounds(Request $request)
     {
@@ -40,7 +42,7 @@ class AppoinmentController extends Controller
 
     public function createRound(Request $request)
     {
-        if(!$request->online){
+        if (!$request->online) {
             return $this->notOnlineSubmision($request);
         }
 
@@ -57,23 +59,25 @@ class AppoinmentController extends Controller
                 $repoFeeadback = Feedbacks::all()
                     ->where('appointment_id', $request->appointment_id)
                     ->where('favorite', true);
-                if($repoFeeadback->count() >= 0){
+                if ($repoFeeadback->count() >= 0) {
                     $idsFeedback = $repoFeeadback->pluck('user_id');
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
                     $dataUserAuditions = $repoUserAuditions->all()->whereNotIn('user_id', $idsFeedback)
-                        ->where('appointment_id',$request->appointment_id);
+                        ->where('appointment_id', $request->appointment_id);
                     if ($dataUserAuditions->count() > 0) {
                         $dataUserAuditions->each(function ($element) {
                             $element->update(['type' => 3]);
                         });
                     }
                 }
-                return response()->json(['message' => 'Round closed successfully', 'data' => $data], 200);
+                return response()->json(['message' => trans('messages.round_closed_successfully'), 'data' => $data], 200);
+                // return response()->json(['message' => 'Round closed successfully', 'data' => $data], 200);
             }
-        }catch(\Exception $exception){
-                $this->log->error($exception->getMessage());
-                return response()->json(['message' => 'Round not close ', 'data' => []], 406);
-            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.round_not_close'), 'data' => []], 406);
+            // return response()->json(['message' => 'Round not close ', 'data' => []], 406);
+        }
     }
 
     public function dataToSlotsProcess($appointment, $slot): array
@@ -85,7 +89,6 @@ class AppoinmentController extends Controller
             'status' => false,
             'is_walk' => $slot['is_walk'],
         ];
-
     }
 
     public function getSlots(Request $request)
@@ -97,10 +100,12 @@ class AppoinmentController extends Controller
             if ($data->count() === 0) {
                 throw new NotFoundException('Not found data');
             }
-            return response()->json(['message' => 'list by slots', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.list_by_slots'), 'data' => $data], 200);
+            // return response()->json(['message' => 'list by slots', 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Not found data', 'data' => []], 404);
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => []], 404);
+            // return response()->json(['message' => 'Not found data', 'data' => []], 404);
         }
     }
 
@@ -111,7 +116,7 @@ class AppoinmentController extends Controller
      */
     public function notOnlineSubmision(Request $request): \Illuminate\Http\JsonResponse
     {
-        $this->log->info("CREATE ROUND::". $request);
+        $this->log->info("CREATE ROUND::" . $request);
         $repoClosedA = new AppointmentRepository(new Appointments());
         $repoDataA = $repoClosedA->findbyparam('auditions_id', $request->audition_id);
         if ($repoDataA->count() > 0) {
@@ -121,7 +126,7 @@ class AppoinmentController extends Controller
         }
         $lastid = $repoDataA->orderBy('id', 'desc')->first();
         $this->log->info("CREATE ROUND LAST ID APPO");
-          $this->log->info($lastid);
+        $this->log->info($lastid);
         $this->toDate = new ManageDates();
         try {
             $repo = new AppointmentRepository(new Appointments());
@@ -142,28 +147,81 @@ class AppoinmentController extends Controller
                 throw new \Exception('Not Slots to process');
             }
             $data = $repo->create($appointment);
-            $this->log->info("CREATE ROUUND NEW ROUND DATA");
-             $this->log->info($data);
-//            $repoFeeadback = Feedbacks::all()
-//                ->where('appointment_id', $lastid->id)
-//                ->where('favorite', true);
-//
-//            if ($repoFeeadback->count() > 0) {
-//                $repoFeeadback->each(function ($item) use ($data) {
-//                    $item->update(['appointment_id' => $data->id]);
-//                });
-//            }
 
+            $newAppointmentId = $data->id;
+            // echo($data);die;
+            $this->log->info("CREATE ROUUND NEW ROUND DATA");
+            $this->log->info($data);
+            //            $repoFeeadback = Feedbacks::all()
+            //                ->where('appointment_id', $lastid->id)
+            //                ->where('favorite', true);
+            //
+            //            if ($repoFeeadback->count() > 0) {
+            //                $repoFeeadback->each(function ($item) use ($data) {
+            //                    $item->update(['appointment_id' => $data->id]);
+            //                });
+            //            }
+
+            // Check is it for next round or not
+            if ($request->round > 1) {
+                $AuditionId = $request->audition_id;
+
+                $roleRepo = new RolesRepository(new Roles());
+                $roleDataRepo = $roleRepo->findbyparam('auditions_id', $AuditionId);
+
+                if ($roleDataRepo->count() > 0) {
+                    // dd($roleDataRepo);
+                    $roles = $roleDataRepo->all();
+                    // dd($roles[0]->id);
+                    $auditionRoleId = $roles[0]->id;
+
+                    $repoPreviousAppointments = new AppointmentRepository(new Appointments());
+                    $repoDataPreviousAppointments = $repoPreviousAppointments->findbyparams(['auditions_id' => $request->audition_id, 'round' => ($request->round - 1)]);
+
+                    if ($repoDataPreviousAppointments->count() > 0) {
+                        $lasApponitment = $repoDataPreviousAppointments->get();
+
+                        $lasApponitmentId = $lasApponitment[0]->id;
+
+                        //Get all users who got feedback in previous round
+                        $feedbacksRepo = new FeedbackRepository(new Feedbacks());
+                        $repoDatafeedbacks = $feedbacksRepo->findbyparams(['appointment_id' => $lasApponitmentId, 'favorite' => 1]);
+
+                        if ($repoDatafeedbacks->count() > 0) {
+                            $feedbackData = $repoDatafeedbacks->get();
+
+                            $allFeddbackUsers = array();
+                            foreach ($feedbackData as $feedback) {
+                                $allFeddbackUsers[] = $feedback->user_id;
+
+                                $dataToInsert = ['user_id' => $feedback->user_id, 'appointment_id' => $newAppointmentId, 'rol_id' => $auditionRoleId, 'type' => '1'];
+                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                                $UserAudition->create($dataToInsert);
+
+                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                $dataSlotRepo->create([
+                                    'user_id' => $feedback->user_id,
+                                    'appointment_id' => $newAppointmentId,
+                                    'slots_id' => null,
+                                    'roles_id' => $auditionRoleId,
+                                    'status' => 1,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
 
             foreach ($request['slots'] as $slot) {
                 $dataSlots = $this->dataToSlotsProcess($data, $slot);
                 $slotsRepo = new SlotsRepository(new Slots());
                 $slotsRepo->create($dataSlots);
             }
-            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+            // return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.round_create'), 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+            return response()->json(['message' => $exception->getMessage(), 'data' => []], 406);
         }
     }
 
@@ -194,20 +252,96 @@ class AppoinmentController extends Controller
                 'auditions_id' => $request->audition_id,
             ];
             $data = $repo->create($appointment);
-//            $repoFeeadback = Feedbacks::all()
-//                ->where('appointment_id', $lastid->id)
-//                ->where('favorite', true);
-//
-//            if ($repoFeeadback->count() > 0) {
-//                $repoFeeadback->each(function ($item) use ($data) {
-//                    $item->update(['appointment_id' => $data->id]);
-//                });
-//            }
+            $testDebug = array();
+            $newAppointmentId = $data->id;
+            $testDebug['newAppointmentId'] = $newAppointmentId;
 
-            return response()->json(['message' => 'Round Create', 'data' => $data], 200);
+            // Check is it for next round or not
+            // Check is it for next round or not
+            if ($request->round > 1) {
+                $testDebug['In Round'] = $request->round;
+                $AuditionId = $request->audition_id;
+
+                $roleRepo = new RolesRepository(new Roles());
+                $roleDataRepo = $roleRepo->findbyparam('auditions_id', $AuditionId);
+
+                if ($roleDataRepo->count() > 0) {
+                    // dd($roleDataRepo);
+                    $roles = $roleDataRepo->all();
+                    // dd($roles[0]->id);
+                    $auditionRoleId = $roles[0]->id;
+                    $testDebug['Role Id'] = $auditionRoleId;
+
+                    $repoPreviousAppointments = new AppointmentRepository(new Appointments());
+                    $repoDataPreviousAppointments = $repoPreviousAppointments->findbyparams(['auditions_id' => $request->audition_id, 'round' => ($request->round - 1)]);
+
+                    if ($repoDataPreviousAppointments->count() > 0) {
+                        $lasApponitment = $repoDataPreviousAppointments->get();
+
+                        $lasApponitmentId = $lasApponitment[0]->id;
+                        $testDebug['last appointment Id'] = $lasApponitmentId;
+
+                        //Get all users who got feedback in previous round
+                        $feedbacksRepo = new FeedbackRepository(new Feedbacks());
+                        $repoDatafeedbacks = $feedbacksRepo->findbyparams(['appointment_id' => $lasApponitmentId, 'favorite' => 1]);
+
+                        if ($repoDatafeedbacks->count() > 0) {
+                            $feedbackData = $repoDatafeedbacks->get();
+
+                            $allFeddbackUsers = array();
+                            foreach ($feedbackData as $feedback) {
+                                $allFeddbackUsers[] = $feedback->user_id;
+
+                                // $testDebug['dataToInsert'] = $dataToInsert;
+                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+
+                                $dataToInsert = [
+                                    'user_id' => $feedback->user_id,
+                                    'appointment_id' => $newAppointmentId,
+                                    'rol_id' => $auditionRoleId,
+                                    'type' => '1',
+                                ];
+
+                                $UserAudition->create($dataToInsert);
+
+                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                $dataSlotRepo->create([
+                                    'user_id' => $feedback->user_id,
+                                    'appointment_id' => $newAppointmentId,
+                                    'slots_id' => factory(Slots::class)->create([
+                                        'appointment_id' => $newAppointmentId,
+                                        'time' => "00:00",
+                                        'status' => false,
+                                    ])->id,
+                                    'roles_id' => $auditionRoleId,
+                                    'status' => 2,
+                                ]);
+
+                                // $testDebug['dataToInsert'] = $dataToInsert;
+                                // $testDebug['after'] = "After";
+                                // $testDebug['UserAudition'] = $UserAudition;
+                            }
+                        }
+                    }
+                }
+            }
+
+            //            $repoFeeadback = Feedbacks::all()
+            //                ->where('appointment_id', $lastid->id)
+            //                ->where('favorite', true);
+            //
+            //            if ($repoFeeadback->count() > 0) {
+            //                $repoFeeadback->each(function ($item) use ($data) {
+            //                    $item->update(['appointment_id' => $data->id]);
+            //                });
+            //            }
+
+            // return response()->json(['message' => 'Round create', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.round_create'), 'data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+            return response()->json(['message' => trans('messages.round_not_create'), 'data' => []], 406);
+            // return response()->json(['message' => 'Round not create ', 'data' => []], 406);
         }
     }
 }

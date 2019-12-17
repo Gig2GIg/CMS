@@ -34,7 +34,8 @@ class MarketplaceController extends Controller
             $responseData = MarketplaceResource::collection($data->allMarketplace());
             return response()->json(['data' => $responseData], 200);
         } else {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -48,7 +49,8 @@ class MarketplaceController extends Controller
             $responseData = MarketplaceResource::collection($data->search_by_title($request->value));
             return response()->json(['data' => $responseData], 200);
         } else {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -62,7 +64,8 @@ class MarketplaceController extends Controller
             $responseData = MarketplaceResource::collection($data->search_marketplaces_by_category_by_title($request->value));
             return response()->json(['data' => $responseData], 200);
         } else {
-            return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
         }
     }
 
@@ -89,7 +92,8 @@ class MarketplaceController extends Controller
             return response()->json(['data' => new MarketplaceResource($marketplace_result)], 201);
         } catch (QueryException $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Error created Marketplace'], 406);
+            return response()->json(['data' => trans('messages.error_created_marketplace')], 406);
+            // return response()->json(['data' => 'Error created Marketplace'], 406);
         }
 
     }
@@ -112,9 +116,9 @@ class MarketplaceController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
         }
-
     }
 
 }

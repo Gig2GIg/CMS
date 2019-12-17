@@ -60,7 +60,9 @@ class PerformersController extends Controller
             return response()->json(['data' => $message]);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Error add performer'], 406);
+
+            return response()->json(['data' => trans('message.error_add_performer')], 406);
+            // return response()->json(['data' => 'Error add performer'], 406);
         }
     }
 
@@ -91,14 +93,16 @@ class PerformersController extends Controller
             $response = $this->notificator($dataReceiver, $data);
             if (!$response) {
                 throw new \Exception('Error to notification');
-            }
-            return response()->json(['data' => 'Code share']);
+            }            
+            // return response()->json(['data' => 'Code share']);
+            return response()->json(['data' => trans('messages.code_share')]);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             if ($exception instanceof NotFoundException) {
                 return response()->json(['data' => $exception->getMessage()], 404);
             }
-            return response()->json(['data' => 'Error send code'], 406);
+            return response()->json(['data' => trans('messages.error_send_code')], 406);
+            // return response()->json(['data' => 'Error send code'], 406);
         }
     }
 
@@ -115,7 +119,8 @@ class PerformersController extends Controller
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not found data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not found data'], 404);
         }
     }
 
@@ -148,7 +153,8 @@ class PerformersController extends Controller
             return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data not Found'], 404);
         }
     }
 
@@ -246,11 +252,14 @@ class PerformersController extends Controller
         try {
             $dataRepo = new TagsRepository(new Tags());
             $data = $dataRepo->findbyparam('setUser_id', $this->getUserLogging())->where('user_id', $request->user)->get();
-            return response()->json(['message' => 'tags by user', 'data' => $data], 200);
+            
+            // return response()->json(['message' => 'tags by user', 'data' => $data], 200);
+            return response()->json(['message' => trans('messages.tag_by_user'), 'data' => $data], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+            // return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
         }
     }
 
@@ -260,11 +269,13 @@ class PerformersController extends Controller
             $dataRepo = new FeedbackRepository(new Feedbacks());
             $data = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->get();
 
-            return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
+            return response()->json(['message' => trans('messages.comment_by_user'), 'data' => CommentListResponse::collection($data)], 200);
+            // return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
+            // return response()->json(['message' => 'Data not found', 'data' => ''], 404);
         }
     }
 
@@ -280,11 +291,12 @@ class PerformersController extends Controller
             $dataTemp = AuditionContract::all()->whereIn('auditions_id', $dataAuditions->pluck('id'));
             $data = $dataTemp->where('user_id', $request->user);
 
-            return response()->json(['message' => 'contracts by user', 'data' => $data->toArray()], 200);
+            return response()->json(['message' => trans('messages.contracts_by_user'), 'data' => $data->toArray()], 200);
+            // return response()->json(['message' => 'contracts by user', 'data' => $data->toArray()], 200);
 
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Data not found', 'data' => ''], 404);
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
         }
     }
 }

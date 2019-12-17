@@ -29,7 +29,7 @@ class UserTabletEdit extends FormRequest
             'address'=>'required|max:150',
             'city'=>'required|string|max:50',
             'state'=>'required|integer',
-            'birth'=>'required|date',
+            // 'birth'=>'required|date',
 //            'location'=>'required',
             'agency_name'=>'required',
             'profesion'=>'required',

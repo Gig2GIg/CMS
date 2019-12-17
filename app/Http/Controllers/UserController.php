@@ -38,10 +38,9 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword','sendPasswordAdmin']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
-
     }
 
 
@@ -60,8 +59,6 @@ class UserController extends Controller
             $code = 404;
         }
         return response()->json($responseData, $code);
-
-
     }
 
     public function store(UserRequest $request)
@@ -72,8 +69,11 @@ class UserController extends Controller
                 'email' => request('email'),
                 'password' => bcrypt(request('password')),
             ];
+
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
+
+
             $usert->image()->create(['url' => request('image'), 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
@@ -85,20 +85,19 @@ class UserController extends Controller
             $code = 201;
 
             DB::commit();
+
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             DB::rollback();
-            return response()->json(['error' => 'ERROR'], 500);
+            // return response()->json(['error' => 'ERROR'], 500);
+            return response()->json(['error' => trans('messages.error')], 500);
         }
-
-
     }
 
     public function storeTablet(UserRequest $request, $id)
     {
         $dataName = explode(" ", $request->name);
-
         $userDataDetails = [
             'type' => $request->type,
             'first_name' => $dataName[0] ?? "null",
@@ -106,25 +105,26 @@ class UserController extends Controller
             'address' => $request->address,
             'city' => $request->city,
             'state' => $request->state,
-            'birth' => $this->date->transformDate($request->birth),
+            'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'agency_name' => $request->agency_name,
             'image' => $request->image,
             'profesion' => $request->profesion,
-//            'location' => $request->location,
+            //            'location' => $request->location,
             'zip' => $request->zip,
             'user_id' => $id,
         ];
+
         $userDetails = new UserDetailsRepository(new UserDetails());
+
         try {
+
             $userDetails->create($userDataDetails);
-            $this->create_setting(['AUDITIONS','CONTRIBUTORS'],$id);
+            $this->create_setting(['AUDITIONS', 'CONTRIBUTORS'], $id);
             return true;
         } catch (CreateException $e) {
             $this->log->error($e->getMessage());
             return false;
-
         }
-
     }
 
     /**
@@ -142,13 +142,13 @@ class UserController extends Controller
             'address' => $request->address,
             'city' => $request->city,
             'state' => $request->state,
-            'birth' => $this->date->transformDate($request->birth),
+            'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'gender' => $request->gender,
             'stage_name' => $request->stage_name ?? null,
             'image' => $request->image,
-            'url'=>$request->url ?? null,
+            'url' => $request->url ?? null,
             'profesion' => $request->profesion,
-//            'location' => $request->location,
+            //            'location' => $request->location,
             'zip' => $request->zip,
             'user_id' => $id,
         ];
@@ -160,7 +160,7 @@ class UserController extends Controller
                 $userUnion = new UserUnionMemberRepository(new UserUnionMembers());
                 $userUnion->create(['name' => $iValue['name'], 'user_id' => $id]);
             }
-            $this->create_setting(['FEEDBACK','RECOMMENDATION'],$id);
+            $this->create_setting(['FEEDBACK', 'RECOMMENDATION'], $id);
             //CREATED DEFAULT NOTIFICATION SETTING
             $this->createNotificationSetting($user);
 
@@ -179,7 +179,7 @@ class UserController extends Controller
 
             foreach ($notificationSetting as $iValue) {
                 $notificationSettingUserRepo = new NotificationSettingUserRepository(new NotificationSettingUser());
-                $noti=$notificationSettingUserRepo->create([
+                $noti = $notificationSettingUserRepo->create([
                     'notification_setting_id' => $iValue['id'],
                     'user_id' => $user->user_id,
                     'code' => $iValue['code']
@@ -215,7 +215,6 @@ class UserController extends Controller
         } catch (NotFoundException $e) {
             return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         }
-
     }
 
     /**
@@ -241,12 +240,12 @@ class UserController extends Controller
                 'address' => $request->address,
                 'city' => $request->city,
                 'state' => $request->state,
-                'birth' => $this->date->transformDate($request->birth),
+                'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
                 'gender' => $request->gender,
                 'stage_name' => $request->stage_name,
                 'profesion' => $request->profesion,
                 'url' => $request->url,
-//                    'location' => $request->location,
+                //                    'location' => $request->location,
                 'zip' => $request->zip,
             ];
             $dataUser->image->update(['url' => $request->image]);
@@ -264,76 +263,70 @@ class UserController extends Controller
             }
 
             return response()->json($responseOut, $code);
-
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
                 $code = 404;
-                $message = ['data'=>'Not Found Data'];
+                $message = ['data' => 'Not Found Data'];
             } else {
                 $code = 406;
-                $message = ['data'=>'Unprocessable'];
-
+                $message = ['data' => 'Unprocessable'];
             }
             return response()->json($message, $code);
         }
-
     }
 
     public function updateTablet(UserTabletEdit $request)
     {
 
-            try {
-                $user = new UserRepository(new User());
-                $this->log->info($request->id);
-                $dataUser = $user->find($request->id);
-                $data['email'] = $request->email;
-                if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
-                    $data['password'] = Hash::make($request->password);
-                }
-                $dataUser->update($data);
-                $name = explode(' ', $request->name);
-                $dataUser->image->update(['url' => $request->image]);
-                $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
-                $userDataDetails = [
-                    'first_name' => $name[0] ?? $dataUserDetails->first_name,
-                    'last_name' => $name[1] ?? $dataUserDetails->last_name,
-                    'address' => $request->address,
-                    'city' => $request->city,
-                    'state' => $request->state,
-                    'birth' => $this->date->transformDate($request->birth),
-                    'gender' => $request->gender,
-                    'agency_name' => $request->agency_name,
-                    'profesion' => $request->profesion,
-//                    'location' => $request->location,
-                    'zip' => $request->zip,
-                ];
-                $dat = $dataUserDetails->update($userDataDetails);
-                if ($dat) {
-                    $responseUserRepo = new UserRepository(new User());
-                    $dataResponseUser = $responseUserRepo->find($request->id);
-                    $responseOut = ['data' => new UserResource($dataResponseUser)];
-                    $code = 200;
-                } else {
-                    $responseOut = ['data' => 'Not updated'];
-                    $code = 406;
-                }
-                return response()->json($responseOut, $code);
-
-            } catch (\Exception $e) {
-                $this->log->error($e->getMessage());
-                if ($e instanceof NotFoundException) {
-                    $code = 404;
-                    $message = ['data'=>'Not Found Data'];
-                } else {
-                    $code = 406;
-                    $message = ['data'=>'Unprocessable'];
-
-                }
-                return response()->json($message, $code);
+        try {
+            $user = new UserRepository(new User());
+            $this->log->info($request->id);
+            $dataUser = $user->find($request->id);
+            $data['email'] = $request->email;
+            if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
+                $data['password'] = Hash::make($request->password);
             }
-
+            $dataUser->update($data);
+            $name = explode(' ', $request->name);
+            $dataUser->image->update(['url' => $request->image]);
+            $userDetails = new UserDetailsRepository(new UserDetails());
+            $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
+            $userDataDetails = [
+                'first_name' => $name[0] ?? $dataUserDetails->first_name,
+                'last_name' => $name[1] ?? $dataUserDetails->last_name,
+                'address' => $request->address,
+                'city' => $request->city,
+                'state' => $request->state,
+                'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
+                'gender' => $request->gender,
+                'agency_name' => $request->agency_name,
+                'profesion' => $request->profesion,
+                //                    'location' => $request->location,
+                'zip' => $request->zip,
+            ];
+            $dat = $dataUserDetails->update($userDataDetails);
+            if ($dat) {
+                $responseUserRepo = new UserRepository(new User());
+                $dataResponseUser = $responseUserRepo->find($request->id);
+                $responseOut = ['data' => new UserResource($dataResponseUser)];
+                $code = 200;
+            } else {
+                $responseOut = ['data' => 'Not updated'];
+                $code = 406;
+            }
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                $code = 404;
+                $message = ['data' => 'Not Found Data'];
+            } else {
+                $code = 406;
+                $message = ['data' => 'Unprocessable'];
+            }
+            return response()->json($message, $code);
+        }
     }
 
     public function delete(Request $request)
@@ -347,11 +340,15 @@ class UserController extends Controller
             $mebersUnion->where('user_id', $dataUser->id)->delete();
             $dataUser->image()->delete();
             $dataUser->delete();
-            return response()->json(['data' => 'User deleted'], 200);
+            // return response()->json(['data' => 'User deleted'], 200);
+            return response()->json(['data' => trans('messages.user_deleted')], 200);
+            
         } catch (NotFoundException $e) {
             return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         } catch (QueryException $e) {
-            return response()->json(['data' => "Unprocesable"], 406);
+            // return response()->json(['data' => "Unprocesable"], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            
         }
     }
 
@@ -390,12 +387,11 @@ class UserController extends Controller
         } catch (QueryException $e) {
             $this->log->error($e);
             throw new UpdateException($e);
-
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "email not found"], 404);
+            // return response()->json(['data' => "email not found"], 404);
+            return response()->json(['data' => trans('messages.email_not_found')], 404);
+            
         }
-
-
     }
 
     public function sendPasswordAdmin(Request $request)
@@ -425,11 +421,9 @@ class UserController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $e) {
             $this->log->error($e);
-            return response()->json(['data' => "email not found"], 404);
-
+            // return response()->json(['data' => "email not found"], 404);
+            return response()->json(['data' => trans('messages.email_not_found')], 404);
         }
-
-
     }
 
     public function updateMemberships(Request $request)
@@ -448,10 +442,12 @@ class UserController extends Controller
                     'name' => $item['name']
                 ]);
             }
-            return response()->json(['data' => 'Unions update'], 200);
+            // return response()->json(['data' => 'Unions update'], 200);
+            return response()->json(['data' => trans('messages.unions_update')], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Error to process'], 406);
+            // return response()->json(['data' => 'Error to process'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
         }
     }
 
@@ -469,16 +465,15 @@ class UserController extends Controller
         return response()->json($responseData, $code);
     }
 
-    public function create_setting(Array $settings,$id){
-        foreach ($settings as $setting){
+    public function create_setting(array $settings, $id)
+    {
+        foreach ($settings as $setting) {
             $repo = new UserSettingsRepository(new UserSettings());
             $repo->create([
-                'user_id'=>$id,
-                'setting'=>$setting,
-                'value'=>true
+                'user_id' => $id,
+                'setting' => $setting,
+                'value' => true
             ]);
         }
     }
-
-
 }

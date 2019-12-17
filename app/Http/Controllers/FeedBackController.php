@@ -44,12 +44,12 @@ class FeedBackController extends Controller
             $data = [
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user, //id usuario que recibe evaluacion
-                'evaluator_id' => $request->evaluator,//id de usuario que da feecback,
+                'evaluator_id' => $request->evaluator, //id de usuario que da feecback,
                 'evaluation' => $request->evaluation,
                 'callback' => $request->callback,
                 'work' => $request->work,
                 'favorite' => $request->favorite,
-                'slot_id'=>$request->slot_id,
+                'slot_id' => $request->slot_id,
                 'comment' => $request->comment
             ];
 
@@ -58,10 +58,10 @@ class FeedBackController extends Controller
             if ($data->id) {
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
-                if($appointmentData->auditions->user_id === $request->evaluator) {
+                if ($appointmentData->auditions->user_id === $request->evaluator) {
                     $slotRepo = new UserSlotsRepository(new UserSlots());
                     $slotData = $slotRepo->findbyparam('slots_id', $request->slot_id)->first();
-                    if(isset($slotData)) {
+                    if (isset($slotData)) {
                         $update = $slotData->update([
                             'favorite' => $request->favorite
                         ]);
@@ -70,7 +70,6 @@ class FeedBackController extends Controller
                 $this->addTalenteToDatabase($request->user);
                 $dataResponse = ['data' => 'Feedback saved successfully', 'feedback_id' => $data->id];
                 $code = 201;
-
             } else {
                 $dataResponse = ['data' => 'Feedback already submitted'];
                 $code = 406;
@@ -78,9 +77,10 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Feedback not add'], 406);
+            return response()->json(['data' => trans('messages.feedback_not_add')], 406);
+            // return response()->json(['data' => 'Feedback not add'], 406);
+            
         }
-
     }
 
 
@@ -117,9 +117,9 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Feedback not update'], 422);
+            return response()->json(['data' => trans('messages.feedback_not_update')], 422);
+            // return response()->json(['data' => 'Feedback not update'], 422);
         }
-
     }
 
     public function list(Request $request)
@@ -140,7 +140,8 @@ class FeedBackController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
 
@@ -152,7 +153,9 @@ class FeedBackController extends Controller
             $dataRepo = $repoAppointment->find($request->id);
             $data = $repo->findbyparam('appointment_id', $request->id);
 
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())->where('evaluator_id','=',$dataRepo->auditions->user_id)->first() ?? new Collection();
+            $dataPre = $data->where('user_id', '=', $this->getUserLogging())
+            // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
+            ->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
@@ -163,8 +166,9 @@ class FeedBackController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            $this->log->error($exception->getMessage());    
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
 
@@ -173,53 +177,48 @@ class FeedBackController extends Controller
     {
         try {
             $repoFeedback = new FeedbackRepository(new Feedbacks());
-
+        
             $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
-            ->where('evaluator_id',$this->getUserLogging())->where('user_id',$request->user_id);
-
-
-
+                ->where('evaluator_id','=', $this->getUserLogging())->where('user_id','=', $request->user_id)->first();
 
             if ($feedbacks->count() == 0) {
                 throw new \Exception('Data not found');
             }
 
-
-                $dataResponse = ['data' => $feedbacks];
-                $code = 200;
-
+            $dataResponse = ['data' => $feedbacks];
+            $code = 200;
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Data Not Found'], 404);
+            // return response()->json(['data' => 'Data Not Found'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
 
-    function addTalenteToDatabase($performer_id){
+    function addTalenteToDatabase($performer_id)
+    {
         try {
             $hasid = new Hashids('g2g');
             $dateHash = new \DateTime();
             $dataTime =  $dateHash->getTimestamp();
             $repo = new PerformerRepository(new Performers());
-            $dataRepo = $repo->findbyparam('director_id',$this->getUserLogging())->get();
-            $count = $dataRepo->where('performer_id',$performer_id)->count();
-            if($count > 0){
+            $dataRepo = $repo->findbyparam('director_id', $this->getUserLogging())->get();
+            $count = $dataRepo->where('performer_id', $performer_id)->count();
+            if ($count > 0) {
                 throw new \Exception("User exists in your database");
             }
             $register = [
                 'performer_id' => $performer_id,
                 'director_id' => $this->getUserLogging(),
-                'uuid' => $hasid->encode($performer_id,$dataTime),
+                'uuid' => $hasid->encode($performer_id, $dataTime),
             ];
 
             $repo->create($register);
             $this->log->info('Talent add');
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-
         }
     }
-
 }

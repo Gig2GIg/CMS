@@ -52,7 +52,8 @@ class SubscriptionController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 406);
+            // return response()->json(['error' => 'ERROR'], 406);
+            return response()->json(['error' => trans('messages.error')], 406);
         }
     }
 
@@ -112,7 +113,8 @@ class SubscriptionController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 406);
+            // return response()->json(['error' => 'ERROR'], 406);
+            return response()->json(['error' => trans('messages.error')], 406);
         }
     }
 
@@ -137,7 +139,8 @@ class SubscriptionController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 406);
+            // return response()->json(['error' => 'ERROR'], 406);
+            return response()->json(['error' => trans('messages.error')], 406);
         }
     }
 
@@ -156,39 +159,40 @@ class SubscriptionController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['error' => 'ERROR'], 404);
+            // return response()->json(['error' => 'ERROR'], 404);
+            return response()->json(['error' => trans('messages.error')], 404);
         }
     }
 
     public function getallSubscription()
     {
-            $dataUser = User::with('userSubscription')->get();
-            $filter = $dataUser->filter(function($item){
-                return $item->details->type === '2';
-            })->filter(function ($item) {
-                return $item->details->subscription !== '1';
-            });
+        $dataUser = User::with('userSubscription')->get();
+        $filter = $dataUser->filter(function ($item) {
+            return $item->details->type === '2';
+        })->filter(function ($item) {
+            return $item->details->subscription !== '1';
+        });
 
-            $stripe = new StripeManagementController();
-            $subscriptions = $stripe->getStripeSubscriptions();
+        $stripe = new StripeManagementController();
+        $subscriptions = $stripe->getStripeSubscriptions();
 
-            $filter->each(function ($subscription) use ($subscriptions) {
-                $data = DB::table('subscriptions')->where('user_id', $subscription->id)->first();
+        $filter->each(function ($subscription) use ($subscriptions) {
+            $data = DB::table('subscriptions')->where('user_id', $subscription->id)->first();
 
-                if ($data) {
-                    $sub = $subscriptions->where('id', $data->stripe_id)->first();
-                } else {
-                    $sub = null;
-                }
+            if ($data) {
+                $sub = $subscriptions->where('id', $data->stripe_id)->first();
+            } else {
+                $sub = null;
+            }
 
-                if ($sub) {
-                    $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->format('m/d/Y g:i A');
-                } else {
-                    $subscription->expiration = '';
-                }
-            });
+            if ($sub) {
+                $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->format('m/d/Y g:i A');
+            } else {
+                $subscription->expiration = '';
+            }
+        });
 
-            return SubsCriptionUserResource::collection($filter);
+        return SubsCriptionUserResource::collection($filter);
     }
 
     public function updateCardData(Request $request)
@@ -214,9 +218,8 @@ class SubscriptionController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['error' => 'ERROR'], 404);
+            // return response()->json(['error' => 'ERROR'], 404);
+            return response()->json(['error' => trans('messages.error')], 404);
         }
     }
-
 }
-

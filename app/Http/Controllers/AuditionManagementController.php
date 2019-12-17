@@ -75,7 +75,7 @@ class AuditionManagementController extends Controller
                     'title' => $audition->title,
                     'code' => 'upcoming_audition',
                     'status' => 'unread',
-                    'message' => 'You have been added to upcoming audition ' . $audition->title
+                    'message' => 'You have been added to the audition ' . $audition->title
                 ]);
             }
         } catch (NotFoundException $exception) {
@@ -87,7 +87,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $this->pushNotifications(
-                'You have been added to upcoming audition ' . $audition->title,
+                'You have been added to the audition ' . $audition->title,
                 $user
             );
         } catch (NotFoundException $exception) {
@@ -127,39 +127,69 @@ class AuditionManagementController extends Controller
         } catch (Exception $exception) {
             DB::rollBack();
             $this->log->error($exception->getMessage());
-            return response()->json(['error' => 'Audition not update'], 406);
+            // return response()->json(['error' => 'Audition not update'], 406);
+            return response()->json(['error' => trans('messages.audition_not_update')], 406);
         }
     }
 
     public function getUpcoming()
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            // $dataAuditions = $data->sortByDesc('created_at');
+            // // $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
 
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            // $dataAuditions = DB::table('user_auditions')
+            //     ->select('user_auditions.id', 'user_auditions.user_id', 'user_auditions.appointment_id', 'user_auditions.rol_id', 'user_auditions.slot_id', 'user_auditions.type', 'user_auditions.created_at', 'user_auditions.updated_at', 'appointments.status')
+            //     ->Join('appointments', 'appointments.id', '=', 'user_auditions.appointment_id')
+            //     ->where('user_id', $this->getUserLogging())
+            //     ->where('appointments.status', 1)
+            //     ->get()->sortByDesc('created_at');
 
-            $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
+
+            $dataAuditions = DB::table('appointments')
+                // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
+                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at')
+                ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->where('UA.user_id', $this->getUserLogging())
+                ->where('appointments.status', 1)
+                ->get()->sortByDesc('created_at');
+
+
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             } else {
                 $dataResponse = ['data' => []];
             }
-
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             $this->log->error($exception->getTraceAsString());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
     public function getPassed()
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            $data = DB::table('appointments')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status')
+                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->where('UA.user_id', $this->getUserLogging())
+                ->where('F.user_id', $this->getUserLogging())
+                // ->where('F.favorite', 1)
+                // ->where('appointments.status', 1)
+                ->get()->sortByDesc('created_at');
+
+            // print_r($data);
+            // die;
 
             // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
             // if ($dataAuditions->count() > 0) {
@@ -167,17 +197,19 @@ class AuditionManagementController extends Controller
             // } else {
             //     $dataResponse = ['data' => []];
             // }
-
+            // print_r($data);
+            // die;
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
                 $dataResponse = ['data' => []];
             }
-            
+
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -191,7 +223,8 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => new AuditionsDetResponse($data)], 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -232,7 +265,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -252,7 +286,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -273,7 +308,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -297,7 +333,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'error to open audition'], 406);
+            return response()->json(['data' => trans('messages.error_to_open_audition')], 406);
+            // return response()->json(['data' => 'error to open audition'], 406);
         }
     }
 
@@ -334,7 +371,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'error to close audition'], 406);
+            return response()->json(['data' => trans('messages.error_to_close_audition')], 406);
+            // return response()->json(['data' => 'error to close audition'], 406);
         }
     }
 
@@ -356,7 +394,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -371,6 +410,7 @@ class AuditionManagementController extends Controller
                 $code = 406;
             } else {
                 $data = $videoRepo->create([
+                    'name' => $request->name,
                     'user_id' => $request->performer,
                     'appointment_id' => $request->appointment_id,
                     'url' => $request->url,
@@ -388,16 +428,29 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
     public function deleteVideo(Request $request)
     {
+
+        $isOnline = DB::table('auditions')
+            ->where('id', $request->audition_id)
+            ->value('online');
         try {
-            $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
-            $delvideo = $videoRepo->find($request->id);
-            $data = $delvideo->delete();
+
+            if ($isOnline) {
+                $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
+                $delvideo = $videoRepo->find($request->id);
+                $data = $delvideo->delete();
+            } else {
+                $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+                $delvideo = $videoRepo->find($request->id);
+                $data = $delvideo->delete();
+            }
+
             if ($data) {
                 $dataResponse = ['data' => 'Video deleted'];
                 $code = 200;
@@ -405,17 +458,19 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => 'Video not deleted'];
                 $code = 406;
             }
+
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
     public function listVideos(Request $request)
     {
         try {
-            $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+            $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
             $data = $videoRepo->findbyparam('appointment_id', $request->id)->get();
             if ($data->count() > 0) {
                 $dataResponse = ['data' => AuditionVideosResource::collection($data)];
@@ -427,7 +482,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
         }
     }
 
@@ -452,7 +508,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['message' => 'Not processable', 'data' => []], 406);
+            return response()->json(['message' => trans('messages.not_processable'), 'data' => []], 406);
+            // return response()->json(['message' => 'Not processable', 'data' => []], 406);
         }
     }
 
@@ -472,7 +529,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not processable'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
         }
     }
 
@@ -491,7 +549,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -546,7 +605,8 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Error to process'], 406);
+            // return response()->json(['data' => 'Error to process'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
         }
     }
 
@@ -602,7 +662,8 @@ class AuditionManagementController extends Controller
             return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
             $this->log->error($exception);
-            return response()->json(['data' => 'Unprocesable Entity'], 422);
+            return response()->json(['data' => trans('messages.unprocesable_entity')], 422);
+            // return response()->json(['data' => 'Unprocesable Entity'], 422);
         }
     }
 
@@ -639,7 +700,6 @@ class AuditionManagementController extends Controller
         }
     }
 
-
     public function bannedAuditions(Request $request)
     {
         try {
@@ -654,17 +714,19 @@ class AuditionManagementController extends Controller
             $resource = $audition->update($data);
 
             if ($resource) {
-                $dataResponse = 'Audition Banned';
-                $code = 200;
+                return response()->json(['data' => trans('messages.audition_banned')], 200);
+                // $dataResponse = 'Audition Banned';
+                // $code = 200;
             } else {
-                $dataResponse = 'Error';
-                $code = 422;
+                return response()->json(['data' => trans('messages.error')], 422);
+                // $dataResponse = 'Error';
+                // $code = 422;
             }
-
-            return response()->json(['data' => $dataResponse], $code);
+            // return response()->json(['data' => $dataResponse], $code);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => 'Error to process'], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Error to process'], 406);
         }
     }
 
@@ -717,7 +779,8 @@ class AuditionManagementController extends Controller
                 ->where('rol_id', '=', $data['rol_id'])
                 ->get();
             if ($datacompare->count() > 0) {
-                return response()->json(['data' => 'You already registered'], 406);
+                return response()->json(['data' => trans('messages.you_already_registered')], 406);
+                // return response()->json(['data' => 'You already registered'], 406);
             } else {
                 $data = $userAuditions->create($data);
                 if ($request->type === 2) {
@@ -750,7 +813,8 @@ class AuditionManagementController extends Controller
                     ]);
                 }
             }
-            return response()->json(['data' => 'Audition Saved'], 201);
+            return response()->json(['data' => trans('messages.audition_saved')], 201);
+            // return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             $message = $exception->getMessage();
@@ -780,7 +844,8 @@ class AuditionManagementController extends Controller
                 ->where('rol_id', '=', $data['rol_id'])
                 ->get();
             if ($datacompare->count() > 0) {
-                return response()->json(['data' => 'You already registered'], 406);
+                return response()->json(['data' => trans('messages.you_already_registered')], 406);
+                // return response()->json(['data' => 'You already registered'], 406);
             } else {
                 $data = $userAuditions->create($data);
                 $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -796,7 +861,8 @@ class AuditionManagementController extends Controller
                     'status' => 2
                 ]);
             }
-            return response()->json(['data' => 'Audition Saved'], 201);
+            return response()->json(['data' => trans('messages.audition_saved')], 201);
+            // return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
             $message = $exception->getMessage();
