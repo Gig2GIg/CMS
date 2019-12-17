@@ -34,7 +34,6 @@ class CalendarController extends Controller
 
             $dataResponse = ['data' => $responseData];
             $code = 200;
-
         } else {
             $dataResponse = ['data' => "Not found Data"];
             $code = 404;
@@ -59,7 +58,6 @@ class CalendarController extends Controller
 
             $dataResponse = ['data' => $responseData];
             $code = 200;
-
         } else {
             $dataResponse = ['data' => "Not found Data"];
             $code = 404;
@@ -87,16 +85,19 @@ class CalendarController extends Controller
 
 
             if ($start_date < $dt || $end_date < $dt) {
-                return response()->json(['error' => "Can't use past dates"], 422);
+                return response()->json(['error' => trans('messages.cant_use_past_dates')], 422);
+                // return response()->json(['error' => "Can't use past dates"], 422);
                 // End date must be greater than start date
             } else if ($end_date < $start_date) {
-                return response()->json(['error' => "End date must be greater than start date"], 422);
+                // return response()->json(['error' => "End date must be greater than start date"], 422);
+                return response()->json(['error' => trans('messages.end_date_must_be_greater_than_start_date')], 422);
             }
 
             // Verify if the range of dates is available
             $count = $calendarRepo->betweenDates($start_date, $end_date, $user_id);
             if ($count > 0) {
-                return response()->json(['error' => "Date range is occupied"], 422);
+                // return response()->json(['error' => "Date range is occupied"], 422);
+                return response()->json(['error' => trans('messages.date_range_is_occupied')], 422);
             }
 
             $data = [
@@ -117,7 +118,8 @@ class CalendarController extends Controller
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
             $this->log->error($exception);
-            return response()->json(['data' => 'Error process event'], 422);
+            return response()->json(['data' => trans('messages.error_process_event')], 422);
+            // return response()->json(['data' => 'Error process event'], 422);
         }
     }
 
@@ -140,10 +142,9 @@ class CalendarController extends Controller
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
-
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => 'Not Found'], 404);
-
+            // return response()->json(['error' => 'Not Found'], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -171,19 +172,23 @@ class CalendarController extends Controller
 
                 if ($calendar->start_date != $start_date || $calendar->end_date != $end_date) {
                     if ($start_date < $dt || $end_date < $dt) {
-                        return response()->json(['error' => "Can't use past dates"], 422);
+                        // return response()->json(['error' => "Can't use past dates"], 422);
+                        return response()->json(['error' => trans('messages.cant_use_past_dates')], 422);
+                        
                     }
                 }
 
                 // End date must be greater than start date
                 if ($end_date < $start_date) {
-                    return response()->json(['error' => "End date must be greater than start date"], 422);
+                    return response()->json(['error' => trans('messages.end_date_must_be_greater_than_start_date')], 422);
+                    // return response()->json(['error' => "End date must be greater than start date"], 422);
                 }
 
                 if ($calendar->start_date != $start_date || $calendar->end_date != $end_date) {
                     $count = $calendarRepo->betweenDates($start_date, $end_date, $user_id, $event_id);
                     if ($count > 0) {
-                        return response()->json(['error' => "Date range is occupied"], 422);
+                        return response()->json(['error' => trans('messages.date_range_is_occupied')], 422);
+                        // return response()->json(['error' => "Date range is occupied"], 422);
                     }
                 }
 
@@ -200,16 +205,15 @@ class CalendarController extends Controller
 
                 $responseData = ['data' => 'Data Updated'];
                 $code = 200;
-
             } else {
                 $responseData = ['error' => 'Unauthorized'];
                 $code = 401;
             }
 
             return response()->json($responseData, $code);
-
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Data Not Found"], 404);
+            // return response()->json(['data' => "Data Not Found"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -223,11 +227,14 @@ class CalendarController extends Controller
             $datac = $calendar->find($request->id);
             $datac->delete();
 
-            return response()->json(['data' => 'Event  deleted'], 200);
+            // return response()->json(['data' => 'Event deleted'], 200);
+            return response()->json(['data' => trans('messages.event_deleted')], 200);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => "Not found Data"], 404);
+            // return response()->json(['data' => "Not found Data"], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (QueryException $e) {
-            return response()->json(['data' => "Unprocesable"], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => "Unprocesable"], 406);
         }
     }
 }

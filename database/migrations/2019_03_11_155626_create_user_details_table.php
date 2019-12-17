@@ -21,7 +21,7 @@ class CreateUserDetailsTable extends Migration
             $table->string('address');
             $table->string('city');
             $table->integer('state');
-            $table->date('birth');
+            $table->date('birth')->nullable();
             $table->enum('subscription',[1,2,3])->default(3);
             $table->string('profesion');
             $table->string('stage_name')->nullable();

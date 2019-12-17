@@ -55,7 +55,8 @@ class SkillsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 
@@ -84,7 +85,8 @@ class SkillsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 500);
+            // return response()->json(['error' => 'ERROR'], 500);
+            return response()->json(['error' => trans('messages.error')], 500);
         }
 
     }
@@ -105,7 +107,8 @@ class SkillsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 500);
+            // return response()->json(['error' => 'ERROR'], 500);
+            return response()->json(['error' => trans('messages.error')], 500);
         }
     }
 
@@ -125,7 +128,8 @@ class SkillsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $e) {
-            return response()->json(['data' => 'Not Found Data'], 404);
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 

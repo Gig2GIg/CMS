@@ -38,26 +38,26 @@ class CommentsController extends Controller
         try {
 
             $data = [
-                'body'=> $request->body,
-                'post_id'=> $request->id,
+                'body' => $request->body,
+                'post_id' => $request->id,
                 'user_id' => $this->getUserLogging()
             ];
 
             $repoComment = new CommentsRepository(new Comments());
-       
+
             $comment = $repoComment->create($data);
 
             $dataResponse = [
-                'message' =>'comment created',
+                'message' => 'comment created',
                 'data' => $comment
             ];
             $code = 201;
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
         }
-
     }
 
 
@@ -66,7 +66,7 @@ class CommentsController extends Controller
         try {
             $repoPost = new CommentsRepository(new Comments());
             $post = $repoPost->find($request->id);
-        
+
             if ($post->delete()) {
                 $dataResponse = ['data' => 'Post removed'];
                 $code = 200;
@@ -74,15 +74,14 @@ class CommentsController extends Controller
                 $dataResponse = ['data' => 'Post not removed'];
                 $code = 404;
             }
-      
+
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
         }
-
     }
-
 
     public function list(Request $request)
     {
@@ -90,22 +89,24 @@ class CommentsController extends Controller
             $postRepo = new PostsRepository(new Posts());
             $post = $postRepo->find($request->id);
 
-            if (! is_null($post)) {
+            if (!is_null($post)) {
                 $topics = PostsTopicsResource::collection($post->post_topics);
                 $post_resources = new PostsResource($post);
-                $dataResponse = [ 'data' => ['post' => ['post_data' => $post_resources, 'topics' => $topics],
-                                 'comments' => CommentsResource::collection($post->comments->sortByDesc('created_at'))]];
+                $dataResponse = ['data' => [
+                    'post' => ['post_data' => $post_resources, 'topics' => $topics],
+                    'comments' => CommentsResource::collection($post->comments->sortByDesc('created_at'))
+                ]];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
                 $code = 404;
             }
-      
+
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
-            return response()->json(['error' => 'ERROR'], 422);
+            return response()->json(['error' => trans('messages.error')], 422);
+            // return response()->json(['error' => 'ERROR'], 422);
         }
-
     }
 }

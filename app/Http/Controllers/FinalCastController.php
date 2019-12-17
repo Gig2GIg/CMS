@@ -22,10 +22,13 @@ class FinalCastController extends Controller
           if($create->id === null){
               throw  new Exception('NOT CREATED REGISTER FOR FINAL CAST');
           }
-            return response()->json(['data'=>$create,'message'=>'Add performer to final cast'],201);
+        //   return response()->json(['data'=>$create,'message'=>'Add performer to final cast'],201);
+          return response()->json(['data'=>$create,'message'=>trans('add_performer_to_final_cast')],201);
+
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'fail to add performer'],406);
+            // return response()->json(['data'=>'fail to add performer'],406);
+            return response()->json(['data' => trans('messages.fail_to_add_performer')], 406);
         }
     }
 
@@ -39,7 +42,8 @@ class FinalCastController extends Controller
             return response()->json(['data'=>FinalCastResource::collection($data)],200);
         }catch (Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'Data Not Found'],404);
+            // return response()->json(['data'=>'Data Not Found'],404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 

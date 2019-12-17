@@ -86,7 +86,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->put('/auditions/close/{id}', ['uses' => 'AuditionManagementController@closeAudition']);
     $router->post('/auditions/video/save', ['uses' => 'AuditionManagementController@saveVideo']);
     $router->get('/auditions/video/list/{id}', ['uses' => 'AuditionManagementController@listVideos']);
-    $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);
+    $router->delete('/auditions/video/delete/{id}/{audition_id}', ['uses' => 'AuditionManagementController@deleteVideo']);
     $router->post('/auditions/contract/save', ['uses' => 'AuditionManagementController@saveContract']);
     $router->get('/auditions/contract/{user_id}/{audition_id}', ['uses' => 'AuditionManagementController@getContact']);
     $router->delete('/auditions/contract/delete/{id}', ['uses' => 'AuditionManagementController@deleteContract']);
@@ -181,6 +181,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
 $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], function () use ($router) {
     //media online submission
     $router->post('media/online', ['uses' => 'OnlineMediaAuditionController@create']);
+    // $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);
     //auditions routes
     $router->get('/users/show/{id}', ['uses' => 'UserController@show']);
 

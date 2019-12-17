@@ -20,7 +20,9 @@ class UserSettingsController extends Controller
         return response()->json(['data'=>$data],200);
      }catch (\Exception $exception){
          $this->log->error($exception->getMessage());
-         return response()->json(['data'=>'Not Found Data'],404);
+        //  return response()->json(['data'=>'Not Found Data'],404);
+         return response()->json(['data' => trans('messages.data_not_found')], 404);
+
      }
  }
 
@@ -37,10 +39,13 @@ class UserSettingsController extends Controller
 
 
 
-            return response()->json(['data'=>'Setting updated'],200);
+            // return response()->json(['data'=>'Setting updated'],200);
+            return response()->json(['data' => trans('messages.setting_updated')], 200);
+
         }catch (\Exception $exception){
             $this->log->error($exception->getMessage());
-            return response()->json(['data'=>'Setting not updated'],406);
+            // return response()->json(['data'=>'Setting not updated'],406);
+            return response()->json(['data' => trans('messages.setting_not_updated')], 406);
         }
     }
 }
