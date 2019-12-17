@@ -430,6 +430,7 @@ export default {
 
     async deleteVendor() {
       await this.destroy(this.selectedVendor);
+      await this.destroyFirebase(this.selectedVendor);
     }
   },
 
