@@ -39,17 +39,17 @@ class AuditionFullResponse extends JsonResource
         $dataProduction = explode(',',$this->production);
         $appointment = $this->appointment()->latest()->first();
         $slotsData = new SlotsRepository(new Slots());
-        $slots = $slotsData->findbyparam('appointment_id',$appointment->id)->get();
+        $slots = $slotsData->findbyparam('appointment_id',$appointment["id"])->get();
 //        $location = isset($appointmentData->location) ? $appointment->location:'';
         $appoinmentResponse =  ['general' => $appointment, 'slots' => $slots];
         return [
             'id' => $this->id,
-            'appointment_id'=>$appointment->id,
+            'appointment_id'=>$appointment["id"],
             'title' => $this->title,
             'date' => $appointment->date ?? null,
             'time' => $appointment->time ?? null,
             'create'=>$this->created_at,
-            'location' =>json_decode($appointment->location),
+            'location' =>json_decode($appointment["location"]),
             'description' => $this->description,
             'url' => $this->url,
             'personal_information'=>$this->personal_information,
