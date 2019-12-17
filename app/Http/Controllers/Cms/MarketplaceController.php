@@ -46,7 +46,7 @@ class MarketplaceController extends Controller
     {
         if ($request->json())
         {
-            
+
             $marketplaceData = [
                 'title' => $request->title,
                 'address' => $request->address,
@@ -82,6 +82,7 @@ class MarketplaceController extends Controller
                     'services' => $request->services,
                     'email' => $request->email,
                     'marketplace_category_id' => $request->marketplace_category_id,
+                    'featured' => $request->featured,
                     'phone_number' => $request->phone_number
                 ];
 
