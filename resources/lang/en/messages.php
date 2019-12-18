@@ -48,7 +48,17 @@ return [
     'audition_banned' => 'Audition Banned',
     'you_already_registered' => 'You already registered',
     'audition_saved' => 'Audition Saved',
-
+    'group_not_creaed' => 'Group not Created',
+    'group_creaed' => 'Group Created',
+    'group_already_open' => 'Group is already Open',
+    'group_open' => 'Group is Open',
+    'group_close' => 'Group is Close',
+    'group_close_success' => 'Group Closed successfully',
+    'group_not_closed' => 'Group not Closed',
+    
+    'video_saved' => 'Video saved',
+    'video_not_saved' => 'Video not saved',
+    
     // Auditions Controller
     'contruibuitors_add' => 'Contruibuitors Add',
 
