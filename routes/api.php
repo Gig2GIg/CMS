@@ -57,7 +57,10 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);
     Route::get('/performers/contracts', ['uses' => 'PerformersController@getContracts']);
 
-
+   // ============== create group =========================
+   $router->post('/group', ['uses' => 'AuditionManagementController@createGroup']);
+   $router->get('/groupStatus/{appointment_id}', ['uses' => 'AuditionManagementController@checkGroupStatus']);
+   // ======================================================
     //final cast
     $router->post('finalcast', ['uses' => 'FinalCastController@add']);
     $router->get('finalcast/{audition_id}/audition', ['uses' => 'FinalCastController@list']);
@@ -97,7 +100,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     // =========================
     $router->get('/audition/{audition_id}/round/{round_id}/videos', ['uses' => 'AuditionVideosController@getVideos']);
     // =========================
-    
+
     //auditions BANNED
     $router->post('/auditions/banned', ['uses' => 'AuditionManagementController@bannedAuditionsFromCms']);
 
@@ -192,6 +195,8 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/upcoming/det/{id}', ['uses' => 'AuditionManagementController@getUpcomingDet']);
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
+ 
+
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);
     $router->get('/users/union/list', ['uses' => 'UserController@listMemberships']);
