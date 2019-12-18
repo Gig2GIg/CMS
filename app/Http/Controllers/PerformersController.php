@@ -40,12 +40,17 @@ class PerformersController extends Controller
             $repo = new PerformerRepository(new Performers());
             $data = $repo->findbyparam('uuid', $request->code)->first();
 
+            if (!$data) {
+                return response()->json(['data' => "This performer does not exist!"], 406);
+            }
+
             $count = $data->where('director_id',$this->getUserLogging())
                 ->where('performer_id',$data->performer_id);
 
             $this->log->info($data);
             if ($count->count() > 0) {
-                $message = 'This user exits in your data base';
+                $message = 'This user already exits in your data base';
+                return response()->json(['data' => $message], 406);
             } else {
                 $register = [
                     'performer_id' => $data->performer_id,
@@ -93,7 +98,7 @@ class PerformersController extends Controller
             $response = $this->notificator($dataReceiver, $data);
             if (!$response) {
                 throw new \Exception('Error to notification');
-            }            
+            }
             // return response()->json(['data' => 'Code share']);
             return response()->json(['data' => trans('messages.code_share')]);
         } catch (\Exception $exception) {
@@ -252,7 +257,7 @@ class PerformersController extends Controller
         try {
             $dataRepo = new TagsRepository(new Tags());
             $data = $dataRepo->findbyparam('setUser_id', $this->getUserLogging())->where('user_id', $request->user)->get();
-            
+
             // return response()->json(['message' => 'tags by user', 'data' => $data], 200);
             return response()->json(['message' => trans('messages.tag_by_user'), 'data' => $data], 200);
 
