@@ -14,7 +14,7 @@ class AddGroupNoToUserAuditionsTable extends Migration
     public function up()
     {
         Schema::table('user_auditions', function (Blueprint $table) {
-            $table->integer('group_no')->default(0);
+            $table->integer('group_no')->default(0)->after('type');
         });
     }
 
