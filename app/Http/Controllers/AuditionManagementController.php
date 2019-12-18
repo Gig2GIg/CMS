@@ -404,25 +404,57 @@ class AuditionManagementController extends Controller
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
             $toData = $videoRepo->findbyparam('slot_id', $request->slot_id);
-
             if ($toData->count() > 0) {
                 $dataResponse = ['data' => 'Video already saved'];
                 $code = 406;
             } else {
-                $data = $videoRepo->create([
-                    'name' => $request->name,
-                    'user_id' => $request->performer,
-                    'appointment_id' => $request->appointment_id,
-                    'url' => $request->url,
-                    'contributors_id' => $this->getUserLogging(),
-                    'slot_id' => $request->slot_id,
-                ]);
-                if (isset($data->id)) {
-                    $dataResponse = ['data' => 'Video saved'];
-                    $code = 200;
+                // ==============================
+                // insert batch in audition videos
+
+                $repo = new AppointmentRepository(new Appointments());
+                $apppointment_data = $repo->find($request->appointment_id);
+                if ($apppointment_data->is_group_open) {
+
+                    $user_ids_of_group_member = DB::table('user_auditions')
+                        // ->where('group_no', $apppointment_data->group_no)
+                        ->where('appointment_id', $request->appointment_id)
+                        ->pluck('user_id');
+
+                    $data_to_add = array();
+                    foreach ($user_ids_of_group_member as $user_id) {
+                        $data_to_add[] = array(
+                            'name' => $request->name,
+                            'user_id' => $user_id,
+                            'appointment_id' => $request->appointment_id,
+                            'url' => $request->url,
+                            'contributors_id' => $this->getUserLogging(),
+                            'slot_id' => $request->slot_id
+                        );
+                    }
+                    $data = AuditionVideos::insert($data_to_add);
+                    if ($data) {
+                        $dataResponse = ['data' => trans('messages.video_saved')];
+                        $code = 200;
+                    } else {
+                        $dataResponse = ['data' => trans('messages.video_not_saved')];
+                        $code = 406;
+                    }
                 } else {
-                    $dataResponse = ['data' => 'Video not saved'];
-                    $code = 406;
+                    $data = $videoRepo->create([
+                        'name' => $request->name,
+                        'user_id' => $request->performer,
+                        'appointment_id' => $request->appointment_id,
+                        'url' => $request->url,
+                        'contributors_id' => $this->getUserLogging(),
+                        'slot_id' => $request->slot_id,
+                    ]);
+                    if (isset($data->id)) {
+                        $dataResponse = ['data' => trans('messages.video_saved')];
+                        $code = 200;
+                    } else {
+                        $dataResponse = ['data' => trans('messages.video_not_saved')];
+                        $code = 406;
+                    }
                 }
             }
             return response()->json($dataResponse, $code);
@@ -868,6 +900,73 @@ class AuditionManagementController extends Controller
             $message = $exception->getMessage();
             $code = 406;
             return response()->json(['error' => $message], $code);
+        }
+    }
+
+    public function createGroup(Request $request)
+    {
+        try {
+            // Update Appointments
+            $repo = new AppointmentRepository(new Appointments());
+            $data = $repo->find($request->appointment_id);
+            if ($data->is_group_open) {
+                return response()->json(['message' => trans('messages.group_already_open'), 'data' => []], 409);
+            }
+            $group_no = $data->group_no + 1;
+            $update = $data->update([
+                "group_no" => $group_no,
+                'is_group_open' => 1
+            ]);
+            if ($update) {
+                // Update User Auditions
+                $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                $dataUserAuditions = $repoUserAuditions->all()->whereIn('user_id', $request->user_ids)
+                    ->where('appointment_id', $request->appointment_id);
+                if ($dataUserAuditions->count() > 0) {
+                    $dataUserAuditions->each(function ($element) use ($group_no) {
+                        $element->update(['group_no' => $group_no]);
+                    });
+                }
+                return response()->json(['message' => trans('messages.group_creaed'), 'data' => []], 200);
+            } else {
+                return response()->json(['message' => trans('messages.group_not_creaed'), 'data' => []], 400);
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.group_not_creaed'), 'data' => []], 400);
+        }
+    }
+
+    public function checkGroupStatus(Request $request)
+    {
+        try {
+            $repo = new AppointmentRepository(new Appointments());
+            $data = $repo->find($request->appointment_id);
+            if ($data->is_group_open) {
+                return response()->json(['message' => trans('messages.group_open'), 'data' => true], 200);
+            } else {
+                return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.data_not_found'), 'data' => false], 404);
+        }
+    }
+
+    public function closeGroup(Request $request)
+    {
+        try {
+            $repo = new AppointmentRepository(new Appointments());
+            $data = $repo->find($request->appointment_id);
+            $update = $data->update(['is_group_open' => 0]);
+            if ($update) {
+                return response()->json(['message' => trans('messages.group_close_success')], 200);
+            } else {
+                return response()->json(['message' => trans('messages.group_not_closed')], 400);
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.not_processable'), 'data' => false], 404);
         }
     }
 }

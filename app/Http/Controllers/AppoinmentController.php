@@ -54,7 +54,10 @@ class AppoinmentController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
-            $update = $data->update(['status' => $request->status]);
+            $update = $data->update([
+                'status' => $request->status,
+                'is_group_open' => 0
+            ]);
             if ($update) {
                 $repoFeeadback = Feedbacks::all()
                     ->where('appointment_id', $request->appointment_id)
