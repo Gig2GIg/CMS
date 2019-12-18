@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddGroupNoToAppointmentsTable extends Migration
+class AddAssignNoToUserAuditionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class AddGroupNoToAppointmentsTable extends Migration
      */
     public function up()
     {
-        Schema::table('appointments', function (Blueprint $table) {            
-            $table->integer('group_no')->default(0)->after('status');
-            $table->tinyInteger('is_group_open')->default(0)->after('group_no');
+        Schema::table('user_auditions', function (Blueprint $table) {
+            $table->integer('assign_no')->nullable()->after('group_no');
+            $table->integer('assign_no_by')->nullable()->after('assign_no');
         });
     }
 
@@ -26,7 +26,7 @@ class AddGroupNoToAppointmentsTable extends Migration
      */
     public function down()
     {
-        Schema::table('appointments', function (Blueprint $table) {
+        Schema::table('user_auditions', function (Blueprint $table) {
             //
         });
     }

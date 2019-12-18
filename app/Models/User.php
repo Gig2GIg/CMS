@@ -123,7 +123,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UserAparence::class);
     }
 
-
+    public function userAuditions(){
+        return $this->hasMany(UserAuditions::class);
+    }
 
 
 }
