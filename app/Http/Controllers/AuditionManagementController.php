@@ -188,8 +188,6 @@ class AuditionManagementController extends Controller
                 // ->where('appointments.status', 1)
                 ->get()->sortByDesc('created_at');
 
-            // print_r($data);
-            // die;
 
             // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
             // if ($dataAuditions->count() > 0) {
@@ -197,8 +195,7 @@ class AuditionManagementController extends Controller
             // } else {
             //     $dataResponse = ['data' => []];
             // }
-            // print_r($data);
-            // die;
+
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
@@ -379,12 +376,11 @@ class AuditionManagementController extends Controller
     public function getUserProfile(Request $request)
     {
         try {
+            // print_r($request->appointment_id);
             $userRepo = new UserRepository(new User());
             $data = $userRepo->find($request->id);
             if ($data) {
-
-
-                $dataResponse = ['data' => new ProfileResource($data)];
+                $dataResponse = ['data' => new ProfileResource($data, $request->appointment_id)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not Found Data'];
@@ -906,12 +902,27 @@ class AuditionManagementController extends Controller
     public function createGroup(Request $request)
     {
         try {
-            // Update Appointments
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
             if ($data->is_group_open) {
                 return response()->json(['message' => trans('messages.group_already_open'), 'data' => []], 409);
             }
+            // check if user has uploaded video before or not
+            $videoRepo = new AuditionVideos();
+            $videoData = $videoRepo->whereIn('user_id', $request->user_ids)
+                ->where('appointment_id', $request->appointment_id)
+                ->groupBy('user_id')
+                ->pluck('user_id');
+
+            if ($videoData->count() > 0) {
+                $userRepo = new UserDetailsRepository(new UserDetails());
+                $user_names = $userRepo->all()->whereIn('user_id', $videoData)->pluck('first_name')->toArray();
+                $names = implode(", ", $user_names);
+                return response()->json(['message' => trans('messages.user_already_uploaded_video', ['user' => $names]), 'data' => []], 409);
+                // return response()->json(['message' => trans('messages.already_uploaded_video'), 'data' => []], 409);
+            }
+            // Update Appointments
             $group_no = $data->group_no + 1;
             $update = $data->update([
                 "group_no" => $group_no,
@@ -958,6 +969,11 @@ class AuditionManagementController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
+            if (!$data->is_group_open) {
+                return response()->json(['message' => trans('messages.group_already_close')], 409);
+            }
+
             $update = $data->update(['is_group_open' => 0]);
             if ($update) {
                 return response()->json(['message' => trans('messages.group_close_success')], 200);
@@ -967,6 +983,47 @@ class AuditionManagementController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.not_processable'), 'data' => false], 404);
+        }
+    }
+
+    public function assignNumber(Request $request)
+    {
+        try {
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $dataUserAuditions = $repoUserAuditions->findbyparams([
+                'user_id' => $request->user_id,
+                'appointment_id' => $request->appointment_id
+            ]);
+
+            if ($dataUserAuditions->count() > 0) {
+                $userAuditionData = $dataUserAuditions->first();
+                if ($userAuditionData->assign_no != NULL) {
+                    return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
+                }
+
+                // Check if Number is unique or not
+                $list_of_numbers = $repoUserAuditions->all()->where('assign_no', $request->assign_no);
+                if ($list_of_numbers->count() > 0) {
+                    return response()->json(['message' => trans('messages.number_already_used'), 'data' => []], 409);
+                }
+
+                // Update User Auditions
+                $updateUserAudi = $dataUserAuditions->update([
+                    'assign_no' => $request->assign_no,
+                    'assign_no_by' => $this->getUserLogging()
+                ]);
+
+                if ($updateUserAudi) {
+                    return response()->json(['message' => trans('messages.assign_number_created'), 'data' => []], 200);
+                } else {
+                    return response()->json(['message' => trans('messages.server_error'), 'data' => []], 500);
+                }
+            } else {
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
         }
     }
 }
