@@ -198,7 +198,7 @@ class PostsController extends Controller
     {
         try {
             $repoPost = new PostsRepository(new Posts());
-            $posts = $repoPost->all()->where('type', 'forum');
+            $posts = $repoPost->all()->where('type', 'forum')->sortByDesc('created_at');
 
             if (count($posts) > 0) {
                 $dataResponse = ['data' => PostsResource::collection($posts)];
