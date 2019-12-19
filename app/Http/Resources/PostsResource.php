@@ -28,9 +28,9 @@ class PostsResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'body' => $this->body,
-            'avatar' => $avatar,
+            'avatar' => $avatar ?? "",
             'url_media' => $this->url_media,
-            'name' => $user->details->first_name,
+            'name' => $user->details->first_name ?? "",
             'time_ago' => $this->created_at->diffForHumans(),
             'search_to' => $this->search_to,
             'type' => $this->type

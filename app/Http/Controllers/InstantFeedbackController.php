@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Repositories\UserAuditionsRepository;
+use App\Models\UserAuditions;
 use App\Http\Controllers\Utils\LogManger;
 use App\Models\InstantFeedback;
 use App\Http\Repositories\InstantFeedbackRepository;
@@ -12,6 +14,9 @@ use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
+use App\Models\InstantFeedbackSettings;
+
+
 
 class InstantFeedbackController extends Controller
 {
@@ -37,7 +42,6 @@ class InstantFeedbackController extends Controller
             $data = $repo->create($data);
             if ($data->id) {
 
-                // send notification
                 $userRepo = new UserRepository(new User());
                 $user = $userRepo->find($request->user);
 
@@ -47,6 +51,24 @@ class InstantFeedbackController extends Controller
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
+                if ($request->accepted == 0) {
+                    // remove that performer from group
+                    $updateappoinmentData = $appoinmentData->update(['group_no' => 0]);
+
+                    $userAuditions = new UserAuditionsRepository(new UserAuditions());
+                    $dataAuditions = $userAuditions->findbyparams([
+                        'user_id' => $request->user,
+                        'appointment_id' => $request->appointment_id,
+                    ]);
+
+                    $updateAuditionsData = $dataAuditions->update(['group_no' => 0]);
+
+                    if (!$updateAuditionsData && !$updateappoinmentData) {
+                        return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
+                    }
+                }
+
+                // send notification
                 $this->sendStoreNotificationToUser($user, $audition);
                 $this->saveStoreNotificationToUser($user, $audition);
 
@@ -81,6 +103,37 @@ class InstantFeedbackController extends Controller
     }
 
 
+    // public function updatDefaultInstantFeedback(Request $request)
+    // {
+    //     if (!is_null($request->feedback)) {
+    //         $instant_feedback_settings = new InstantFeedbackSettings();
+
+    //         $data = $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
+    //         if (empty($data)) {
+    //             // add
+    //             echo "add";
+    //             $data = [
+    //                 'comment' => $request->feedback,
+    //                 'user_id' => $this->getUserLogging()
+    //             ];
+
+    //             $feedbackUpdated = $instant_feedback_settings->insert($data);
+    //             $repo = new InstantFeedbackRepository(new InstantFeedback());
+    //             $data = $repo->create($data);
+    //         } else {
+    //             echo "update";
+    //             // update
+    //             $update_feedback = $instant_feedback_settings
+    //                 ->update(['comment', $request->feedback])
+    //                 ->where('user_id', $this->getUserLogging())
+    //                 ->get();
+    //         }
+
+    //         return response()->json(['data' => $data], 200);
+    //     } else {
+    //         return response()->json(['data' => trans('messages.data_not_found')], 404);
+    //     }
+    // }
 
     public function instantFeedbackDetailsCaster(Request $request)
     {
@@ -130,8 +183,6 @@ class InstantFeedbackController extends Controller
     }
 
 
-
-
     public function saveStoreNotificationToUser($user, $audition): void
     {
         try {
@@ -148,6 +199,7 @@ class InstantFeedbackController extends Controller
             $this->log->error($exception->getMessage());
         }
     }
+
 
     public function sendStoreNotificationToUser($user, $audition): void
     {
