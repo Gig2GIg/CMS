@@ -73,6 +73,7 @@ class UserAuditionsResource extends JsonResource
             'comment' => $feedback_comment['comment'],
             'status' => $dataRepo->status,
             // 'favorite' => $favorite->favorite,
+            'assign_no' => $this->assign_no,           
             // ===========================
         ];
         return $return;
