@@ -124,6 +124,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     // =====================================================
     // instant feedback
     $router->post('/instantfeedbacks/add', ['uses' => 'InstantFeedbackController@store']);
+    $router->post('/instantfeedbacks/changeDefault', ['uses' => 'InstantFeedbackController@updatDefaultInstantFeedback']);
 
     // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces', ['uses' => 'RecommendationsController@store']);

@@ -144,7 +144,7 @@ class Notifications
                                 ->to([$user_result->pushkey])
                                 ->notification([
                                     'title' => $title,
-                                    'body' => $message,
+                                    'body' => $tomsg,
                                 ])
                                 ->send();
                         });
@@ -165,7 +165,7 @@ class Notifications
                                 ->to([$user_result->pushkey])
                                 ->notification([
                                     'title' => $title,
-                                    'body' => $message,
+                                    'body' => $tomsg,
                                 ])
                                 ->send();
                         });
