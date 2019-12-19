@@ -140,22 +140,13 @@ class AuditionManagementController extends Controller
             // $dataAuditions = $data->sortByDesc('created_at');
             // // $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
 
-            // $dataAuditions = DB::table('user_auditions')
-            //     ->select('user_auditions.id', 'user_auditions.user_id', 'user_auditions.appointment_id', 'user_auditions.rol_id', 'user_auditions.slot_id', 'user_auditions.type', 'user_auditions.created_at', 'user_auditions.updated_at', 'appointments.status')
-            //     ->Join('appointments', 'appointments.id', '=', 'user_auditions.appointment_id')
-            //     ->where('user_id', $this->getUserLogging())
-            //     ->where('appointments.status', 1)
-            //     ->get()->sortByDesc('created_at');
-
-
             $dataAuditions = DB::table('appointments')
                 // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
-                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at')
+                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at','UA.assign_no')
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
                 ->get()->sortByDesc('created_at');
-
 
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
