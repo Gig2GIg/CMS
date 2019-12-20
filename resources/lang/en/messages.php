@@ -120,7 +120,7 @@ return [
     // Users Settying controller
     'setting_updated' => 'Setting Updated',
     'setting_not_updated' => 'Setting Not Updated',
-    
+
 
 
 

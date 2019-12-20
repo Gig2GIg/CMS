@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 
 class MarketplaceCategoriesController extends Controller
 {
- 
+
     protected $model;
     protected $log;
 
@@ -77,8 +77,5 @@ class MarketplaceCategoriesController extends Controller
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => "Not found Data"], 404);
         }
-
     }
 }
-
- 

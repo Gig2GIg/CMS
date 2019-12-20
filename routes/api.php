@@ -168,7 +168,6 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->get('blog/posts', ['uses' => 'PostsController@list']);
     $router->get('blog/posts/find_by_title', ['uses' => 'PostsController@search_post_by_title']);
 
-    
     $router->get('blog/posts/order_by', ['uses' => 'PostsController@sort_post_by_param_to_director']);
 
     //BLOG-POST-COMMENTS
@@ -207,7 +206,6 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/upcoming/det/{id}', ['uses' => 'AuditionManagementController@getUpcomingDet']);
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
-
 
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);
