@@ -59,7 +59,7 @@ class AuditionVideosController extends Controller
             /**
              * TODO:
              * Handle an empty array
-             * This can be handeled if we use froup by in query
+             * This can be improved if we can use group by in query
              */
             $result = array();
             $added_user_ids = array();

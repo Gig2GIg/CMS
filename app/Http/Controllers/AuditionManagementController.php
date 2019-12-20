@@ -952,16 +952,13 @@ class AuditionManagementController extends Controller
     {
         try {
             $repo = new AppointmentRepository(new Appointments());
-            $data = $repo->find($request->appointment_id);
+            $data = $repo->findbyparams(['id' => $request->appointment_id, 'is_group_open' => 1]);
 
-            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
-            $groupUserIds = $repoUserAuditions->getByParam('group_no', $data->group_no)->pluck('user_id');
+            if ($data->count() == 0) {
+                return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
+            }
 
-            $userRepo = new UserDetailsRepository(new UserDetails());
-
-            //    $user_data = DB::table('user_details')->whereIn('user_id', $groupUserIds)->get();
-
-            $user_data = DB::table('user_details AS UD')
+            $user_data = DB::table('user_auditions AS UA')
                 ->select(
                     'UD.id',
                     'UD.first_name',
@@ -977,19 +974,22 @@ class AuditionManagementController extends Controller
                     'UA.assign_no_by',
                     'UA.slot_id',
                     'UA.rol_id',
-                    'UA.appointment_id'
+                    'UA.appointment_id',
+                    'R.url AS image'
                 )
-                ->Join('user_auditions AS UA', 'UD.user_id', '=', 'UA.user_id')
-                ->whereIn('UD.user_id', $groupUserIds)
-                ->where('UA.group_no', $data->group_no)
+                ->Join('user_details AS UD', 'UD.user_id', '=', 'UA.user_id')
+                ->leftJoin('resources AS R', 'R.resource_id', '=', 'UA.user_id')
+                ->Join('appointments AS A', function ($join) {
+                    $join->on('A.id', '=', 'UA.appointment_id')
+                        ->on('A.group_no', '=', 'UA.group_no');
+                })
+                ->where('A.is_group_open', 1)
+                ->where('appointment_id', $request->appointment_id)
+                ->where('R.type', 'cover')
+                ->where('R.resource_type', '=', 'App\Models\User')
                 ->get();
 
-
-            if ($data->is_group_open) {
-                return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
-            } else {
-                return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
-            }
+            return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => false], 404);

@@ -206,10 +206,6 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/upcoming/det/{id}', ['uses' => 'AuditionManagementController@getUpcomingDet']);
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/develop
 
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);
