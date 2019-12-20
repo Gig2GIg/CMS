@@ -37,7 +37,9 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/appointments/auditions', ['uses' => 'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}', ['uses' => 'AppoinmentAuditionsController@show']);
 
-
+    // =============== assignNumber ========================
+    $router->post('/assignNumber', ['uses' => 'AuditionManagementController@assignNumber']);
+    // =======================================
     $router->get('/appointments/show/{id}/walk', ['uses' => 'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk', ['uses' => 'AppoinmentAuditionsController@showListNotWalk']);
     //monitor update
@@ -57,10 +59,12 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);
     Route::get('/performers/contracts', ['uses' => 'PerformersController@getContracts']);
 
-   // ============== create group =========================
-   $router->post('/group', ['uses' => 'AuditionManagementController@createGroup']);
-   $router->get('/groupStatus/{appointment_id}', ['uses' => 'AuditionManagementController@checkGroupStatus']);
-   // ======================================================
+    // ============== create group =========================
+    $router->post('/group', ['uses' => 'AuditionManagementController@createGroup']);
+    $router->get('/group/status/{appointment_id}', ['uses' => 'AuditionManagementController@checkGroupStatus']);
+    $router->get('/group/close/{appointment_id}', ['uses' => 'AuditionManagementController@closeGroup']);
+
+    // ======================================================
     //final cast
     $router->post('finalcast', ['uses' => 'FinalCastController@add']);
     $router->get('finalcast/{audition_id}/audition', ['uses' => 'FinalCastController@list']);
@@ -83,7 +87,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->post('/auditions/create', ['uses' => 'AuditionsController@store']);
     $router->get('/auditions/upcoming', ['uses' => 'AuditionManagementController@getUpcomingMangement']);
     $router->get('/auditions/passed', ['uses' => 'AuditionManagementController@getPassedMangement']);
-    $router->get('/auditions/profile/user/{id}', ['uses' => 'AuditionManagementController@getUserProfile']);
+    $router->get('/auditions/profile/user/{id}/appointment/{appointment_id}', ['uses' => 'AuditionManagementController@getUserProfile']);
     $router->put('/auditions/update/{id}', ['uses' => 'AuditionsController@update']);
     $router->put('/auditions/open/{id}', ['uses' => 'AuditionManagementController@openAudition']);
     $router->put('/auditions/close/{id}', ['uses' => 'AuditionManagementController@closeAudition']);
@@ -98,6 +102,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->put('auditions/appointments/{id}/slots', ['uses' => 'AuditionManagementController@reorderAppointmentTimes']);
     $router->post('auditions/{id}/contributors', ['uses' => 'AuditionsController@addContruibuitor']);
     // =========================
+    $router->get('auditions/find_by_title', ['uses' => 'InstantFeedbackController@search_with_upcoming_audition']);
     $router->get('/audition/{audition_id}/round/{round_id}/videos', ['uses' => 'AuditionVideosController@getVideos']);
     // =========================
 
@@ -116,6 +121,10 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->put('/auditions/{id}/feedbacks/update', ['uses' => 'FeedBackController@update']);
 
     $router->get('/feedbacks/list', ['uses' => 'FeedBackController@list']);
+    // =====================================================
+    // instant feedback
+    $router->post('/instantfeedbacks/add', ['uses' => 'InstantFeedbackController@store']);
+    $router->post('/instantfeedbacks/changeDefault', ['uses' => 'InstantFeedbackController@updatDefaultInstantFeedback']);
 
     // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces', ['uses' => 'RecommendationsController@store']);
@@ -125,6 +134,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
 
     // AUDITIONS FEEDBACK
     $router->get('/auditions/{id}/feedbacks/details', ['uses' => 'FeedBackController@feedbackDetailsByUser']);
+    $router->get('/auditions/{id}/instantfeedbacks/details', ['uses' => 'InstantFeedbackController@instantFeedbackDetailsCaster']);
 
     // TAGS
     $router->post('auditions/feedbacks/tags', ['uses' => 'TagsController@store']);
@@ -157,6 +167,8 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->delete('blog/posts/{id}/delete', ['uses' => 'PostsController@delete']);
     $router->get('blog/posts', ['uses' => 'PostsController@list']);
     $router->get('blog/posts/find_by_title', ['uses' => 'PostsController@search_post_by_title']);
+
+
     $router->get('blog/posts/order_by', ['uses' => 'PostsController@sort_post_by_param_to_director']);
 
     //BLOG-POST-COMMENTS
@@ -195,7 +207,6 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/upcoming/det/{id}', ['uses' => 'AuditionManagementController@getUpcomingDet']);
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
- 
 
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);
@@ -210,6 +221,9 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/credits/show/{id}', ['uses' => 'CreditsController@show']);
     $router->put('/credits/update/{id}', ['uses' => 'CreditsController@update']);
     $router->delete('/credits/delete/{id}', ['uses' => 'CreditsController@delete']);
+
+    // instant feedback===================
+    $router->get('/auditions/{id}/instantfeedbacks/details', ['uses' => 'InstantFeedbackController@instantFeedbackDetailsPerformer']);
 
     //skills
     $router->get('/skills/byuser', ['uses' => 'SkillsController@byUser']);

@@ -24,7 +24,6 @@ class AuditionVideosRepository implements IAuditionVideosRepository
         $this->log = new LogManger();
     }
 
-
     public function create(array $data): AuditionVideos
     {
 
@@ -38,7 +37,6 @@ class AuditionVideosRepository implements IAuditionVideosRepository
         }
     }
 
-
     public function find($id): AuditionVideos
     {
         try {
@@ -47,9 +45,7 @@ class AuditionVideosRepository implements IAuditionVideosRepository
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
-
     }
-
 
     public function findbyparam($colum, $value)
     {
@@ -60,12 +56,15 @@ class AuditionVideosRepository implements IAuditionVideosRepository
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
-
     }
+
     public function delete(): ?bool
     {
         return $this->model->delete();
     }
 
-
+    public function all()
+    {
+        return $this->model->all();
+    }
 }

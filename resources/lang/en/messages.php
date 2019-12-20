@@ -22,6 +22,8 @@ return [
     'unprocesable_entity' => 'Unprocesable Entity',
     'data_not_update' => 'Data Not Update',
     'unauthorized' => 'Unauthorized',
+    'server_error' => 'Server Error',
+    'something_went_wrong' => 'Something went Wrong',
 
     // Feedback Controller
     'feedback_not_add' => 'Feedback not add',
@@ -50,15 +52,21 @@ return [
     'audition_saved' => 'Audition Saved',
     'group_not_creaed' => 'Group not Created',
     'group_creaed' => 'Group Created',
-    'group_already_open' => 'Group is already Open',
+    'group_already_open' => 'Group already Open',
+    'group_already_close' => 'Group already Closed',
     'group_open' => 'Group is Open',
     'group_close' => 'Group is Close',
     'group_close_success' => 'Group Closed successfully',
     'group_not_closed' => 'Group not Closed',
-    
     'video_saved' => 'Video saved',
     'video_not_saved' => 'Video not saved',
-    
+    'user_already_uploaded_video' => 'User :user, have already uploaded Video',
+    'already_uploaded_video' => 'User already uploaded Video',
+    'assign_number_created' => 'Assign number Created Successfully',
+    'assign_number_not_created' => 'Failed to Create Assign Number',
+    'number_already_assigned' => 'Number Already Assigned',
+    'number_already_used' => 'Number already Used, Change the number',
+
     // Auditions Controller
     'contruibuitors_add' => 'Contruibuitors Add',
 
@@ -72,6 +80,9 @@ return [
     'date_range_is_occupied' => "Date range is occupied",
     'error_process_event' => 'Error process event',
 
+
+    // Feedback
+    'feedback_save_success' => 'Feedback saved successfully',
     // Final Cast Controller 
     'fail_to_add_performer' => 'fail to add performer',
     'add_performer_to_final_cast' => 'Add performer to final cast',
@@ -101,17 +112,15 @@ return [
     'comment_by_user' => 'Comment by User',
     'contracts_by_user' => 'contracts by user',
 
-
     // UserController
     'user_deleted' => 'User Deleted',
     'email_not_found' => 'Email not Found',
     'unions_update' => 'Unions Update',
 
-
     // Users Settying controller
     'setting_updated' => 'Setting Updated',
     'setting_not_updated' => 'Setting Not Updated',
-    
+
 
 
 

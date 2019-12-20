@@ -83,7 +83,8 @@ class MarketplaceRepository implements IMarketplaceRepository
 
     public function all()
     {
-      return $this->model->all();
+        return $this->model->all();
+        
     }
 
     public function search_by_title($search)

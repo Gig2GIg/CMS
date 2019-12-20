@@ -107,4 +107,14 @@ class AppointmentRepository implements IAppointmentRepository
     {
         return $this->model->all();
     }
+
+
+    // public function search_by_audition_name($search)
+    // {
+    //    $result =  $this->model->where('title', 'LIKE', "%{$search}%")
+    //                 ->orderBy('title', 'desc')->get();
+
+    //    return  $result;
+    // }
+
 }

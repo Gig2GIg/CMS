@@ -87,7 +87,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $this->pushNotifications(
-                'You have been added to the audition ' . $audition->title,
+                'You have been added to upcoming audition ' . $audition->title,
                 $user
             );
         } catch (NotFoundException $exception) {
@@ -140,22 +140,13 @@ class AuditionManagementController extends Controller
             // $dataAuditions = $data->sortByDesc('created_at');
             // // $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
 
-            // $dataAuditions = DB::table('user_auditions')
-            //     ->select('user_auditions.id', 'user_auditions.user_id', 'user_auditions.appointment_id', 'user_auditions.rol_id', 'user_auditions.slot_id', 'user_auditions.type', 'user_auditions.created_at', 'user_auditions.updated_at', 'appointments.status')
-            //     ->Join('appointments', 'appointments.id', '=', 'user_auditions.appointment_id')
-            //     ->where('user_id', $this->getUserLogging())
-            //     ->where('appointments.status', 1)
-            //     ->get()->sortByDesc('created_at');
-
-
             $dataAuditions = DB::table('appointments')
                 // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
-                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at')
+                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'UA.assign_no')
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
                 ->get()->sortByDesc('created_at');
-
 
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
@@ -179,7 +170,7 @@ class AuditionManagementController extends Controller
             // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
             $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
                 ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
@@ -188,8 +179,6 @@ class AuditionManagementController extends Controller
                 // ->where('appointments.status', 1)
                 ->get()->sortByDesc('created_at');
 
-            // print_r($data);
-            // die;
 
             // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
             // if ($dataAuditions->count() > 0) {
@@ -197,8 +186,16 @@ class AuditionManagementController extends Controller
             // } else {
             //     $dataResponse = ['data' => []];
             // }
-            // print_r($data);
-            // die;
+
+            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+
+            // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
+            // if ($dataAuditions->count() > 0) {
+            //     $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
+            // } else {
+            //     $dataResponse = ['data' => []];
+            // }
+
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
@@ -379,12 +376,11 @@ class AuditionManagementController extends Controller
     public function getUserProfile(Request $request)
     {
         try {
+            // print_r($request->appointment_id);
             $userRepo = new UserRepository(new User());
             $data = $userRepo->find($request->id);
             if ($data) {
-
-
-                $dataResponse = ['data' => new ProfileResource($data)];
+                $dataResponse = ['data' => new ProfileResource($data, $request->appointment_id)];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not Found Data'];
@@ -416,7 +412,7 @@ class AuditionManagementController extends Controller
                 if ($apppointment_data->is_group_open) {
 
                     $user_ids_of_group_member = DB::table('user_auditions')
-                        // ->where('group_no', $apppointment_data->group_no)
+                        ->where('group_no', $apppointment_data->group_no)
                         ->where('appointment_id', $request->appointment_id)
                         ->pluck('user_id');
 
@@ -906,12 +902,27 @@ class AuditionManagementController extends Controller
     public function createGroup(Request $request)
     {
         try {
-            // Update Appointments
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
             if ($data->is_group_open) {
                 return response()->json(['message' => trans('messages.group_already_open'), 'data' => []], 409);
             }
+            // check if user has uploaded video before or not
+            $videoRepo = new AuditionVideos();
+            $videoData = $videoRepo->whereIn('user_id', $request->user_ids)
+                ->where('appointment_id', $request->appointment_id)
+                ->groupBy('user_id')
+                ->pluck('user_id');
+
+            if ($videoData->count() > 0) {
+                $userRepo = new UserDetailsRepository(new UserDetails());
+                $user_names = $userRepo->all()->whereIn('user_id', $videoData)->pluck('first_name')->toArray();
+                $names = implode(", ", $user_names);
+                return response()->json(['message' => trans('messages.user_already_uploaded_video', ['user' => $names]), 'data' => []], 409);
+                // return response()->json(['message' => trans('messages.already_uploaded_video'), 'data' => []], 409);
+            }
+            // Update Appointments
             $group_no = $data->group_no + 1;
             $update = $data->update([
                 "group_no" => $group_no,
@@ -942,8 +953,40 @@ class AuditionManagementController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $groupUserIds = $repoUserAuditions->getByParam('group_no', $data->group_no)->pluck('user_id');
+
+            $userRepo = new UserDetailsRepository(new UserDetails());
+
+            //    $user_data = DB::table('user_details')->whereIn('user_id', $groupUserIds)->get();
+
+            $user_data = DB::table('user_details AS UD')
+                ->select(
+                    'UD.id',
+                    'UD.first_name',
+                    'UD.last_name',
+                    'UD.url',
+                    'UD.address',
+                    'UD.city',
+                    'UD.state',
+                    'UD.birth',
+                    'UD.user_id',
+                    'UA.group_no',
+                    'UA.assign_no',
+                    'UA.assign_no_by',
+                    'UA.slot_id',
+                    'UA.rol_id',
+                    'UA.appointment_id'
+                )
+                ->Join('user_auditions AS UA', 'UD.user_id', '=', 'UA.user_id')
+                ->whereIn('UD.user_id', $groupUserIds)
+                ->where('UA.group_no', $data->group_no)
+                ->get();
+
+
             if ($data->is_group_open) {
-                return response()->json(['message' => trans('messages.group_open'), 'data' => true], 200);
+                return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
             } else {
                 return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
             }
@@ -958,6 +1001,11 @@ class AuditionManagementController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
+            if (!$data->is_group_open) {
+                return response()->json(['message' => trans('messages.group_already_close')], 409);
+            }
+
             $update = $data->update(['is_group_open' => 0]);
             if ($update) {
                 return response()->json(['message' => trans('messages.group_close_success')], 200);
@@ -967,6 +1015,47 @@ class AuditionManagementController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.not_processable'), 'data' => false], 404);
+        }
+    }
+
+    public function assignNumber(Request $request)
+    {
+        try {
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $dataUserAuditions = $repoUserAuditions->findbyparams([
+                'user_id' => $request->user_id,
+                'appointment_id' => $request->appointment_id
+            ]);
+
+            if ($dataUserAuditions->count() > 0) {
+                $userAuditionData = $dataUserAuditions->first();
+                if ($userAuditionData->assign_no != NULL) {
+                    return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
+                }
+
+                // Check if Number is unique or not
+                $list_of_numbers = $repoUserAuditions->all()->where('assign_no', $request->assign_no);
+                if ($list_of_numbers->count() > 0) {
+                    return response()->json(['message' => trans('messages.number_already_used'), 'data' => []], 409);
+                }
+
+                // Update User Auditions
+                $updateUserAudi = $dataUserAuditions->update([
+                    'assign_no' => $request->assign_no,
+                    'assign_no_by' => $this->getUserLogging()
+                ]);
+
+                if ($updateUserAudi) {
+                    return response()->json(['message' => trans('messages.assign_number_created'), 'data' => []], 200);
+                } else {
+                    return response()->json(['message' => trans('messages.server_error'), 'data' => []], 500);
+                }
+            } else {
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
         }
     }
 }
