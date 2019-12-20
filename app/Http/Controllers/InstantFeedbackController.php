@@ -15,8 +15,8 @@ use App\Models\User;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Models\InstantFeedbackSettings;
-
-
+use stdClass;
+use Illuminate\Support\Facades\DB;
 
 class InstantFeedbackController extends Controller
 {
@@ -164,18 +164,34 @@ class InstantFeedbackController extends Controller
         try {
             $repoFeedback = new InstantFeedbackRepository(new InstantFeedback());
 
+            $data = new stdClass();
             $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
                 ->where('user_id', '=', $request->user_id)->first();
+            
+            $appointmentRepo = new AppointmentRepository(new Appointments());
+            $appoinmentData = $appointmentRepo->find($request->id);
+
+            $auditionsRepo = new AuditionRepository(new Auditions());
+            $auditionData = $auditionsRepo->find($appoinmentData->auditions_id);
+
+            $data->feedback = $feedbacks;
+            $data->appoinment = $appoinmentData;
+            $data->audition = $auditionData;
+
+            // $dataResponse = ['data' => UserAuditionsResource::collection($data)];
+
+
 
             if ($feedbacks == NULL) {
                 throw new \Exception('Data not found');
             }
 
-            $dataResponse = ['data' => $feedbacks];
+            $dataResponse = ['data' => $data];
             $code = 200;
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
