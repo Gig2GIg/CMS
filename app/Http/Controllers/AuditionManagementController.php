@@ -166,7 +166,7 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
             // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
             $data = DB::table('appointments')
