@@ -87,7 +87,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $this->pushNotifications(
-                'You have been added to the audition ' . $audition->title,
+                'You have been added to upcoming audition ' . $audition->title,
                 $user
             );
         } catch (NotFoundException $exception) {
@@ -187,12 +187,21 @@ class AuditionManagementController extends Controller
             //     $dataResponse = ['data' => []];
             // }
 
+            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+
+            // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
+            // if ($dataAuditions->count() > 0) {
+            //     $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
+            // } else {
+            //     $dataResponse = ['data' => []];
+            // }
+
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
                 $dataResponse = ['data' => []];
             }
-
+            
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());

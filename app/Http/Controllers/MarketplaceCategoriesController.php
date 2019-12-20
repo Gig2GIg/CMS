@@ -9,19 +9,27 @@ use App\Http\Repositories\ResourcesRepository;
 use App\Models\Marketplace;
 use App\Models\MarketplaceCategory;
 use App\Http\Resources\Cms\MarketplaceCategoryResource;
+use App\Http\Resources\Cms\MarketplaceResource;
 use App\Http\Requests\Marketplace\MarketplaceCategoryRequest;
 use App\Http\Exceptions\NotFoundException;
-
+use App\Http\Controllers\Utils\LogManger;
 use App\Models\Resources;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
 class MarketplaceCategoriesController extends Controller
 {
-    public function __construct()
+ 
+    protected $model;
+    protected $log;
+
+    public function __construct(MarketplaceCategory $makerplace_category)
     {
         $this->middleware('jwt');
+        $this->model = $makerplace_category;
+        $this->log = new LogManger();
     }
+
 
     public function getAll()
     {
@@ -69,5 +77,8 @@ class MarketplaceCategoriesController extends Controller
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => "Not found Data"], 404);
         }
+
     }
 }
+
+ 
