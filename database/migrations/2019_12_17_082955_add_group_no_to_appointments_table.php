@@ -13,8 +13,8 @@ class AddGroupNoToAppointmentsTable extends Migration
      */
     public function up()
     {
-        Schema::table('appointments', function (Blueprint $table) {            
-            $table->integer('group_no')->default(0)->after('status');
+        Schema::table('appointments', function (Blueprint $table) {
+            $table->integer('group_no')->default(0)->after('auditions_id');
             $table->tinyInteger('is_group_open')->default(0)->after('group_no');
         });
     }
