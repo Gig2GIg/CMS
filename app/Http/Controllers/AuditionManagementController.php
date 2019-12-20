@@ -170,7 +170,7 @@ class AuditionManagementController extends Controller
             // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
             $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status','UA.assign_no')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
                 ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
@@ -403,7 +403,7 @@ class AuditionManagementController extends Controller
                 if ($apppointment_data->is_group_open) {
 
                     $user_ids_of_group_member = DB::table('user_auditions')
-                        // ->where('group_no', $apppointment_data->group_no)
+                        ->where('group_no', $apppointment_data->group_no)
                         ->where('appointment_id', $request->appointment_id)
                         ->pluck('user_id');
 
@@ -950,7 +950,31 @@ class AuditionManagementController extends Controller
 
             $userRepo = new UserDetailsRepository(new UserDetails());
 
-           $user_data = DB::table('user_details')->whereIn('user_id', $groupUserIds)->get();
+            //    $user_data = DB::table('user_details')->whereIn('user_id', $groupUserIds)->get();
+
+            $user_data = DB::table('user_details AS UD')
+                ->select(
+                    'UD.id',
+                    'UD.first_name',
+                    'UD.last_name',
+                    'UD.url',
+                    'UD.address',
+                    'UD.city',
+                    'UD.state',
+                    'UD.birth',
+                    'UD.user_id',
+                    'UA.group_no',
+                    'UA.assign_no',
+                    'UA.assign_no_by',
+                    'UA.slot_id',
+                    'UA.rol_id',
+                    'UA.appointment_id'
+                )
+                ->Join('user_auditions AS UA', 'UD.user_id', '=', 'UA.user_id')
+                ->whereIn('UD.user_id', $groupUserIds)
+                ->where('UA.group_no', $data->group_no)
+                ->get();
+
 
             if ($data->is_group_open) {
                 return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
