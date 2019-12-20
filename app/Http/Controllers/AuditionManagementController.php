@@ -142,7 +142,7 @@ class AuditionManagementController extends Controller
 
             $dataAuditions = DB::table('appointments')
                 // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
-                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at','UA.assign_no')
+                ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'UA.assign_no')
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
@@ -170,7 +170,7 @@ class AuditionManagementController extends Controller
             // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
 
             $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status','UA.assign_no')
                 ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
@@ -944,8 +944,16 @@ class AuditionManagementController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $groupUserIds = $repoUserAuditions->getByParam('group_no', $data->group_no)->pluck('user_id');
+
+            $userRepo = new UserDetailsRepository(new UserDetails());
+
+           $user_data = DB::table('user_details')->whereIn('user_id', $groupUserIds)->get();
+
             if ($data->is_group_open) {
-                return response()->json(['message' => trans('messages.group_open'), 'data' => true], 200);
+                return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
             } else {
                 return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
             }
