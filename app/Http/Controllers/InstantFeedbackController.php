@@ -69,9 +69,9 @@ class InstantFeedbackController extends Controller
                             ->update(['group_no' => 0]);
                     }
 
-                    if (!$updateAuditionsData) {
-                        return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
-                    }
+                    // if (!$updateAuditionsData) {
+                    //     return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
+                    // }
                 }
 
                 // send notification
