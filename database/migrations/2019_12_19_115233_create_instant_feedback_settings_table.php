@@ -20,6 +20,7 @@ class CreateInstantFeedbackSettingsTable extends Migration
             $table->unique(['user_id']);
             $table->timestamps();
         });
+        
     }
 
     /**

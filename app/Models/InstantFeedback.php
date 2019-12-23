@@ -10,6 +10,7 @@ class InstantFeedback extends Model
         'appointment_id',
         'user_id',
         'evaluator_id',
-        'comment'
+        'comment',
+        'suggested_appointment_id'
     ];
 }

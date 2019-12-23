@@ -17,6 +17,7 @@ class AddSuggestedAuditionToInstantFeedbackTable extends Migration
                 $table->integer('suggested_appointment_id')->unsigned();
                 $table->unique(['appointment_id']);
         });
+        
     }
 
     /**
