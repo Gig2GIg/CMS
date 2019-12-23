@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -102,6 +102,11 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->put('/auditions/document/shareable/{id}', ['uses' => 'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots', ['uses' => 'AuditionManagementController@reorderAppointmentTimes']);
     $router->post('auditions/{id}/contributors', ['uses' => 'AuditionsController@addContruibuitor']);
+
+    /// Telent Database Get Auditions by performer and video list
+    $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);
+    $router->get('/auditions/video/list/{audition_id}/performer/{performer_id}', ['uses' => 'AuditionManagementController@listVideosByAudition']);
+
     // =========================
     $router->get('auditions/find_by_title', ['uses' => 'InstantFeedbackController@search_with_upcoming_audition']);
     $router->get('/audition/{audition_id}/round/{round_id}/videos', ['uses' => 'AuditionVideosController@getVideos']);
@@ -109,7 +114,6 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
 
     //auditions BANNED
     $router->post('/auditions/banned', ['uses' => 'AuditionManagementController@bannedAuditionsFromCms']);
-
 
     //calendar routes
     $router->get('/user/{id}/calendar', ['uses' => 'CalendarController@getAll']);
@@ -273,7 +277,6 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->put('/notification-send-pushkey', 'NotificationsController@update');
     $router->delete('/notification-history/delete/{id}', ['uses' => 'NotificationsController@delete']);
 
-
     // CONTENT SETTING
     $router->get('/content-settings', 'ContentSettingController@getAllContentSetting');
 
@@ -323,13 +326,11 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->post('marketplace-featured-listing/create', ['uses' => 'MarketplaceFeaturedListingController@store']);
 });
 
-
-
 /*
 |--------------------------------------------------------------------------
 | CMS Routes
 |--------------------------------------------------------------------------
-*/
+ */
 
 Route::prefix('admin')->namespace('Admin')->group(function () {
     Auth::routes(['register' => false]);
@@ -337,7 +338,7 @@ Route::prefix('admin')->namespace('Admin')->group(function () {
 });
 
 $router->group(['middleware' => ['auth:admin']], function () use ($router) {
-    Route::namespace('Cms')->prefix('cms')->group(function () use ($router) {
+    Route::namespace ('Cms')->prefix('cms')->group(function () use ($router) {
         //marketplace categories
         $router->get('/marketplace_categories', 'MarketplaceCategoriesController@getAll');
 

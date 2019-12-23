@@ -27,6 +27,7 @@ use App\Http\Resources\AuditionVideosResource;
 use App\Http\Resources\ContractResponse;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
+use App\Http\Resources\AuditionListByPerformer;
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
@@ -1057,5 +1058,70 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
         }
+    }
+
+    /// Telent Database Get Auditions by performer and video list
+    public function getAuditionListByPerformer(Request $request)
+    {
+        try {
+            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            $data = $userAuditions->getByParam('user_id', $request->id)->sortByDesc('created_at');
+            $dataAuditions = $data->where('type', '!=', '0')->sortByDesc('created_at');
+
+            $Auditions = new Collection();
+            $dataAuditions->each(function ($item) use ($Auditions) {
+                $repoAppoinmets = new AppointmentRepository(new Appointments());
+                $dataRepoAppo = $repoAppoinmets->find($item->appointment_id);
+                $audirepo = new AuditionRepository(new Auditions());
+                $Auditions->push($audirepo->find($dataRepoAppo->auditions_id));
+            });
+
+            $Auditions = $Auditions->unique();
+            $count = count($Auditions);
+            if ($count !== 0) {
+                $responseData = AuditionListByPerformer::collection($Auditions);
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => "Not found Data"];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+
+            } catch (Exception $exception) {
+                $this->log->error($exception->getMessage());
+                // return response()->json(['data' => 'Not Found Data'], 404);
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+        
+    }
+
+    public function listVideosByAudition(Request $request)
+    {
+        try {
+            $audition = new AuditionRepository(new Auditions());
+            $audiData = $audition->find($request->audition_id);
+
+            $appointmentIds = $audiData->appointment()->get()->pluck('id');
+            
+            $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
+            $data = $videoRepo->findbyparam('performer_id', $request->performer_id)
+                ->where('type', 'video')
+                ->whereIn('appointment_id', $appointmentIds)
+                ->get();
+
+            if ($data->count() > 0) {
+                $dataResponse = ['data' => $data];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => []];
+                $code = 200;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (NotFoundException $exception) {
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
+        }
+        
     }
 }
