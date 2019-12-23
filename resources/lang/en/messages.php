@@ -121,10 +121,7 @@ return [
     'setting_updated' => 'Setting Updated',
     'setting_not_updated' => 'Setting Not Updated',
 
-
-
-
-
+    'default_instant_feedback_message' => "Thanks for attending. That's all we need today",
 
 
 

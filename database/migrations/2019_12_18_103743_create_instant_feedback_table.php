@@ -19,7 +19,7 @@ class CreateInstantFeedbackTable extends Migration
             $table->integer('appointment_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->integer('evaluator_id')->unsigned();
-            $table->unique(['appointment_id', 'user_id', 'evaluator_id']);
+            // $table->unique(['appointment_id']);
             $table->timestamps();
         });
     }

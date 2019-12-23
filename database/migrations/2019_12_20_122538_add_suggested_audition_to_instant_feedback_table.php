@@ -15,7 +15,7 @@ class AddSuggestedAuditionToInstantFeedbackTable extends Migration
     {
         Schema::table('instant_feedback', function (Blueprint $table) {
                 $table->integer('suggested_appointment_id')->unsigned();
-                $table->unique(['appointment_id']);
+                // $table->unique(['appointment_id']);
         });
         
     }
