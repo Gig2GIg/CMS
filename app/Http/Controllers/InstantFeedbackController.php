@@ -18,8 +18,8 @@ use App\Models\InstantFeedbackSettings;
 use stdClass;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\AuditionResponseInstantFeedback;
-// use App\Http\Resources\AuditionFullResponse;
 use Illuminate\Support\Collection;
+
 class InstantFeedbackController extends Controller
 {
     protected $log;
@@ -32,18 +32,19 @@ class InstantFeedbackController extends Controller
 
     public function store(Request $request)
     {
+
         try {
             $data = [
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user,
                 'evaluator_id' => $request->evaluator,
-                'comment' => $request->comment
+                'comment' => $request->comment,
+                'suggested_appointment_id' => $request->suggested_appointment_id
             ];
 
             $repo = new InstantFeedbackRepository(new InstantFeedback());
             $data = $repo->create($data);
             if ($data->id) {
-
                 $userRepo = new UserRepository(new User());
                 $user = $userRepo->find($request->user);
 
@@ -167,19 +168,25 @@ class InstantFeedbackController extends Controller
             $repoFeedback = new InstantFeedbackRepository(new InstantFeedback());
 
             $data = new stdClass();
-            $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
-                ->where('user_id', '=', $request->user_id)->first();
-            
+            $feedbacks = $repoFeedback->all()
+                ->where('appointment_id', $request->id)
+                ->where('user_id', '=', $request->user_id)
+                ->first();
+
             $appointmentRepo = new AppointmentRepository(new Appointments());
-            $appoinmentData = $appointmentRepo->find($request->id);
-        
             $auditionsRepo = new AuditionRepository(new Auditions());
-            $auditionData = $auditionsRepo->all()->where('id',$appoinmentData->auditions_id);
 
-            $responseData = AuditionResponseInstantFeedback::collection($auditionData);
+            $appoinmentData = $appointmentRepo->find($request->id);
+            $auditionData = $auditionsRepo->all()->where('id', $appoinmentData->auditions_id);
+            $responseDataAudition = AuditionResponseInstantFeedback::collection($auditionData);
+
+            $suggestedAppoinmentData = $appointmentRepo->find($feedbacks->suggested_appointment_id);
+            $suggestedAuditionData = $auditionsRepo->all()->where('id', $suggestedAppoinmentData->auditions_id);
+            $responseDataSuggestedAudition = AuditionResponseInstantFeedback::collection($suggestedAuditionData);
+
             $data->feedback = $feedbacks;
-            $data->audition = $responseData;
-
+            $data->audition = $responseDataAudition;
+            $data->suggested_audition = $responseDataSuggestedAudition;
             if ($feedbacks == NULL) {
                 throw new \Exception('Data not found');
             }
