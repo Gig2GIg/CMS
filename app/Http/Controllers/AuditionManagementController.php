@@ -27,6 +27,8 @@ use App\Http\Resources\AuditionVideosResource;
 use App\Http\Resources\ContractResponse;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
+use App\Http\Resources\CheckGroupStatusResource;
+
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
@@ -948,6 +950,7 @@ class AuditionManagementController extends Controller
         }
     }
 
+
     public function checkGroupStatus(Request $request)
     {
         try {
@@ -958,36 +961,25 @@ class AuditionManagementController extends Controller
                 return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
             }
 
-            $user_data = DB::table('user_auditions AS UA')
+            $userData = DB::table('user_auditions AS UA')
                 ->select(
-                    'UD.id',
-                    'UD.first_name',
-                    'UD.last_name',
-                    'UD.url',
-                    'UD.address',
-                    'UD.city',
-                    'UD.state',
-                    'UD.birth',
-                    'UD.user_id',
+                    'UA.user_id',
                     'UA.group_no',
                     'UA.assign_no',
                     'UA.assign_no_by',
                     'UA.slot_id',
                     'UA.rol_id',
-                    'UA.appointment_id',
-                    'R.url AS image'
+                    'UA.appointment_id'
                 )
-                ->Join('user_details AS UD', 'UD.user_id', '=', 'UA.user_id')
-                ->leftJoin('resources AS R', 'R.resource_id', '=', 'UA.user_id')
                 ->Join('appointments AS A', function ($join) {
                     $join->on('A.id', '=', 'UA.appointment_id')
                         ->on('A.group_no', '=', 'UA.group_no');
                 })
                 ->where('A.is_group_open', 1)
-                ->where('appointment_id', $request->appointment_id)
-                ->where('R.type', 'cover')
-                ->where('R.resource_type', '=', 'App\Models\User')
+                ->where('UA.appointment_id', $request->appointment_id)
                 ->get();
+
+            $user_data =  CheckGroupStatusResource::collection($userData);
 
             return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
         } catch (\Exception $exception) {
@@ -995,6 +987,7 @@ class AuditionManagementController extends Controller
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => false], 404);
         }
     }
+
 
     public function closeGroup(Request $request)
     {
