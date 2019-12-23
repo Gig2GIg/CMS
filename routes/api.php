@@ -88,7 +88,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->get('/auditions/upcoming', ['uses' => 'AuditionManagementController@getUpcomingMangement']);
     $router->get('/auditions/passed', ['uses' => 'AuditionManagementController@getPassedMangement']);
     $router->get('/auditions/profile/user/{id}', ['uses' => 'AuditionManagementController@getUserProfile']);
-    // $router->get('/auditions/profile/user/{id}/appointment/{appointment_id}', ['uses' => 'AuditionManagementController@getUserProfile']);
+    $router->get('/auditions/profile/user/{id}/appointment/{appointment_id}', ['uses' => 'AuditionManagementController@getUserProfile']);
     $router->put('/auditions/update/{id}', ['uses' => 'AuditionsController@update']);
     $router->put('/auditions/open/{id}', ['uses' => 'AuditionManagementController@openAudition']);
     $router->put('/auditions/close/{id}', ['uses' => 'AuditionManagementController@closeAudition']);
@@ -126,6 +126,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     // instant feedback
     $router->post('/instantfeedbacks/add', ['uses' => 'InstantFeedbackController@store']);
     $router->post('/instantfeedbacks/changeDefault', ['uses' => 'InstantFeedbackController@updatDefaultInstantFeedback']);
+    $router->get('/instantfeedbacks/defaultFeedback/{user_id}', ['uses' => 'InstantFeedbackController@getDefaultInstantFeedback']);
 
     // RECOMMENDATION
     $router->post('/auditions/feeback/recommendations-marketplaces', ['uses' => 'RecommendationsController@store']);
