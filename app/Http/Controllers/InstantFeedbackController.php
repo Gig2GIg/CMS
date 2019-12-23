@@ -54,21 +54,24 @@ class InstantFeedbackController extends Controller
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
+
                 if ($request->accepted == 0) {
                     // remove that performer from group
-                    $updateappoinmentData = $appoinmentData->update(['group_no' => 0]);
+                    $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                    $dataUserAuditions = $repoUserAuditions->all()
+                        ->where('user_id', $request->user)
+                        ->where('appointment_id', $request->appointment_id);
 
-                    $userAuditions = new UserAuditionsRepository(new UserAuditions());
-                    $dataAuditions = $userAuditions->findbyparams([
-                        'user_id' => $request->user,
-                        'appointment_id' => $request->appointment_id,
-                    ]);
-
-                    $updateAuditionsData = $dataAuditions->update(['group_no' => 0]);
-
-                    if (!$updateAuditionsData && !$updateappoinmentData) {
-                        return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
+                    if ($dataUserAuditions->count() > 0) {
+                        $updateAuditionsData = DB::table('user_auditions')
+                            ->where('user_id', $request->user)
+                            ->where('appointment_id', $request->appointment_id)
+                            ->update(['group_no' => 0]);
                     }
+
+                    // if (!$updateAuditionsData) {
+                    //     return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
+                    // }
                 }
 
                 // send notification
@@ -105,38 +108,50 @@ class InstantFeedbackController extends Controller
         }
     }
 
+    public function getDefaultInstantFeedback(Request $request)
+    {
+        if (!is_null($request->user_id)) {
+            $instant_feedback_settings = new InstantFeedbackSettings();
+            $data = $instant_feedback_settings->where('user_id', $request->user_id)->get()->first();
 
-    // public function updatDefaultInstantFeedback(Request $request)
-    // {
-    //     if (!is_null($request->feedback)) {
-    //         $instant_feedback_settings = new InstantFeedbackSettings();
+            if ($data == null) {
+                $response = ['comment' =>  trans('messages.default_instant_feedback_message')];
+            } else {
+                $response = ['comment' =>  $data->comment];
+            }
+            return response()->json(['data' => $response], 200);
+        } else {
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+    }
 
-    //         $data = $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
-    //         if (empty($data)) {
-    //             // add
-    //             echo "add";
-    //             $data = [
-    //                 'comment' => $request->feedback,
-    //                 'user_id' => $this->getUserLogging()
-    //             ];
+    public function updatDefaultInstantFeedback(Request $request)
+    {
+        if (!is_null($request->feedback)) {
+            $instant_feedback_settings = new InstantFeedbackSettings();
 
-    //             $feedbackUpdated = $instant_feedback_settings->insert($data);
-    //             $repo = new InstantFeedbackRepository(new InstantFeedback());
-    //             $data = $repo->create($data);
-    //         } else {
-    //             echo "update";
-    //             // update
-    //             $update_feedback = $instant_feedback_settings
-    //                 ->update(['comment', $request->feedback])
-    //                 ->where('user_id', $this->getUserLogging())
-    //                 ->get();
-    //         }
+            $data = $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
+            if (empty($data)) {
+                // add if no feedback added for caster
+                $data = [
+                    'comment' => $request->feedback,
+                    'user_id' => $this->getUserLogging()
+                ];
 
-    //         return response()->json(['data' => $data], 200);
-    //     } else {
-    //         return response()->json(['data' => trans('messages.data_not_found')], 404);
-    //     }
-    // }
+                $feedbackUpdated = $instant_feedback_settings->insert($data);
+            } else {
+                // update if caster's feedbacke already exist
+                $update_feedback = $instant_feedback_settings
+                    ->where('user_id', $this->getUserLogging())
+                    ->update(['comment' => $request->feedback]);
+            }
+
+            $response =  $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
+            return response()->json(['data' => $response], 200);
+        } else {
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+    }
 
     public function instantFeedbackDetailsCaster(Request $request)
     {
