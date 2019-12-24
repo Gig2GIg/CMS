@@ -17,7 +17,6 @@ class AuditionVideosController extends Controller
 {
     public function getVideos($audition_id, $round_id)
     {
-
         try {
 
             $isOnline = DB::table('auditions')
@@ -56,31 +55,16 @@ class AuditionVideosController extends Controller
                     ->get();
             }
 
+            $data = $AuditionVideos->unique(['slots_id', 'user_id']);
 
-
-            // $result = $AuditionVideos->unique('user_id');
-
-            
-            /**
-             * TODO:
-             * Handle an empty array
-             * This can be improved if we can use group by in query
-             */
-            $result = array();
-            $added_user_ids = array();
-
-            foreach ($AuditionVideos as $video) {
-                if (!in_array($video->user_id, $added_user_ids)) {
-                    $added_user_ids[] = $video->user_id;
-                    $video->performer = new stdClass();
-                    $video->performer->name = $video->first_name;
-                    $video->performer->user_id = $video->user_id;
-                    $video->performer->slots_id = $video->slots_id;
-                    $video->performer->favorite = $video->favorite;
-                    $video->performer->roles_id = $video->roles_id;
-                    $video->performer->image = $video->image;
-                    $result[] = $video;
-                }
+            foreach ($data as $video) {
+                $video->performer = new stdClass();
+                $video->performer->name = $video->first_name;
+                $video->performer->user_id = $video->user_id;
+                $video->performer->slots_id = $video->slots_id;
+                $video->performer->favorite = $video->favorite;
+                $video->performer->roles_id = $video->roles_id;
+                $video->performer->image = $video->image;
             }
 
             if ($AuditionVideos->count() == 0) {
@@ -88,7 +72,7 @@ class AuditionVideosController extends Controller
                 // return response()->json(['data' => [], 'message' => 'Not Found Data'], 400);
                 return response()->json(['data' => [], 'message' => trans('messages.data_not_found')], 400);
             }
-            return response()->json(['data' => $result], 200);
+            return response()->json(['data' => $data], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => []], 404);
