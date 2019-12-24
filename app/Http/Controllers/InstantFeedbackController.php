@@ -195,15 +195,17 @@ class InstantFeedbackController extends Controller
             $auditionData = $auditionsRepo->all()->where('id', $appoinmentData->auditions_id);
             $responseDataAudition = AuditionResponseInstantFeedback::collection($auditionData);
 
+            $data->feedback = $feedbacks;
+            $data->audition = $responseDataAudition;
+
             if ($feedbacks->suggested_appointment_id != null) {
                 $suggestedAppoinmentData = $appointmentRepo->find($feedbacks->suggested_appointment_id);
                 $suggestedAuditionData = $auditionsRepo->all()->where('id', $suggestedAppoinmentData->auditions_id);
                 $responseDataSuggestedAudition = AuditionResponseInstantFeedback::collection($suggestedAuditionData);
+                $data->suggested_audition = $responseDataSuggestedAudition;
             }
+            // $data->suggested_audition = isset($responseDataSuggestedAudition) ? $responseDataSuggestedAudition : array();
 
-            $data->feedback = $feedbacks;
-            $data->audition = $responseDataAudition;
-            $data->suggested_audition = isset($responseDataSuggestedAudition) ? $responseDataSuggestedAudition : array();
             if ($feedbacks == NULL) {
                 throw new \Exception('Data not found');
             }

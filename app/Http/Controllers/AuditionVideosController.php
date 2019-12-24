@@ -56,6 +56,11 @@ class AuditionVideosController extends Controller
                     ->get();
             }
 
+
+
+            // $result = $AuditionVideos->unique('user_id');
+
+            
             /**
              * TODO:
              * Handle an empty array
