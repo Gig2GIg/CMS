@@ -43,8 +43,9 @@ class InstantFeedbackController extends Controller
             ];
 
             $repo = new InstantFeedbackRepository(new InstantFeedback());
-            $data = $repo->create($data);
-            if ($data->id) {
+            $dataCreated = $repo->create($data);
+            if ($dataCreated->id) {
+               
                 $userRepo = new UserRepository(new User());
                 $user = $userRepo->find($request->user);
 
@@ -53,6 +54,24 @@ class InstantFeedbackController extends Controller
 
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
+
+                // if ($request->accepted == 0) {
+                //     // remove that performer from group
+                //     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                //     $dataUserAuditions = $repoUserAuditions->all()
+                //         ->where('user_id', $request->user)
+                //         ->where('appointment_id', $request->appointment_id);
+
+                //     if ($dataUserAuditions->count() > 0) {
+                //         $data = $repoUserAuditions->findbyparams(
+                //             [
+                //                 'user_id' => $request->user,
+                //                 'appointment_id' => $request->appointment_id
+                //             ]
+                //         );
+                //         $updateAuditionsData = $data->update(['group_no' => 0]);
+                //     }
+                // }
 
 
                 if ($request->accepted == 0) {
@@ -68,17 +87,14 @@ class InstantFeedbackController extends Controller
                             ->where('appointment_id', $request->appointment_id)
                             ->update(['group_no' => 0]);
                     }
-
-                    // if (!$updateAuditionsData) {
-                    //     return response()->json(['message' => trans('messages.something_went_wrong'), 'data' => []], 400);
-                    // }
                 }
+                
 
                 // send notification
                 $this->sendStoreNotificationToUser($user, $audition);
                 $this->saveStoreNotificationToUser($user, $audition);
 
-                $dataResponse = ['data' => trans('messages.feedback_save_success'), 'feedback_id' => $data->id];
+                $dataResponse = ['data' => trans('messages.feedback_save_success'), 'feedback_id' => $dataCreated->id];
                 $code = 201;
             } else {
                 $dataResponse = ['data' => 'Feedback already submitted'];
@@ -195,15 +211,17 @@ class InstantFeedbackController extends Controller
             $auditionData = $auditionsRepo->all()->where('id', $appoinmentData->auditions_id);
             $responseDataAudition = AuditionResponseInstantFeedback::collection($auditionData);
 
+            $data->feedback = $feedbacks;
+            $data->audition = $responseDataAudition;
+
             if ($feedbacks->suggested_appointment_id != null) {
                 $suggestedAppoinmentData = $appointmentRepo->find($feedbacks->suggested_appointment_id);
                 $suggestedAuditionData = $auditionsRepo->all()->where('id', $suggestedAppoinmentData->auditions_id);
                 $responseDataSuggestedAudition = AuditionResponseInstantFeedback::collection($suggestedAuditionData);
+                $data->suggested_audition = $responseDataSuggestedAudition;
             }
+            // $data->suggested_audition = isset($responseDataSuggestedAudition) ? $responseDataSuggestedAudition : array();
 
-            $data->feedback = $feedbacks;
-            $data->audition = $responseDataAudition;
-            $data->suggested_audition = isset($responseDataSuggestedAudition) ? $responseDataSuggestedAudition : array();
             if ($feedbacks == NULL) {
                 throw new \Exception('Data not found');
             }
