@@ -85,7 +85,10 @@ class InstantFeedbackController extends Controller
                         $updateAuditionsData = DB::table('user_auditions')
                             ->where('user_id', $request->user)
                             ->where('appointment_id', $request->appointment_id)
-                            ->update(['group_no' => 0]);
+                            ->update([
+                                'group_no' => 0,
+                                'rejected' => 1                            
+                            ]);
                     }
                 }
                 
