@@ -1098,13 +1098,20 @@ class AuditionManagementController extends Controller
             $appointmentIds = $audiData->appointment()->get()->pluck('id');
             
             $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
-            $data = $videoRepo->findbyparam('performer_id', $request->performer_id)
+            $onlineVideodata = $videoRepo->findbyparam('performer_id', $request->performer_id)
                 ->where('type', 'video')
                 ->whereIn('appointment_id', $appointmentIds)
                 ->get();
 
-            if ($data->count() > 0) {
-                $dataResponse = ['data' => $data];
+            $offlineVideoRepo = new AuditionVideosRepository(new AuditionVideos());
+            $offlineVideoData = $offlineVideoRepo->findbyparam('user_id', $request->performer_id)
+                ->whereIn('appointment_id', $appointmentIds)
+                ->get();
+
+            $totalVideos = array_merge($onlineVideodata->toArray(), $offlineVideoData->toArray());
+            
+            if (count($totalVideos) > 0) {
+                $dataResponse = ['data' => $totalVideos];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => []];
