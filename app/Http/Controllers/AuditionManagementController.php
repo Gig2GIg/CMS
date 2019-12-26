@@ -138,13 +138,7 @@ class AuditionManagementController extends Controller
     public function getUpcoming()
     {
         try {
-            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
-            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
-            // $dataAuditions = $data->sortByDesc('created_at');
-            // // $dataAuditions = $data->where('type', '=', '1')->sortByDesc('created_at');
-
             $dataAuditions = DB::table('appointments')
-                // ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'appointments.status')
                 ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'UA.assign_no')
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
@@ -170,35 +164,16 @@ class AuditionManagementController extends Controller
     {
         try {
             $userAuditions = new UserAuditionsRepository(new UserAuditions());
-            // $data = $userAuditions->getByParam('user_id', $this->getUserLogging())->sortByDesc('created_at');
+            // $data = DB::table('appointments')
+            //     ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
+            //     ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+            //     ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+            //     ->where('UA.user_id', $this->getUserLogging())
+            //     ->where('F.user_id', $this->getUserLogging())
+            //     ->get()->sortByDesc('created_at');
 
-            $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
-                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
-                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
-                ->where('UA.user_id', $this->getUserLogging())
-                ->where('F.user_id', $this->getUserLogging())
-                // ->where('F.favorite', 1)
-                // ->where('appointments.status', 1)
-                ->get()->sortByDesc('created_at');
-
-
-            // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
-            // if ($dataAuditions->count() > 0) {
-            //     $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
-            // } else {
-            //     $dataResponse = ['data' => []];
-            // }
-
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
-
-            // $dataAuditions = $data->where('type', '=', '3')->sortByDesc('created_at');
-            // if ($dataAuditions->count() > 0) {
-            //     $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
-            // } else {
-            //     $dataResponse = ['data' => []];
-            // }
-
+            $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            $data = $userAuditionsData->sortByDesc('created_at');
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
@@ -382,7 +357,7 @@ class AuditionManagementController extends Controller
             // print_r($request->appointment_id);
             $userRepo = new UserRepository(new User());
             $data = $userRepo->find($request->id);
-            
+
             if ($data) {
                 $dataResponse = ['data' => new ProfileResource($data)];
                 $code = 200;
@@ -403,60 +378,82 @@ class AuditionManagementController extends Controller
     {
         try {
             $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-            $toData = $videoRepo->findbyparam('slot_id', $request->slot_id);
-            if ($toData->count() > 0) {
-                $dataResponse = ['data' => 'Video already saved'];
-                $code = 406;
-            } else {
-                // ==============================
+
+            $repo = new AppointmentRepository(new Appointments());
+            $apppointment_data = $repo->find($request->appointment_id);
+
+            if ($apppointment_data->is_group_open) {
                 // insert batch in audition videos
-
-                $repo = new AppointmentRepository(new Appointments());
-                $apppointment_data = $repo->find($request->appointment_id);
-                if ($apppointment_data->is_group_open) {
-
-                    $user_ids_of_group_member = DB::table('user_auditions')
-                        ->where('group_no', $apppointment_data->group_no)
-                        ->where('appointment_id', $request->appointment_id)
-                        ->pluck('user_id');
-
-                    $data_to_add = array();
-                    foreach ($user_ids_of_group_member as $user_id) {
-                        $data_to_add[] = array(
-                            'name' => $request->name,
-                            'user_id' => $user_id,
-                            'appointment_id' => $request->appointment_id,
-                            'url' => $request->url,
-                            'contributors_id' => $this->getUserLogging(),
-                            'slot_id' => $request->slot_id
-                        );
+                $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+                $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(
+                    [
+                        'group_no' => $apppointment_data->group_no,
+                        'appointment_id' => $request->appointment_id
+                    ]
+                );
+                // ======= get available slot for group video =========
+                $slots = $dataAuditionsUser->pluck('slot_id');
+                $slotsNotAvailable = $videoRepo->all()->whereIn('slot_id', $slots);
+                foreach ($slots as $slot) {
+                    if (!$slotsNotAvailable->contains('slot_id', $slot)) {
+                        $slot_id = $slot;
                     }
-                    $data = AuditionVideos::insert($data_to_add);
-                    if ($data) {
-                        $dataResponse = ['data' => trans('messages.video_saved')];
-                        $code = 200;
-                    } else {
-                        $dataResponse = ['data' => trans('messages.video_not_saved')];
-                        $code = 406;
-                    }
-                } else {
-                    $data = $videoRepo->create([
+                }
+
+                if (!isset($slot_id)) {
+                    $dataResponse = ['data' => 'Video already saved'];
+                    $code = 406;
+                }
+                // ==================================================
+                $user_ids_of_group_member = $dataAuditionsUser->groupBy('user_id')->pluck('user_id');
+                $data_to_add = array();
+                foreach ($user_ids_of_group_member as $user_id) {
+                    $data_to_add[] = array(
                         'name' => $request->name,
-                        'user_id' => $request->performer,
+                        'user_id' => $user_id,
                         'appointment_id' => $request->appointment_id,
                         'url' => $request->url,
                         'contributors_id' => $this->getUserLogging(),
-                        'slot_id' => $request->slot_id,
-                    ]);
-                    if (isset($data->id)) {
-                        $dataResponse = ['data' => trans('messages.video_saved')];
-                        $code = 200;
-                    } else {
-                        $dataResponse = ['data' => trans('messages.video_not_saved')];
-                        $code = 406;
-                    }
+                        'slot_id' => $slot_id
+                    );
+                }
+
+                // $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+                // $data = $videoRepo->insertBatch($data_to_add);
+                $data = AuditionVideos::insert($data_to_add);
+                if ($data) {
+                    $dataResponse = ['data' => trans('messages.video_saved')];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => trans('messages.video_not_saved')];
+                    $code = 406;
+                }
+            } else {
+                $videoRepo = new AuditionVideosRepository(new AuditionVideos());
+                $toData = $videoRepo->findbyparam('slot_id', $request->slot_id);
+                if ($toData->count() > 0) {
+
+                    $dataResponse = ['data' => 'Video already saved'];
+                    $code = 406;
+                }
+
+                $data = $videoRepo->create([
+                    'name' => $request->name,
+                    'user_id' => $request->performer,
+                    'appointment_id' => $request->appointment_id,
+                    'url' => $request->url,
+                    'contributors_id' => $this->getUserLogging(),
+                    'slot_id' => $request->slot_id,
+                ]);
+                if (isset($data->id)) {
+                    $dataResponse = ['data' => trans('messages.video_saved')];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => trans('messages.video_not_saved')];
+                    $code = 406;
                 }
             }
+
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -1081,13 +1078,11 @@ class AuditionManagementController extends Controller
                 $code = 404;
             }
             return response()->json($dataResponse, $code);
-
-            } catch (Exception $exception) {
-                $this->log->error($exception->getMessage());
-                // return response()->json(['data' => 'Not Found Data'], 404);
-                return response()->json(['data' => trans('messages.data_not_found')], 404);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
-        
     }
 
     public function listVideosByAudition(Request $request)
@@ -1097,7 +1092,7 @@ class AuditionManagementController extends Controller
             $audiData = $audition->find($request->audition_id);
 
             $appointmentIds = $audiData->appointment()->get()->pluck('id');
-            
+
             $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
             $onlineVideodata = $videoRepo->findbyparam('performer_id', $request->performer_id)
                 ->where('type', 'video')
@@ -1123,6 +1118,5 @@ class AuditionManagementController extends Controller
             return response()->json(['error' => trans('messages.data_not_found')], 404);
             // return response()->json(['error' => 'Not Found'], 404);
         }
-        
     }
 }
