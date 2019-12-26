@@ -55,6 +55,25 @@ class InstantFeedbackController extends Controller
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
+                // if ($request->accepted == 0) {
+                //     // remove that performer from group
+                //     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                //     $dataUserAuditions = $repoUserAuditions->all()
+                //         ->where('user_id', $request->user)
+                //         ->where('appointment_id', $request->appointment_id);
+
+                //     if ($dataUserAuditions->count() > 0) {
+                //         $data = $repoUserAuditions->findbyparams(
+                //             [
+                //                 'user_id' => $request->user,
+                //                 'appointment_id' => $request->appointment_id
+                //             ]
+                //         );
+                //         $updateAuditionsData = $data->update(['group_no' => 0]);
+                //     }
+                // }
+
+
                 if ($request->accepted == 0) {
                     // remove that performer from group
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -63,15 +82,13 @@ class InstantFeedbackController extends Controller
                         ->where('appointment_id', $request->appointment_id);
 
                     if ($dataUserAuditions->count() > 0) {
-                        $data = $repoUserAuditions->findbyparams(
-                            [
-                                'user_id' => $request->user,
-                                'appointment_id' => $request->appointment_id
-                            ]
-                        );
-                        $updateAuditionsData = $data->update(['group_no' => 0]);
+                        $updateAuditionsData = DB::table('user_auditions')
+                            ->where('user_id', $request->user)
+                            ->where('appointment_id', $request->appointment_id)
+                            ->update(['group_no' => 0]);
                     }
                 }
+                
 
                 // send notification
                 $this->sendStoreNotificationToUser($user, $audition);
