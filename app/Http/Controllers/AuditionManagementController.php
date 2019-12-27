@@ -402,8 +402,9 @@ class AuditionManagementController extends Controller
                 }
 
                 if (!isset($slot_id)) {
-                    return response()->json(['data' => 'Video already saved'], 406);
+                    return response()->json(['data' => trans('messages.no_slot_available')], 406);
                 }
+                
                 // ==================================================
                 
                 $user_ids_of_group_member = $dataAuditionsUser->groupBy('user_id')->pluck('user_id');
