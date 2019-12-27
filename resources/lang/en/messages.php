@@ -42,6 +42,7 @@ return [
     'list_by_slots' => 'List by slots',
     'round_create' => 'Round Create',
     'round_not_create' => 'Round not Create',
+    'no_slot_available' => 'No Slot Available',
 
     // Audition Management Controller
     'audition_not_update' => 'Audition not update',
