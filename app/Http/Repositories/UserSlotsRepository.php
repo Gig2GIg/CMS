@@ -73,4 +73,9 @@ class UserSlotsRepository implements IUserSlotsReporitory
     {
         // TODO: Implement update() method.
     }
+
+    public function all()
+    {
+        return $this->model->all();
+    }
 }
