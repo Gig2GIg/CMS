@@ -391,8 +391,14 @@ class AuditionManagementController extends Controller
                         'appointment_id' => $request->appointment_id
                     ]
                 );
+                $user_ids_of_group_member = $dataAuditionsUser->groupBy('user_id')->pluck('user_id');
+
                 // ======= get available slot for group video =========
-                $slots = $dataAuditionsUser->pluck('slot_id');
+                $slotRepo = new UserSlotsRepository(new UserSlots());
+                $slots = $slotRepo->all()
+                    ->whereIn('user_id', $user_ids_of_group_member)
+                    ->where('appointment_id', $request->appointment_id)->pluck('slots_id');
+
                 $slotsNotAvailable = $videoRepo->all()->whereIn('slot_id', $slots);
 
                 foreach ($slots as $slot) {
@@ -404,10 +410,9 @@ class AuditionManagementController extends Controller
                 if (!isset($slot_id)) {
                     return response()->json(['data' => trans('messages.no_slot_available')], 406);
                 }
-                
+
                 // ==================================================
-                
-                $user_ids_of_group_member = $dataAuditionsUser->groupBy('user_id')->pluck('user_id');
+
                 $data_to_add = array();
                 foreach ($user_ids_of_group_member as $user_id) {
                     $data_to_add[] = array(
@@ -420,8 +425,6 @@ class AuditionManagementController extends Controller
                     );
                 }
 
-                // $videoRepo = new AuditionVideosRepository(new AuditionVideos());
-                // $data = $videoRepo->insertBatch($data_to_add);
                 $data = AuditionVideos::insert($data_to_add);
                 if ($data) {
                     $dataResponse = ['data' => trans('messages.video_saved')];
@@ -458,6 +461,7 @@ class AuditionManagementController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => $exception->getMessage()], 406);
             // return response()->json(['data' => trans('messages.not_processable')], 406);
