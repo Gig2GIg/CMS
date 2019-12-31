@@ -20,7 +20,7 @@ use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 
 class AppoinmentAuditionsController extends Controller
 {
@@ -209,21 +209,23 @@ class AppoinmentAuditionsController extends Controller
         try {
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $data = $dataRepo->findbyparam('appointment_id', $request->audition);
-            // $res = $data->where('status', '=', 'checked')
-            //     ->unique('user_id');
-
-            $dataAuditions = DB::table('user_slots AS US')
-                // ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'UA.assign_no')
-                ->Join('user_auditions AS UA', 'UA.appointment_id', '=', 'US.appointment_id')
-                ->where('US.appointment_id', $request->audition)
-                ->where('US.status', 'checked')
-                // ->where('UA.user_id', 'US.user_id')
-                ->where('UA.rejected', 0)
-                ->get()
-                // ->sortByDesc('created_at')
+            $response = $data->where('status', '=', 'checked')
                 ->unique('user_id');
 
-            $dataResponse = AppointmentResource::collection($dataAuditions);
+            $finalResponse = new Collection();
+            $response->each(function ($item) use ($finalResponse) {
+                $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+                $userAuditionData = $userAuditionRepo->findbyparams([
+                    'appointment_id' => $item->appointment_id,
+                    'user_id' => $item->user_id,
+                ])->first();
+
+                if ($userAuditionData->rejected == 0) {
+                    $finalResponse->push($item);
+                }
+            });
+
+            $dataResponse = AppointmentResource::collection($finalResponse);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
