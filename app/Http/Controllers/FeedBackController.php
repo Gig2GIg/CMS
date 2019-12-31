@@ -185,17 +185,7 @@ class FeedBackController extends Controller
                 ]
 
             );
-            $feedbacks = $data->get();
-
-           
-            // $repoFeedback = new FeedbackRepository(new Feedbacks());
-            // $feedbacks = $repoFeedback->all()
-            //     ->where('appointment_id', $request->id)
-            //     ->where('evaluator_id', '=', $this->getUserLogging())
-            //     ->where('user_id', '=', $request->user_id)
-            //     ->first();
-
-
+            $feedbacks = $data->first();
 
             if ($feedbacks->count() == 0) {
                 throw new \Exception('Data not found');
