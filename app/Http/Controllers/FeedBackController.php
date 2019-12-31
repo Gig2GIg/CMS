@@ -79,7 +79,7 @@ class FeedBackController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.feedback_not_add')], 406);
             // return response()->json(['data' => 'Feedback not add'], 406);
-            
+
         }
     }
 
@@ -154,8 +154,8 @@ class FeedBackController extends Controller
             $data = $repo->findbyparam('appointment_id', $request->id);
 
             $dataPre = $data->where('user_id', '=', $this->getUserLogging())
-            // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
-            ->first() ?? new Collection();
+                // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
+                ->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
@@ -166,7 +166,7 @@ class FeedBackController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());    
+            $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Data Not Found'], 404);
         }
@@ -176,10 +176,26 @@ class FeedBackController extends Controller
     public function feedbackDetailsByUser(Request $request)
     {
         try {
-            $repoFeedback = new FeedbackRepository(new Feedbacks());
-        
-            $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
-                ->where('evaluator_id','=', $this->getUserLogging())->where('user_id','=', $request->user_id)->first();
+            $repo = new FeedbackRepository(new Feedbacks());
+            $data = $repo->findbyparams(
+                [
+                    'appointment_id' => $request->id,
+                    'evaluator_id' => $this->getUserLogging(),
+                    'user_id' => $request->user_id
+                ]
+
+            );
+            $feedbacks = $data->get();
+
+           
+            // $repoFeedback = new FeedbackRepository(new Feedbacks());
+            // $feedbacks = $repoFeedback->all()
+            //     ->where('appointment_id', $request->id)
+            //     ->where('evaluator_id', '=', $this->getUserLogging())
+            //     ->where('user_id', '=', $request->user_id)
+            //     ->first();
+
+
 
             if ($feedbacks->count() == 0) {
                 throw new \Exception('Data not found');
