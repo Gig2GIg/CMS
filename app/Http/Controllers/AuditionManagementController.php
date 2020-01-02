@@ -1033,7 +1033,10 @@ class AuditionManagementController extends Controller
                 }
 
                 // Check if Number is unique or not
-                $list_of_numbers = $repoUserAuditions->all()->where('assign_no', $request->assign_no);
+                $list_of_numbers = $repoUserAuditions->all()
+                    ->where('assign_no', $request->assign_no)
+                    ->where('appointment_id', $request->appointment_id);
+                    
                 if ($list_of_numbers->count() > 0) {
                     return response()->json(['message' => trans('messages.number_already_used'), 'data' => []], 409);
                 }
