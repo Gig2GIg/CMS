@@ -20,7 +20,7 @@ class AddStatusToNotificationHistory extends Migration
 
         Schema::table('notification_history', function (Blueprint $table) {
           
-            $table->enum('status', ['read', 'unread','aceppted', 'rejected'])->default('unread');
+            $table->enum('status', ['read', 'unread','accepted', 'rejected'])->default('unread');
         });
     }
 

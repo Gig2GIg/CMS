@@ -661,7 +661,7 @@ class AuditionsController extends Controller
 
                 $dataNotification = [
                     'message' => 'You have accepted this invitation to ' . $audition->title,
-                    'status' => 'aceppted'
+                    'status' => 'accepted'
                 ];
 
                 if ($notification->update($dataNotification)) {
