@@ -8,9 +8,6 @@ namespace App\Http\Controllers;
 
 // models
 use Illuminate\Support\Facades\DB;
-use App\Http\Repositories\UserSlotsRepository;
-use App\Http\Resources\AppointmentResource;
-use App\Models\UserSlots;
 use stdClass;
 
 class AuditionVideosController extends Controller
@@ -42,7 +39,7 @@ class AuditionVideosController extends Controller
             } else {
                 $AuditionVideos = DB::table('audition_videos AS AV')
                     ->select('AV.id', 'AV.name', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'AV.slot_id AS slots_id', 'US.favorite', 'US.roles_id')
-                    // ->select('AV.id', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image',  'US.slots_id',   'US.favorite', 'US.roles_id', 'AV.appointment_id', 'AV.contributors_id', 'AV.slot_id')
+                // ->select('AV.id', 'AV.url', 'UD.first_name', 'UD.user_id', 'R.url AS image',  'US.slots_id',   'US.favorite', 'US.roles_id', 'AV.appointment_id', 'AV.contributors_id', 'AV.slot_id')
                     ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'AV.user_id')
                     ->leftJoin('resources AS R', 'R.resource_id', '=', 'AV.user_id')
                     ->leftJoin('user_slots AS US', function ($join) {
@@ -55,7 +52,8 @@ class AuditionVideosController extends Controller
                     ->get();
             }
 
-            $data = $AuditionVideos->unique(['slots_id', 'user_id']);
+            // $data = $AuditionVideos->unique(['slots_id', 'user_id']);
+            $data = $AuditionVideos;
 
             foreach ($data as $video) {
                 $video->performer = new stdClass();
