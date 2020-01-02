@@ -113,7 +113,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-                    //                    $this->sendStoreNotificationToContributors($audition);
+                    // $this->sendStoreNotificationToContributors($audition);
                 }
 
                 DB::commit();
@@ -651,7 +651,7 @@ class AuditionsController extends Controller
 
                 $dataNotification = [
                     'message' => 'You have accepted this invitation to ' . $audition->title,
-                    'status' => 'aceppted',
+                    'status' => 'accepted',
                 ];
 
                 if ($notification->update($dataNotification)) {
