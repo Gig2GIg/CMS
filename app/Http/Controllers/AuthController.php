@@ -38,6 +38,11 @@ class AuthController extends Controller
                 'type' => $details['type'],
             ];
 
+            $type = request('type');
+            if ($type != $details['type']) {
+                return response()->json(['error' => trans('messages.unauthorized')], 401);
+            }
+
             JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
                 return response()->json(['error' => trans('messages.unauthorized')], 401);
