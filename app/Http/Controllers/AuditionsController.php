@@ -7,28 +7,22 @@ use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
-use App\Http\Exceptions\UpdateException;
-
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
-use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\FeedbackRepository;
+use App\Http\Repositories\Notification\NotificationHistoryRepository;
 use App\Http\Repositories\Notification\NotificationRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
-use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
-use App\Http\Repositories\Notification\NotificationHistoryRepository;
-
 use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
 use App\Http\Requests\MediaRequest;
 use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\ContributorsResource;
-
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -39,16 +33,12 @@ use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
-
 use App\Models\UserAuditions;
-use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use PhpOption\Tests\Repository;
 
 class AuditionsController extends Controller
 {
@@ -82,7 +72,7 @@ class AuditionsController extends Controller
                             'url' => $file['url'],
                             'type' => $file['type'],
                             'name' => $file['name'],
-                            'share' => $file['share']
+                            'share' => $file['share'],
                         ];
                     }
                 }
@@ -90,7 +80,7 @@ class AuditionsController extends Controller
                     'url' => $request->cover,
                     'type' => 'cover',
                     'name' => $request->cover_name,
-                    'share' => 'no'
+                    'share' => 'no',
                 ];
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
@@ -266,7 +256,7 @@ class AuditionsController extends Controller
                 'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
                 'type' => 'audition',
                 'notificationable_type' => 'auditions',
-                'notificationable_id' => $audition->id
+                'notificationable_id' => $audition->id,
             ];
 
             $notificationHistoryData = [
@@ -275,7 +265,7 @@ class AuditionsController extends Controller
                 'user_id' => $userContributor->id,
                 'message' => 'You have been invited to audition ' . $audition->title,
                 'custom_data' => $userContributor->id,
-                'status' => 'unread'
+                'status' => 'unread',
             ];
 
             if ($audition !== null) {
@@ -335,7 +325,7 @@ class AuditionsController extends Controller
         return [
             'user_id' => $contrib->id,
             'auditions_id' => $audition->id,
-            'status' => true
+            'status' => false,
         ];
     }
 
@@ -652,7 +642,7 @@ class AuditionsController extends Controller
             $this->sendInviteNotificationToContributors($audition);
 
             $data = [
-                'status' => $request->status
+                'status' => $request->status,
             ];
 
             $invite = $auditionContributorsData->update($data);
@@ -661,7 +651,7 @@ class AuditionsController extends Controller
 
                 $dataNotification = [
                     'message' => 'You have accepted this invitation to ' . $audition->title,
-                    'status' => 'aceppted'
+                    'status' => 'aceppted',
                 ];
 
                 if ($notification->update($dataNotification)) {
@@ -677,7 +667,7 @@ class AuditionsController extends Controller
 
                 $dataNotification = [
                     'message' => 'You have rejected this invitation to ' . $audition->title,
-                    'status' => 'rejected'
+                    'status' => 'rejected',
                 ];
 
                 if ($notification->update($dataNotification)) {
@@ -718,7 +708,7 @@ class AuditionsController extends Controller
             $banStatus = $request->banned;
             $audition = $auditionRepo->find($request->id);
             $updateRepo = new AuditionRepository($audition);
-            $update = $updateRepo->update(['banned' => $banStatus,]);
+            $update = $updateRepo->update(['banned' => $banStatus]);
 
             if ($update) {
                 $responseData = new AuditionFullResponse($audition);
