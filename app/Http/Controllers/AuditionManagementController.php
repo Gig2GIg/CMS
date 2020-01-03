@@ -30,6 +30,7 @@ use App\Http\Resources\UserAuditionsResource;
 use App\Http\Resources\CheckGroupStatusResource;
 
 use App\Http\Resources\AuditionListByPerformer;
+use App\Http\Resources\NoficationsResource;
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
