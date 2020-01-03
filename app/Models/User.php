@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Notifications\NotificationHistory;
+use App\Models\Notifications\NotificationSettingUser;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Laravel\Cashier\Subscription;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Models\Notifications\NotificationHistory;
-use App\Models\Notifications\NotificationSettingUser;
-use App\Models\Notifications\NotificationSetting;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -23,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'pushkey'
+        'email', 'password', 'pushkey',
     ];
 
     /**
@@ -51,7 +49,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getJWTIdentifier()
     {
-       return $this->getKey();
+        return $this->getKey();
     }
 
     /**
@@ -64,31 +62,38 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function details(){
+    public function details()
+    {
         return $this->hasOne(UserDetails::class);
     }
 
-    public function userSubscription(){
+    public function userSubscription()
+    {
         return $this->hasOne(Subscription::class);
     }
 
-    public function memberunions(){
+    public function memberunions()
+    {
         return $this->hasMany(UserUnionMembers::class);
     }
 
-    public function calendars(){
+    public function calendars()
+    {
         return $this->hasMany(Calendar::class);
     }
 
-    public function image(){
-        return $this->morphOne(Resources::class,'resource');
+    public function image()
+    {
+        return $this->morphOne(Resources::class, 'resource');
     }
 
-    public function contributors(){
+    public function contributors()
+    {
         return $this->belongsTo(AuditionContributors::class);
     }
 
-    public function skills(){
+    public function skills()
+    {
         return $this->hasMany(UserSkills::class);
     }
 
@@ -112,20 +117,28 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(NotificationHistory::class)->orderBy('created_at');
     }
 
-    public function educations(){
+    public function educations()
+    {
         return $this->hasMany(Educations::class);
     }
-    public function credits(){
+    public function credits()
+    {
         return $this->hasMany(Credits::class);
     }
 
-    public function aparence(){
+    public function aparence()
+    {
         return $this->hasOne(UserAparence::class);
     }
 
-    public function userAuditions(){
+    public function userAuditions()
+    {
         return $this->hasMany(UserAuditions::class);
     }
 
+    public function pushkey()
+    {
+        return $this->hasMany(UserPushKeys::class);
+    }
 
 }
