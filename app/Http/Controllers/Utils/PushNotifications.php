@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Utils;
 
-use App\Http\Exceptions\NotificationException;
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Exceptions\NotificationException;
+use Illuminate\Support\Collection;
 
 class PushNotifications
 {
@@ -17,13 +18,19 @@ class PushNotifications
     public static function send($message, $user)
     {
         try {
+            $tokenArray = new Collection();
+            $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                $tokenArray->push($user_token_detail->device_token);
+            });
+            $tokens = $tokenArray->toArray();
+
             fcm()
-            ->to([$user->pushkey])
-            ->notification([
-                'title' => $message,
-                'body'  => $message,
-            ])
-            ->send();
+                ->to($tokens)
+                ->notification([
+                    'title' => $message,
+                    'body' => $message,
+                ])
+                ->send();
         } catch (NotificationException $exception) {
             $log->error($exception->getMessage());
         }

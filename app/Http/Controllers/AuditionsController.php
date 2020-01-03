@@ -507,8 +507,10 @@ class AuditionsController extends Controller
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
                 }
-                foreach ($request['dates'] as $date) {
-                    $audition->dates()->update($this->dataDatesToProcess($date));
+                if (isset($request['dates'])) {
+                    foreach ($request['dates'] as $date) {
+                        $audition->dates()->update($this->dataDatesToProcess($date));
+                    }
                 }
                 foreach ($request->roles as $roles) {
                     $roldata = $this->dataRolesToProcess($audition, $roles);
