@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Utils;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Exceptions\NotificationException;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\User;
-
-use App\Http\Exceptions\NotificationException;
 use App\Models\UserAuditions;
-
+use Illuminate\Support\Collection;
 
 class Notifications
 {
@@ -23,7 +22,6 @@ class Notifications
     const CUSTOM = 'custom';
     const CMS = 'cms';
     const CMS_TO_USER = 'cms_to_user';
-
 
     public static function send($audition = null, $type, $user = null, $title = null, $message = null)
     {
@@ -88,11 +86,17 @@ class Notifications
                         'title' => $title,
                         'code' => $type,
                         'status' => 'unread',
-                        'message' => $title
+                        'message' => $title,
                     ]);
 
+                    $tokenArray = new Collection();
+                    $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                        $tokenArray->push($user_token_detail->device_token);
+                    });
+                    $tokens = $tokenArray->toArray();
+
                     fcm()
-                        ->to([$user->pushkey])
+                        ->to($tokens)
                         ->notification([
                             'title' => $title,
                             'body' => $title,
@@ -105,11 +109,17 @@ class Notifications
                             'title' => $title,
                             'code' => $type,
                             'status' => 'unread',
-                            'message' => $message
+                            'message' => $message,
                         ]);
 
+                        $tokenArray = new Collection();
+                        $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                            $tokenArray->push($user_token_detail->device_token);
+                        });
+                        $tokens = $tokenArray->toArray();
+
                         fcm()
-                            ->to([$user->pushkey])
+                            ->to($tokens)
                             ->notification([
                                 'title' => $title,
                                 'body' => $message,
@@ -124,8 +134,8 @@ class Notifications
                     if ($type == 'custom') {
 
                         $repo = new UserAuditionsRepository(new UserAuditions());
-                        $repData = $repo->getByParam('appointment_id',$audition->id);
-                        if ($repData->count() === 0  ) {
+                        $repData = $repo->getByParam('appointment_id', $audition->id);
+                        if ($repData->count() === 0) {
                             throw new \Exception('NULL ELEMENETS TO NOTIFICATE');
                         }
                         $repData->each(function ($useraudition) use ($title, $message, $type) {
@@ -136,19 +146,24 @@ class Notifications
                                 'title' => $title,
                                 'code' => $type,
                                 'status' => 'unread',
-                                'message' => $tomsg
+                                'message' => $tomsg,
                             ]);
 
+                            $tokenArray = new Collection();
+                            $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                                $tokenArray->push($user_token_detail->device_token);
+                            });
+                            $tokens = $tokenArray->toArray();
 
                             fcm()
-                                ->to([$user_result->pushkey])
+                                ->to($tokens)
                                 ->notification([
                                     'title' => $title,
                                     'body' => $tomsg,
                                 ])
                                 ->send();
                         });
-                    }else {
+                    } else {
                         $audition->contributors->each(function ($contributor) use ($title, $message, $type, $audition, $log) {
                             $userRepo = new UserRepository(new User);
                             $tomsg = !empty($message) ? $message : $title;
@@ -158,11 +173,18 @@ class Notifications
                                 'code' => $type,
                                 'status' => 'unread',
                                 'custom_data' => $contributor->id,
-                                'message' => $tomsg
+                                'message' => $tomsg,
                             ]);
+
+                            $tokenArray = new Collection();
+                            $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                                $tokenArray->push($user_token_detail->device_token);
+                            });
+                            $tokens = $tokenArray->toArray();
+
                             $log->info($history);
                             fcm()
-                                ->to([$user_result->pushkey])
+                                ->to($tokens)
                                 ->notification([
                                     'title' => $title,
                                     'body' => $tomsg,
@@ -172,16 +194,22 @@ class Notifications
                     }
                 } elseif ($to == 'ONE' && ($user instanceof User)) {
                     $user->notification_settings_on->each(function ($notification) use ($title, $message, $type, $user) {
-                        if ($notification->code == $type && $notification->status == 'on')
+                        if ($notification->code == $type && $notification->status == 'on') {
                             $user->notification_history()->create([
                                 'title' => $title,
                                 'code' => $type,
                                 'status' => 'unread',
-                                'message' => $message
+                                'message' => $message,
                             ]);
+                        }
+                        $tokenArray = new Collection();
+                        $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                            $tokenArray->push($user_token_detail->device_token);
+                        });
+                        $tokens = $tokenArray->toArray();
 
                         fcm()
-                            ->to([$user->pushkey])
+                            ->to($tokens)
                             ->notification([
                                 'title' => $title,
                                 'body' => $message,
@@ -190,7 +218,6 @@ class Notifications
                     });
                 }
             }
-
 
         } catch (NotificationException $exception) {
             // $this->log->error($exception->getMessage());
