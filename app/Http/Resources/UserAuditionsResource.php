@@ -25,7 +25,7 @@ class UserAuditionsResource extends JsonResource
         $repoAppointment = new AppointmentRepository(new Appointments());
         $dataRepo = $repoAppointment->find($this->appointment_id);
 
-        $round = Appointments::select('round')->where('id', $this->appointment_id)->first();
+        $round = Appointments::select('round','status')->where('id', $this->appointment_id)->first();
         $dataHour = null;
         $dataProduction = explode(",", $dataRepo->auditions->production);
         $url_media = $dataRepo->auditions->resources
