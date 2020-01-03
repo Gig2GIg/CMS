@@ -117,9 +117,9 @@ class InstantFeedbackController extends Controller
         if (!is_null($request->value)) {
             $auditionRepo = new Auditions();
             $data = $auditionRepo
-                // ->select('id')
                 ->where('title', 'like', "%{$request->value}%")
                 ->where('status', 1)
+                ->where('user_id', $this->getUserLogging())
                 ->get();
             return response()->json(['data' => $data], 200);
         } else {
