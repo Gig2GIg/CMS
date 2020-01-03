@@ -242,10 +242,9 @@ class AuditionManagementController extends Controller
             $userCount = count($user->notification_history);
 
             if ($userCount > 0) {
-                $responseData = NoficationsResource::collection($user->notification_history->where('status', unread));
-                $unreadNotificationsCount = $responseData->count();
+                $responseData = NoficationsResource::collection($user->notification_history->where('status', 'unread'));
+                $unreadNotificationsCount = count($responseData);
             }
-            
             if ($this->collection->count() > 0) {
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection->sortByDesc('created_at')->unique())];
                 $code = 200;
@@ -260,6 +259,7 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
+            echo $exception->getMessage();
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Not Found Data'], 404);
         }
