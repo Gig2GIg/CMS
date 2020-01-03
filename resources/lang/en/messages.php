@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Controllers\NotificationManagementController;
-use App\Http\Controllers\UserController;
-
 return [
 
     /*
@@ -99,7 +96,8 @@ return [
 
     // Notification Controller
     'record_not_created' => 'record_not_created',
-
+    'notifications_not_found' => 'There are no notifications',
+    
     // OnlineMediaAuditionController
     'media_created' => 'Media created',
     'media_not_created' => 'Media not created',
