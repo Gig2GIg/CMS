@@ -232,6 +232,19 @@ class AuditionManagementController extends Controller
                 }
             });
 
+            /**
+             * Get all unread notifications
+             */
+            $unreadNotificationsCount = 0;
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($this->getUserLogging());
+            $userCount = count($user->notification_history);
+
+            if ($userCount > 0) {
+                $responseData = NoficationsResource::collection($user->notification_history->where('status', unread));
+                $unreadNotificationsCount = $responseData->count();
+            }
+            
             if ($this->collection->count() > 0) {
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection->sortByDesc('created_at')->unique())];
                 $code = 200;
@@ -239,6 +252,8 @@ class AuditionManagementController extends Controller
                 $dataResponse = ['data' => []];
                 $code = 200;
             }
+
+            $dataResponse['unreadNotificationsCount'] = $unreadNotificationsCount;
 
 
             return response()->json($dataResponse, $code);
