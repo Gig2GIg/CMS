@@ -34,7 +34,7 @@ class Notifications
                 case self::AUTIDION_ADD_CONTRIBUIDOR:
                     $log->info("PUSH NOTIFICATION AUDITION SAVE " . $audition->title);
                     $title = 'Audition Save';
-                    $message = 'you have been add to  audition ' . $audition->title;
+                    $message = 'You have been added to the audition ' . $audition->title;
                     $to = 'MANY';
                     break;
                 case self::UPCOMING_AUDITION:
