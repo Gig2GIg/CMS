@@ -519,7 +519,7 @@ class AuditionsController extends Controller
                     $rol->image()->update(['url' => $roles['cover']]);
                     $rol->update($roldata);
                 }
-                if (isset($request->appointment)) {
+                if (isset($request->appointment) && isset($request->appointment[0]['slots'])) {
                     foreach ($request->appointment[0]['slots'] as $slot) {
 
                         $dataSlots = [
