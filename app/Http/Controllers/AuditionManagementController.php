@@ -170,6 +170,7 @@ class AuditionManagementController extends Controller
                 ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
+                ->where('appointments.status', 0)
                 ->get()->sortByDesc('created_at');
 
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
