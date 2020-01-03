@@ -480,7 +480,7 @@ class AuditionsController extends Controller
         $this->log->info($request);
         $auditionFilesData = [];
         try {
-            if (isset($request['media'])) {
+            if (isset($request['media']) && is_array($request['media'])) {
                 foreach ($request['media'] as $file) {
                     $auditionFilesData[] = [
                         'url' => $file['url'],
@@ -507,7 +507,7 @@ class AuditionsController extends Controller
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
                 }
-                if (isset($request['dates'])) {
+                if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
                         $audition->dates()->update($this->dataDatesToProcess($date));
                     }
