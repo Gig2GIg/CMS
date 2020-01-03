@@ -24,8 +24,6 @@ class UserAuditionsResource extends JsonResource
 
         $repoAppointment = new AppointmentRepository(new Appointments());
         $dataRepo = $repoAppointment->find($this->appointment_id);
-
-        $round = Appointments::select('round')->where('id', $this->appointment_id)->first();
         $dataHour = null;
         $dataProduction = explode(",", $dataRepo->auditions->production);
         $url_media = $dataRepo->auditions->resources
@@ -34,17 +32,7 @@ class UserAuditionsResource extends JsonResource
             ->pluck('url');
         $rolanme = Roles::where('id', '=', $this->rol_id)->get()->pluck('name');
         $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
-        // print_r($feedback_comment);
-        // die;
-        // ===========================
-        // $feedback_favorite = Feedbacks::select('favorite')->where('appointment_id', $this->appointment_id)->first();
-        // if ($feedback_favorite == null) {
-        //     $favorite = new stdClass();
-        //     $favorite->favorite = 0;
-        // } else {
-        //     $favorite = $feedback_favorite;
-        // }
-        // ===========================
+
         $slot = $this->slot_id;
         if ($slot != null) {
             $repoSlot = new SlotsRepository(new Slots());
@@ -68,11 +56,10 @@ class UserAuditionsResource extends JsonResource
             'production' => $dataProduction,
             'media' => $url_media[0] ?? null,
             'number_roles' => count($dataRepo->auditions->roles),
-            'round' => $round->round,
+            'round' => $dataRepo->round,
             // ===========================
             'comment' => $feedback_comment['comment'],
             'status' => $dataRepo->status,
-            // 'favorite' => $favorite->favorite,
             'assign_no' => $this->assign_no ?? NULL,
             // ===========================
         ];

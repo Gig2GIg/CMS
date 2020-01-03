@@ -163,17 +163,21 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
-            // $data = DB::table('appointments')
-            //     ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
-            //     ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
-            //     ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
-            //     ->where('UA.user_id', $this->getUserLogging())
-            //     ->where('F.user_id', $this->getUserLogging())
-            //     ->get()->sortByDesc('created_at');
 
-            $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
-            $data = $userAuditionsData->sortByDesc('created_at');
+            $data = DB::table('appointments')
+                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
+                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->where('UA.user_id', $this->getUserLogging())
+                ->where('F.user_id', $this->getUserLogging())
+                ->where('appointments.status', 0)
+                ->get()->sortByDesc('created_at');
+
+            // $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            // $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            // $data = $userAuditionsData->sortByDesc('created_at');
+
+
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
             } else {
@@ -1036,7 +1040,7 @@ class AuditionManagementController extends Controller
                 $list_of_numbers = $repoUserAuditions->all()
                     ->where('assign_no', $request->assign_no)
                     ->where('appointment_id', $request->appointment_id);
-                    
+
                 if ($list_of_numbers->count() > 0) {
                     return response()->json(['message' => trans('messages.number_already_used'), 'data' => []], 409);
                 }
