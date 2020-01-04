@@ -3,9 +3,11 @@
 namespace App\Http\Resources;
 
 use App\Http\Repositories\InstantFeedbackRepository;
-use App\Models\InstantFeedback;
-
+use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\UserRepository;
+
+use App\Models\InstantFeedback;
+use App\Models\UserSlots;
 use App\Models\User;
 
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -36,6 +38,13 @@ class CheckGroupStatusResource extends JsonResource
 
         $is_feedback_sent = $instantFeedbackData->count() == 0 ? 0 : 1;
 
+
+        // favorite FROM user_slots
+
+        $userSlotsRepo = new UserSlotsRepository(new UserSlots());
+        $userSlotsData = $userSlotsRepo->findbyparam('slots_id', $this->slot_id)->first();
+        $favorite = $userSlotsData->favorite;
+
         $return =  [
             'id' => $userData->details->id,
             'first_name' => $userData->details->first_name,
@@ -53,7 +62,8 @@ class CheckGroupStatusResource extends JsonResource
             'rol_id' => $this->rol_id,
             'appointment_id' => $this->appointment_id,
             'image' => $userData->image->url,
-            'is_feedback_sent' => $is_feedback_sent
+            'is_feedback_sent' => $is_feedback_sent,
+            'favorite' => $favorite
         ];
         return $return;
     }
