@@ -144,6 +144,7 @@ class AuditionManagementController extends Controller
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
+                ->where('UA.type', 1)
                 ->get()->sortByDesc('created_at');
 
             if ($dataAuditions->count() > 0) {
