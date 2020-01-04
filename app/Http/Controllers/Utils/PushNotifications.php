@@ -32,6 +32,7 @@ class PushNotifications
                 ])
                 ->send();
         } catch (NotificationException $exception) {
+            $log->error($message);
             $log->error($exception->getMessage());
         }
 
