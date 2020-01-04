@@ -197,18 +197,22 @@ class AppoinmentController extends Controller
                             foreach ($feedbackData as $feedback) {
                                 $allFeddbackUsers[] = $feedback->user_id;
 
-                                $dataToInsert = ['user_id' => $feedback->user_id, 'appointment_id' => $newAppointmentId, 'rol_id' => $auditionRoleId, 'type' => '1'];
+                                $dataToInsert = [
+                                    'user_id' => $feedback->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId, 
+                                    'type' => '1'];
                                 $UserAudition = new UserAuditionsRepository(new UserAuditions());
                                 $UserAudition->create($dataToInsert);
 
-                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                                $dataSlotRepo->create([
-                                    'user_id' => $feedback->user_id,
-                                    'appointment_id' => $newAppointmentId,
-                                    'slots_id' => null,
-                                    'roles_id' => $auditionRoleId,
-                                    'status' => 1,
-                                ]);
+                                // $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                // $dataSlotRepo->create([
+                                //     'user_id' => $feedback->user_id,
+                                //     'appointment_id' => $newAppointmentId,
+                                //     'slots_id' => null,
+                                //     'roles_id' => $auditionRoleId,
+                                //     'status' => 1,
+                                // ]);
                             }
                         }
                     }
