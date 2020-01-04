@@ -148,6 +148,7 @@ class AuditionsController extends Controller
                     $user_contributor,
                     'You have been invited for the audition ' . $audition->title
                 );
+                break;
             });
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
