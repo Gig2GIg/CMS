@@ -111,6 +111,7 @@ class AuditionsController extends Controller
                 }
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
+                        $this->log->error("SAVE CONTRIBUTOR  ==  " . $contrib . "  ++  " . $audition );
                         $this->saveContributor($contrib, $audition);
                     }
                     // $this->sendStoreNotificationToContributors($audition);
