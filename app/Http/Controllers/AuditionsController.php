@@ -340,6 +340,7 @@ class AuditionsController extends Controller
         $repoAppoRound = new AppointmentRepository(new Appointments());
         $dataRepoRound = $repoAppoRound->all()
             ->where('status', true)
+            ->where('round', 1) //We need only first round in all search
             ->pluck('auditions_id');
 
         $dataTemp->all()->whereIn('id', $dataRepoRound)->each(function ($item) use ($data) {
