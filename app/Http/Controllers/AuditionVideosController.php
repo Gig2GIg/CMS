@@ -24,13 +24,16 @@ class AuditionVideosController extends Controller
                 ->where('auditions_id', $audition_id)
                 ->where('round', $round_id)
                 ->pluck('appointments.id');
-
             if ($isOnline) {
                 $AuditionVideos = DB::table('online_media_auditions AS OMA')
                     ->select('OMA.id', 'OMA.name', 'OMA.url', 'UD.first_name', 'UD.user_id', 'R.url AS image', 'US.slots_id', 'US.favorite', 'US.roles_id')
                     ->leftJoin('user_details AS UD', 'UD.user_id', '=', 'OMA.performer_id')
                     ->leftJoin('resources AS R', 'R.resource_id', '=', 'OMA.performer_id')
-                    ->leftJoin('user_slots AS US', 'US.user_id', '=', 'OMA.performer_id')
+                    // ->leftJoin('user_slots AS US', 'US.user_id', '=', 'OMA.performer_id')
+                    ->leftJoin('user_slots AS US', function ($join) {
+                        $join->on('US.user_id', '=', 'OMA.performer_id')
+                            ->on('US.appointment_id', '=', 'OMA.appointment_id');
+                    })
                     ->where('OMA.type', 'video')
                     ->where('R.type', 'cover')
                     ->where('R.resource_type', '=', 'App\Models\User')
@@ -54,7 +57,6 @@ class AuditionVideosController extends Controller
 
             // $data = $AuditionVideos->unique(['slots_id', 'user_id']);
             $data = $AuditionVideos;
-
             foreach ($data as $video) {
                 $video->performer = new stdClass();
                 $video->performer->name = $video->first_name;
