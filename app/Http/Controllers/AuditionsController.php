@@ -137,18 +137,23 @@ class AuditionsController extends Controller
     public function sendStoreNotificationToContributors($audition): void
     {
         try {
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                1,
+                'You have been invited for the audition ' . $audition->title
+            );
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 //                $this->pushNotifications(
                 //                    'You have been registered for the audition ' . $audition->title,
                 //                    $user_contributor
                 //                );
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                    $user_contributor,
-                    'You have been invited for the audition ' . $audition->title
-                );
-                break;
+                // $this->sendPushNotification(
+                //     $audition,
+                //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                //     $user_contributor,
+                //     'You have been invited for the audition ' . $audition->title
+                // );
             });
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
