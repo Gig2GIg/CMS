@@ -113,7 +113,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-                    // $this->sendStoreNotificationToContributors($audition);
+                    $this->sendStoreNotificationToContributors($audition);
                 }
 
                 DB::commit();
@@ -301,12 +301,12 @@ class AuditionsController extends Controller
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
                 $this->createNotification($audition, $contributors);
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                    $dataUser->id,
-                    'You have been invited for the audition ' . $audition->title
-                );
+                // $this->sendPushNotification(
+                //     $audition,
+                //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                //     $dataUser->id,
+                //     'You have been invited for the audition ' . $audition->title
+                // );
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
             }
