@@ -92,7 +92,9 @@ class Notifications
 
                     $tokenArray = new Collection();
                     $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
-                        $tokenArray->push($user_token_detail->device_token);
+                        if($user_token_detail->device_token){
+                            $tokenArray->push($user_token_detail->device_token);
+                        }
                     });
                     $tokens = $tokenArray->toArray();
 
@@ -115,7 +117,9 @@ class Notifications
 
                         $tokenArray = new Collection();
                         $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
-                            $tokenArray->push($user_token_detail->device_token);
+                            if($user_token_detail->device_token){
+                                $tokenArray->push($user_token_detail->device_token);
+                            }
                         });
                         $tokens = $tokenArray->toArray();
 
@@ -152,7 +156,9 @@ class Notifications
 
                             $tokenArray = new Collection();
                             $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray) {
-                                $tokenArray->push($user_token_detail->device_token);
+                                if($user_token_detail->device_token){
+                                    $tokenArray->push($user_token_detail->device_token);
+                                }
                             });
                             $tokens = $tokenArray->toArray();
 
@@ -184,14 +190,8 @@ class Notifications
                                 }
                             });
                             $tokens = $tokenArray->toArray();
-                            // $tokens = array_filter(array_unique($tokens));
+                            
                             $log->info($history);
-                            $log->info('------------------------------------------------------------');
-                            $log->info('------------------------------------------------------------');
-                            $log->info('Tokens');
-                            $log->info(json_encode($tokens));
-                            $log->info(count($tokens));
-                            $log->info('########################################');
                             fcm()
                                 ->to($tokens)
                                 ->notification([
@@ -213,7 +213,9 @@ class Notifications
                         }
                         $tokenArray = new Collection();
                         $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
-                            $tokenArray->push($user_token_detail->device_token);
+                            if($user_token_detail->device_token){
+                                $tokenArray->push($user_token_detail->device_token);
+                            }
                         });
                         $tokens = $tokenArray->toArray();
 
