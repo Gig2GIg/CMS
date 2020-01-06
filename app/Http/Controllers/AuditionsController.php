@@ -305,7 +305,7 @@ class AuditionsController extends Controller
                 $auditionContributorsData = $this->dataToContributorsProcess($dataUser, $audition);
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
-                $send = $email->sendContributor($contrib['email'], $audition->title);
+                // $send = $email->sendContributor($contrib['email'], $audition->title);
                 $this->createNotification($audition, $auditionContributorsData, $dataUser);
                 // $this->sendPushNotification(
                 //     $audition,
