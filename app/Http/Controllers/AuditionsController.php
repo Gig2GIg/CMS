@@ -648,7 +648,7 @@ class AuditionsController extends Controller
 
             $notification = $notificationHistoryRepo->find($request->notification_id);
 
-            $this->sendInviteNotificationToContributors($audition);
+            // $this->sendInviteNotificationToContributors($audition);
 
             $data = [
                 'status' => $request->status,
