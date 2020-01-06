@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Repositories\InstantFeedbackRepository;
+use App\Models\Feedbacks;
 use App\Models\InstantFeedback;
 
 class AppointmentResource extends JsonResource
@@ -28,12 +30,19 @@ class AppointmentResource extends JsonResource
         $slotData = $slot->find($this->slots_id);
 
         $repo = new InstantFeedbackRepository(new InstantFeedback());
-        $data = $repo->findbyparams([
+        $instant_feedback = $repo->findbyparams([
             'appointment_id' => $slotData->appointment_id,
             'user_id' => $this->user_id
         ])->get();
-        
-        $is_feedback_sent = $data->count() == 0 ? 0 : 1;
+
+
+        $feedbackRepo = new FeedbackRepository(new Feedbacks());
+        $feedback = $feedbackRepo->findbyparams([
+            'appointment_id' => $this->appointment_id,
+            'user_id' => $this->user_id
+        ])->first();
+
+        $is_feedback_sent = $instant_feedback->count() == 0 ? 0 : 1;
 
         return [
             'user_id' => $this->user_id,
@@ -41,7 +50,8 @@ class AppointmentResource extends JsonResource
             'image' => $userData->image->url,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'time' => $slotData->time,
-            'favorite' => $this->favorite,
+            'favorite' => $feedback->favorite,
+            // 'favorite' => $this->favorite,
             'slot_id' => $this->slots_id,
             'is_feedback_sent' => $is_feedback_sent ?? null
         ];
