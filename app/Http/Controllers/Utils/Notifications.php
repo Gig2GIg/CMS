@@ -181,7 +181,7 @@ class Notifications
                             $tokens = [];
                             $user_result->pushkey->each(function ($user_token_detail) use ($tokens) {
 
-                                if($user_token_detail->device_token && !in_array($user_token_detail->device_token ,$tokens)){
+                                if($user_token_detail->device_token ){
                                     $tokens[] = $user_token_detail->device_token;
                                 }
                                 // $tokenArray->push($user_token_detail->device_token);
