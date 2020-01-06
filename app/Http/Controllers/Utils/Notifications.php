@@ -179,9 +179,9 @@ class Notifications
 
                             // $tokenArray = new Collection();
                             $tokens = [];
-                            $user_result->pushkey->each(function ($user_token_detail) use ($tokens) {
+                            $user_result->pushkey->each(function ($user_token_detail) {
 
-                                if($user_token_detail->device_token ){
+                                if($user_token_detail->device_token != '') {
                                     $tokens[] = $user_token_detail->device_token;
                                 }
                                 // $tokenArray->push($user_token_detail->device_token);
