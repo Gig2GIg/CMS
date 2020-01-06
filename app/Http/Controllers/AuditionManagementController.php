@@ -1006,7 +1006,8 @@ class AuditionManagementController extends Controller
                 ->where('UA.appointment_id', $request->appointment_id)
                 ->get();
 
-            $user_data =  CheckGroupStatusResource::collection($userData);
+            // $user_data =  CheckGroupStatusResource::collection($userData);
+            $user_data =  CheckGroupStatusResource::collection($userData->unique('user_id'));
 
             return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
         } catch (\Exception $exception) {
