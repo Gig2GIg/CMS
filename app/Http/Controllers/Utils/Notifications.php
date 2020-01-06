@@ -184,6 +184,9 @@ class Notifications
                             $tokens = $tokenArray->toArray();
 
                             $log->info($history);
+                            $log->info('------------------------------------------------------------');
+                            $log->info('------------------------------------------------------------');
+                            $log->info(json_encode($tokens));
                             fcm()
                                 ->to($tokens)
                                 ->notification([
