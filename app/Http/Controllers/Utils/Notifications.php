@@ -177,16 +177,13 @@ class Notifications
                                 'message' => $tomsg,
                             ]);
 
-                            // $tokenArray = new Collection();
-                            $tokens = [];
-                            $user_result->pushkey->each(function ($user_token_detail) {
-
-                                if($user_token_detail->device_token != '') {
-                                    $tokens[] = $user_token_detail->device_token;
+                            $tokenArray = new Collection();
+                            $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray) {
+                                if($user_token_detail->device_token){
+                                    $tokenArray->push($user_token_detail->device_token);
                                 }
-                                // $tokenArray->push($user_token_detail->device_token);
                             });
-                            // $tokens = $tokenArray->toArray();
+                            $tokens = $tokenArray->toArray();
                             // $tokens = array_filter(array_unique($tokens));
                             $log->info($history);
                             $log->info('------------------------------------------------------------');
@@ -194,17 +191,14 @@ class Notifications
                             $log->info('Tokens');
                             $log->info(json_encode($tokens));
                             $log->info(count($tokens));
-                            $log->info('****************************');
-                            $log->info('****************************');
-                            if(!empty($tokens)) {
-                                fcm()
-                                    ->to($tokens)
-                                    ->notification([
-                                        'title' => $title,
-                                        'body' => $tomsg,
-                                    ])
-                                    ->send();
-                            }
+                            $log->info('########################################');
+                            fcm()
+                                ->to($tokens)
+                                ->notification([
+                                    'title' => $title,
+                                    'body' => $tomsg,
+                                ])
+                                ->send();
                         });
                     }
                 } elseif ($to == 'ONE' && ($user instanceof User)) {
