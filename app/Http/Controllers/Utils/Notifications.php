@@ -182,11 +182,13 @@ class Notifications
                                 $tokenArray->push($user_token_detail->device_token);
                             });
                             $tokens = $tokenArray->toArray();
-
+                            $tokens = array_filter(array_unique($tokens));
                             $log->info($history);
                             $log->info('------------------------------------------------------------');
                             $log->info('------------------------------------------------------------');
+                            $log->info('Tokens');
                             $log->info(json_encode($tokens));
+                            $log->info(count($tokens));
                             fcm()
                                 ->to($tokens)
                                 ->notification([
