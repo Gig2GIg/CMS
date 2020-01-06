@@ -113,7 +113,7 @@ class AuditionsController extends Controller
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
                     }
-                    // $this->sendStoreNotificationToContributors($audition);
+                    $this->sendStoreNotificationToContributors($audition);
                 }
 
                 DB::commit();
@@ -137,17 +137,23 @@ class AuditionsController extends Controller
     public function sendStoreNotificationToContributors($audition): void
     {
         try {
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                1,
+                'You have been invited for the audition ' . $audition->title
+            );
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 //                $this->pushNotifications(
                 //                    'You have been registered for the audition ' . $audition->title,
                 //                    $user_contributor
                 //                );
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                    $user_contributor,
-                    'You have been invited for the audition ' . $audition->title
-                );
+                // $this->sendPushNotification(
+                //     $audition,
+                //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                //     $user_contributor,
+                //     'You have been invited for the audition ' . $audition->title
+                // );
             });
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -301,12 +307,12 @@ class AuditionsController extends Controller
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
                 $this->createNotification($audition, $contributors);
-                $this->sendPushNotification(
-                    $audition,
-                    SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                    $dataUser->id,
-                    'You have been invited for the audition ' . $audition->title
-                );
+                // $this->sendPushNotification(
+                //     $audition,
+                //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+                //     $dataUser->id,
+                //     'You have been invited for the audition ' . $audition->title
+                // );
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
             }
@@ -340,6 +346,7 @@ class AuditionsController extends Controller
         $repoAppoRound = new AppointmentRepository(new Appointments());
         $dataRepoRound = $repoAppoRound->all()
             ->where('status', true)
+            ->where('round', 1) //We need only first round in all search
             ->pluck('auditions_id');
 
         $dataTemp->all()->whereIn('id', $dataRepoRound)->each(function ($item) use ($data) {
@@ -480,7 +487,7 @@ class AuditionsController extends Controller
         $this->log->info($request);
         $auditionFilesData = [];
         try {
-            if (isset($request['media'])) {
+            if (isset($request['media']) && is_array($request['media'])) {
                 foreach ($request['media'] as $file) {
                     $auditionFilesData[] = [
                         'url' => $file['url'],
@@ -507,8 +514,10 @@ class AuditionsController extends Controller
                 foreach ($auditionFilesData as $file) {
                     $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
                 }
-                foreach ($request['dates'] as $date) {
-                    $audition->dates()->update($this->dataDatesToProcess($date));
+                if (isset($request['dates']) && is_array($request['dates'])) {
+                    foreach ($request['dates'] as $date) {
+                        $audition->dates()->update($this->dataDatesToProcess($date));
+                    }
                 }
                 foreach ($request->roles as $roles) {
                     $roldata = $this->dataRolesToProcess($audition, $roles);
@@ -517,7 +526,7 @@ class AuditionsController extends Controller
                     $rol->image()->update(['url' => $roles['cover']]);
                     $rol->update($roldata);
                 }
-                if (isset($request->appointment)) {
+                if (isset($request->appointment) && isset($request->appointment[0]['slots'])) {
                     foreach ($request->appointment[0]['slots'] as $slot) {
 
                         $dataSlots = [

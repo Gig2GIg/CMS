@@ -34,6 +34,11 @@ class NotificationsController extends Controller
             $count = count($user->notification_history);
             if ($count > 0) {
                 $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
+                
+                foreach ($user->notification_history as $notification) {
+                    $notification->update(['status' => 'read']);
+                }
+                
                 return response()->json(['data' => $responseData], 200);
             } else {
                 return response()->json(['data' => trans('messages.data_not_found')], 404);

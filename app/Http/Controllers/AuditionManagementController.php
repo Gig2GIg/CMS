@@ -30,6 +30,7 @@ use App\Http\Resources\UserAuditionsResource;
 use App\Http\Resources\CheckGroupStatusResource;
 
 use App\Http\Resources\AuditionListByPerformer;
+use App\Http\Resources\NoficationsResource;
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
@@ -143,6 +144,7 @@ class AuditionManagementController extends Controller
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
+                ->where('UA.type', 1)
                 ->get()->sortByDesc('created_at');
 
             if ($dataAuditions->count() > 0) {
@@ -232,6 +234,18 @@ class AuditionManagementController extends Controller
                 }
             });
 
+            /**
+             * Get all unread notifications
+             */
+            $unreadNotificationsCount = 0;
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($this->getUserLogging());
+            $userCount = count($user->notification_history);
+
+            if ($userCount > 0) {
+                $responseData = NoficationsResource::collection($user->notification_history->where('status', 'unread'));
+                $unreadNotificationsCount = count($responseData);
+            }
             if ($this->collection->count() > 0) {
                 $dataResponse = ['data' => AuditionResponse::collection($this->collection->sortByDesc('created_at')->unique())];
                 $code = 200;
@@ -240,10 +254,13 @@ class AuditionManagementController extends Controller
                 $code = 200;
             }
 
+            $dataResponse['unreadNotificationsCount'] = $unreadNotificationsCount;
+
 
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
+            echo $exception->getMessage();
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Not Found Data'], 404);
         }
