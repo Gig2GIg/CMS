@@ -189,7 +189,7 @@ class Notifications
                                     $tokenArray->push($user_token_detail->device_token);
                                 }
                             });
-                            $tokens = $tokenArray->toArray();
+                            $tokens = $tokenArray->unique()->toArray();
                             
                             $log->info($history);
                             fcm()
