@@ -24,7 +24,7 @@ class PushNotifications
                     $tokenArray->push($user_token_detail->device_token);
                 }
             });
-            $tokens = $tokenArray->toArray();
+            $tokens = $tokenArray->unique()->toArray();
 
             fcm()
                 ->to($tokens)
