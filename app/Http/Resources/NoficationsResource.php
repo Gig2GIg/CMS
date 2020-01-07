@@ -23,7 +23,7 @@ class NoficationsResource extends JsonResource
             'code' => $this->code,
             'custom_data' => $this->custom_data,
             'time_ago' => $this->created_at->diffForHumans(),
-            'message' => $this->message,
+            'message' => $this->message ?? null,
         ];
     }
 }
