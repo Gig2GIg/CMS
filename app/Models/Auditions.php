@@ -68,4 +68,9 @@ class Auditions extends Model
     public function recommendations_marketplaces(){
         return $this->hasMany(Recommendations::class, 'audition_id');
     }
+
+    public function feedbacks(){
+        return $this->hasMany(Feedbacks::class, 'appointment_id');
+    }
+    
 }

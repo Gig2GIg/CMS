@@ -253,7 +253,7 @@ class AuditionsController extends Controller
         ];
     }
 
-    public function createNotification($audition, $userContributor): void
+    public function createNotification($audition, $auditionContributor, $user): void
     {
         try {
 
@@ -268,9 +268,9 @@ class AuditionsController extends Controller
             $notificationHistoryData = [
                 'title' => $audition->title,
                 'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                'user_id' => $userContributor->id,
+                'user_id' => $user->id,
                 'message' => 'You have been invited to audition ' . $audition->title,
-                'custom_data' => $userContributor->id,
+                'custom_data' => $auditionContributor->id,
                 'status' => 'unread',
             ];
 
@@ -306,7 +306,7 @@ class AuditionsController extends Controller
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
-                $this->createNotification($audition, $dataUser);
+                $this->createNotification($audition, $contributors, $dataUser);
                 // $this->sendPushNotification(
                 //     $audition,
                 //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
@@ -648,7 +648,7 @@ class AuditionsController extends Controller
 
             $notification = $notificationHistoryRepo->find($request->notification_id);
 
-            $this->sendInviteNotificationToContributors($audition);
+            // $this->sendInviteNotificationToContributors($audition);
 
             $data = [
                 'status' => $request->status,
