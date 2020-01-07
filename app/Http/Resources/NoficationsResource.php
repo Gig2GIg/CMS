@@ -22,7 +22,8 @@ class NoficationsResource extends JsonResource
             'status' => $this->status,
             'code' => $this->code,
             'custom_data' => $this->custom_data,
-            'time_ago' => $this->created_at->diffForHumans()
+            'time_ago' => $this->created_at->diffForHumans(),
+            'message' => $this->message ?? null,
         ];
     }
 }
