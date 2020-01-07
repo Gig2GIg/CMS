@@ -43,21 +43,20 @@ class MonitorManagerController extends Controller
 
                 $auditionRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionRepo->find($appointment->auditions_id);
-
                 $userDirector = $audition->user;
 
-//                $this->createNotification($appointment->auditions, $request->title);
+                //                $this->createNotification($appointment->auditions, $request->title);
 
-//                $this->saveCreateNotification($userDirector, $audition);
+                //                $this->saveCreateNotification($userDirector, $audition);
 
-//                $this->sendCreateNotification($audition);
+                //                $this->sendCreateNotification($audition);
                 $this->sendPushNotification(
                     $appointment,
                     'custom',
                     null,
+                    $audition->title,
                     $request->title
                 );
-
             } else {
                 $dataResponse = ['data' => 'Update Not Publised'];
                 $code = 406;
@@ -82,7 +81,6 @@ class MonitorManagerController extends Controller
                     $user_director
                 );
             });
-
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -99,7 +97,6 @@ class MonitorManagerController extends Controller
                     'message' => 'Audition ' . $audition->title . ' has been created'
                 ]);
             }
-
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -120,12 +117,10 @@ class MonitorManagerController extends Controller
 
                 $notificationRepo = new NotificationRepository(new Notification());
                 $m = $notificationRepo->create($notificationData);
-
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
-
     }
 
     public function list(Request $request)
@@ -163,7 +158,6 @@ class MonitorManagerController extends Controller
                         'title' => $datum->title,
                         'time' => $datum->time,
                     ];
-
                 }
                 $dataResponse = ['data' => $retu];
                 $code = 200;
