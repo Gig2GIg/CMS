@@ -62,7 +62,9 @@ class NotificationsController extends Controller
             $count = count($user->notification_history);
 
             foreach ($user->notification_history as $notification) {
-                $notification->update(['status' => 'read']);
+                if ($notification->status == 'unread') {
+                    $notification->update(['status' => 'read']);
+                }
             }
 
             $responseData = NoficationsResource::collection($user->notification_history->sortByDesc('created_at'));
