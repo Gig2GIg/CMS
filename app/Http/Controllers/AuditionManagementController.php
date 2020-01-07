@@ -670,11 +670,9 @@ class AuditionManagementController extends Controller
     public function reorderAppointmentTimes(Request $request)
     {
         try {
-
-
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-
+            
             foreach ($request->slots as $slot) {
 
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
@@ -699,6 +697,8 @@ class AuditionManagementController extends Controller
                     'slot_time' => $slot->time
                 ];
 
+                $audition = $appoiment->auditions;
+                
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
 
@@ -728,14 +728,15 @@ class AuditionManagementController extends Controller
     {
         try {
             $userRepo = new UserRepository(new User);
-
-            $audition->user_auditions->each(function ($user_audition) use ($audition) {
-                $user = $userRepo->find($user_audition['user_id']);
-                $this->pushNotifications(
-                    'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
-                    $user_auditions
-                );
-            });
+            if($audition->user_auditions) {
+                $audition->user_auditions->each(function ($user_audition) use ($audition) {
+                    $user = $userRepo->find($user_audition['user_id']);
+                    $this->pushNotifications(
+                        'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
+                        $user_auditions
+                    );
+                });
+            }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
