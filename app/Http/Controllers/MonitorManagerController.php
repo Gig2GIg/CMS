@@ -78,7 +78,8 @@ class MonitorManagerController extends Controller
             $audition->user->each(function ($user_director) use ($audition) {
                 $this->pushNotifications(
                     'Audition ' . $audition->title . ' has been created',
-                    $user_director
+                    $user_director,
+                    $audition->title
                 );
             });
         } catch (NotFoundException $exception) {

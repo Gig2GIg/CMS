@@ -198,7 +198,7 @@ class AppoinmentAuditionsController extends Controller
     public function sendStoreNotificationToUser($user, $audition): void
     {
         try {
-            $this->pushNotifications('You have been registered for the audition ' . $audition->title, $user);
+            $this->pushNotifications('You have been registered for the audition ' . $audition->title, $user, $audition->title);
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }

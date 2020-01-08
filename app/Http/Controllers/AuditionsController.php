@@ -146,7 +146,8 @@ class AuditionsController extends Controller
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 //                $this->pushNotifications(
                 //                    'You have been registered for the audition ' . $audition->title,
-                //                    $user_contributor
+                //                    $user_contributor,
+                //                    $audition->title
                 //                );
                 // $this->sendPushNotification(
                 //     $audition,
@@ -702,7 +703,8 @@ class AuditionsController extends Controller
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
                     'You have been invited for the audition ' . $audition->title,
-                    $user_contributor
+                    $user_contributor,
+                    $audition->title
                 );
             });
         } catch (NotFoundException $exception) {

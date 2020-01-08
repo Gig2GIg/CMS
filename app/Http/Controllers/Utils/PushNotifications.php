@@ -15,12 +15,12 @@ class PushNotifications
         $this->log = new LogManger();
     }
 
-    public static function send($message, $user)
+    public static function send($message, $user, $title = null)
     {
         try {
             $tokenArray = new Collection();
             $user->pushkey->each(function ($user_token_detail) use ($tokenArray) {
-                if($user_token_detail->device_token){
+                if ($user_token_detail->device_token) {
                     $tokenArray->push($user_token_detail->device_token);
                 }
             });
@@ -29,7 +29,7 @@ class PushNotifications
             fcm()
                 ->to($tokens)
                 ->notification([
-                    'title' => $message,
+                    'title' => $title,
                     'body' => $message,
                 ])
                 ->send();

@@ -92,7 +92,8 @@ class AuditionManagementController extends Controller
         try {
             $this->pushNotifications(
                 'You have been added to upcoming audition ' . $audition->title,
-                $user
+                $user,
+                $audition->title
             );
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -733,7 +734,8 @@ class AuditionManagementController extends Controller
                     $user = $userRepo->find($user_audition['user_id']);
                     $this->pushNotifications(
                         'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
-                        $user_auditions
+                        $user_auditions,
+                        $audition->title
                     );
                 });
             }
