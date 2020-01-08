@@ -97,19 +97,34 @@ class RecommendationsController extends Controller
 
             foreach ($request->marketplaces as $markeplace) {
 
-                $recommendation = Recommendations::find($markeplace['id']);
+                $data = [
+                    'marketplace_id' => $markeplace['marketplace_id'],
+                    'audition_id' => $audition->id,
+                    'user_id' => $markeplace['user_id'],
+                    'appointment_id' => $markeplace['appointment_id'],
+                ];
 
-                if (!is_null($recommendation)) {
-                    $recommendation->update([
-                        'marketplace_id' => $markeplace['marketplace_id'],
-                    ]);
+                $checkAlreadyExists = $repoRecommendation->findbyparams($data)->first();
+                if ($checkAlreadyExists) {
+                    $responseData = 'Already exists';
+                    $code = 422;
+
+                    return response()->json(['data' => $responseData], $code);
                 }
+                // $recommendation = Recommendations::find($markeplace['id']);
 
-                if (is_null($recommendation)) {
+                // if (!is_null($recommendation)) {
+                //     $recommendation->update([
+                //         'marketplace_id' => $markeplace['marketplace_id'],
+                //     ]);
+                // }
+
+                if (is_null($checkAlreadyExists)) {
                     $repoRecommendation->create([
                         'marketplace_id' => $markeplace['marketplace_id'],
                         'audition_id' => $audition->id,
                         'user_id' => $markeplace['user_id'],
+                        'appointment_id' => $markeplace['appointment_id'],
                     ]);
                 }
             }
@@ -119,6 +134,7 @@ class RecommendationsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
+            print_r($ex->getMessage());exit;
             $this->log->error($ex->getMessage());
             // return response()->json(['error' => 'ERROR'], 422);
             return response()->json(['error' => trans('messages.error')], 422);
