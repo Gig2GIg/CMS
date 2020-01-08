@@ -8,7 +8,6 @@
 
 namespace App\Http\Repositories;
 
-
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
@@ -29,10 +28,8 @@ class RecommendationsRepository implements IRecommendationsRepository
         $this->log = new LogManger();
     }
 
-
     public function create(array $data): Recommendations
     {
-
 
         try {
             return $this->model->create($data);
@@ -43,37 +40,34 @@ class RecommendationsRepository implements IRecommendationsRepository
         }
     }
 
-
     public function find($id): Recommendations
     {
-        try{
+        try {
             return $this->model->findOrFail($id);
-        }catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
 
     }
-
 
     public function findbyparam($colum, $value): Recommendations
     {
-        try{
+        try {
 
-            return $this->model->where($colum,'=',$value)->first();
-        }catch (ModelNotFoundException $e){
+            return $this->model->where($colum, '=', $value)->first();
+        } catch (ModelNotFoundException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
 
     }
 
-
-    public function update(array $data) : bool
+    public function update(array $data): bool
     {
-        try{
+        try {
             return $this->model->update($data);
-        }catch (QueryException $e){
+        } catch (QueryException $e) {
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new UpdateException($e);
         }
@@ -91,4 +85,17 @@ class RecommendationsRepository implements IRecommendationsRepository
     {
         return $this->model->all();
     }
+
+    public function findbyparams($array)
+    {
+        try {
+
+            return $this->model->where($array);
+        } catch (ModelNotFoundException $e) {
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
+
+    }
+
 }

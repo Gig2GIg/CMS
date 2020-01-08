@@ -32,6 +32,15 @@ class RecommendationsController extends Controller
             'audition_id' => $request->audition_id,
             'appointment_id' => $request->appointment_id,
         ];
+
+        $checkAlreadyExists = $recommendationsRepo->findbyparams($data)->first();
+        if ($checkAlreadyExists) {
+            $responseData = 'Already exists';
+            $code = 422;
+
+            return response()->json(['data' => $responseData], $code);
+        }
+
         $recommendation = $recommendationsRepo->create($data);
 
         if ($recommendation) {
@@ -46,12 +55,12 @@ class RecommendationsController extends Controller
     }
 
     function list(Auditions $audition, Request $request) {
+
         $data = $audition->recommendations_marketplaces;
 
-        $data = $audition->recommendations_marketplaces->where('user_id', $this->getUserLogging());
+        $data = $audition->recommendations_marketplaces->where('user_id', $this->getUserLogging())->where('appointment_id', $request->appointment_id);
 
         if (count($data) > 0) {
-            $data->where('user_id', $this->getUserLogging());
             $responseData = RecommendationMarketplacesResource::collection($data);
             $code = 200;
         } else {
