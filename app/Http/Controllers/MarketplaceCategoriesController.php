@@ -3,19 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\Marketplace\MarketplaceCategoryRepository as MarketplaceCategoryRepo;
 use App\Http\Repositories\Marketplace\MarketplaceRepository;
-use App\Http\Repositories\ResourcesRepository;
+use App\Http\Resources\Cms\MarketplaceCategoryResource;
 use App\Models\Marketplace;
 use App\Models\MarketplaceCategory;
-use App\Http\Resources\Cms\MarketplaceCategoryResource;
-use App\Http\Resources\Cms\MarketplaceResource;
-use App\Http\Requests\Marketplace\MarketplaceCategoryRequest;
-use App\Http\Exceptions\NotFoundException;
-use App\Http\Controllers\Utils\LogManger;
-use App\Models\Resources;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class MarketplaceCategoriesController extends Controller
 {
@@ -30,15 +24,13 @@ class MarketplaceCategoriesController extends Controller
         $this->log = new LogManger();
     }
 
-
     public function getAll()
     {
         try {
             $repo = new MarketplaceRepository(new Marketplace());
-            $market = $repo->all()
-                ->where('featured', 'yes')
-                ->sortByDesc('updated_at')
-                ->first();
+            $market = $repo->all();
+            // ->where('featured', 'yes')
+            // ->sortByDesc('updated_at');
 
             $data = new MarketplaceCategoryRepo(new MarketplaceCategory);
             $count = count($data->all());
@@ -46,30 +38,37 @@ class MarketplaceCategoriesController extends Controller
             if ($count !== 0) {
                 $responseData = MarketplaceCategoryResource::collection($data->all());
             }
-            if ($market != null && !empty($market)) {
-                $market = $market->get();
 
+            if (!empty($market)) {
+                $featured_image = '';
+                $marketResponse = new Collection();
+                foreach ($market as $item) {
+                    if ($item->featured == 'yes') {
+                        $market_cat = MarketplaceCategory::find($item->marketplace_category_id);
+                        $item->marketplace_category_name = $market_cat->name;
+                        $item->marketplace_category_description = $market_cat->description;
+                        $item->image;
+                        $featured_image = $item->image->url;
+                    }
+                    $marketResponse->push($item);
+                }
 
-                $market_cat = MarketplaceCategory::find($market[0]->marketplace_category_id);
-                $market[0]->marketplace_category_name = $market_cat->name;
-                $market[0]->marketplace_category_description = $market_cat->description;
-
-                $image = $market[0]->image->get()->pluck('url')->first();
+                // $image = $market[0]->image->get()->pluck('url')->first();
 
                 if ($count !== 0) {
                     return response()->json([
-                        'featured_image' => $image,
-                        'featured' => $market,
-                        'data' => $responseData
+                        'featured_image' => $featured_image,
+                        'featured' => $marketResponse,
+                        'data' => $responseData,
                     ], 200);
                 } else {
                     return response()->json([
-                        'data' => $responseData
+                        'data' => $responseData,
                     ], 200);
                 }
             } else {
                 return response()->json([
-                    'data' => $responseData
+                    'data' => $responseData,
                 ], 200);
             }
         } catch (\Exception $exception) {
