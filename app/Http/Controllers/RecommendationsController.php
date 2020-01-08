@@ -134,7 +134,6 @@ class RecommendationsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
-            print_r($ex->getMessage());exit;
             $this->log->error($ex->getMessage());
             // return response()->json(['error' => 'ERROR'], 422);
             return response()->json(['error' => trans('messages.error')], 422);
