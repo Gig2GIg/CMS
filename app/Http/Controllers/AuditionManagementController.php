@@ -673,7 +673,7 @@ class AuditionManagementController extends Controller
         try {
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-            
+
             foreach ($request->slots as $slot) {
 
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
@@ -699,7 +699,7 @@ class AuditionManagementController extends Controller
                 ];
 
                 $audition = $appoiment->auditions;
-                
+
                 $mail = new SendMail();
                 $mail->sendPerformance($user->email, $dataMail);
 
@@ -729,7 +729,7 @@ class AuditionManagementController extends Controller
     {
         try {
             $userRepo = new UserRepository(new User);
-            if($audition->user_auditions) {
+            if ($audition->user_auditions) {
                 $audition->user_auditions->each(function ($user_audition) use ($audition) {
                     $user = $userRepo->find($user_audition['user_id']);
                     $this->pushNotifications(
