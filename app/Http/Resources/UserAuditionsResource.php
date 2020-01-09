@@ -57,7 +57,7 @@ class UserAuditionsResource extends JsonResource
             'number_roles' => count($dataRepo->auditions->roles),
             'round' => $dataRepo->round,
             // ===========================
-            'comment' => $this->comment,
+            'comment' => isset($this->comment) && $this->comment ? $this->comment : "",
             'status' => $dataRepo->status,
             'assign_no' => $this->assign_no ?? NULL,
             // ===========================
