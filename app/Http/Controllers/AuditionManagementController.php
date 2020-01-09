@@ -166,20 +166,50 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-
+// dd("Helllo");
             $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
-                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
-                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+
+                ->select(
+                    'UA.id',
+                    'UA.appointment_id', 
+                    'UA.rol_id', 
+                    'UA.slot_id', 
+                    'UA.type', 
+                    'UA.created_at', 
+                    'UA.updated_at', 
+                    'F.comment', 
+                    'appointments.status', 
+                    'UA.assign_no')
+
+                ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->Join('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->Join('auditions AS A', function ($join) {
+                    $join->on('appointments.auditions_id', '=', 'A.id')   
+                         ->on('F.evaluator_id', '=', 'A.user_id');
+                    })
+
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
                 ->where('appointments.status', 0)
                 ->get()->sortByDesc('created_at');
 
+                // dd($data);
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
             // $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
             // $data = $userAuditionsData->sortByDesc('created_at');
 
+            // print_r($data);exit;
+            // $this->collection = new Collection();
+            // $data->each(function ($item) {
+                // print_r($item->appointments);exit;
+
+                // $auditionRepo = new AuditionRepository(new Auditions());
+                // $audiData = $auditionRepo->find($item['auditions_id']);
+                // if ($audiData->status != 2) {
+                //     $this->collection->push($item);
+                // }
+            // });
+            // print_r($data);exit;
 
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
@@ -190,6 +220,7 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
+            // dd($exception->getMessage());
             // return response()->json(['data' => 'Not Found Data'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
