@@ -3,16 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AppointmentRepository;
+use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\MonitorRepository;
+use App\Http\Repositories\Notification\NotificationRepository;
 use App\Models\Appointments;
-use App\Models\Monitor;
 use App\Models\Auditions;
+use App\Models\Monitor;
 use App\Models\Notifications\Notification;
 use Illuminate\Http\Request;
-use App\Http\Repositories\AuditionRepository;
-
-use App\Http\Repositories\Notification\NotificationRepository;
 use Illuminate\Support\Str;
 
 class MonitorManagerController extends Controller
@@ -32,7 +32,7 @@ class MonitorManagerController extends Controller
             $data = $repo->create([
                 'appointment_id' => $request->appointment,
                 'title' => $request->title,
-                'time' => $request->time
+                'time' => $request->time,
             ]);
             if ($data->id) {
                 $dataResponse = ['data' => 'Update Publised'];
@@ -52,7 +52,7 @@ class MonitorManagerController extends Controller
                 //                $this->sendCreateNotification($audition);
                 $this->sendPushNotification(
                     $appointment,
-                    'custom',
+                    SendNotifications::CUSTOM,
                     null,
                     $audition->title,
                     $request->title
@@ -78,7 +78,8 @@ class MonitorManagerController extends Controller
             $audition->user->each(function ($user_director) use ($audition) {
                 $this->pushNotifications(
                     'Audition ' . $audition->title . ' has been created',
-                    $user_director
+                    $user_director,
+                    $audition->title
                 );
             });
         } catch (NotFoundException $exception) {
@@ -94,7 +95,7 @@ class MonitorManagerController extends Controller
                     'title' => $audition->title,
                     'code' => 'create_audition',
                     'status' => 'unread',
-                    'message' => 'Audition ' . $audition->title . ' has been created'
+                    'message' => 'Audition ' . $audition->title . ' has been created',
                 ]);
             }
         } catch (NotFoundException $exception) {
@@ -110,7 +111,7 @@ class MonitorManagerController extends Controller
                 'code' => Str::random(12),
                 'type' => 'custom',
                 'notificationable_type' => 'auditions',
-                'notificationable_id' => $audition->id
+                'notificationable_id' => $audition->id,
             ];
 
             if ($audition !== null) {
@@ -123,8 +124,7 @@ class MonitorManagerController extends Controller
         }
     }
 
-    public function list(Request $request)
-    {
+    function list(Request $request) {
         try {
             $repo = new MonitorRepository(new Monitor());
             $data = $repo->findbyparam('appointment_id', $request->id)->get();

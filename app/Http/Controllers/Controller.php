@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Utils\Notifications as SendNotifications;
-
-use App\Http\Controllers\Utils\PushNotifications;
-
 use App\Http\Controllers\Utils\LogManger;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
+use App\Http\Controllers\Utils\PushNotifications;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -54,11 +52,12 @@ class Controller extends BaseController
     }
 
     //Use to sender notifications
-    public function pushNotifications($message, $user)
+    public function pushNotifications($message, $user, $title = null)
     {
         PushNotifications::send(
             $message,
-            $user
+            $user,
+            $title
         );
     }
 }

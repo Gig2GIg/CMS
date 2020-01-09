@@ -3,18 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Repositories\RecommendationsRepository;
-use App\Http\Repositories\AuditionRepository;
 use App\Http\Controllers\Utils\LogManger;
-
-use App\Models\Recommendations;
-use App\Models\Auditions;
-
+use App\Http\Repositories\AuditionRepository;
+use App\Http\Repositories\RecommendationsRepository;
 use App\Http\Requests\RecommendationsRequest;
-use App\Http\Exceptions\NotFoundException;
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use App\Http\Resources\RecommendationMarketplacesResource;
+use App\Models\Auditions;
+use App\Models\Recommendations;
+use Illuminate\Http\Request;
 
 class RecommendationsController extends Controller
 {
@@ -34,7 +30,17 @@ class RecommendationsController extends Controller
             'marketplace_id' => $request->marketplace_id,
             'user_id' => $request->user_id,
             'audition_id' => $request->audition_id,
+            'appointment_id' => $request->appointment_id,
         ];
+
+        $checkAlreadyExists = $recommendationsRepo->findbyparams($data)->first();
+        if ($checkAlreadyExists) {
+            $responseData = 'Already exists';
+            $code = 422;
+
+            return response()->json(['data' => $responseData], $code);
+        }
+
         $recommendation = $recommendationsRepo->create($data);
 
         if ($recommendation) {
@@ -45,17 +51,16 @@ class RecommendationsController extends Controller
             $code = 422;
         }
 
-        return response()->json(['data' =>  $responseData], $code);
+        return response()->json(['data' => $responseData], $code);
     }
 
-    public function list(Auditions $audition, Request $request)
-    {
-        $data =  $audition->recommendations_marketplaces;
+    function list(Auditions $audition, Request $request) {
 
-        $data = $audition->recommendations_marketplaces->where('user_id', $this->getUserLogging());
+        $data = $audition->recommendations_marketplaces;
+
+        $data = $audition->recommendations_marketplaces->where('user_id', $this->getUserLogging())->where('appointment_id', $request->appointment_id);
 
         if (count($data) > 0) {
-            $data->where('user_id', $this->getUserLogging());
             $responseData = RecommendationMarketplacesResource::collection($data);
             $code = 200;
         } else {
@@ -63,12 +68,12 @@ class RecommendationsController extends Controller
             $code = 404;
         }
 
-        return response()->json(['data' =>  $responseData], $code);
+        return response()->json(['data' => $responseData], $code);
     }
 
     public function listByUser(Auditions $audition, Request $request)
     {
-        $data =  $audition->recommendations_marketplaces;
+        $data = $audition->recommendations_marketplaces;
 
         $data = $audition->recommendations_marketplaces->where('user_id', $request->user_id);
 
@@ -80,7 +85,7 @@ class RecommendationsController extends Controller
             $code = 200;
         }
 
-        return response()->json(['data' =>  $responseData], $code);
+        return response()->json(['data' => $responseData], $code);
     }
 
     public function updateFromArray(Request $request)
@@ -90,26 +95,39 @@ class RecommendationsController extends Controller
             $repoAudition = new AuditionRepository(new Auditions());
             $audition = $repoAudition->find($request->id);
 
-
             foreach ($request->marketplaces as $markeplace) {
 
-                $recommendation = Recommendations::find($markeplace['id']);
+                $data = [
+                    'marketplace_id' => $markeplace['marketplace_id'],
+                    'audition_id' => $audition->id,
+                    'user_id' => $markeplace['user_id'],
+                    'appointment_id' => $markeplace['appointment_id'],
+                ];
 
-                if (!is_null($recommendation)) {
-                    $recommendation->update([
-                        'marketplace_id' => $markeplace['marketplace_id']
-                    ]);
+                $checkAlreadyExists = $repoRecommendation->findbyparams($data)->first();
+                if ($checkAlreadyExists) {
+                    $responseData = 'Already exists';
+                    $code = 422;
+
+                    return response()->json(['data' => $responseData], $code);
                 }
+                // $recommendation = Recommendations::find($markeplace['id']);
 
-                if (is_null($recommendation)) {
+                // if (!is_null($recommendation)) {
+                //     $recommendation->update([
+                //         'marketplace_id' => $markeplace['marketplace_id'],
+                //     ]);
+                // }
+
+                if (is_null($checkAlreadyExists)) {
                     $repoRecommendation->create([
                         'marketplace_id' => $markeplace['marketplace_id'],
                         'audition_id' => $audition->id,
-                        'user_id' => $markeplace['user_id']
+                        'user_id' => $markeplace['user_id'],
+                        'appointment_id' => $markeplace['appointment_id'],
                     ]);
                 }
             }
-
 
             $dataResponse = ['data' => 'Marketplaces updates'];
             $code = 200;
@@ -127,7 +145,6 @@ class RecommendationsController extends Controller
         try {
             $repoRecommendation = new RecommendationsRepository(new Recommendations());
             $recommendation = $repoRecommendation->find($request->id);
-
 
             if ($recommendation->delete()) {
                 $dataResponse = ['data' => 'Recommendation removed'];

@@ -146,7 +146,8 @@ class AuditionsController extends Controller
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 //                $this->pushNotifications(
                 //                    'You have been registered for the audition ' . $audition->title,
-                //                    $user_contributor
+                //                    $user_contributor,
+                //                    $audition->title
                 //                );
                 // $this->sendPushNotification(
                 //     $audition,
@@ -306,7 +307,7 @@ class AuditionsController extends Controller
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
-                $this->createNotification($audition, $contributors, $dataUser);
+                // $this->createNotification($audition, $contributors, $dataUser);
                 // $this->sendPushNotification(
                 //     $audition,
                 //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
@@ -702,7 +703,8 @@ class AuditionsController extends Controller
             $audition->contributors->each(function ($user_contributor) use ($audition) {
                 $this->pushNotifications(
                     'You have been invited for the audition ' . $audition->title,
-                    $user_contributor
+                    $user_contributor,
+                    $audition->title
                 );
             });
         } catch (NotFoundException $exception) {

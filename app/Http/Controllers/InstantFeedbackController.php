@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Repositories\UserAuditionsRepository;
-use App\Models\UserAuditions;
 use App\Http\Controllers\Utils\LogManger;
-use App\Models\InstantFeedback;
-use App\Http\Repositories\InstantFeedbackRepository;
-use Illuminate\Http\Request;
-use App\Models\Auditions;
-use App\Models\Appointments;
-use App\Http\Repositories\UserRepository;
-use App\Models\User;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
-use App\Models\InstantFeedbackSettings;
-use stdClass;
-use Illuminate\Support\Facades\DB;
+use App\Http\Repositories\InstantFeedbackRepository;
+use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Repositories\UserRepository;
 use App\Http\Resources\AuditionResponseInstantFeedback;
+use App\Models\Appointments;
+use App\Models\Auditions;
+use App\Models\InstantFeedback;
+use App\Models\InstantFeedbackSettings;
+use App\Models\User;
+use App\Models\UserAuditions;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class InstantFeedbackController extends Controller
 {
@@ -39,7 +39,7 @@ class InstantFeedbackController extends Controller
                 'user_id' => $request->user,
                 'evaluator_id' => $request->evaluator,
                 'comment' => $request->comment,
-                'suggested_appointment_id' => $request->suggested_appointment_id
+                'suggested_appointment_id' => $request->suggested_appointment_id,
             ];
 
             $repo = new InstantFeedbackRepository(new InstantFeedback());
@@ -73,7 +73,6 @@ class InstantFeedbackController extends Controller
                 //     }
                 // }
 
-
                 if ($request->accepted == 0) {
                     // remove that performer from group
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -87,11 +86,10 @@ class InstantFeedbackController extends Controller
                             ->where('appointment_id', $request->appointment_id)
                             ->update([
                                 'group_no' => 0,
-                                'rejected' => 1
+                                'rejected' => 1,
                             ]);
                     }
                 }
-
 
                 // send notification
                 $this->sendStoreNotificationToUser($user, $audition);
@@ -110,7 +108,6 @@ class InstantFeedbackController extends Controller
             // return response()->json(['data' => 'Feedback not add'], 406);
         }
     }
-
 
     public function search_with_upcoming_audition(Request $request)
     {
@@ -134,9 +131,9 @@ class InstantFeedbackController extends Controller
             $data = $instant_feedback_settings->where('user_id', $request->user_id)->get()->first();
 
             if ($data == null) {
-                $response = ['comment' =>  trans('messages.default_instant_feedback_message')];
+                $response = ['comment' => trans('messages.default_instant_feedback_message')];
             } else {
-                $response = ['comment' =>  $data->comment];
+                $response = ['comment' => $data->comment];
             }
             return response()->json(['data' => $response], 200);
         } else {
@@ -154,7 +151,7 @@ class InstantFeedbackController extends Controller
                 // add if no feedback added for caster
                 $data = [
                     'comment' => $request->feedback,
-                    'user_id' => $this->getUserLogging()
+                    'user_id' => $this->getUserLogging(),
                 ];
 
                 $feedbackUpdated = $instant_feedback_settings->insert($data);
@@ -165,7 +162,7 @@ class InstantFeedbackController extends Controller
                     ->update(['comment' => $request->feedback]);
             }
 
-            $response =  $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
+            $response = $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
             return response()->json(['data' => $response], 200);
         } else {
             return response()->json(['data' => trans('messages.data_not_found')], 404);
@@ -180,7 +177,7 @@ class InstantFeedbackController extends Controller
             $feedbacks = $repoFeedback->all()->where('appointment_id', $request->id)
                 ->where('evaluator_id', '=', $this->getUserLogging())->where('user_id', '=', $request->user_id)->first();
 
-            if ($feedbacks == NULL) {
+            if ($feedbacks == null) {
                 throw new \Exception('Data not found');
             }
 
@@ -195,7 +192,6 @@ class InstantFeedbackController extends Controller
         }
     }
 
-
     public function instantFeedbackDetailsPerformer(Request $request)
     {
         try {
@@ -207,11 +203,11 @@ class InstantFeedbackController extends Controller
                 ->where('user_id', '=', $request->user_id)
                 ->first();
 
-            if ($feedbacks == NULL) {
+            if ($feedbacks == null) {
                 throw new \Exception('Data not found');
             }
 
-            if ($feedbacks == NULL) {
+            if ($feedbacks == null) {
                 throw new \Exception('Data not found');
             }
             $appointmentRepo = new AppointmentRepository(new Appointments());
@@ -232,7 +228,6 @@ class InstantFeedbackController extends Controller
             }
             // $data->suggested_audition = isset($responseDataSuggestedAudition) ? $responseDataSuggestedAudition : array();
 
-
             $dataResponse = ['data' => $data];
             $code = 200;
 
@@ -244,7 +239,6 @@ class InstantFeedbackController extends Controller
         }
     }
 
-
     public function saveStoreNotificationToUser($user, $audition): void
     {
         try {
@@ -253,7 +247,7 @@ class InstantFeedbackController extends Controller
                     'title' => $audition->title,
                     'code' => 'instant_feedback',
                     'status' => 'unread',
-                    'message' => 'You have received new instant feedback for ' . $audition->title
+                    'message' => 'You have received new instant feedback for ' . $audition->title,
                 ]);
                 $this->log->info('saveStoreNotificationToUser:: ', $history);
             }
@@ -262,11 +256,10 @@ class InstantFeedbackController extends Controller
         }
     }
 
-
     public function sendStoreNotificationToUser($user, $audition): void
     {
         try {
-            $this->pushNotifications('You have received new instant feedback for ' . $audition->title, $user);
+            $this->pushNotifications('You have received new instant feedback for ' . $audition->title, $user, $audition->title);
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }

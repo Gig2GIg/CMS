@@ -10,9 +10,11 @@ class Recommendations extends Model
         'marketplace_id',
         'user_id',
         'audition_id',
+        'appointment_id',
     ];
 
-    public function markeplace(){
+    public function markeplace()
+    {
         $this->belongsTo(Marketplace::class);
     }
 
