@@ -843,7 +843,7 @@ class AuditionManagementController extends Controller
                 // return response()->json(['data' => 'You already registered'], 406);
             } else {
                 $data = $userAuditions->create($data);
-                if ($request->type === 2) {
+                if ($request->type == 2) {
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
