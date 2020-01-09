@@ -847,7 +847,7 @@ class AuditionManagementController extends Controller
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . is_null($detailData->details->last_name) ? '' : $detailData->details->last_name;
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name ? $detailData->details->last_name : "";
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $appoinmetRepo = new AppointmentRepository(new Appointments());
                     $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
