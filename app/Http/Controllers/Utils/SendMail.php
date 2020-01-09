@@ -8,10 +8,7 @@
 
 namespace App\Http\Controllers\Utils;
 
-
 use App\Http\Controllers\NotificationManagementController;
-use App\Http\Exceptions\SendEmailException;
-
 use SendGrid\Mail\Mail;
 
 class SendMail
@@ -46,7 +43,7 @@ class SendMail
                 $this->log->error($response->body() . " " . $response->statusCode());
                 return false;
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return false;
         }
@@ -56,10 +53,14 @@ class SendMail
     {
         try {
             $email = new Mail();
-            $content = sprintf("Your client: <strong> %s</strong> wants to attend the audition:<a href='%s'> <strong>%s</strong></a>, check his agenda to set the time of the appointment",
+            // $content = sprintf("Your client: <strong> %s</strong> wants to attend the audition:<a href='%s'> <strong>%s</strong></a>, check his agenda to set the time of the appointment",
+            // $data['name'],
+            // $data['url'],
+            // $data['audition']);
+            $content = sprintf("%s has requested an appointment for %s",
                 $data['name'],
-                $data['url'],
-                $data['audition']);
+                $data['audition'],
+                $data['url']);
             $email->setFrom(env('SUPPORT_EMAIL'));
             $email->setSubject('Check Auditions');
             $email->addTo($emailTo);
@@ -74,7 +75,7 @@ class SendMail
                 $this->log->error($response->body() . " " . $response->statusCode());
                 return false;
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return false;
         }
@@ -99,12 +100,11 @@ class SendMail
                 $this->log->error($response->body() . " " . $response->statusCode());
                 return false;
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return false;
         }
     }
-
 
     public function sendCode($user, $data)
     {
@@ -124,7 +124,7 @@ class SendMail
                 $data['performer'],
                 $data['code']);
             $email->addContent("text/html", $content);
-            $push->sendPushNotification(null,'cms_to_user',$user,$contentpush);
+            $push->sendPushNotification(null, 'cms_to_user', $user, $contentpush);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
             $response = $sendgrid->send($email);
@@ -134,12 +134,11 @@ class SendMail
                 $this->log->error($response->body() . " " . $response->statusCode());
                 return false;
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return false;
         }
     }
-
 
     public function sendPerformance($user, $data)
     {
@@ -148,12 +147,12 @@ class SendMail
             $email = new Mail();
 
             $email->setFrom(env('SUPPORT_EMAIL'));
-            $email->setSubject('Your appointment time to audition'.  $data['audition_title'] . 'is update');
+            $email->setSubject('Your appointment time to audition' . $data['audition_title'] . 'is update');
             $email->addTo($user->email);
-            $content = sprintf('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition'.  $data['audition_title'] . 'is update <strong>%s</strong>'. 'to'. $data['slot_time']);
+            $content = sprintf('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition' . $data['audition_title'] . 'is update <strong>%s</strong>' . 'to' . $data['slot_time']);
 
             $email->addContent("text/html", $content);
-            $push->sendPushNotification(null,'cms_to_user',$user,$content);
+            $push->sendPushNotification(null, 'cms_to_user', $user, $content);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
             $response = $sendgrid->send($email);
@@ -163,7 +162,7 @@ class SendMail
                 $this->log->error($response->body() . " " . $response->statusCode());
                 return false;
             }
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return false;
         }
