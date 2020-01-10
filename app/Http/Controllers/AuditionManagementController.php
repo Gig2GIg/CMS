@@ -708,7 +708,10 @@ class AuditionManagementController extends Controller
             foreach ($request->slots as $slot) {
 
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
-                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+                $userSlot = $userSlotRepo->findbyparams([
+                    'user_id' => $slot['user_id'],
+                    'appointment_id' => $request->id
+                    ])->first();
 
                 $update = $userSlot->update(['slots_id' => $slot['slot_id']]);
 
@@ -718,13 +721,13 @@ class AuditionManagementController extends Controller
                 $user = $userRepo->find($slot['user_id']);
 
                 $appointmentRepo = new AppointmentRepository(new Appointments());
-                $appointment = $appointmentRepo->find($newUserSlot->appointment_id);
+                $appointment = $appointmentRepo->find($request->id);
 
                 $slotRepo = new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($slot['slot_id']);
 
                 $dataMail = [
-                    'name' => $user->details->first_name,
+                    'name' => $user->details->first_name . ' ' . $user->details->last_name,
                     'audition_title' => $appointment->auditions->title,
                     'slot_time' => $slot->time
                 ];
@@ -732,11 +735,11 @@ class AuditionManagementController extends Controller
                 $audition = $appoiment->auditions;
 
                 $mail = new SendMail();
-                $mail->sendPerformance($user->email, $dataMail);
+                $mail->sendPerformance($user, $dataMail);
 
-                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition);
-
-                $this->sendReorderAppointmentTimesNotification($audition);
+                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot);
+                
+                $this->sendReorderAppointmentTimesNotification($user, $audition, $slot);
             }
 
             if ($userSlotRepo) {
@@ -756,26 +759,22 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function sendReorderAppointmentTimesNotification($audition): void
+    public function sendReorderAppointmentTimesNotification($user = null, $audition, $slot): void
     {
         try {
-            $userRepo = new UserRepository(new User);
-            if ($audition->user_auditions) {
-                $audition->user_auditions->each(function ($user_audition) use ($audition) {
-                    $user = $userRepo->find($user_audition['user_id']);
-                    $this->pushNotifications(
-                        'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
-                        $user_auditions,
-                        $audition->title
-                    );
-                });
+            if ($user) {
+                $this->pushNotifications(
+                    'Your appointment time to audition ' . $audition->title . ' is update to '. $slot->time,
+                    $user,
+                    $audition->title
+                );
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
 
-    public function saveReorderAppointmentTimesNotificationToUser($user, $audition): void
+    public function saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot): void
     {
         try {
             if ($user instanceof User) {
@@ -783,7 +782,7 @@ class AuditionManagementController extends Controller
                     'title' => $audition->title,
                     'code' => 'appointment_reorder',
                     'status' => 'unread',
-                    'message' => 'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved'
+                    'message' => 'Your appointment time to audition '. $audition->title .' is update to '. $slot->time
                 ]);
             }
         } catch (NotFoundException $exception) {

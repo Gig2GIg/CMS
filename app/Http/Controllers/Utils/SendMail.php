@@ -143,16 +143,16 @@ class SendMail
     public function sendPerformance($user, $data)
     {
         try {
-            $push = new NotificationManagementController();
+            // $push = new NotificationManagementController();
             $email = new Mail();
 
             $email->setFrom(env('SUPPORT_EMAIL'));
-            $email->setSubject('Your appointment time to audition' . $data['audition_title'] . 'is update');
+            $email->setSubject('Your appointment time to audition ' . $data['audition_title'] . 'is update');
             $email->addTo($user->email);
-            $content = sprintf('<strong>%s</strong> Hello <strong>%s</strong> Your appointment time to audition' . $data['audition_title'] . 'is update <strong>%s</strong>' . 'to' . $data['slot_time']);
+            $content = sprintf('Your appointment time to audition ' . $data['audition_title'] . ' is update to ' . $data['slot_time']);
 
             $email->addContent("text/html", $content);
-            $push->sendPushNotification(null, 'cms_to_user', $user, $content);
+            // $push->sendPushNotification(null, 'cms_to_user', $user, $content);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 
             $response = $sendgrid->send($email);
