@@ -715,6 +715,14 @@ class AuditionManagementController extends Controller
 
                 $update = $userSlot->update(['slots_id' => $slot['slot_id']]);
 
+                $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+                $userAudition = $userAuditionRepo->findbyparams([
+                    'user_id' => $slot['user_id'],
+                    'appointment_id' => $request->id
+                    ])->first();
+
+                $userAuditionUpdate = $userAudition->update(['slot_id' => $slot['slot_id']]);
+                
                 $userRepo = new UserRepository(new User());
                 $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
 
