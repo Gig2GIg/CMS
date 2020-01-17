@@ -4,24 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\AppointmentRepository;
-use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
-use App\Http\Repositories\SlotsRepository;
-use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\FeedbackResource;
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Performers;
-use App\Models\Slots;
-use App\Models\UserAuditions;
 use App\Models\UserSlots;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class FeedBackController extends Controller
 {
@@ -50,7 +44,7 @@ class FeedBackController extends Controller
                 'work' => $request->work,
                 'favorite' => $request->favorite,
                 'slot_id' => $request->slot_id,
-                'comment' => $request->comment
+                'comment' => $request->comment,
             ];
 
             $repo = new FeedbackRepository(new Feedbacks());
@@ -63,7 +57,7 @@ class FeedBackController extends Controller
                     $slotData = $slotRepo->findbyparam('slots_id', $request->slot_id)->first();
                     if (isset($slotData)) {
                         $update = $slotData->update([
-                            'favorite' => $request->favorite
+                            'favorite' => $request->favorite,
                         ]);
                     }
                 }
@@ -83,7 +77,6 @@ class FeedBackController extends Controller
         }
     }
 
-
     public function update(Request $request)
     {
         try {
@@ -97,9 +90,8 @@ class FeedBackController extends Controller
                 'callback' => $request->callback,
                 'work' => $request->work,
                 'favorite' => $request->favorite,
-                'comment' => $request->comment
+                'comment' => $request->comment,
             ];
-
 
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
@@ -122,8 +114,7 @@ class FeedBackController extends Controller
         }
     }
 
-    public function list(Request $request)
-    {
+    function list(Request $request) {
         try {
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->findbyparam('appointment_id', $request->appointment_id);
@@ -154,7 +145,7 @@ class FeedBackController extends Controller
             $data = $repo->findbyparam('appointment_id', $request->id);
 
             $dataPre = $data->where('user_id', '=', $this->getUserLogging())
-                // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
+            // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
                 ->first() ?? new Collection();
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
@@ -172,7 +163,6 @@ class FeedBackController extends Controller
         }
     }
 
-
     public function feedbackDetailsByUser(Request $request)
     {
         try {
@@ -181,14 +171,14 @@ class FeedBackController extends Controller
                 [
                     'appointment_id' => $request->id,
                     'evaluator_id' => $this->getUserLogging(),
-                    'user_id' => $request->user_id
+                    'user_id' => $request->user_id,
                 ]
 
             );
             $feedbacks = $data->first();
 
-            if ($feedbacks->count() == 0) {
-                throw new \Exception('Data not found');
+            if (empty($feedbacks)) {
+                return response()->json(['data' => trans('messages.data_not_found')], 404);
             }
 
             $dataResponse = ['data' => $feedbacks];
@@ -202,13 +192,12 @@ class FeedBackController extends Controller
         }
     }
 
-
-    function addTalenteToDatabase($performer_id)
+    public function addTalenteToDatabase($performer_id)
     {
         try {
             $hasid = new Hashids('g2g');
             $dateHash = new \DateTime();
-            $dataTime =  $dateHash->getTimestamp();
+            $dataTime = $dateHash->getTimestamp();
             $repo = new PerformerRepository(new Performers());
             $dataRepo = $repo->findbyparam('director_id', $this->getUserLogging())->get();
             $count = $dataRepo->where('performer_id', $performer_id)->count();
