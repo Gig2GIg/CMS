@@ -1091,9 +1091,9 @@ class AuditionManagementController extends Controller
 
             if ($dataUserAuditions->count() > 0) {
                 $userAuditionData = $dataUserAuditions->first();
-                if ($userAuditionData->assign_no != NULL) {
-                    return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
-                }
+                // if ($userAuditionData->assign_no != NULL) {
+                //     return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
+                // }
 
                 // Check if Number is unique or not
                 $list_of_numbers = $repoUserAuditions->all()

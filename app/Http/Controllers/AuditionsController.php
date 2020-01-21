@@ -177,9 +177,9 @@ class AuditionsController extends Controller
             'email' => $request->email, //null
             'other_info' => $request->other_info, //null
             'additional_info' => $request->additional_info,
-            'union' => $request->union,
-            'contract' => $request->contract,
-            'production' => $request->production,
+            'union' => strtoupper($request->union),
+            'contract' => strtoupper($request->contract),
+            'production' => strtoupper($request->production),
             'status' => false,
             'online' => $request->online ?? false,
             'user_id' => Auth::user()->getAuthIdentifier(),

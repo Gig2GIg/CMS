@@ -8,15 +8,11 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Http\Resources\AuditionResourceFind;
-use App\Http\Resources\AuditionResponse;
 use App\Models\Auditions;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-
 
 class AuditionsFindController extends Controller
 {
@@ -30,7 +26,6 @@ class AuditionsFindController extends Controller
             if (isset($request->base)) {
                 $elementResponse = $data->where('title', 'like', "%{$request->base}%");
             }
-
 
             if (isset($request->union)) {
                 $elementResponse->where('union', '=', strtoupper($request->union));
@@ -47,7 +42,6 @@ class AuditionsFindController extends Controller
 
             }
 
-
             $data2 = $elementResponse->get()->sortByDesc('created_at');
             $response = AuditionResourceFind::collection($data2);
 
@@ -59,9 +53,8 @@ class AuditionsFindController extends Controller
                 $code = 200;
             }
 
-
             return response()->json($dataResponse, $code);
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             // return response()->json(['error' => 'Not Found'], 404);
             return response()->json(['error' => trans('messages.data_not_found')], 404);
@@ -74,8 +67,7 @@ class AuditionsFindController extends Controller
         try {
             $elementResponse = new Collection();
 
-
-            if (isset($request->production) &&  $request->production != 'ANY') {
+            if (isset($request->production) && $request->production != 'ANY') {
 
                 $split_elements = explode(',', $request->production);
                 foreach ($split_elements as $item) {
@@ -87,14 +79,14 @@ class AuditionsFindController extends Controller
                     }
                 }
 
-            }else{
+            } else {
                 $elementResponse = Auditions::all();
             }
-            if (isset($request->union)) {
+            if (isset($request->union) && $request->union != strtoupper($request->union)) {
                 $elementResponse = $elementResponse->where('union', '=', strtoupper($request->union));
             }
 
-            if (isset($request->contract)) {
+            if (isset($request->contract) && $request->contract != strtoupper($request->contract)) {
                 $elementResponse = $elementResponse->where('contract', '=', strtoupper($request->contract));
             }
             $response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
@@ -108,7 +100,7 @@ class AuditionsFindController extends Controller
             }
 
             return response()->json($dataResponse, $code);
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             // return response()->json(['error' => 'Not Found'], 404);
             return response()->json(['error' => trans('messages.data_not_found')], 404);
