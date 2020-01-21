@@ -82,11 +82,11 @@ class AuditionsFindController extends Controller
             } else {
                 $elementResponse = Auditions::all();
             }
-            if (isset($request->union) && $request->union != strtoupper($request->union)) {
+            if (isset($request->union) && strtoupper($request->union) != "ANY") {
                 $elementResponse = $elementResponse->where('union', '=', strtoupper($request->union));
             }
 
-            if (isset($request->contract) && $request->contract != strtoupper($request->contract)) {
+            if (isset($request->contract) && strtoupper($request->contract) != "ANY") {
                 $elementResponse = $elementResponse->where('contract', '=', strtoupper($request->contract));
             }
             $response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
