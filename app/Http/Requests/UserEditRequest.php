@@ -27,7 +27,7 @@ class UserEditRequest extends ApiRequest
             'email'=>'required|email',
             'first_name'=>'required|string|max:50',
             'address'=>'required|max:150',
-            'city'=>'required|string|max:50',
+//            'city'=>'required|string|max:50',
             'state'=>'required|integer',
             // 'birth'=>'required|date',
 //            'location'=>'required',
