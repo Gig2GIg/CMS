@@ -22,8 +22,9 @@ class Notifications
     const CUSTOM = 'custom';
     const CMS = 'cms';
     const CMS_TO_USER = 'cms_to_user';
+    const ICON = '/images/logo-color-push.png';
 
-    public static function send($audition = null, $type, $user = null, $title = null, $message = null)
+    public static function send($audition = null, $type, $user = null, $title = null, $message = null, $clickToSend = "")
     {
         try {
 
@@ -33,50 +34,59 @@ class Notifications
                     $log->info("PUSH NOTIFICATION AUDITION SAVE " . $audition->title);
                     $title = 'Audition Save';
                     // $message = 'You have been added to the audition ' . $audition->title;
-                    $message = 'Contributor invitation available for ' . $audition->title;                    
+                    $message = 'Contributor invitation available for ' . $audition->title;
                     $to = 'MANY';
+                    $clickToSend = env('CASTER_URL');
                     break;
                 case self::UPCOMING_AUDITION:
                     $log->info("PUSH NOTIFICATION UPCOMMING " . $audition->title);
                     $title = 'Audition Upcomming';
                     $message = ' you have been upcoming to audition ' . $audition->title;
                     $to = 'ONE';
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::AUTIDION_UPDATE:
                     $log->info("PUSH NOTIFICATION AUDITION UPDATE " . $audition->title);
                     $title = 'Audition Update';
                     $message = 'A new update has been added ' . $audition->title;
                     $to = 'MANY';
+                    $clickToSend = env('CASTER_URL');
                     break;
                 case self::REPRESENTATION_EMAIL:
                     $log->info("PUSH NOTIFICATION REPRESENTATION EMAIL SEND " . $user->email);
                     $title = 'Representation Email';
                     $message = "Some message";
                     $to = 'ONE';
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::DOCUMENT_UPLOAD:
                     $log->info("PUSH NOTIFICATION DOCUMENT_UPLOAD");
                     $title = 'Document Upload';
                     $message = "Some message";
                     $to = 'ONE';
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::CHECK_IN:
                     $log->info("PUSH NOTIFICATION  CHECK_IN " . $audition->title);
                     $title = 'Check-in ';
                     $message = 'you have been registered for the audition ' . $audition->title;
                     $to = 'ONE';
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::CUSTOM:
                     $log->info("PUSH NOTIFICATION  CUSTOM");
                     $to = 'MANY';
+                    $clickToSend = env('CASTER_URL');
                     break;
                 case self::CMS:
                     $log->info("PUSH NOTIFICATION FROM CMS");
                     $to = 'NONE';
+                    $clickToSend = '';
                     break;
                 case self::CMS_TO_USER:
                     $log->info("PUSH NOTIFICATION FROM CMS TO USER");
                     $to = 'ONE';
+                    $clickToSend = '';
                     break;
                 default:
             }
@@ -103,6 +113,8 @@ class Notifications
                         ->notification([
                             'title' => $title,
                             'body' => $title,
+                            'icon' => self::ICON,
+                            'click_action' => $clickToSend
                         ])
                         ->send();
                 } else {
@@ -128,6 +140,8 @@ class Notifications
                             ->notification([
                                 'title' => $title,
                                 'body' => $message,
+                                'icon' => self::ICON,
+                                'click_action' => $clickToSend
                             ])
                             ->send();
                     });
@@ -167,6 +181,8 @@ class Notifications
                                 ->notification([
                                     'title' => $title,
                                     'body' => $tomsg,
+                                    'icon' => self::ICON,
+                                    'click_action' => $clickToSend
                                 ])
                                 ->send();
                         });
@@ -190,13 +206,15 @@ class Notifications
                                 }
                             });
                             $tokens = $tokenArray->unique()->toArray();
-                            
+
                             $log->info($history);
                             fcm()
                                 ->to($tokens)
                                 ->notification([
                                     'title' => $title,
                                     'body' => $tomsg,
+                                    'icon' => self::ICON,
+                                    'click_action' => $clickToSend
                                 ])
                                 ->send();
                         });
@@ -224,6 +242,8 @@ class Notifications
                             ->notification([
                                 'title' => $title,
                                 'body' => $message,
+                                'icon' => self::ICON,
+                                'click_action' => $clickToSend
                             ])
                             ->send();
                     });
