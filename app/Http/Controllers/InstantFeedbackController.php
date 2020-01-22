@@ -6,6 +6,7 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\InstantFeedbackRepository;
+use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Resources\AuditionResponseInstantFeedback;
@@ -13,8 +14,10 @@ use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\InstantFeedback;
 use App\Models\InstantFeedbackSettings;
+use App\Models\Performers;
 use App\Models\User;
 use App\Models\UserAuditions;
+use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -94,6 +97,8 @@ class InstantFeedbackController extends Controller
                 // send notification
                 $this->sendStoreNotificationToUser($user, $audition);
                 $this->saveStoreNotificationToUser($user, $audition);
+
+                $this->addTalenteToDatabase($request->user);
 
                 $dataResponse = ['data' => trans('messages.feedback_save_success'), 'feedback_id' => $dataCreated->id];
                 $code = 201;
@@ -264,4 +269,30 @@ class InstantFeedbackController extends Controller
             $this->log->error($exception->getMessage());
         }
     }
+
+    public function addTalenteToDatabase($performer_id)
+    {
+        try {
+            $hasid = new Hashids('g2g');
+            $dateHash = new \DateTime();
+            $dataTime = $dateHash->getTimestamp();
+            $repo = new PerformerRepository(new Performers());
+            $dataRepo = $repo->findbyparam('director_id', $this->getUserLogging())->get();
+            $count = $dataRepo->where('performer_id', $performer_id)->count();
+            if ($count > 0) {
+                throw new \Exception("User exists in your database");
+            }
+            $register = [
+                'performer_id' => $performer_id,
+                'director_id' => $this->getUserLogging(),
+                'uuid' => $hasid->encode($performer_id, $dataTime),
+            ];
+
+            $repo->create($register);
+            $this->log->info('Talent add');
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
 }
