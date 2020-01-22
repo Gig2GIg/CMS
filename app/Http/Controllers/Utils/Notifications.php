@@ -119,7 +119,7 @@ class Notifications
                         ->send();
                 } else {
                     $user = User::all();
-                    $user->each(function ($user) use ($title, $type, $message) {
+                    $user->each(function ($user) use ($title, $type, $message, $clickToSend) {
                         $user->notification_history()->create([
                             'title' => $title,
                             'code' => $type,
@@ -157,7 +157,7 @@ class Notifications
                         if ($repData->count() === 0) {
                             throw new \Exception('NULL ELEMENETS TO NOTIFICATE');
                         }
-                        $repData->each(function ($useraudition) use ($title, $message, $type) {
+                        $repData->each(function ($useraudition) use ($title, $message, $type, $clickToSend) {
                             $tomsg = !empty($message) ? $message : $title;
                             $userRepo = new UserRepository(new User);
                             $user_result = $userRepo->find($useraudition->user_id);
@@ -187,7 +187,7 @@ class Notifications
                                 ->send();
                         });
                     } else {
-                        $audition->contributors->each(function ($contributor) use ($title, $message, $type, $audition, $log) {
+                        $audition->contributors->each(function ($contributor) use ($title, $message, $type, $audition, $log, $clickToSend) {
                             $userRepo = new UserRepository(new User);
                             $tomsg = !empty($message) ? $message : $title;
                             $user_result = $userRepo->find($contributor->user_id);
@@ -220,7 +220,7 @@ class Notifications
                         });
                     }
                 } elseif ($to == 'ONE' && ($user instanceof User)) {
-                    $user->notification_settings_on->each(function ($notification) use ($title, $message, $type, $user) {
+                    $user->notification_settings_on->each(function ($notification) use ($title, $message, $type, $user, $clickToSend) {
                         if ($notification->code == $type && $notification->status == 'on') {
                             $user->notification_history()->create([
                                 'title' => $title,
