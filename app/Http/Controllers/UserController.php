@@ -103,7 +103,7 @@ class UserController extends Controller
             'first_name' => $dataName[0] ?? "null",
             'last_name' => $dataName[1] ?? "",
             'address' => $request->address,
-            'city' => $request->city,
+            'city' => isset($request->city) ? $request->city : "",
             'state' => $request->state,
             'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'agency_name' => $request->agency_name,
@@ -140,7 +140,7 @@ class UserController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'address' => $request->address,
-            'city' => $request->city,
+            'city' => isset($request->city) ? $request->city : "",
             'state' => $request->state,
             'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'gender' => $request->gender,
@@ -238,7 +238,7 @@ class UserController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'address' => $request->address,
-                'city' => $request->city,
+                'city' => isset($request->city) ? $request->city : "",
                 'state' => $request->state,
                 'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
                 'gender' => $request->gender,
@@ -296,7 +296,7 @@ class UserController extends Controller
                 'first_name' => $name[0] ?? $dataUserDetails->first_name,
                 'last_name' => $name[1] ?? $dataUserDetails->last_name,
                 'address' => $request->address,
-                'city' => $request->city,
+                'city' => isset($request->city) ? $request->city : "",
                 'state' => $request->state,
                 'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
                 'gender' => $request->gender,
@@ -342,13 +342,13 @@ class UserController extends Controller
             $dataUser->delete();
             // return response()->json(['data' => 'User deleted'], 200);
             return response()->json(['data' => trans('messages.user_deleted')], 200);
-            
+
         } catch (NotFoundException $e) {
             return response()->json(['data' => self::NOT_FOUND_DATA], 404);
         } catch (QueryException $e) {
             // return response()->json(['data' => "Unprocesable"], 406);
             return response()->json(['data' => trans('messages.not_processable')], 406);
-            
+
         }
     }
 
@@ -390,7 +390,7 @@ class UserController extends Controller
         } catch (NotFoundException $e) {
             // return response()->json(['data' => "email not found"], 404);
             return response()->json(['data' => trans('messages.email_not_found')], 404);
-            
+
         }
     }
 
