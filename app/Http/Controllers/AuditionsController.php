@@ -59,7 +59,7 @@ class AuditionsController extends Controller
      * @param AuditionRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(AuditionRequest $request)
+    public function store(Request $request) //public function store(AuditionRequest $request) 23 Jan 2020 remove all validation
     {
         try {
             DB::beginTransaction();
@@ -85,28 +85,39 @@ class AuditionsController extends Controller
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
-                foreach ($auditionFilesData as $file) {
-                    $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
+                if($request->cover != ''){
+                    foreach ($auditionFilesData as $file) {
+                        $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
+                    }
                 }
-                foreach ($request['dates'] as $date) {
-                    $audition->dates()->create($this->dataDatesToProcess($date));
+                
+                if(isset($request['dates'])) {
+                    foreach ($request['dates'] as $date) {
+                        $audition->dates()->create($this->dataDatesToProcess($date));
+                    }
                 }
-                foreach ($request->roles as $roles) {
-                    $roldata = $this->dataRolesToProcess($audition, $roles);
-                    $rolesRepo = new RolesRepository(new Roles());
-                    $rol = $rolesRepo->create($roldata);
-                    $imageUrl = $roles['cover'] ?? App::make('url')->to('/') . '/images/roles.png';
-                    $imageName = $roles['name_cover'] ?? 'default';
-                    $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
+                
+                if(isset($request['dates'])) {
+                    foreach ($request->roles as $roles) {
+                        $roldata = $this->dataRolesToProcess($audition, $roles);
+                        $rolesRepo = new RolesRepository(new Roles());
+                        $rol = $rolesRepo->create($roldata);
+                        $imageUrl = $roles['cover'] ?? App::make('url')->to('/') . '/images/roles.png';
+                        $imageName = $roles['name_cover'] ?? 'default';
+                        $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
+                    }
                 }
+                
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointment = $appointmentRepo->create($dataAppoinment);
                 if (!$request->online) {
-                    foreach ($request['appointment']['slots'] as $slot) {
-                        $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
-                        $slotsRepo = new SlotsRepository(new Slots());
-                        $slotsRepo->create($dataSlots);
+                    if(isset($request['appointment']['slots'])) {
+                        foreach ($request['appointment']['slots'] as $slot) {
+                            $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
+                            $slotsRepo = new SlotsRepository(new Slots());
+                            $slotsRepo->create($dataSlots);
+                        }
                     }
                 }
                 if (isset($request['contributors'])) {
@@ -225,14 +236,14 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($request->date), //null
-            'time' => $request->time, //null
-            'location' => json_encode($request->location), //null
-            'slots' => $request['appointment']['spaces'],
-            'type' => $request['appointment']['type'],
-            'length' => $request['appointment']['length'],
-            'start' => $request['appointment']['start'],
-            'end' => $request['appointment']['end'],
+            'date' => $this->toDate->transformDate($request->date)  ?? null, //null
+            'time' => $request->time ?? null, //null
+            'location' => json_encode($request->location) ?? null, //null
+            'slots' => $request['appointment']['spaces'] ?? null,
+            'type' => $request['appointment']['type'] ?? null,
+            'length' => $request['appointment']['length'] ?? null,
+            'start' => $request['appointment']['start'] ?? null,
+            'end' => $request['appointment']['end'] ?? null,
             'status' => true,
             'round' => 1,
         ];
