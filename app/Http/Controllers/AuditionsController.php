@@ -59,7 +59,7 @@ class AuditionsController extends Controller
      * @param AuditionRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request) //public function store(AuditionRequest $request) 23 Jan 2020 remove all validation
+    public function store(AuditionRequest $request)
     {
         try {
             DB::beginTransaction();
@@ -85,19 +85,19 @@ class AuditionsController extends Controller
                 $auditRepo = new AuditionRepository(new Auditions());
                 $audition = $auditRepo->create($auditionData);
 
-                if($request->cover != ''){
+                if ($request->cover != '') {
                     foreach ($auditionFilesData as $file) {
                         $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
                     }
                 }
-                
-                if(isset($request['dates'])) {
+
+                if (isset($request['dates'])) {
                     foreach ($request['dates'] as $date) {
                         $audition->dates()->create($this->dataDatesToProcess($date));
                     }
                 }
-                
-                if(isset($request['dates'])) {
+
+                if (isset($request['dates'])) {
                     foreach ($request->roles as $roles) {
                         $roldata = $this->dataRolesToProcess($audition, $roles);
                         $rolesRepo = new RolesRepository(new Roles());
@@ -107,12 +107,12 @@ class AuditionsController extends Controller
                         $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
                     }
                 }
-                
+
                 $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointment = $appointmentRepo->create($dataAppoinment);
                 if (!$request->online) {
-                    if(isset($request['appointment']['slots'])) {
+                    if (isset($request['appointment']['slots'])) {
                         foreach ($request['appointment']['slots'] as $slot) {
                             $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
                             $slotsRepo = new SlotsRepository(new Slots());
@@ -236,7 +236,7 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($request->date)  ?? null, //null
+            'date' => $this->toDate->transformDate($request->date) ?? null, //null
             'time' => $request->time ?? null, //null
             'location' => json_encode($request->location) ?? null, //null
             'slots' => $request['appointment']['spaces'] ?? null,
@@ -493,7 +493,7 @@ class AuditionsController extends Controller
         }
     }
 
-    public function update(Request $request) // public function update(AuditionEditRequest $request) 23 Jan 2020 remove all validation
+    public function update(AuditionEditRequest $request)
     {
         $this->log->info("UPDATE AUDITION");
         $this->log->info($request);
