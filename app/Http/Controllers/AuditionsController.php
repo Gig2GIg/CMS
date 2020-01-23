@@ -493,7 +493,7 @@ class AuditionsController extends Controller
         }
     }
 
-    public function update(AuditionEditRequest $request)
+    public function update(Request $request) // public function update(AuditionEditRequest $request) 23 Jan 2020 remove all validation
     {
         $this->log->info("UPDATE AUDITION");
         $this->log->info($request);
