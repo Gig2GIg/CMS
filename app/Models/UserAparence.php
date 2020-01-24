@@ -6,16 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserAparence extends Model
 {
-    protected $fillable =[
+    protected $fillable = [
         'height',
         'weight',
         'hair',
         'eyes',
         'race',
         'user_id',
+        'personal_flare',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }
