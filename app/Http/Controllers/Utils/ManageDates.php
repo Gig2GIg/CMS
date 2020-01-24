@@ -8,12 +8,15 @@
 
 namespace App\Http\Controllers\Utils;
 
-
 class ManageDates
 {
     public function transformDate($date)
     {
-        return date('Y-m-d', strtotime($date));
+        if ($date != '') {
+            return date('Y-m-d', strtotime($date));
+        } else {
+            return null;
+        }
 
     }
 }
