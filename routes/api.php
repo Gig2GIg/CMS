@@ -218,6 +218,9 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
 
+    // delete user audition
+    $router->delete('/auditions/user/delete/{id}', ['uses' => 'AuditionManagementController@deleteAuditionUserCard']);
+
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);
     $router->get('/users/union/list', ['uses' => 'UserController@listMemberships']);

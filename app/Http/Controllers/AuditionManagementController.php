@@ -1192,4 +1192,26 @@ class AuditionManagementController extends Controller
             // return response()->json(['error' => 'Not Found'], 404);
         }
     }
+
+    public function deleteAuditionUserCard(Request $request)
+    {
+        try {
+            $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+            $del = $userAuditionRepo->find($request->id);
+            $data = $del->delete();
+            if ($data) {
+                $dataResponse = ['data' => 'User audition deleted'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'User audition not deleted'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
 }
