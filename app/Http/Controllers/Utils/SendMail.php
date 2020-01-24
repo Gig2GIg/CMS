@@ -167,4 +167,39 @@ class SendMail
             return false;
         }
     }
+
+    public function sendForgotPasswordLink($remember_token, $user)
+    {
+        try {
+            $setLink = '';
+            if (isset($user->details->type) && $user->details->type == 1) {
+                $setLink = env('CASTER_PASSWORD_LINK') . "/password/reset-password/" . $remember_token;
+            } else if (isset($user->details->type) && $user->details->type == 2) {
+                $setLink = env('PERFORMER_PASSWORD_LINK') . "/password/reset-password/" . $remember_token;
+            } else {
+                return response()->json(['data' => trans('messages.email_not_found')], 404);
+            }
+
+            $email = new Mail();
+
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Reset Your Password');
+            $email->addTo($user->email);
+            $email->addContent("text/html", "Hello " . $user->email . "<br/><br/>Reset Your Password: <strong><a href='" . $setLink . "' style='font-size: 14px;line-height: normal;color: #ffffff;font-weight: bold;display: inline-block;background-color: #f8a33e;text-decoration: none;padding: 2px 20px;'>Click Here</a></strong><br/><br/>Please, change the password now.");
+
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
+
 }

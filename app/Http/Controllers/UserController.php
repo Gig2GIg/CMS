@@ -8,22 +8,23 @@ use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
+use App\Http\Repositories\Notification\NotificationSettingUserRepository;
 use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSettingsRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
-use App\Http\Repositories\Notification\NotificationSettingUserRepository;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
 use App\Models\Admin;
+use App\Models\Notifications\NotificationSetting;
+use App\Models\Notifications\NotificationSettingUser;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
-use App\Models\Notifications\NotificationSetting;
-use App\Models\Notifications\NotificationSettingUser;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,6 @@ class UserController extends Controller
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
-
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -72,7 +72,6 @@ class UserController extends Controller
 
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
-
 
             $usert->image()->create(['url' => request('image'), 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
@@ -182,7 +181,7 @@ class UserController extends Controller
                 $noti = $notificationSettingUserRepo->create([
                     'notification_setting_id' => $iValue['id'],
                     'user_id' => $user->user_id,
-                    'code' => $iValue['code']
+                    'code' => $iValue['code'],
                 ]);
                 $this->log->info($noti);
             }
@@ -439,7 +438,7 @@ class UserController extends Controller
                 $dataNew = new UserUnionMemberRepository(new UserUnionMembers());
                 $dataNew->create([
                     'user_id' => $this->getUserLogging(),
-                    'name' => $item['name']
+                    'name' => $item['name'],
                 ]);
             }
             // return response()->json(['data' => 'Unions update'], 200);
@@ -472,8 +471,85 @@ class UserController extends Controller
             $repo->create([
                 'user_id' => $id,
                 'setting' => $setting,
-                'value' => true
+                'value' => true,
             ]);
         }
     }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws UpdateException
+     */
+    public function forgotPassword(Request $request)
+    {
+        $dataResponse = null;
+        $code = null;
+        try {
+            $response = new SendMail();
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->findbyparam('email', $request->email);
+
+            if (isset($user->id)) {
+                $password_reset_token = Str::random(32);
+                $userUpdate = $userRepo->find($user->id);
+                if ($userUpdate->update(['password_reset_token' => $password_reset_token])) {
+                    $response->sendForgotPasswordLink($password_reset_token, $user);
+                    $dataResponse = ['data' => "email send"];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => "email not send"];
+                    $code = 406;
+                }
+            } else {
+                $dataResponse = ['data' => "email not found"];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (QueryException $e) {
+            $this->log->error($e);
+            throw new UpdateException($e);
+        } catch (NotFoundException $e) {
+            // return response()->json(['data' => "email not found"], 404);
+            return response()->json(['data' => trans('messages.email_not_found')], 404);
+
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws UpdateException
+     */
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $dataResponse = null;
+        $code = null;
+        try {
+            $response = new SendMail();
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->findbyparam('password_reset_token', $request->token);
+            if (isset($user->id)) {
+                if ($user->update(['password_reset_token' => null, 'password' => Hash::make($request->password)])) {
+                    $dataResponse = ['data' => "Password changed successfully"];
+                    $code = 200;
+                } else {
+                    $dataResponse = ['data' => "Password not changed"];
+                    $code = 406;
+                }
+            } else {
+                $dataResponse = ['data' => "Your one time link has been expired!"];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (QueryException $e) {
+            $this->log->error($e);
+            throw new UpdateException($e);
+        } catch (NotFoundException $e) {
+            // return response()->json(['data' => "email not found"], 404);
+            return response()->json(['data' => trans('messages.email_not_found')], 404);
+
+        }
+    }
+
 }
