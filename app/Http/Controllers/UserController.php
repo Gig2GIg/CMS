@@ -39,7 +39,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -521,7 +521,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws UpdateException
      */
-    public function resetPassword(ResetPasswordRequest $request)
+    public function     (ResetPasswordRequest $request)
     {
         $dataResponse = null;
         $code = null;
