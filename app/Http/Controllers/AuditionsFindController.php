@@ -27,14 +27,21 @@ class AuditionsFindController extends Controller
                 $elementResponse = $data->where('title', 'like', "%{$request->base}%");
             }
 
-            if (isset($request->union)) {
-                $elementResponse->where('union', '=', strtoupper($request->union));
+            if (isset($request->union) && strtoupper($request->union) != "ANY") {
+                $elementResponse->where('union', strtoupper($request->union));
             }
 
-            if (isset($request->contract)) {
-                $elementResponse->where('contract', '=', strtoupper($request->contract));
-
+            if (isset($request->contract) && strtoupper($request->contract) != "ANY") {
+                $elementResponse->where('contract', strtoupper($request->contract));
             }
+
+            // if (isset($request->union)) {
+            //     $elementResponse->where('union', '=', strtoupper($request->union));
+            // }
+
+            // if (isset($request->contract)) {
+            //     $elementResponse->where('contract', '=', strtoupper($request->contract));
+            // }
 
             if (isset($request->production)) {
 
