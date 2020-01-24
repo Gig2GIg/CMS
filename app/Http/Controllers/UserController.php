@@ -521,7 +521,7 @@ class UserController extends Controller
      * @return \Illuminate\Http\JsonResponse
      * @throws UpdateException
      */
-    public function     (ResetPasswordRequest $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
         $dataResponse = null;
         $code = null;
