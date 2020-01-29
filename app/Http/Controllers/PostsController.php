@@ -3,21 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-
 use App\Http\Controllers\Utils\LogManger;
-use App\Http\Exceptions\NotFoundException;
-
-use App\Models\Posts;
-use App\Models\PostTopics;
-
-use Illuminate\Http\Request;
-use App\Http\Requests\PostsRequest;
-
 use App\Http\Repositories\PostsRepository;
 use App\Http\Repositories\PostTopicsRepository;
-
+use App\Http\Requests\PostsRequest;
 use App\Http\Resources\PostsResource;
 use App\Http\Resources\PostsTopicsWithPostResource;
+use App\Models\Posts;
+use App\Models\PostTopics;
+use Illuminate\Http\Request;
 
 class PostsController extends Controller
 {
@@ -35,10 +29,10 @@ class PostsController extends Controller
             $data = [
                 'title' => $request->title,
                 'body' => $request->body,
-                'url_media' =>  $request->url_media,
+                'url_media' => $request->url_media,
                 'type' => $request->type,
-                'search_to' =>  $request->search_to,
-                'user_id' => $this->getUserLogging()
+                'search_to' => $request->search_to,
+                'user_id' => $this->getUserLogging(),
             ];
 
             $repoPost = new PostsRepository(new Posts());
@@ -49,14 +43,14 @@ class PostsController extends Controller
 
                 if (isset($request['topic_ids'])) {
                     foreach ($request['topic_ids'] as $topic) {
-                        $repoPostTopic->create(['post_id' =>  $post->id, 'topic_id' => $topic['id']]);
+                        $repoPostTopic->create(['post_id' => $post->id, 'topic_id' => $topic['id']]);
                     }
                 }
             }
 
             $dataResponse = [
                 'message' => 'Post created',
-                'data' => $post
+                'data' => $post,
             ];
 
             $code = 201;
@@ -74,9 +68,9 @@ class PostsController extends Controller
             $data = [
                 'title' => $request->title,
                 'body' => $request->body,
-                'url_media' =>  $request->url_media,
+                'url_media' => $request->url_media,
                 'type' => $request->type,
-                'search_to' =>  $request->search_to
+                'search_to' => $request->search_to,
             ];
 
             $repoPost = new PostsRepository(new Posts());
@@ -100,7 +94,7 @@ class PostsController extends Controller
     public function delete(Request $request)
     {
         try {
-            $post = Posts::find($request->id);
+            $post = Posts::findOrfail($request->id);
 
             if ($post->delete()) {
                 $dataResponse = ['data' => 'Post removed'];
@@ -118,8 +112,7 @@ class PostsController extends Controller
         }
     }
 
-    public function list(Request $request)
-    {
+    function list(Request $request) {
         try {
             $repoPost = new PostsRepository(new Posts());
             $posts = $repoPost->all();
@@ -175,7 +168,7 @@ class PostsController extends Controller
                 return $postTopics;
             })->flatten()->unique();
 
-            $data =  PostsTopicsWithPostResource::collection($posts);
+            $data = PostsTopicsWithPostResource::collection($posts);
             $response = collect($data)->filter()->all();
 
             if (count($posts) > 0) {
@@ -361,7 +354,7 @@ class PostsController extends Controller
             $this->log->error($ex->getMessage());
             // return response()->json(['error' => 'ERROR'], 422);
             return response()->json(['error' => trans('messages.error')], 422);
-            
+
         }
     }
 }

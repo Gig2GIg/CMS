@@ -20,9 +20,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/logout', ['uses' => 'AuthController@logout']);
-    $router->post('/remember', ['uses' => 'UserController@sendPassword']);
+    // $router->post('/remember', ['uses' => 'UserController@sendPassword']);
     $router->post('/remember/admin', ['uses' => 'UserController@sendPasswordAdmin']);
     $router->post('/users/create', ['uses' => 'UserController@store']);
+
+    // forget password
+    $router->post('/remember', ['uses' => 'UserController@forgotPassword']);
+    $router->post('/reset-password', ['uses' => 'UserController@resetPassword']);
+
 });
 $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->get('/users/settings', ['uses' => 'UserSettingsController@list']);
@@ -212,6 +217,9 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->get('/auditions/user/upcoming/det/{id}', ['uses' => 'AuditionManagementController@getUpcomingDet']);
     $router->get('/auditions/user/requested', ['uses' => 'AuditionManagementController@getRequested']);
     $router->put('/auditions/user/update/{id}', ['uses' => 'AuditionManagementController@updateAudition']);
+
+    // delete user audition
+    $router->delete('/auditions/user/delete/{id}', ['uses' => 'AuditionManagementController@deleteAuditionUserCard']);
 
     $router->get('/users', ['uses' => 'UserController@getAll']);
     $router->put('/users/union/update', ['uses' => 'UserController@updateMemberships']);

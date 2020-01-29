@@ -31,7 +31,7 @@ class UserAuditionsResource extends JsonResource
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
         $rolanme = Roles::where('id', '=', $this->rol_id)->get()->pluck('name');
-        $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
+        // $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
 
         $slot = $this->slot_id;
         if ($slot != null) {
@@ -41,7 +41,6 @@ class UserAuditionsResource extends JsonResource
         }
         $return =  [
             'id' => $this->id,
-            'appointment_id' => $this->appointment_id,
             'appointment_id' => $this->appointment_id,
             'auditions_id' => $dataRepo->auditions->id,
             'online' => $dataRepo->auditions->online,
@@ -58,7 +57,7 @@ class UserAuditionsResource extends JsonResource
             'number_roles' => count($dataRepo->auditions->roles),
             'round' => $dataRepo->round,
             // ===========================
-            'comment' => $feedback_comment['comment'],
+            'comment' => isset($this->comment) && $this->comment ? $this->comment : "",
             'status' => $dataRepo->status,
             'assign_no' => $this->assign_no ?? NULL,
             // ===========================

@@ -16,12 +16,13 @@ class AparenceResource extends JsonResource
     {
 
         return [
-            'id'=> $this->id,
-            'height'=> $this->height,
-            'weight'=> $this->weight,
-            'hair'=> $this->hair,
-            'eyes'=> $this->eyes,
-            'race'=> $this->race,
+            'id' => $this->id,
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'hair' => $this->hair,
+            'eyes' => $this->eyes,
+            'race' => $this->race,
+            'personal_flare' => $this->personal_flare,
 
         ];
     }

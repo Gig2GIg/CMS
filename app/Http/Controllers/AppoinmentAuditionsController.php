@@ -8,6 +8,7 @@ use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
+use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AppointmentDetailsUserResource;
@@ -18,6 +19,7 @@ use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAuditions;
+use App\Models\UserDetails;
 use App\Models\UserSlots;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -212,15 +214,23 @@ class AppoinmentAuditionsController extends Controller
             $response = $data->where('status', '=', 'checked')
                 ->unique('user_id');
 
+
+            $userDataRepo = new UserDetailsRepository(new UserDetails());
+            $dataUserDet = $userDataRepo->findbyparam('user_id',$this->getUserLogging());
+
             $finalResponse = new Collection();
-            $response->each(function ($item) use ($finalResponse) {
+            $response->each(function ($item) use ($finalResponse, $dataUserDet) {
                 $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
                 $userAuditionData = $userAuditionRepo->findbyparams([
                     'appointment_id' => $item->appointment_id,
                     'user_id' => $item->user_id,
                 ])->first();
 
-                if ($userAuditionData->rejected == 0) {
+
+
+                if ($dataUserDet->type == 1 && $userAuditionData->rejected == 0) {
+                    $finalResponse->push($item);
+                } else if($dataUserDet->type == 2) {
                     $finalResponse->push($item);
                 }
             });
@@ -229,6 +239,7 @@ class AppoinmentAuditionsController extends Controller
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
+            echo $exception->getMessage(); exit;
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Data Not Found'], 404);
         }

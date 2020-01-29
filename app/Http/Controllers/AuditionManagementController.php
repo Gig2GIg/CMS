@@ -166,20 +166,50 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-
+// dd("Helllo");
             $data = DB::table('appointments')
-                ->select('UA.id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'F.comment', 'appointments.status', 'UA.assign_no')
-                ->leftJoin('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
-                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+
+                ->select(
+                    'UA.id',
+                    'UA.appointment_id', 
+                    'UA.rol_id', 
+                    'UA.slot_id', 
+                    'UA.type', 
+                    'UA.created_at', 
+                    'UA.updated_at', 
+                    'F.comment', 
+                    'appointments.status', 
+                    'UA.assign_no')
+
+                ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->Join('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->Join('auditions AS A', function ($join) {
+                    $join->on('appointments.auditions_id', '=', 'A.id')   
+                         ->on('F.evaluator_id', '=', 'A.user_id');
+                    })
+
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
                 ->where('appointments.status', 0)
                 ->get()->sortByDesc('created_at');
 
+                // dd($data);
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
             // $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
             // $data = $userAuditionsData->sortByDesc('created_at');
 
+            // print_r($data);exit;
+            // $this->collection = new Collection();
+            // $data->each(function ($item) {
+                // print_r($item->appointments);exit;
+
+                // $auditionRepo = new AuditionRepository(new Auditions());
+                // $audiData = $auditionRepo->find($item['auditions_id']);
+                // if ($audiData->status != 2) {
+                //     $this->collection->push($item);
+                // }
+            // });
+            // print_r($data);exit;
 
             if ($data->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($data)];
@@ -190,6 +220,7 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, 200);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
+            // dd($exception->getMessage());
             // return response()->json(['data' => 'Not Found Data'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
@@ -673,39 +704,50 @@ class AuditionManagementController extends Controller
         try {
             $repoApp = new AppointmentRepository(new Appointments());
             $appoiment = $repoApp->find($request->id);
-            
+
             foreach ($request->slots as $slot) {
 
                 $userSlotRepo = new UserSlotsRepository(new  UserSlots);
-                $userSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
+                $userSlot = $userSlotRepo->findbyparams([
+                    'user_id' => $slot['user_id'],
+                    'appointment_id' => $request->id
+                    ])->first();
 
                 $update = $userSlot->update(['slots_id' => $slot['slot_id']]);
 
+                $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+                $userAudition = $userAuditionRepo->findbyparams([
+                    'user_id' => $slot['user_id'],
+                    'appointment_id' => $request->id
+                    ])->first();
+
+                $userAuditionUpdate = $userAudition->update(['slot_id' => $slot['slot_id']]);
+                
                 $userRepo = new UserRepository(new User());
                 $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
 
                 $user = $userRepo->find($slot['user_id']);
 
                 $appointmentRepo = new AppointmentRepository(new Appointments());
-                $appointment = $appointmentRepo->find($newUserSlot->appointment_id);
+                $appointment = $appointmentRepo->find($request->id);
 
                 $slotRepo = new SlotsRepository(new Slots());
                 $slot = $slotRepo->find($slot['slot_id']);
 
                 $dataMail = [
-                    'name' => $user->details->first_name,
+                    'name' => $user->details->first_name . ' ' . $user->details->last_name,
                     'audition_title' => $appointment->auditions->title,
                     'slot_time' => $slot->time
                 ];
 
                 $audition = $appoiment->auditions;
-                
+
                 $mail = new SendMail();
-                $mail->sendPerformance($user->email, $dataMail);
+                $mail->sendPerformance($user, $dataMail);
 
-                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition);
-
-                $this->sendReorderAppointmentTimesNotification($audition);
+                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot);
+                
+                $this->sendReorderAppointmentTimesNotification($user, $audition, $slot);
             }
 
             if ($userSlotRepo) {
@@ -725,26 +767,22 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function sendReorderAppointmentTimesNotification($audition): void
+    public function sendReorderAppointmentTimesNotification($user = null, $audition, $slot): void
     {
         try {
-            $userRepo = new UserRepository(new User);
-            if($audition->user_auditions) {
-                $audition->user_auditions->each(function ($user_audition) use ($audition) {
-                    $user = $userRepo->find($user_audition['user_id']);
-                    $this->pushNotifications(
-                        'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved',
-                        $user_auditions,
-                        $audition->title
-                    );
-                });
+            if ($user) {
+                $this->pushNotifications(
+                    'Your appointment time to audition ' . $audition->title . ' is update to '. $slot->time,
+                    $user,
+                    $audition->title
+                );
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
     }
 
-    public function saveReorderAppointmentTimesNotificationToUser($user, $audition): void
+    public function saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot): void
     {
         try {
             if ($user instanceof User) {
@@ -752,7 +790,7 @@ class AuditionManagementController extends Controller
                     'title' => $audition->title,
                     'code' => 'appointment_reorder',
                     'status' => 'unread',
-                    'message' => 'Your appointment to audition ' . '* ' . $audition->title . ' *' . ' has been moved'
+                    'message' => 'Your appointment time to audition '. $audition->title .' is update to '. $slot->time
                 ]);
             }
         } catch (NotFoundException $exception) {
@@ -843,11 +881,11 @@ class AuditionManagementController extends Controller
                 // return response()->json(['data' => 'You already registered'], 406);
             } else {
                 $data = $userAuditions->create($data);
-                if ($request->type === 2) {
+                if ($request->type == 2) {
                     $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . is_null($detailData->details->last_name) ? '' : $detailData->details->last_name;
+                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
                     $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $appoinmetRepo = new AppointmentRepository(new Appointments());
                     $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
@@ -1053,9 +1091,9 @@ class AuditionManagementController extends Controller
 
             if ($dataUserAuditions->count() > 0) {
                 $userAuditionData = $dataUserAuditions->first();
-                if ($userAuditionData->assign_no != NULL) {
-                    return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
-                }
+                // if ($userAuditionData->assign_no != NULL) {
+                //     return response()->json(['message' => trans('messages.number_already_assigned'), 'data' => []], 409);
+                // }
 
                 // Check if Number is unique or not
                 $list_of_numbers = $repoUserAuditions->all()
@@ -1154,4 +1192,26 @@ class AuditionManagementController extends Controller
             // return response()->json(['error' => 'Not Found'], 404);
         }
     }
+
+    public function deleteAuditionUserCard(Request $request)
+    {
+        try {
+            $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+            $del = $userAuditionRepo->find($request->id);
+            $data = $del->delete();
+            if ($data) {
+                $dataResponse = ['data' => 'User audition deleted'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'User audition not deleted'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
 }

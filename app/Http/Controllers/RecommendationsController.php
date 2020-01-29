@@ -108,7 +108,7 @@ class RecommendationsController extends Controller
                 if ($checkAlreadyExists) {
                     $responseData = 'Already exists';
                     $code = 422;
-
+                    continue;
                     return response()->json(['data' => $responseData], $code);
                 }
                 // $recommendation = Recommendations::find($markeplace['id']);

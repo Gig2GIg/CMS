@@ -28,10 +28,11 @@ class AparencesController extends Controller
         try {
             $data = [
                 'weight' => $request->weight,
-                'height' =>  $request->height,
-                'hair' =>     $request->hair,
-                'eyes' =>  $request->eyes,
-                'race' =>         $request->race,
+                'height' => $request->height,
+                'hair' => $request->hair,
+                'eyes' => $request->eyes,
+                'race' => $request->race,
+                'personal_flare' => $request->personal_flare,
                 'user_id' => $this->getUserLogging(),
             ];
             $repo = new UserAparenceRepository(new UserAparence());
@@ -79,10 +80,11 @@ class AparencesController extends Controller
         try {
             $data = [
                 'weight' => $request->weight,
-                'height' =>  $request->height,
-                'hair' =>     $request->hair,
-                'eyes' =>  $request->eyes,
-                'race' =>         $request->race,
+                'height' => $request->height,
+                'hair' => $request->hair,
+                'eyes' => $request->eyes,
+                'race' => $request->race,
+                'personal_flare' => $request->personal_flare,
             ];
             $repo = new UserAparenceRepository(new UserAparence());
             $dataManager = $repo->find(request('id'));

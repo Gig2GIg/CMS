@@ -9,7 +9,8 @@
 
 namespace App\Http\Resources;
 
-
+use App\Http\Repositories\AppointmentRepository;
+use App\Models\Appointments;
 use App\Models\Resources;
 use App\Models\Roles;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -28,6 +29,9 @@ class AuditionResourceFind extends JsonResource
             ->where('resource_id', $this->id)
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
+
+        $appointmentRepo = new AppointmentRepository(new Appointments());
+        $appointment = $appointmentRepo->findbyparam('auditions_id', $this->id)->first();
 
         // $this->roles->each(function ($item) {
         //     $item->image;
@@ -60,8 +64,9 @@ class AuditionResourceFind extends JsonResource
             "user_id" => $this->user_id,
             "cover" => $url_media[0] ?? null,
             "number_roles" => $countRoles,
-            "roles" => $roles
-            // "roles" => $this->roles
+            "roles" => $roles,
+            // "roles" => $this->roles,
+            "location" => (isset($appointment->location) && $appointment->location != '') ? json_decode($appointment->location) : null,
         ];
     }
 }
