@@ -93,7 +93,9 @@ class AuditionsController extends Controller
 
                 if (isset($request['dates'])) {
                     foreach ($request['dates'] as $date) {
-                        $audition->dates()->create($this->dataDatesToProcess($date));
+                        if(!empty($date['to']) && !empty($date['from'])){
+                            $audition->dates()->create($this->dataDatesToProcess($date));    
+                        }                        
                     }
                 }
 
