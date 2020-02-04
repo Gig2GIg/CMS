@@ -2,14 +2,22 @@
 
 namespace App\Http\Resources;
 
+//use App\Http\Repositories\AppointmentRepository;
+//use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\InstantFeedbackRepository;
 use App\Http\Repositories\SlotsRepository;
+use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\UserUnionMemberRepository;
+//use App\Models\Appointments;
+//use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\InstantFeedback;
 use App\Models\Slots;
 use App\Models\User;
+use App\Models\UserManager;
+use App\Models\UserUnionMembers;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppointmentResource extends JsonResource
@@ -39,6 +47,19 @@ class AppointmentResource extends JsonResource
             'user_id' => $this->user_id,
         ])->first();
 
+        $userManagerRepo = new UserManagerRepository(new UserManager());
+        $userManager = $userManagerRepo->findbyparam('user_id', $this->user_id);
+
+        $userRepo = new UserRepository(new User());
+        $userData = $userRepo->find($this->user_id);
+        $user = new UserResource($userData);
+
+
+        $userUnionMemberRepo = new UserUnionMemberRepository(new UserUnionMembers());
+        $userUnionMember = $userUnionMemberRepo->findbyparam('user_id', $this->user_id)->pluck('name')->toArray();
+        $userUnionMember = array_unique($userUnionMember);
+        $userUnionMemberString = count($userUnionMember) > 0 ? implode(',', $userUnionMember) :"";
+
         $is_feedback_sent = $instant_feedback->count() == 0 ? 0 : 1;
 
         return [
@@ -51,8 +72,13 @@ class AppointmentResource extends JsonResource
             // 'favorite' => $this->favorite,
             'slot_id' => $this->slots_id,
             'is_feedback_sent' => $is_feedback_sent ?? null,
-            'email' => $userData->email ?? null,
+            'email' => $userData->email ? $userData->email : null,
             'birth' => $userData->details->birth ?? null,
+            'representation_name' => isset($userManager->name) ? $userManager->name : "",
+            'representation_email' => isset($userManager->email) ? $userManager->email : "",
+            'union_string' => $userUnionMemberString,
+            'union_array' => $userUnionMember,
+            'website' => isset($user->details->url) ? $user->details->url : ""
         ];
     }
 }
