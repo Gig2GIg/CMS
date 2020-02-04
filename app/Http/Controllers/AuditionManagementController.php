@@ -171,20 +171,20 @@ class AuditionManagementController extends Controller
 
                 ->select(
                     'UA.id',
-                    'UA.appointment_id', 
-                    'UA.rol_id', 
-                    'UA.slot_id', 
-                    'UA.type', 
-                    'UA.created_at', 
-                    'UA.updated_at', 
-                    'F.comment', 
-                    'appointments.status', 
+                    'UA.appointment_id',
+                    'UA.rol_id',
+                    'UA.slot_id',
+                    'UA.type',
+                    'UA.created_at',
+                    'UA.updated_at',
+                    'F.comment',
+                    'appointments.status',
                     'UA.assign_no')
 
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->Join('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->Join('auditions AS A', function ($join) {
-                    $join->on('appointments.auditions_id', '=', 'A.id')   
+                    $join->on('appointments.auditions_id', '=', 'A.id')
                          ->on('F.evaluator_id', '=', 'A.user_id');
                     })
 
@@ -722,7 +722,7 @@ class AuditionManagementController extends Controller
                     ])->first();
 
                 $userAuditionUpdate = $userAudition->update(['slot_id' => $slot['slot_id']]);
-                
+
                 $userRepo = new UserRepository(new User());
                 $newUserSlot = $userSlotRepo->findbyparam('user_id', $slot['user_id'])->first();
 
@@ -746,7 +746,7 @@ class AuditionManagementController extends Controller
                 $mail->sendPerformance($user, $dataMail);
 
                 $this->saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot);
-                
+
                 $this->sendReorderAppointmentTimesNotification($user, $audition, $slot);
             }
 
@@ -985,6 +985,11 @@ class AuditionManagementController extends Controller
                 ->groupBy('user_id')
                 ->pluck('user_id');
 
+            /*
+             *
+             * Allow user to send multiple video [4Jan2020]
+             *
+             *
             if ($videoData->count() > 0) {
                 $userRepo = new UserDetailsRepository(new UserDetails());
                 $user_names = $userRepo->all()->whereIn('user_id', $videoData)->pluck('first_name')->toArray();
@@ -992,6 +997,7 @@ class AuditionManagementController extends Controller
                 return response()->json(['message' => trans('messages.user_already_uploaded_video', ['user' => $names]), 'data' => []], 409);
                 // return response()->json(['message' => trans('messages.already_uploaded_video'), 'data' => []], 409);
             }
+            */
             // Update Appointments
             $group_no = $data->group_no + 1;
             $update = $data->update([
