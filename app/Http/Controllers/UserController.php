@@ -292,8 +292,9 @@ class UserController extends Controller
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $userDataDetails = [
-                'first_name' => $name[0] ?? $dataUserDetails->first_name,
-                'last_name' => $name[1] ?? $dataUserDetails->last_name,
+
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
                 'address' => $request->address,
                 'city' => isset($request->city) ? $request->city : "",
                 'state' => $request->state,
