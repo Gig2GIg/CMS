@@ -99,8 +99,8 @@ class UserController extends Controller
         $dataName = explode(" ", $request->name);
         $userDataDetails = [
             'type' => $request->type,
-            'first_name' => $dataName[0] ?? "null",
-            'last_name' => $dataName[1] ?? "",
+            'first_name' => $request->first_name, //$dataName[0] ?? "null",
+            'last_name' => $request->last_name, //$dataName[1] ?? "",
             'address' => $request->address,
             'city' => isset($request->city) ? $request->city : "",
             'state' => $request->state,

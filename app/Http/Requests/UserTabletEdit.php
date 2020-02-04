@@ -25,7 +25,9 @@ class UserTabletEdit extends FormRequest
     {
         return [
             'email' => 'required|email',
-            'name'=>'required|string|max:50',
+//            'name'=>'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
             'address'=>'required|max:150',
 //            'city'=>'required|string|max:50',
             'state'=>'required|integer',
