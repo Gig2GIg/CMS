@@ -978,6 +978,11 @@ class AuditionManagementController extends Controller
             if ($data->is_group_open) {
                 return response()->json(['message' => trans('messages.group_already_open'), 'data' => []], 409);
             }
+
+            /*
+             *
+             * Allow user to send multiple video [4Jan2020]
+             *
             // check if user has uploaded video before or not
             $videoRepo = new AuditionVideos();
             $videoData = $videoRepo->whereIn('user_id', $request->user_ids)
@@ -985,11 +990,6 @@ class AuditionManagementController extends Controller
                 ->groupBy('user_id')
                 ->pluck('user_id');
 
-            /*
-             *
-             * Allow user to send multiple video [4Jan2020]
-             *
-             *
             if ($videoData->count() > 0) {
                 $userRepo = new UserDetailsRepository(new UserDetails());
                 $user_names = $userRepo->all()->whereIn('user_id', $videoData)->pluck('first_name')->toArray();
