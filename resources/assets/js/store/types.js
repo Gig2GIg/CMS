@@ -50,6 +50,13 @@ export const UPDATE_BLOG = 'Update Blog';
 export const DELETE_BLOG = 'Delete Blog';
 
 
+export const FETCH_FORUMS_SUCCESS = 'Fetch Forums successful';
+export const FETCH_FORUMS_FAILURE = 'Fetch Forums failed';
+export const CREATE_FORUM = 'Create Forum';
+export const UPDATE_FORUM = 'Update Forum';
+export const DELETE_FORUM = 'Delete Forum';
+
+
 
 export const FETCH_VENDORS_SUCCESS = 'Fetch Vendors successful';
 export const FETCH_VENDORS_FAILURE = 'Fetch Vendors failed';

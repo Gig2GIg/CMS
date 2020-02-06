@@ -8,7 +8,7 @@ export default {
 
   async fetch({ commit }) {
     try {
-      const { data: { data } } = await axios.get('/api/cms/forum/posts');
+      const { data: { data } } = await axios.get('/api/cms/blog/posts/list');
      console.log(data);
       commit(types.FETCH_BLOGS_SUCCESS, data);
     } catch (e) {

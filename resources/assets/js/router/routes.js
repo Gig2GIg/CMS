@@ -12,6 +12,7 @@ import Skills from '@/pages/Skills';
 import Subscriptions from '@/pages/Subscriptions';
 import Payments from '@/pages/Payments';
 import Blogs from '@/pages/Blogs';
+import Forums from '@/pages/Forums';
 import Settings from '@/pages/Settings';
 import NotFound from '@/pages/errors/404';
 import FeaturedListing from '@/pages/FeaturedListing';
@@ -38,6 +39,7 @@ export default [
     { path: '/payments', title: 'Payments', name: 'payments', component: Payments },
     { path: '/settings', title: 'Settings', name: 'settings', component: Settings },
     { path: '/blogs', title: 'Blogs', name: 'blogs', component: Blogs },
+    { path: '/forum', title: 'Forums', name: 'forums', component: Forums },
     { path: '/featured-listing', title: 'Marketplace Featured Listing', name: 'featured-listing', component: FeaturedListing },
 
   ]),

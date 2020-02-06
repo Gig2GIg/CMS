@@ -15,7 +15,8 @@ export default {
   },
 
   [types.CREATE_BLOG] (state, blog) {
-    state.blogs.push(blog);
+    // state.blogs.push(blog);
+    state.forums.splice(0,0,blog)
   },
 
   [types.UPDATE_BLOG] (state, blog) {

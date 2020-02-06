@@ -14,27 +14,58 @@ require("dotenv").config();
  |
  */
 
-mix
-  .setPublicPath('./')
-  .js("resources/assets/js/app.js", "public/js")
-  .sass("resources/assets/sass/app.scss", "public/css")
-  .options({
-    processCssUrls: false,
-    postCss: [tailwindcss("tailwind.js")]
-  })
-  .sourceMaps()
-  .version();
+// mix
+//   .setPublicPath('./')
+//   .js("resources/assets/js/app.js", "public/js")
+//   .sass("resources/assets/sass/app.scss", "public/css")
+//   .options({
+//     processCssUrls: false,
+//     postCss: [tailwindcss("tailwind.js")]
+//   })
+//   .sourceMaps()
+//   .version();
 
-mix.browserSync(process.env.APP_URL);
+// mix.browserSync(process.env.APP_URL);
 
-mix.webpackConfig({
-  module: {
-    rules: [
-      {
-        test: /\.styl$/,
-        loader: ["style-loader", "css-loader", "stylus-loader"]
-      }
-    ]
-  },
-  resolve: { alias: { "@": path.join(__dirname, "./resources/assets/js") } }
-});
+// mix.webpackConfig({
+//   module: {
+//     rules: [
+//       {
+//         test: /\.styl$/,
+//         loader: ["style-loader", "css-loader", "stylus-loader"]
+//       }
+//     ]
+//   },
+//   resolve: { alias: { "@": path.join(__dirname, "./resources/assets/js") } }
+// });
+
+mix.js('resources/assets/js/app.js', 'public/js')
+   .sass('resources/assets/sass/app.scss', 'public/css')
+   .options({
+      processCssUrls: false,
+      postCss: [ tailwindcss('tailwind.js') ],
+    })
+   .sourceMaps()
+   .disableNotifications()
+   .browserSync(process.env.APP_URL)
+   .webpackConfig({
+      resolve: {
+        alias: {
+          /**
+           * An alias for the JS imports.
+           *
+           * Example of usage:
+           * require('@/components/AutocompleteLocation');
+           */
+          '@': path.join(__dirname, './resources/assets/js'),
+
+          /**
+           * An alias for the SASS imports.
+           *
+           * Example of usage:
+           * @import "~sass/_vars";
+           */
+          'sass': path.join(__dirname, './resources/assets/sass'),
+        },
+      },
+   });

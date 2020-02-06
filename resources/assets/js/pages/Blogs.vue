@@ -58,10 +58,10 @@
                   label="Date"
                   sortable>{{ props.row.created_at }}</b-table-column>
 
-                <b-table-column 
+                <!-- <b-table-column 
                   field="type"
                   label="Type"
-                  sortable>{{ props.row.type }}</b-table-column>
+                  sortable>{{ props.row.type }}</b-table-column> -->
 
                 <b-table-column 
                   field="search_to"
@@ -89,13 +89,13 @@
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
                     <div class="mb-4">
-                      <img class="w-full" :src="props.row.url_media">
+                      <img class="w-full" :src="props.row && props.row.url_media ? props.row.url_media : defaultImg" @error="defaultImg">
                     </div>
                     <div class="content">
-                      <p>
+                      <!-- <p>
                         <strong>Type:</strong>
                         {{ props.row.type }}
-                      </p>
+                      </p> -->
                       <p>
                         <strong>Body:</strong>
                         <span v-html=" props.row.body"></span>
@@ -190,7 +190,7 @@
               </b-select>
             </b-field>
 
-            <b-field
+            <!-- <b-field
               label="type"
               :type="{'is-danger': errors.has('type')}"
               :message="errors.first('type')"
@@ -208,7 +208,7 @@
                   {{ type }}
                 </option>
               </b-select>
-            </b-field>
+            </b-field> -->
 
 
             <b-field
@@ -257,6 +257,7 @@
 <script>
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { mapActions, mapState, mapGetters } from "vuex";
+import DEFINE from '../constant.js';
 
 export default {
   name: "Blogs",
@@ -315,7 +316,7 @@ export default {
 
     async createBlog() {
       try {
-    
+        this.selectedBlog.type = "blog"; // store forum type blogs
         await this.store(this.selectedBlog);
 
         this.isModalActive = false;
@@ -326,7 +327,7 @@ export default {
 
     async updateBlog() {
       try {
-
+        this.selectedBlog.type = "blog"; // store forum type blogs
         await this.update(this.selectedBlog);
 
         this.isModalActive = false;
@@ -338,6 +339,10 @@ export default {
     async deleteBlog() {
       console.log(this.selectedBlog);
       await this.destroy(this.selectedBlog);
+    },
+    defaultImg(event){
+      event.target.src = DEFINE.no_img_placeholder;
+      
     }
   },
 
