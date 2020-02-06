@@ -50,10 +50,11 @@ class AuditionVideosController extends Controller
                             ->on('US.slots_id', '=', 'AV.slot_id');
                     })
                     ->where('R.type', 'cover')
-                    ->where('R.resource_type', '=', 'App\Models\User')
+                    ->where('R.resource_type', 'App\Models\User')
                     ->whereIn('AV.appointment_id', $AppointmentIds)
+//                    ->where('US.status', 'checked')
                     ->get();
-            }
+             }
 
             // $data = $AuditionVideos->unique(['slots_id', 'user_id']);
             $data = $AuditionVideos;

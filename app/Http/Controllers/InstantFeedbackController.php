@@ -92,11 +92,11 @@ class InstantFeedbackController extends Controller
                                 'rejected' => 1,
                             ]);
                     }
+                }  else {
+                    // send notification
+                    $this->sendStoreNotificationToUser($user, $audition);
+                    $this->saveStoreNotificationToUser($user, $audition);
                 }
-
-                // send notification
-                $this->sendStoreNotificationToUser($user, $audition);
-                $this->saveStoreNotificationToUser($user, $audition);
 
                 $this->addTalenteToDatabase($request->user);
 

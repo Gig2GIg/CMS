@@ -153,7 +153,13 @@ class Notifications
                     if ($type == 'custom') {
 
                         $repo = new UserAuditionsRepository(new UserAuditions());
-                        $repData = $repo->getByParam('appointment_id', $audition->id);
+                        /*
+                         * Remove performer who got X'd via instant feedback [5Jan2020]
+                         */
+//                        $repData = $repo->getByParam('appointment_id', $audition->id);
+                        $repData = $repo->findbyparams(['appointment_id'=> $audition->id, 'rejected' => 0]);
+
+
                         if ($repData->count() === 0) {
                             throw new \Exception('NULL ELEMENETS TO NOTIFICATE');
                         }
