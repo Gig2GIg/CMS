@@ -20,7 +20,7 @@ export default {
     }
   },
 
-  async store({ dispatch, commit }, category) {
+  async store({ dispatch, commit }, topic) {
     try {
       dispatch('toggleSpinner');
 
@@ -45,7 +45,7 @@ export default {
       await axios.put(`/api/cms/topics/update/${topic.id}`, topic);
       commit(types.UPDATE_TOPIC, topic);
 
-      dispatch('toast/showMessage', 'Category updated.', { root: true });
+      dispatch('toast/showMessage', 'Topic updated.', { root: true });
     } catch (e) {
       throw e;
     } finally {
@@ -61,7 +61,7 @@ export default {
       await axios.delete(`/api/cms/topics/delete/${topic.id}`);
       commit(types.DELETE_TOPIC, topic);
 
-      dispatch('toast/showMessage', 'topic deleted.', { root: true });
+      dispatch('toast/showMessage', 'Topic deleted.', { root: true });
     } catch(e) {
       dispatch('toast/showError', 'Something went wrong.', { root: true });
     } finally {

@@ -289,6 +289,7 @@ export default {
   },
   methods: {
     ...mapActions('forums', ['fetch', 'store', 'update', 'destroy']),
+    ...mapActions('topics', {'fetchTopics' : 'fetch'}),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(forum) {
@@ -347,6 +348,7 @@ export default {
 
   async created() {
     await this.fetch();
+    await this.fetchTopics();
     this.loaded = true;
   }
 };

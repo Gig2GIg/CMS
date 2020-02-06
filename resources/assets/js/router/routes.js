@@ -11,6 +11,7 @@ import ProductionTypes from '@/pages/ProductionTypes';
 import Skills from '@/pages/Skills';
 import Subscriptions from '@/pages/Subscriptions';
 import Payments from '@/pages/Payments';
+import Topics from '@/pages/Topics';
 import Blogs from '@/pages/Blogs';
 import Forums from '@/pages/Forums';
 import Settings from '@/pages/Settings';
@@ -38,8 +39,9 @@ export default [
     { path: '/subscriptions', title: 'Subscriptions', name: 'subscriptions', component: Subscriptions },
     { path: '/payments', title: 'Payments', name: 'payments', component: Payments },
     { path: '/settings', title: 'Settings', name: 'settings', component: Settings },
+    { path: '/topics', title: 'Topics', name: 'topics', component: Topics },
     { path: '/blogs', title: 'Blogs', name: 'blogs', component: Blogs },
-    { path: '/forum', title: 'Forums', name: 'forums', component: Forums },
+    { path: '/forum', title: 'Forums', name: 'forums', component: Forums },    
     { path: '/featured-listing', title: 'Marketplace Featured Listing', name: 'featured-listing', component: FeaturedListing },
 
   ]),

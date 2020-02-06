@@ -19,7 +19,7 @@ export default {
   },
 
   [types.UPDATE_TOPIC] (state, topic) {
-    let current = state.topic.find(x => x.id === topic.id);
+    let current = state.topics.find(x => x.id === topic.id);
     let index = state.topics.indexOf(current);
 
     Vue.set(state.topics, index, topic);

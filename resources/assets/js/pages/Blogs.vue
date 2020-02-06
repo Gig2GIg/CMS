@@ -289,6 +289,7 @@ export default {
   },
   methods: {
     ...mapActions('blogs', ['fetch', 'store', 'update', 'destroy']),
+    ...mapActions('topics', {'fetchTopics' : 'fetch'}),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(blog) {
@@ -348,6 +349,7 @@ export default {
 
   async created() {
     await this.fetch();
+    await this.fetchTopics();
     this.loaded = true;
   }
 };
