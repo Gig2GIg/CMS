@@ -33,7 +33,7 @@ class PostsResource extends JsonResource
             'time_ago' => $this->created_at->diffForHumans(),
             'search_to' => $this->search_to,
             'type' => $this->type,
-            'created_at' => $this->created_at,
+            'created_at' => isset($this->created_at) ? $this->created_at->format('Y.m.d H:i:s') : '',
             'topic_id' => isset($this->post_topics[0]->id) ? $this->post_topics[0]->id : ""
         ];
     }
