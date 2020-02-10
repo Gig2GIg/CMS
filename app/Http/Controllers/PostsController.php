@@ -77,6 +77,19 @@ class PostsController extends Controller
             $post = $repoPost->find($request->id);
 
             if ($post->update(array_filter($data))) {
+
+                //Post Topics Delete previous ones
+                if (isset($request['topic_ids'])) {
+                    $repoPostTopic = new PostTopicsRepository(new PostTopics());
+                    $repoPostTopic->findbyparam('post_id', $request->id);
+                    $repoPostTopic->delete();
+
+                    //Add new topics
+                    foreach ($request['topic_ids'] as $topic) {
+                        $repoPostTopic->create(['post_id' => $post->id, 'topic_id' => $topic['id']]);
+                    }
+                }
+
                 $dataResponse = ['data' => 'Post update'];
                 $code = 200;
             } else {
