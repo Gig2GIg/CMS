@@ -21,8 +21,8 @@ export default {
       dispatch('toggleSpinner');
 
       // Save changes
-      const { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body, topic_ids: [{id: post.topic_id}], type: post.type, url_media: post.url_media, search_to: post.search_to});
-      
+      let { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body, topic_ids: [{id: post.topic_id}], type: post.type, url_media: post.url_media, search_to: post.search_to});
+      data.topic_id = post.topic_id;
       commit(types.CREATE_FORUM, data);
 
       dispatch('toast/showMessage', 'Forum created.', { root: true });
@@ -34,7 +34,6 @@ export default {
   },
 
   async update({ dispatch, commit }, post) {
-    console.log("TCL: update -> post", post)
     try {
       dispatch('toggleSpinner');
 

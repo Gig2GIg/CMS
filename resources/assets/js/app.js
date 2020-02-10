@@ -18,6 +18,13 @@ Vue.use(CKEditor);
 
 Vue.config.productionTip = false;
 
+
+Vue.filter("dateTimeFormatBlogs", function (value) {
+  if (value) {
+    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY-MM-DD hh:mm:ss A");
+  }
+});
+
 firebase.initializeApp({
   apiKey: 'AIzaSyDTrKkhJCM4ZNbFXRTq0AE2uKzNlpo3_i4',
   projectId: 'dd-gig2gi',

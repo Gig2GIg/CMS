@@ -56,7 +56,7 @@
                 <b-table-column 
                   field="date"
                   label="Date"
-                  sortable>{{ props.row.created_at }}</b-table-column>
+                  sortable>{{ props.row.created_at | dateTimeFormatBlogs}}</b-table-column>
 
                 <!-- <b-table-column 
                   field="type"
@@ -322,6 +322,7 @@ export default {
 
         this.isModalActive = false;
       } catch(e) {
+        console.log("TCL: createBlog -> e", e)
         this.$setErrorsFromResponse(e.response.data);
       }
     },

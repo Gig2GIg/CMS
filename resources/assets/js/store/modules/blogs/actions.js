@@ -22,7 +22,7 @@ export default {
 
       // Save changes
       const { data: { data } } = await axios.post('/api/cms/blog/posts', { title: post.title, body: post.body, topic_ids: [{id: post.topic_id}], type: post.type, url_media: post.url_media, search_to: post.search_to});
-      
+      data.topic_id = post.topic_id;
       commit(types.CREATE_BLOG, data);
 
       dispatch('toast/showMessage', 'Blog created.', { root: true });

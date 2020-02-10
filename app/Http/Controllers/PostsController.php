@@ -76,17 +76,16 @@ class PostsController extends Controller
             $repoPost = new PostsRepository(new Posts());
             $post = $repoPost->find($request->id);
 
-            if ($post->update(array_filter($data))) {
-
-                //Post Topics Delete previous ones
+            if ($post->update(array_filter($data))) {                
                 if (isset($request['topic_ids'])) {
-                    $repoPostTopic = new PostTopicsRepository(new PostTopics());
-                    $repoPostTopic->findbyparam('post_id', $request->id);
-                    $repoPostTopic->delete();
+                    //Post Topics Delete previous ones
+                    $collection = PostTopics::where('post_id', $request->id)->get(['id']);
+                    PostTopics::destroy($collection->toArray());
 
                     //Add new topics
+                    $repoPostTopic = new PostTopicsRepository(new PostTopics());
                     foreach ($request['topic_ids'] as $topic) {
-                        $repoPostTopic->create(['post_id' => $post->id, 'topic_id' => $topic['id']]);
+                        $repoPostTopic->create(['post_id' => $request->id, 'topic_id' => $topic['id']]);
                     }
                 }
 
