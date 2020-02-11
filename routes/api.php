@@ -41,6 +41,8 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     $router->post('/appointments/auditions', ['uses' => 'AppoinmentAuditionsController@store']);
     $router->get('/appointments/auditions', ['uses' => 'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}', ['uses' => 'AppoinmentAuditionsController@show']);
+    $router->get('/appointments/auditions/{audition}/hidden', ['uses' => 'AppoinmentAuditionsController@showHidden']);
+
 
     // =============== assignNumber ========================
     $router->post('/assignNumber', ['uses' => 'AuditionManagementController@assignNumber']);
