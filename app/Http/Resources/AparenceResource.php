@@ -23,7 +23,7 @@ class AparenceResource extends JsonResource
             'eyes' => $this->eyes,
             'race' => $this->race,
             'personal_flare' => $this->personal_flare,
-
+            'gender_pronouns' => $this->gender_pronouns
         ];
     }
 }

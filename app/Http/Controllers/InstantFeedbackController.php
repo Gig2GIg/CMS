@@ -119,13 +119,15 @@ class InstantFeedbackController extends Controller
 
         try {
             $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
-            $dataUserAuditions = $repoUserAuditions->all()
-                ->where('user_id', $request->user)
-                ->where('appointment_id', $request->appointment_id);
+            $dataUserAuditions = $repoUserAuditions->findbyparams(
+                [
+                    'user_id' => $request->user,
+                    'appointment_id' => $request->appointment_id
+                ])->first();
 
-            $dataUserAuditions->update([
-                    'rejected' => 0
-                ]);
+            $dataUserAuditions->rejected = 0;
+
+            $dataUserAuditions->save();
 
             $dataResponse = ['data' => trans('messages.performer_restored_success')];
             $code = 200;

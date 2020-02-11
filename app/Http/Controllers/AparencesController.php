@@ -34,6 +34,7 @@ class AparencesController extends Controller
                 'race' => $request->race,
                 'personal_flare' => $request->personal_flare,
                 'user_id' => $this->getUserLogging(),
+                'gender_pronouns' => $request->gender_pronouns
             ];
             $repo = new UserAparenceRepository(new UserAparence());
             $repo->create($data);
@@ -85,6 +86,7 @@ class AparencesController extends Controller
                 'eyes' => $request->eyes,
                 'race' => $request->race,
                 'personal_flare' => $request->personal_flare,
+                'gender_pronouns' => $request->gender_pronouns
             ];
             $repo = new UserAparenceRepository(new UserAparence());
             $dataManager = $repo->find(request('id'));

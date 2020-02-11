@@ -14,6 +14,7 @@ class UserAparence extends Model
         'race',
         'user_id',
         'personal_flare',
+        'gender_pronouns'
     ];
 
     public function user()

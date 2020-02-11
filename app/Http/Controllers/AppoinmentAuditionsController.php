@@ -239,7 +239,6 @@ class AppoinmentAuditionsController extends Controller
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            echo $exception->getMessage(); exit;
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Data Not Found'], 404);
         }
@@ -253,12 +252,8 @@ class AppoinmentAuditionsController extends Controller
             $response = $data->where('status', '=', 'checked')
                 ->unique('user_id');
 
-
-            $userDataRepo = new UserDetailsRepository(new UserDetails());
-            $dataUserDet = $userDataRepo->findbyparam('user_id',$this->getUserLogging());
-
             $finalResponse = new Collection();
-            $response->each(function ($item) use ($finalResponse, $dataUserDet) {
+            $response->each(function ($item) use ($finalResponse) {
                 $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
                 $userAuditionData = $userAuditionRepo->findbyparams([
                     'appointment_id' => $item->appointment_id,
@@ -266,9 +261,7 @@ class AppoinmentAuditionsController extends Controller
                     'rejected' => 1
                 ])->first();
 
-
-
-                if ($userAuditionData->rejected == 0) {
+                if ($userAuditionData) {
                     $finalResponse->push($item);
                 }
             });
@@ -277,9 +270,7 @@ class AppoinmentAuditionsController extends Controller
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            echo $exception->getMessage(); exit;
             return response()->json(['data' => trans('messages.data_not_found')], 404);
-            // return response()->json(['data' => 'Data Not Found'], 404);
         }
     }
     /**

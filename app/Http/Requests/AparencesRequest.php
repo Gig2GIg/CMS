@@ -29,6 +29,7 @@ class AparencesRequest extends FormRequest
             'hair'=>'required',
             'eyes'=>'required',
             'race'=>'required',
+            'gender_pronouns'=>'required'
         ];
     }
 }
