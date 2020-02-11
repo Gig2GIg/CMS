@@ -114,6 +114,29 @@ class InstantFeedbackController extends Controller
         }
     }
 
+    public function restore(Request $request)
+    {
+
+        try {
+            $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+            $dataUserAuditions = $repoUserAuditions->all()
+                ->where('user_id', $request->user)
+                ->where('appointment_id', $request->appointment_id);
+
+            $dataUserAuditions->update([
+                    'rejected' => 0
+                ]);
+
+            $dataResponse = ['data' => trans('messages.performer_restored_success')];
+            $code = 200;
+
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.performer_restored_failure')], 406);
+        }
+    }
+
     public function search_with_upcoming_audition(Request $request)
     {
         if (!is_null($request->value)) {

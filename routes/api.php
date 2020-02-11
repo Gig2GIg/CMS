@@ -136,6 +136,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     // =====================================================
     // instant feedback
     $router->post('/instantfeedbacks/add', ['uses' => 'InstantFeedbackController@store']);
+    $router->post('/instantfeedbacks/restore', ['uses' => 'InstantFeedbackController@restore']);
     $router->post('/instantfeedbacks/changeDefault', ['uses' => 'InstantFeedbackController@updatDefaultInstantFeedback']);
     $router->get('/instantfeedbacks/defaultFeedback/{user_id}', ['uses' => 'InstantFeedbackController@getDefaultInstantFeedback']);
 

@@ -16,7 +16,7 @@ return [
     'error' => 'ERROR',
     'success' => 'Success',
     'not_processable' => 'Not processable',
-    'unprocesable_entity' => 'Unprocesable Entity',
+    'unprocesable_entity' => 'Unprocessable Entity',
     'data_not_update' => 'Data Not Update',
     'unauthorized' => 'Unauthorized',
     'server_error' => 'Server Error',
@@ -66,7 +66,7 @@ return [
     'number_already_used' => 'Number already Used, Change the number',
 
     // Auditions Controller
-    'contruibuitors_add' => 'Contruibuitors Add',
+    'contruibuitors_add' => 'Contributors Add',
 
     // Auth Controller
     'successfully_logged_out' => 'Successfully logged out',
@@ -81,9 +81,11 @@ return [
 
     // Feedback
     'feedback_save_success' => 'Feedback saved successfully',
-    // Final Cast Controller 
+    // Final Cast Controller
     'fail_to_add_performer' => 'fail to add performer',
     'add_performer_to_final_cast' => 'Add performer to final cast',
+    'performer_restored_success' => 'Performer restored successfully',
+    'performer_restored_failure' => 'Performer can not be restored',
 
     // Market Place Controller
     'error_created_marketplace' => 'Error created Marketplace',
@@ -92,12 +94,12 @@ return [
     'error_created_marketplace_featured_listing' => 'Error created Marketplace Featured Listing',
 
     // Monitor manager controller
-    'update_not_publised' => 'Update Not Publised',
+    'update_not_publised' => 'Update Not Published',
 
     // Notification Controller
     'record_not_created' => 'record_not_created',
     'notifications_not_found' => 'There are no notifications',
-    
+
     // OnlineMediaAuditionController
     'media_created' => 'Media created',
     'media_not_created' => 'Media not created',
@@ -133,7 +135,7 @@ return [
     // Managers Controller
     // NotificationManagementController
     // Audition videos Controller
-    // Comments Controller 
+    // Comments Controller
     // Content Setting Controller
     // Controller
     // Credits Controller
