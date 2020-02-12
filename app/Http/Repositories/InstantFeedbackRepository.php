@@ -37,7 +37,7 @@ class InstantFeedbackRepository
             throw new CreateException($e);
         }
     }
-    
+
     public function findbyparams($array)
     {
         try{
@@ -47,5 +47,13 @@ class InstantFeedbackRepository
             throw new NotFoundException("Not found Data");
         }
 
+    }
+
+    /**
+     * @return bool
+     */
+    public function delete(): ?bool
+    {
+        return $this->model->delete();
     }
 }
