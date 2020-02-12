@@ -131,12 +131,11 @@ class InstantFeedbackController extends Controller
 
             $instantFeedbackRepo = new InstantFeedbackRepository(new InstantFeedback());
 
-            $instantFeedback = $instantFeedbackRepo->findbyparams(
+            $instantFeedbackRepo->findbyparams(
                 [
                     'user_id' => $request->user,
                     'appointment_id' => $request->appointment_id
                 ])->delete();
-            $instantFeedback->delete();
 
             $dataResponse = ['data' => trans('messages.performer_restored_success')];
             $code = 200;
