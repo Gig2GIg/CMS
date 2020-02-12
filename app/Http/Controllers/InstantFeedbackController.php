@@ -130,7 +130,7 @@ class InstantFeedbackController extends Controller
             $dataUserAuditions->save();
 
             $instantFeedbackRepo = new InstantFeedbackRepository(new InstantFeedback());
-            
+
             $instantFeedback = $instantFeedbackRepo->findbyparams(
                 [
                     'user_id' => $request->user,
