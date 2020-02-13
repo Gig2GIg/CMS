@@ -10,6 +10,7 @@ use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionContributorsRepository;
 use App\Http\Repositories\AuditionRepository;
+use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\Notification\NotificationHistoryRepository;
 use App\Http\Repositories\Notification\NotificationRepository;
@@ -27,6 +28,7 @@ use App\Http\Resources\ContributorsResource;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
+use App\Models\Dates;
 use App\Models\Feedbacks;
 use App\Models\Notifications\Notification;
 use App\Models\Notifications\NotificationHistory;
@@ -497,6 +499,7 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request)
     {
+
         $this->log->info("UPDATE AUDITION");
         $this->log->info($request);
         $auditionFilesData = [];
@@ -530,12 +533,15 @@ class AuditionsController extends Controller
                 }
                 if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
-                        if(isset($date->id)) {
-                            $audition->dates()->update($this->dataDatesToProcess($date));
+                        if(isset($date['id'])) {
+                            $auditionsDatesRepo = new AuditionsDatesRepository(new Dates());
+                            $auditionsDates = $auditionsDatesRepo->find($date['id']);
+                            $auditionsDates->update($this->dataDatesToProcess($date));
                         } else {
                             $audition->dates()->create($this->dataDatesToProcess($date));
                         }
                     }
+
                 }
                 foreach ($request->roles as $roles) {
                     $roldata = $this->dataRolesToProcess($audition, $roles);
@@ -582,6 +588,7 @@ class AuditionsController extends Controller
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
+            dd($exception->getMessage());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();

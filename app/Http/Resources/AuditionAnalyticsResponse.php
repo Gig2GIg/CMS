@@ -53,55 +53,56 @@ class AuditionAnalyticsResponse extends JsonResource
 //        $appointments = $this->appointments->toArray();
         //Total Auditioners	Gender breakdown	Starred Performers
 
-        return [
+
+
+         return [
             [
                 "1", "50", "35:15:5", "32"
             ],
             [
-                "1", "50", "35:15:5", "32"
+                "2", "50", "35:15:5", "32"
             ],
             [
-                "1", "50", "35:15:5", "32"
+                "3", "50", "35:15:5", "32"
             ]
 
         ];
-        /*
+
+
         $appointments = $this->appointments;
         $csvArray = []; $i = 0;
         $appointments->each(function ($item)  use ($csvArray, $i) {
 
             $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
             $userAuditions = $userAuditionRepo->all()->where('appointment_id', $item->id);
+
+            $csvArray[$i][] = $i+1;
             $csvArray[$i][] = count($userAuditions);
-            $male = $female = $other = 0;
+            $male = 0;
+            $female = 0;
+            $other = 0;
             $userAuditions->each(function ($uD) use ($male, $female, $other) {
                 $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id', $uD->user_id);
-                if(dataUserDetails->gender == "male") {
+                $dataUserDetails = $userDetails->findbyparam('user_id', $uD->user_id)->first();
+                if($dataUserDetails->ge && $dataUserDetails->gender == "male") {
                     $male++;
-                } else if(dataUserDetails->gender == "female") {
+                } else if($dataUserDetails && $dataUserDetails->gender == "female") {
                     $female++;
                 } else {
                     $other++;
                 }
-                echo "gender" . $dataUserDetails->gender . PHP_EOL."------------------".PHP_EOL;
             });
-
-            echo "----------" . $item->id . "----------".PHP_EOL;
-            $userAuditions = $userAuditions->pluck('user_id');
-            print_r($userAuditions);
-            echo PHP_EOL. "-------------------( " . count($userAuditions) . " )------------------".PHP_EOL;
+            $csvArray[$i][] = $male . ":" . $female . ":" . $other;
+            $csvArray[$i][] = 10;
 
 
-//            $userDetails = new UserDetailsRepository(new UserDetails());
-//            $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
-
-
-        }); die;
+        });
+        return $csvArray;
+        /*
         return [
-            'id' => $this->id,
-            'appointments' => $appointments
-            /*
+//            'id' => $this->id,
+//            'appointments' => $appointments
+
             'appointment_id'=>$appointment["id"],
             'title' => $this->title,
             'date' => $appointment->date ?? null,
@@ -140,6 +141,6 @@ class AuditionAnalyticsResponse extends JsonResource
             'banned' => $this->banned
 
         ];
-        */
+*/
     }
 }
