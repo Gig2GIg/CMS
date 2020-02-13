@@ -184,7 +184,7 @@ class AuditionsController extends Controller
             'title' => $request->title,
 
             self::DESCRIPTION => $request->description,
-            'url' => $request->url,
+            'url' => isset( $request->url ) ? $request->url : null,
             'personal_information' => $request->personal_information,
             'phone' => $request->phone, //null
             'email' => $request->email, //null

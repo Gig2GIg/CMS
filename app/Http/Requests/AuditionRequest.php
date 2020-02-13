@@ -31,7 +31,7 @@ class AuditionRequest extends ApiRequest
 //            'time'=>'required',
             //'location'=>'required',
             'description' => 'required',
-            'url' => 'required',
+//            'url' => 'required',
             'cover' => 'required',
             'union',
             'contract',

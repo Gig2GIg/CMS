@@ -29,7 +29,7 @@ class AuditionEditRequest extends ApiRequest
 //            'time'=>'required',
             //'location'=>'required',
             'description'=>'required',
-            'url'=>'required',
+//            'url'=>'required',
 
             'union',
             'contract',
