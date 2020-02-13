@@ -77,7 +77,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->get('finalcast/{audition_id}/audition', ['uses' => 'FinalCastController@list']);
     $router->put('finalcast/{id}', ['uses' => 'FinalCastController@update']);
     $router->delete('finalcast/{id}', ['uses' => 'FinalCastController@delete']);
-
+    $router->get('/auditions/analytics/{id}', ['uses' => 'AuditionsController@getAnalytics']);
     //performers db
     Route::post('performers/add', ['uses' => 'PerformersController@add']);
     $router->post('performers/code', ['uses' => 'PerformersController@shareCode']);
@@ -252,7 +252,7 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->put('/managers/update/{id}', ['uses' => 'ManagersController@update']);
 
     //aparences
-    $router->get('/aparences/byuser', ['uses' => 'AparencesController@byUser']);
+    $router->get('/aparences/byuser', ['uses' => 'AparencesController@auditions/update/']);
     $router->post('/aparences', ['uses' => 'AparencesController@store']);
     $router->put('/aparences/update/{id}', ['uses' => 'AparencesController@update']);
 

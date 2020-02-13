@@ -21,6 +21,7 @@ use App\Http\Requests\AuditionEditRequest;
 use App\Http\Requests\AuditionRequest;
 use App\Http\Requests\MediaRequest;
 use App\Http\Resources\AuditionFullResponse;
+use App\Http\Resources\AuditionAnalyticsResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\ContributorsResource;
 use App\Models\Appointments;
@@ -29,7 +30,6 @@ use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Notifications\Notification;
 use App\Models\Notifications\NotificationHistory;
-use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -94,8 +94,8 @@ class AuditionsController extends Controller
                 if (isset($request['dates'])) {
                     foreach ($request['dates'] as $date) {
                         if(!empty($date['to']) && !empty($date['from'])){
-                            $audition->dates()->create($this->dataDatesToProcess($date));    
-                        }                        
+                            $audition->dates()->create($this->dataDatesToProcess($date));
+                        }
                     }
                 }
 
@@ -530,7 +530,11 @@ class AuditionsController extends Controller
                 }
                 if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
-                        $audition->dates()->update($this->dataDatesToProcess($date));
+                        if(isset($date->id)) {
+                            $audition->dates()->create($this->dataDatesToProcess($date));
+                        } else {
+                            $audition->dates()->update($this->dataDatesToProcess($date));
+                        }
                     }
                 }
                 foreach ($request->roles as $roles) {
@@ -747,6 +751,27 @@ class AuditionsController extends Controller
             $this->log->error($exception->getMessage());
             // return response()->json(['data' => 'Data Not Updated'], 406);
             return response()->json(['data' => trans('messages.data_not_update')], 406);
+        }
+    }
+
+    public function getAnalytics(Request $request)
+    {
+        try {
+            $audition = new AuditionRepository(new Auditions());
+            $data = $audition->find($request->id);
+            if (isset($data->id)) {
+                $responseData = new AuditionAnalyticsResponse($data);
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+            } else {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (NotFoundException $exception) {
+            dd($exception->getMessage());
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
         }
     }
 }

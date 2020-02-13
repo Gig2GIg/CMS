@@ -40,6 +40,10 @@ class Auditions extends Model
         return $this->hasOne(Appointments::class);
     }
 
+    public function appointments(){
+        return $this->hasMany(Appointments::class);
+    }
+
     public function dates(){
         return $this->morphOne(Dates::class,'date');
     }
@@ -72,5 +76,5 @@ class Auditions extends Model
     public function feedbacks(){
         return $this->hasMany(Feedbacks::class, 'appointment_id');
     }
-    
+
 }
