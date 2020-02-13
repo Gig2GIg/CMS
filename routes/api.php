@@ -252,7 +252,7 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
     $router->put('/managers/update/{id}', ['uses' => 'ManagersController@update']);
 
     //aparences
-    $router->get('/aparences/byuser', ['uses' => 'AparencesController@auditions/update/']);
+    $router->get('/aparences/byuser', ['uses' => 'AparencesController@byUser']);
     $router->post('/aparences', ['uses' => 'AparencesController@store']);
     $router->put('/aparences/update/{id}', ['uses' => 'AparencesController@update']);
 
