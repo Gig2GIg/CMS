@@ -531,9 +531,9 @@ class AuditionsController extends Controller
                 if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
                         if(isset($date->id)) {
-                            $audition->dates()->create($this->dataDatesToProcess($date));
-                        } else {
                             $audition->dates()->update($this->dataDatesToProcess($date));
+                        } else {
+                            $audition->dates()->create($this->dataDatesToProcess($date));
                         }
                     }
                 }
