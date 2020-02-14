@@ -166,13 +166,21 @@ class InstantFeedbackController extends Controller
     {
         if (!is_null($request->user_id)) {
             $instant_feedback_settings = new InstantFeedbackSettings();
-            $data = $instant_feedback_settings->where('user_id', $request->user_id)->get()->first();
+            $data = $instant_feedback_settings->where('user_id', $request->user_id)->get();
+            $response = array();
 
             if ($data == null) {
-                $response = ['comment' => trans('messages.default_instant_feedback_message')];
+                $response['comment'] = trans('messages.default_instant_feedback_message');
+                $response['positiveComment'] = trans('messages.default_instant_feedback_message');
             } else {
-                $response = ['comment' => $data->comment];
+                foreach($data as $e){
+                    if($e->type == 'positive')
+                        $response['positiveComment'] = $e->comment;
+                    else    
+                        $response['comment'] = $e->comment;
+                }
             }
+
             return response()->json(['data' => $response], 200);
         } else {
             return response()->json(['data' => trans('messages.data_not_found')], 404);
@@ -181,15 +189,22 @@ class InstantFeedbackController extends Controller
 
     public function updatDefaultInstantFeedback(Request $request)
     {
+        $type = $request->type && $request->type != null ? 'positive' : 'negative';
+        
         if (!is_null($request->feedback)) {
             $instant_feedback_settings = new InstantFeedbackSettings();
 
-            $data = $instant_feedback_settings->where('user_id', $this->getUserLogging())->get()->toArray();
+            $data = $instant_feedback_settings
+                    ->where('user_id', $this->getUserLogging())
+                    ->where('type', $type)
+                    ->get()->toArray();
+
             if (empty($data)) {
                 // add if no feedback added for caster
                 $data = [
                     'comment' => $request->feedback,
                     'user_id' => $this->getUserLogging(),
+                    'type' => $type
                 ];
 
                 $feedbackUpdated = $instant_feedback_settings->insert($data);
@@ -197,6 +212,7 @@ class InstantFeedbackController extends Controller
                 // update if caster's feedbacke already exist
                 $update_feedback = $instant_feedback_settings
                     ->where('user_id', $this->getUserLogging())
+                    ->where('type', $type)
                     ->update(['comment' => $request->feedback]);
             }
 
@@ -204,7 +220,7 @@ class InstantFeedbackController extends Controller
             return response()->json(['data' => $response], 200);
         } else {
             return response()->json(['data' => trans('messages.data_not_found')], 404);
-        }
+        }     
     }
 
     public function instantFeedbackDetailsCaster(Request $request)

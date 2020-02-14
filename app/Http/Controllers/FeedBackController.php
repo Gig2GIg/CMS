@@ -30,7 +30,6 @@ class FeedBackController extends Controller
     public function store(Request $request)
     {
         try {
-
             $userExists = false;
             $evaluatorExits = false;
             $slotExits = false;
@@ -38,13 +37,13 @@ class FeedBackController extends Controller
             $data = [
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user, //id usuario que recibe evaluacion
-                'evaluator_id' => $request->evaluator, //id de usuario que da feecback,
-                'evaluation' => $request->evaluation,
-                'callback' => $request->callback,
-                'work' => $request->work,
+                'evaluator_id' => $request->evaluator && $request->evaluator != null && $request->evaluator != "" ? $request->evaluator : null, //id de usuario que da feecback,
+                'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
+                'callback' => $request->callback && $request->callback != null && $request->callback != "" ? $request->callback : null,
+                'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
-                'slot_id' => $request->slot_id,
-                'comment' => $request->comment,
+                'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
+                'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
             ];
 
             $repo = new FeedbackRepository(new Feedbacks());
@@ -86,11 +85,11 @@ class FeedBackController extends Controller
             $slotExits = false;
 
             $data = [
-                'evaluation' => $request->evaluation,
-                'callback' => $request->callback,
-                'work' => $request->work,
+                'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
+                'callback' => $request->callback && $request->callback != null && $request->callback != "" ? $request->callback : null,
+                'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
-                'comment' => $request->comment,
+                'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
             ];
 
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
