@@ -13,6 +13,7 @@ class AlterFeedbackTableColumnsToNullable extends Migration
      */
     public function up()
     {
+        //Putting db statement instead of query builder as Doctrin/dbal doesn't support ENUM datatypes to be changed unless column dropped and created again.
         DB::statement("ALTER TABLE `feedbacks` CHANGE `evaluator_id` `evaluator_id` INT(10) UNSIGNED NULL, CHANGE `evaluation` `evaluation` INT(10) UNSIGNED NULL, CHANGE `slot_id` `slot_id` INT(10) UNSIGNED NULL, CHANGE `callback` `callback` TINYINT(1) NULL, CHANGE `work` `work` ENUM('vocals','acting','dancing') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL, CHANGE `comment` `comment` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;");
     }
 
