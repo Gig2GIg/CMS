@@ -189,7 +189,11 @@ class InstantFeedbackController extends Controller
 
     public function updatDefaultInstantFeedback(Request $request)
     {
-        $type = $request->type && $request->type != null ? 'positive' : 'negative';
+        if($request->type && $request->type != null && ($request->type == 'positive' || $request->type == 'negative')){
+            $type = $request->type;
+        }else{
+            $type = 'negative';
+        }
         
         if (!is_null($request->feedback)) {
             $instant_feedback_settings = new InstantFeedbackSettings();
