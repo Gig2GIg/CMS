@@ -175,7 +175,7 @@ class MediaManagerController extends Controller
             });
 
 
-            if (count($this->dataArray) > 0) {
+            if (isset($this->dataArray) && count($this->dataArray) > 0) {
 
                 $dataResponse = ['data' => $this->dataArray];
                 $code = 200;
