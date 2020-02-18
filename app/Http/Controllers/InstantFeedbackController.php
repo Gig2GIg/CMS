@@ -76,7 +76,12 @@ class InstantFeedbackController extends Controller
                 //     }
                 // }
                 
-                $comment = $request->comment && $request->comment != "" ? $request->comment : "";
+                if($request->comment != ""){
+                    $comment = $request->comment;    
+                }else{
+                    $comment = "";
+                }
+
                 if ($request->accepted == 0) {
                     // remove that performer from group
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -306,7 +311,7 @@ class InstantFeedbackController extends Controller
     public function saveStoreNotificationToUser($user, $audition, $comment = ""): void
     {
         try {
-            if($comment = ""){
+            if($comment == ""){
                 $message = 'You have received new instant feedback for ' . $audition->title;
             }else{
                 $message = $comment;
@@ -329,7 +334,7 @@ class InstantFeedbackController extends Controller
     public function sendStoreNotificationToUser($user, $audition, $comment = ""): void
     {
         try {
-            if($comment = ""){
+            if($comment == ""){
                 $message = 'You have received new instant feedback for ' . $audition->title;
             }else{
                 $message = $comment;
