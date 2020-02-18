@@ -75,7 +75,8 @@ class InstantFeedbackController extends Controller
                 //         $updateAuditionsData = $data->update(['group_no' => 0]);
                 //     }
                 // }
-
+                
+                $comment = $request->comment && $request->comment != "" ? $request->comment : "";
                 if ($request->accepted == 0) {
                     // remove that performer from group
                     $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -92,10 +93,14 @@ class InstantFeedbackController extends Controller
                                 'rejected' => 1,
                             ]);
                     }
+
+                    // send notification
+                    $this->sendStoreNotificationToUser($user, $audition, $comment);
+                    $this->saveStoreNotificationToUser($user, $audition, $comment);   
                 }  else {
                     // send notification
-                    $this->sendStoreNotificationToUser($user, $audition);
-                    $this->saveStoreNotificationToUser($user, $audition);
+                    $this->sendStoreNotificationToUser($user, $audition, $comment);
+                    $this->saveStoreNotificationToUser($user, $audition, $comment);
                 }
 
                 $this->addTalenteToDatabase($request->user);
@@ -108,6 +113,7 @@ class InstantFeedbackController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.feedback_not_add')], 406);
             // return response()->json(['data' => 'Feedback not add'], 406);
@@ -297,15 +303,21 @@ class InstantFeedbackController extends Controller
         }
     }
 
-    public function saveStoreNotificationToUser($user, $audition): void
+    public function saveStoreNotificationToUser($user, $audition, $comment = ""): void
     {
         try {
+            if($comment = ""){
+                $message = 'You have received new instant feedback for ' . $audition->title;
+            }else{
+                $message = $comment;
+            }
+
             if ($user instanceof User) {
                 $history = $user->notification_history()->create([
                     'title' => $audition->title,
                     'code' => 'instant_feedback',
                     'status' => 'unread',
-                    'message' => 'You have received new instant feedback for ' . $audition->title,
+                    'message' => $message,
                 ]);
                 $this->log->info('saveStoreNotificationToUser:: ', $history);
             }
@@ -314,10 +326,16 @@ class InstantFeedbackController extends Controller
         }
     }
 
-    public function sendStoreNotificationToUser($user, $audition): void
+    public function sendStoreNotificationToUser($user, $audition, $comment = ""): void
     {
         try {
-            $this->pushNotifications('You have received new instant feedback for ' . $audition->title, $user, $audition->title);
+            if($comment = ""){
+                $message = 'You have received new instant feedback for ' . $audition->title;
+            }else{
+                $message = $comment;
+            }
+
+            $this->pushNotifications($message, $user, $audition->title);
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
