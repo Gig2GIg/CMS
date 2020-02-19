@@ -118,7 +118,6 @@ class InstantFeedbackController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.feedback_not_add')], 406);
             // return response()->json(['data' => 'Feedback not add'], 406);

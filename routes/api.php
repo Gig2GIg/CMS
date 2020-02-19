@@ -436,6 +436,12 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::put('forum/posts/{id}', ['uses' => 'PostsController@update']);
         Route::delete('forum/posts/{id}/delete', ['uses' => 'PostsController@delete']);
 
+        //USERS
+        Route::get('/users', ['uses' => 'UserController@getAll']);
+        Route::get('/users/{id}', ['uses' => 'UserController@show']);
+        Route::put('/users/{id}', ['uses' => 'UserController@update']);
+        Route::delete('users/{id}/delete', ['uses' => 'UserController@delete']);
+
         //FEATURED LISTING
         Route::get('marketplace-featured-listing', ['uses' => 'MarketplaceFeaturedListingController@getAllFeaturedListing']);
     });
