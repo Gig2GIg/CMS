@@ -16,6 +16,7 @@ use App\Http\Repositories\UserUnionMemberRepository;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserStatusRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
 use App\Models\Admin;
@@ -167,6 +168,29 @@ class UserController extends Controller
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             return false;
+        }
+    }
+
+    public function changeStatus(UserStatusRequest $request){
+        try{
+            $user = new UserRepository(new User());
+            $userData = $user->find(request('id'));
+            $updateData = array();
+            $status = $request->status == 1 ? 1 : 0;
+            $userData->update(['is_active' => $status]);
+
+            return response()->json(['data' => trans('messages.success')], 200);
+
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                $code = 404;
+                $message = ['data' => 'Not Found Data'];
+            } else {
+                $code = 406;
+                $message = ['data' => 'Unprocessable'];
+            }
+            return response()->json($message, $code);
         }
     }
 
@@ -492,15 +516,20 @@ class UserController extends Controller
             $user = $userRepo->findbyparam('email', $request->email);
 
             if (isset($user->id)) {
-                $password_reset_token = Str::random(32);
-                $userUpdate = $userRepo->find($user->id);
-                if ($userUpdate->update(['password_reset_token' => $password_reset_token])) {
-                    $response->sendForgotPasswordLink($password_reset_token, $user);
-                    $dataResponse = ['data' => "email send"];
-                    $code = 200;
-                } else {
-                    $dataResponse = ['data' => "email not send"];
-                    $code = 406;
+                if($user->is_active){
+                    $password_reset_token = Str::random(32);
+                    $userUpdate = $userRepo->find($user->id);
+                    if ($userUpdate->update(['password_reset_token' => $password_reset_token])) {
+                        $response->sendForgotPasswordLink($password_reset_token, $user);
+                        $dataResponse = ['data' => "email send"];
+                        $code = 200;
+                    } else {
+                        $dataResponse = ['data' => "email not send"];
+                        $code = 406;
+                    }
+                }else{
+                    $dataResponse = ['data' => trans('messages.account_deactivated')];
+                    $code = 403;
                 }
             } else {
                 $dataResponse = ['data' => "email not found"];

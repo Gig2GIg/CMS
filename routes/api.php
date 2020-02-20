@@ -441,6 +441,7 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         Route::get('/users/{id}', ['uses' => 'UserController@show']);
         Route::put('/users/{id}', ['uses' => 'UserController@update']);
         Route::delete('users/{id}/delete', ['uses' => 'UserController@delete']);
+        Route::post('users/changeStatus', ['uses' => 'UserController@changeStatus']);
 
         //FEATURED LISTING
         Route::get('marketplace-featured-listing', ['uses' => 'MarketplaceFeaturedListingController@getAllFeaturedListing']);

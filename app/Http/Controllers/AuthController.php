@@ -30,9 +30,15 @@ class AuthController extends Controller
     {
         try {
             $credentials = request(['email', 'password']);
+            
             $expiration = Carbon::now()->addDays(7)->timestamp;
             $userData = new UserRepository(new User());
             $user = $userData->findbyparam('email', request('email'));
+
+            if(!$user->is_active){
+                return response()->json(['error' => trans('messages.account_deactivated')], 403);
+            }
+
             $details = isset($user->details) ? $user->details : null;
             $payload = [
                 'type' => $details['type'],

@@ -178,8 +178,8 @@ class InstantFeedbackController extends Controller
             $instant_feedback_settings = new InstantFeedbackSettings();
             $data = $instant_feedback_settings->where('user_id', $request->user_id)->get();
             $response = array();
-
-            if ($data == null) {
+            
+            if ($data == null || count($data) == 0) {
                 $response['comment'] = trans('messages.default_instant_feedback_message');
                 $response['positiveComment'] = trans('messages.default_instant_feedback_message');
             } else {

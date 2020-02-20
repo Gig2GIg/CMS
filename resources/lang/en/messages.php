@@ -21,6 +21,7 @@ return [
     'unauthorized' => 'Unauthorized',
     'server_error' => 'Server Error',
     'something_went_wrong' => 'Something went Wrong',
+    'account_deactivated' => 'Sorry! your account has been deactivated by administration',
 
     // Feedback Controller
     'feedback_not_add' => 'Feedback not add',
