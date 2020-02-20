@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/login', ['uses' => 'AuthController@login']);
     $router->post('/logout', ['uses' => 'AuthController@logout']);
+
     // $router->post('/remember', ['uses' => 'UserController@sendPassword']);
     $router->post('/remember/admin', ['uses' => 'UserController@sendPasswordAdmin']);
     $router->post('/users/create', ['uses' => 'UserController@store']);
@@ -346,6 +347,7 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
 
 Route::prefix('admin')->namespace('Admin')->group(function () {
     Auth::routes(['register' => false]);
+    Route::post('/refresh', 'Auth\LoginController@refresh');
     Route::get('/me', 'Auth\LoginController@profile');
 });
 
