@@ -19,7 +19,6 @@ axios.interceptors.response.use(
   response => response,
   (error) => {
     const is_remember = localStorage.getItem('is_remember');
-    console.log("TCL: is_remember", is_remember)
     if (error.response.status === 401 && is_remember == 1 && isRetryTokenRefresh) {
       isRetryTokenRefresh = false;
       return axios.post('/api/admin/refresh')

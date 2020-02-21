@@ -24,7 +24,7 @@ export default {
   [types.SAVE_TOKEN] (state, { token, remember, is_remember }) {
     state.token = token;
     state.is_remember = is_remember;    
-    Cookies.set("token", token, { expires: remember ? 1 : null });
+    Cookies.set("token", token, { expires: remember ? 365 : 1 });
     localStorage.setItem('token', token);
     localStorage.setItem('is_remember', is_remember ? 1 : 0);
   },
