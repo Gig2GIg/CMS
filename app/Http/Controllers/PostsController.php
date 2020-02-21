@@ -26,14 +26,24 @@ class PostsController extends Controller
     public function store(PostsRequest $request)
     {
         try {
+
+            $is_admin = in_array('auth:admin', \Route::current()->middleware());
+
             $data = [
                 'title' => $request->title,
                 'body' => $request->body,
                 'url_media' => $request->url_media,
                 'type' => $request->type,
                 'search_to' => $request->search_to,
-                'user_id' => $this->getUserLogging(),
             ];
+
+            if($is_admin){
+                $data['user_id'] = null;
+                $data['admin_id'] = $this->getUserLogging();
+            }else{
+                $data['user_id'] = $this->getUserLogging();
+                $data['admin_id'] = null;
+            }
 
             $repoPost = new PostsRepository(new Posts());
             $post = $repoPost->create($data);
@@ -150,19 +160,19 @@ class PostsController extends Controller
         try {
 
             $postTopics = PostTopics::whereIn('topic_id', $request->topics_ids)->get();
-
             $posts = $postTopics->map(function ($postTopics) {
                 return $postTopics;
             });
-
+            
             if (count($posts) > 0) {
-                $dataResponse = ['data' => PostsTopicsWithPostResource::collection($posts)];
+                $postCollect = collect(PostsTopicsWithPostResource::collection($posts));
+                $filterDirectorType = $postCollect->filter(function ($value) { return $value['search_to'] != "director"; });
+                $dataResponse = ['data' => $filterDirectorType];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
                 $code = 404;
             }
-
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
@@ -181,7 +191,8 @@ class PostsController extends Controller
             })->flatten()->unique();
 
             $data = PostsTopicsWithPostResource::collection($posts);
-            $response = collect($data)->filter()->all();
+            $filterDirectorType = collect($data)->filter(function ($value) { return $value['search_to'] != "director"; });
+            $response = $filterDirectorType->filter()->all();
 
             if (count($posts) > 0) {
                 $dataResponse = ['data' => $response];
@@ -204,7 +215,7 @@ class PostsController extends Controller
         try {
             $repoPost = new PostsRepository(new Posts());
             $posts = $repoPost->all()->where('type', 'forum')->sortByDesc('created_at');
-
+            
             if (count($posts) > 0) {
                 $dataResponse = ['data' => PostsResource::collection($posts)];
                 $code = 200;

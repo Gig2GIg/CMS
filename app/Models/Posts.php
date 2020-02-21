@@ -11,6 +11,7 @@ class Posts extends Model
         'body',
         'created_at',
         'user_id',
+        'admin_id',
         'url_media',
         'type',
         'search_to'
