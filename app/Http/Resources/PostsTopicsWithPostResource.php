@@ -25,7 +25,7 @@ class PostsTopicsWithPostResource extends JsonResource
 
         $userRepo = new UserRepository(new User());
         
-        if($post->admin_id == null && $this->user_id != null){
+        if($post->admin_id == null && $post->user_id != null){
             $user = $userRepo->find($post->user_id);
             $name = $user->details->first_name;
             $avatar = $user->image->url;
