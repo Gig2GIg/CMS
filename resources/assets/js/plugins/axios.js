@@ -42,7 +42,7 @@ axios.interceptors.response.use(
         }).catch((refresh_token_error) => {
           isRetryTokenRefresh = false;
         });
-    } else {
+    } else if (error.response.status === 401) {
       store.dispatch('auth/removeToken');
       router.replace({ name: 'login' });
     }
