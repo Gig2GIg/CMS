@@ -10,6 +10,10 @@ export default {
     commit(types.SAVE_TOKEN, token);
   },
 
+  removeToken({ commit }) {
+    commit(types.LOGOUT);
+  },
+
   async fetchUser({ commit }) {
     try {
       const { data } = await axios.get('/api/admin/me');
@@ -31,6 +35,7 @@ export default {
       dispatch('saveToken', {
         token: data.token,
         remember: credentials.remember,
+        is_remember: credentials.remember,
       });
 
       await dispatch('fetchUser');
