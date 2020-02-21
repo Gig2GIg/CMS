@@ -24,10 +24,19 @@ class PostsTopicsWithPostResource extends JsonResource
         $post = $postRepo->find($this->post_id);
 
         $userRepo = new UserRepository(new User());
-        $user = $userRepo->find($post->user_id);
-        $avatar = $user->image->url;
+        
+        if($post->admin_id == null && $this->user_id != null){
+            $user = $userRepo->find($post->user_id);
+            $name = $user->details->first_name;
+            $avatar = $user->image->url;
+            $is_admin = 0;
+        }else{
+            $name = 'Gig2Gig Team';
+            $avatar = "";
+            $is_admin = 1;
+        }
 
-        if ($post->search_to != 'director'){
+        //if ($post->search_to != 'director'){
             return [
                 'id' => $post->id,
                 'title' => $post->title,
@@ -36,9 +45,11 @@ class PostsTopicsWithPostResource extends JsonResource
                 'url_media' => $post->url_media,
                 'avatar' => $avatar,
                 'url_media' => $post->url_media,
-                'name' => $user->details->first_name,
-                'time_ago' => $post->created_at->diffForHumans()
+                'name' => $name,
+                'time_ago' => $post->created_at->diffForHumans(),
+                'search_to' => $post->search_to,
+                'is_admin' => $is_admin
             ];
-        }  
+        //}
     }
 }
