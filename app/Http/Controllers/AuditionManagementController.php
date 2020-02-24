@@ -435,7 +435,7 @@ class AuditionManagementController extends Controller
             $repo = new AppointmentRepository(new Appointments());
             $apppointment_data = $repo->find($request->appointment_id);
 
-            if ($apppointment_data->is_group_open && (!$request->has('performer') || $request->performer == "" || $request->performer == null)) {
+            if ($apppointment_data->is_group_open) {
                 // insert batch in audition videos
                 $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
                 $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(
