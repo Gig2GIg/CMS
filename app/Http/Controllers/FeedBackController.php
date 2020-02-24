@@ -34,12 +34,22 @@ class FeedBackController extends Controller
             $evaluatorExits = false;
             $slotExits = false;
 
+            if($request->callback === true){
+                $request->callback = 1;
+            }else if($request->callback === false){
+                $request->callback = 0;
+            }else if($request->callback === null){
+                $request->callback = null; 
+            }else{
+                $request->callback = null; 
+            }
+
             $data = [
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user, //id usuario que recibe evaluacion
                 'evaluator_id' => $request->evaluator && $request->evaluator != null && $request->evaluator != "" ? $request->evaluator : null, //id de usuario que da feecback,
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
-                'callback' => $request->has('callback') && $request->callback != null ? $request->callback : null,
+                'callback' => $request->callback,
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
@@ -79,24 +89,33 @@ class FeedBackController extends Controller
     public function update(Request $request)
     {
         try {
-
             $userExists = false;
             $evaluatorExits = false;
             $slotExits = false;
 
+            if($request->callback === true){
+                $request->callback = 1;
+            }else if($request->callback === false){
+                $request->callback = 0;
+            }else if($request->callback === null){
+                $request->callback = null; 
+            }else{
+                $request->callback = null; 
+            }
+
             $data = [
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
-                'callback' => $request->has('callback') && $request->callback != null ? $request->callback : null,
+                'callback' => $request->callback,
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
             ];
-
+            
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
             $feedback = $feedbacks->where('user_id', $request->user_id)->first();
-
-            $update = $feedback->update($data);
+            
+            $update = $feedback->update($data); 
 
             if ($update) {
                 $dataResponse = ['data' => 'Feedback update'];
