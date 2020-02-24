@@ -435,7 +435,7 @@ class AuditionManagementController extends Controller
             $repo = new AppointmentRepository(new Appointments());
             $apppointment_data = $repo->find($request->appointment_id);
 
-            if ($apppointment_data->is_group_open) {
+            if ($apppointment_data->is_group_open && (!$request->has('performer') || $request->performer == "" || $request->performer == null)) {
                 // insert batch in audition videos
                 $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
                 $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(
@@ -452,12 +452,12 @@ class AuditionManagementController extends Controller
                     ->whereIn('user_id', $user_ids_of_group_member)
                     ->where('appointment_id', $request->appointment_id)->pluck('slots_id');
 
-                $slotsNotAvailable = $videoRepo->all()->whereIn('slot_id', $slots);
-
+                //$slotsNotAvailable = $videoRepo->all()->whereIn('slot_id', $slots);
+                $slot_id = array();
                 foreach ($slots as $slot) {
-                    if (!$slotsNotAvailable->contains('slot_id', $slot)) {
-                        $slot_id = $slot;
-                    }
+                    //if (!$slotsNotAvailable->contains('slot_id', $slot)) {
+                        $slot_id[] = $slot;
+                    //}
                 }
 
                 if (!isset($slot_id)) {
@@ -467,6 +467,7 @@ class AuditionManagementController extends Controller
                 // ==================================================
 
                 $data_to_add = array();
+                $i = 0;
                 foreach ($user_ids_of_group_member as $user_id) {
                     $data_to_add[] = array(
                         'name' => $request->name,
@@ -474,9 +475,10 @@ class AuditionManagementController extends Controller
                         'appointment_id' => $request->appointment_id,
                         'url' => $request->url,
                         'contributors_id' => $this->getUserLogging(),
-                        'slot_id' => $slot_id
+                        'slot_id' => $slot_id[$i]
                     );
-                }
+                    $i++;
+                }   
 
                 $data = AuditionVideos::insert($data_to_add);
                 if ($data) {
@@ -514,7 +516,6 @@ class AuditionManagementController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
-            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => $exception->getMessage()], 406);
             // return response()->json(['data' => trans('messages.not_processable')], 406);
@@ -1032,7 +1033,7 @@ class AuditionManagementController extends Controller
             $data = $repo->findbyparams(['id' => $request->appointment_id, 'is_group_open' => 1]);
 
             if ($data->count() == 0) {
-                return response()->json(['message' => trans('messages.group_close'), 'data' => false], 200);
+                return response()->json(['message' => trans('messages.group_close'), 'data' => [], 'is_group_open' => false], 200);
             }
 
             $userData = DB::table('user_auditions AS UA')
@@ -1056,7 +1057,7 @@ class AuditionManagementController extends Controller
             // $user_data =  CheckGroupStatusResource::collection($userData);
             $user_data =  CheckGroupStatusResource::collection($userData->unique('user_id'));
 
-            return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data], 200);
+            return response()->json(['message' => trans('messages.group_open'), 'data' => $user_data, 'is_group_open' => true], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => false], 404);

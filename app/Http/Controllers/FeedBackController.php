@@ -39,7 +39,7 @@ class FeedBackController extends Controller
                 'user_id' => $request->user, //id usuario que recibe evaluacion
                 'evaluator_id' => $request->evaluator && $request->evaluator != null && $request->evaluator != "" ? $request->evaluator : null, //id de usuario que da feecback,
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
-                'callback' => $request->callback && $request->callback != null && $request->callback != "" ? $request->callback : null,
+                'callback' => $request->has('callback') && $request->callback != null ? $request->callback : null,
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
@@ -86,7 +86,7 @@ class FeedBackController extends Controller
 
             $data = [
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
-                'callback' => $request->callback && $request->callback != null && $request->callback != "" ? $request->callback : null,
+                'callback' => $request->has('callback') && $request->callback != null ? $request->callback : null,
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
@@ -118,7 +118,7 @@ class FeedBackController extends Controller
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->findbyparam('appointment_id', $request->appointment_id);
             $dataPre = $data->where('user_id', '=', $request->performer)->get();
-
+            
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => FeedbackResource::collection($dataPre)];
                 $code = 200;
