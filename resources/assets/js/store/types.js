@@ -71,3 +71,10 @@ export const UPDATE_SUBSCRIPTION = 'Update Subscription';
 // Payments
 export const FETCH_PAYMENTS_SUCCESS = 'Fetch Payments Successful';
 export const FETCH_PAYMENTS_FAILURE = 'Fetch Payments Failed';
+
+// user
+export const FETCH_USERS_SUCCESS = 'Fetch Users successful';
+export const FETCH_USERS_FAILURE = 'Fetch Users failed';
+export const UPDATE_USER = 'Update User';
+export const DELETE_USER = 'Delete User';
+export const USER_STATUS_CHANGE_SUCCESS = 'User status change successful';
