@@ -23,7 +23,7 @@ class UserResource extends JsonResource
             'details' =>$this->details,
             'union_members' => $this->memberunions,
             'subscription'=>$this->subscriptions,
-
+            'is_active' => $this->is_active
         ];
     }
 }
