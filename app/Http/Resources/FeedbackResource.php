@@ -19,8 +19,14 @@ class FeedbackResource extends JsonResource
     {
         $userRepo = new UserRepository(new User());
         $round = Appointments::select('round')->where('id',$this->appointment_id)->first();
-        $userData = $userRepo->find($this->evaluator_id);
-        $name = $userData->details->first_name . " " . $userData->details->last_name;
+
+        if($this->evaluator_id && $this->evaluator_id != null){
+            $userData = $userRepo->find($this->evaluator_id);
+            $name = $userData->details->first_name . " " . $userData->details->last_name;
+        }else{
+            $name = "";
+        }
+
         return [
             'id'=>$this->id,
             'auditions_id'=>$this->auditions_id,
