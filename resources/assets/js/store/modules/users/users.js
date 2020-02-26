@@ -3,7 +3,7 @@ import actions from './actions';
 import mutations from './mutations';
 
 const state = {
-  topics: [],
+  userList: [],
   isLoading: false,
 };
 

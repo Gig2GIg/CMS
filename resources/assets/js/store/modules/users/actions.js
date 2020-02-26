@@ -82,7 +82,7 @@ export default {
       }
       await axios.post(`/api/cms/users/changeStatus`, param);
       user.is_active = newStatus;
-      commit(types.USER_STATUS_CHANGE_SUCCESS, user);
+      commit(types.UPDATE_USER, user);
 
       dispatch('toast/showMessage', 'User status changed.', { root: true });
     } catch (e) {

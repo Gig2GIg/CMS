@@ -12,7 +12,7 @@
       <section v-if="loaded">
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="users.length">
+            <div class="columns" v-if="userList.length">
               <b-field class="column">
                 <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
               </b-field>
@@ -49,13 +49,13 @@
                   label="First Name"
                   width="100"
                   sortable
-                >{{ props.row.details.first_name }}</b-table-column>
+                >{{ props.row.details.first_name ? props.row.details.first_name : ""}}</b-table-column>
                 <b-table-column
                   field="last_name"
                   label="Last Name"
                   width="100"
                   sortable
-                >{{ props.row.details.last_name }}</b-table-column>
+                >{{ props.row.details.last_name ? props.row.details.last_name : "" }}</b-table-column>
 
                 <b-table-column
                   field="status"
@@ -447,7 +447,7 @@ import DEFINE from '../constant.js';
 import states from '@/utils/states';
 import Vue from 'vue';
 
-import firebase from 'firebase/app';
+import firebase,{ functions } from 'firebase/app';
 import 'firebase/storage';
 import uuid from 'uuid/v1';
 
@@ -475,7 +475,7 @@ export default {
     profile_file : null
   }),
   computed: {
-    ...mapState('users', ['users', 'isLoading']),
+    ...mapState('users', ['userList', 'isLoading']),
     ...mapGetters('users', ['search']),
 
     filter: function() {

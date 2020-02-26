@@ -7,22 +7,22 @@ export default {
   },
 
   [types.FETCH_USERS_SUCCESS](state, users) {
-    state.users = users;
+    state.userList = users;
   },
 
   [types.FETCH_USERS_FAILURE](state) {
-    state.users = [];
+    state.userList = [];
   },
 
   [types.UPDATE_USER](state, user) {
-    let current = state.users.find(x => x.id === user.id);
-    let index = state.users.indexOf(current);
+    let current = state.userList.find(x => x.id === user.id);
+    let index = state.userList.indexOf(current);
 
-    Vue.set(state.users, index, user);
+    Vue.set(state.userList, index, user);
   },
 
   [types.DELETE_TOPIC](state, user) {
-    let index = state.users.indexOf(user);
-    state.users.splice(index, 1);
+    let index = state.userList.indexOf(user);
+    state.userList.splice(index, 1);
   },
 };
