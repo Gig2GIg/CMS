@@ -37,11 +37,11 @@
               detailed
               hoverable
             >
-              <template slot-scope="props">
+              <template slot-scope="props" v-if="props.row.details">
                 <b-table-column
                   field="email"
                   label="Email"
-                  width="100"
+                  width="60"
                   sortable
                 >{{ props.row.email }}</b-table-column>
                 <b-table-column
@@ -58,7 +58,7 @@
                 >{{ props.row.details.last_name ? props.row.details.last_name : "" }}</b-table-column>
 
                 <b-table-column
-                  field="status"
+                  field="is_active"
                   label="Status"
                   width="100"
                   sortable
@@ -71,7 +71,7 @@
                   sortable
                 >{{ user_type[props.row.details.type] ? user_type[props.row.details.type] : '' }}</b-table-column>
 
-                <b-table-column width="80" field="created_at" label="Date" sortable>{{ props.row.details.created_at | dateFormat}}</b-table-column>
+                <b-table-column width="100" field="created_at" label="Date" sortable>{{ props.row.details.created_at | dateFormat}}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
@@ -431,7 +431,7 @@
             >Close</button>
             <button 
               class="button is-primary"
-              :disabled="isLoading">Update User</button>
+              :disabled="isLoading" type="submit">Update User</button>
           </footer>
         </div>
       </form>
@@ -483,8 +483,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('users', ['fetch', 'update', 'destroy', 'status_change']),
-
+    ...mapActions('users', ['fetch', 'update', 'destroy', 'status_change', 'dateChange']),
+    ...mapActions('toast', ['showError']),
     confirmDelete(user) {
       this.selectedUser = Object.assign({}, user);
 
@@ -518,22 +518,33 @@ export default {
     defaultImg(event){
       event.target.src = DEFINE.user_default_img;      
     },
-    showUpdateModal(user) {
+    async showUpdateModal(user) {
       this.profile_file = null;
-      this.selectedUser = Object.assign({}, user);
-      this.selectedUser.details.birth = Vue.moment(this.selectedUser.details.birth).toDate();
+      this.selectedUser = JSON.parse(JSON.stringify(user));
+      if(this.selectedUser.details.birth){
+        this.selectedUser.details.birth = Vue.moment(this.selectedUser.details.birth).toDate();
+      } else {
+        this.selectedUser.details.birth = null
+      }
+      
       this.isModalActive = true;
     },
     async updateUser() {
       try {        
+        let valid = await this.$validator.validateAll();
+
+        if (! valid) {
+          this.showError('Please check the fields.');
+          return;
+        }
+
         if(this.profile_file){
           const imageName = this.profile_file.name;
           const snapshot = await firebase.storage()
             .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
             .put(this.profile_file);
 
-          this.selectedUser.image = await snapshot.ref.getDownloadURL();
-          console.log("TCL: updateUser -> this.selectedUser", this.selectedUser)
+          this.selectedUser.image = await snapshot.ref.getDownloadURL();          
         } else {
           this.selectedUser.image = null;
         }
