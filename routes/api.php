@@ -337,6 +337,9 @@ $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], functio
 
     //FEATURED LISTING
     $router->post('marketplace-featured-listing/create', ['uses' => 'MarketplaceFeaturedListingController@store']);
+
+    //Social Media Links
+    $router->put('social-links/{user_id}/update', ['uses' => 'UserController@updateSocialLinks']);
 });
 
 /*

@@ -268,10 +268,11 @@ class UserController extends Controller
                 'stage_name' => $request->stage_name,
                 'profesion' => $request->profesion,
                 'url' => $request->url,
-                //                    'location' => $request->location,
+                //'location' => $request->location,
                 'zip' => $request->zip,
             ];
-            $dataUser->image->update(['url' => $request->image]);
+            
+            //$dataUser->image->update(['url' => $request->image]);
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $dat = $dataUserDetails->update($userDataDetails);
@@ -372,7 +373,6 @@ class UserController extends Controller
         } catch (QueryException $e) {
             // return response()->json(['data' => "Unprocesable"], 406);
             return response()->json(['data' => trans('messages.not_processable')], 406);
-
         }
     }
 
@@ -582,4 +582,44 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateSocialLinks(Request $request)
+    {
+        try {
+            $storeData = array();
+            if($request->has('twitter')){
+                $storeData['twitter'] = $request->twitter;
+            }
+            if($request->has('instagram')){
+                $storeData['instagram'] = $request->instagram;
+            }
+            if($request->has('facebook')){
+                $storeData['facebook'] = $request->facebook;
+            }
+            if($request->has('linkedin')){
+                $storeData['linkedin'] = $request->linkedin;
+            }
+            
+            if ($userDetails = UserDetails::where('user_id', $request->user_id)->first()) {
+                $userDetails->update($storeData);
+                $responseOut = ['data' => trans('messages.success')];
+                $code = 200;
+            } else {
+                $responseOut = ['data' => self::NOT_FOUND_DATA];
+                $code = 406;
+            }
+
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => trans('not_processable')], 406);
+            }
+        }
+    }
 }

@@ -21,7 +21,11 @@ class UserDetails extends Model
         'stage_name',
         'url',
         'zip',
-        'agency_name'
+        'agency_name',
+        'twitter',
+        'facebook',
+        'instagram',
+        'linkedin'
     ];
 
     protected $casts =[
