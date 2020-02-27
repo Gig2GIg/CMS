@@ -48,12 +48,22 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAll(): \Illuminate\Http\JsonResponse
+    public function getAll(Request $request): \Illuminate\Http\JsonResponse
     {
-        $data = new UserRepository(new User());
-        $count = count($data->all());
+        $data = new User();
+        if($request->has('type') && $request->type != null){
+            $type = $request->type;
+            
+            $allData = $data->whereHas('details', function ($query) use ($type) {
+                $query->where('type', $type);
+            })->get();
+        }else{
+            $allData = $data->all();
+        }
+        
+        $count = count($allData);
         if ($count !== 0) {
-            $responseData = ['data' => UserResource::collection($data->all())];
+            $responseData = ['data' => UserResource::collection($allData)];
             $code = 200;
         } else {
             $responseData = ['data' => self::NOT_FOUND_DATA];
@@ -272,7 +282,9 @@ class UserController extends Controller
                 'zip' => $request->zip,
             ];
             
-            //$dataUser->image->update(['url' => $request->image]);
+            if($request->has('image') && $request->image != null){
+                $dataUser->image->update(['url' => $request->image]);
+            }
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $dat = $dataUserDetails->update($userDataDetails);

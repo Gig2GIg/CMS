@@ -49,7 +49,7 @@ class AuditionsFindController extends Controller
 
             }
 
-            $data2 = $elementResponse->get()->sortByDesc('created_at');
+            $data2 = $elementResponse->where('status' , "!=", 2)->get()->sortByDesc('created_at');
             $response = AuditionResourceFind::collection($data2);
 
             if (count($data2) === 0) {
@@ -97,7 +97,8 @@ class AuditionsFindController extends Controller
             if (isset($request->contract) && strtoupper($request->contract) != "ANY") {
                 $elementResponse = $elementResponse->where('contract', strtoupper($request->contract));
             }
-            $response = AuditionResourceFind::collection($elementResponse->sortByDesc('created_at'));
+
+            $response = AuditionResourceFind::collection($elementResponse->where('status' , "!=", 2)->sortByDesc('created_at'));
 
             if (count($elementResponse) === 0) {
                 $dataResponse = ['error' => 'Not Found'];

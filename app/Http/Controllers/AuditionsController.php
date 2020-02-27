@@ -365,7 +365,7 @@ class AuditionsController extends Controller
             ->where('round', 1) //We need only first round in all search
             ->pluck('auditions_id');
 
-        $dataTemp->all()->whereIn('id', $dataRepoRound)->each(function ($item) use ($data) {
+        $dataTemp->all()->whereIn('id', $dataRepoRound)->where("status" , "!=", 2)->each(function ($item) use ($data) {
             $data->push($item);
         });
 
@@ -401,7 +401,7 @@ class AuditionsController extends Controller
 
             if ($dataInclude->count() > 0) {
                 $repoAuditionsExtra = new AuditionRepository(new Auditions());
-                $repoAuditionsExtraData = $repoAuditionsExtra->all()->whereIn('id', $dataInclude);
+                $repoAuditionsExtraData = $repoAuditionsExtra->all()->whereIn('id', $dataInclude)->where("status" , "!=", 2);
                 $repoAuditionsExtraData->each(function ($item) use ($data) {
                     $data->push($item);
                 });
@@ -412,7 +412,7 @@ class AuditionsController extends Controller
                 ->where('status', true)
                 ->where('round', 1)
                 ->pluck('auditions_id');
-            $dataTemp2->all()->whereIn('id', $dataRepoRound1)->each(function ($item) use ($data) {
+            $dataTemp2->all()->whereIn('id', $dataRepoRound1)->where("status" , "!=", 2)->each(function ($item) use ($data) {
                 $data->push($item);
             });
 
