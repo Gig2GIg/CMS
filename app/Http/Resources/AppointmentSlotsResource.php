@@ -22,21 +22,33 @@ class AppointmentSlotsResource extends JsonResource
 
     public function toArray($request)
     {
+        $slotsData = array();
         if ($this->type == 1) {
-            $slotsData = $this->slot()
+            $temp = $this->slot()
                 ->where('is_walk', '=', '0')
                 ->where('status', '=', '0')
+                ->with('userSlots')
                 ->get();
-
-
-
         } else {
-            $slotsData = $this->slot()
+            $temp = $this->slot()
                 ->where('is_walk', '=', '1')
-                ->where('status', '=', '0')->get();
+                ->where('status', '=', '0')
+                ->with('userSlots')
+                ->get();
         }
-        return [
 
+        foreach ($temp as $e) {
+            $elem = $e->toArray();
+            if(count($elem['user_slots']) != 0){
+                if($elem['user_slots'][0]['status'] != 'reserved'){
+                    array_push($slotsData, $elem);
+                }
+            }else{
+                array_push($slotsData, $elem);
+            }
+        }
+
+        return [
             'start' => $this->start,
             'end' => $this->end,
             'duration' => $this->length,

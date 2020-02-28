@@ -310,6 +310,7 @@ class AppoinmentAuditionsController extends Controller
             $dataResponse = new AppointmentSlotsResource($data, 1);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
