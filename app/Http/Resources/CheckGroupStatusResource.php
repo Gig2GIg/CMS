@@ -5,10 +5,12 @@ namespace App\Http\Resources;
 use App\Http\Repositories\InstantFeedbackRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\UserRepository;
+use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Models\InstantFeedback;
 use App\Models\UserSlots;
 use App\Models\User;
+use App\Models\Slots;
 use App\Models\Feedbacks;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,6 +27,15 @@ class CheckGroupStatusResource extends JsonResource
         // user_details
         $userRepo = new UserRepository(new User());
         $userData = $userRepo->find($this->user_id);
+
+        //Slot details and time
+        if($this->slot_id && $this->slot_id != null){
+            $slot = new SlotsRepository(new Slots());
+            $slotData = $slot->find($this->slot_id);
+            $time = $slotData->time;
+        }else{
+            $time = null;
+        }
 
         // instant_feedback
         $instantFeedbackRepo = new InstantFeedbackRepository(new InstantFeedback());
@@ -60,6 +71,7 @@ class CheckGroupStatusResource extends JsonResource
             'assign_no' => $this->assign_no,
             'assign_no_by' => $this->assign_no_by,
             'slot_id' => $this->slot_id,
+            'time' => $time,
             'rol_id' => $this->rol_id,
             'appointment_id' => $this->appointment_id,
             'image' => $userData->image->url,

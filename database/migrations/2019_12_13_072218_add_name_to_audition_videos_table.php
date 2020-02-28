@@ -26,7 +26,7 @@ class AddNameToAuditionVideosTable extends Migration
     public function down()
     {
         Schema::table('audition_videos', function (Blueprint $table) {
-            //
+            $table->dropColumn('name');            
         });
     }
 }
