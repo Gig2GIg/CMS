@@ -30,7 +30,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/reset-password', ['uses' => 'UserController@resetPassword']);
 
 });
-$router->group(['middleware' => ['jwt.auth']], function () use ($router) {
+$router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
     $router->get('/users/settings', ['uses' => 'UserSettingsController@list']);
     $router->put('/users/settings/{id}', ['uses' => 'UserSettingsController@update']);
     $router->post('/auditions/findby', ['uses' => 'AuditionsController@findby']);
@@ -62,7 +62,7 @@ $router->group(['middleware' => ['jwt.auth']], function () use ($router) {
     Route::get('media/online/{appointment_id}/round', ['uses' => 'OnlineMediaAuditionController@listByRound']);
     Route::get('media/online/{id}', ['uses' => 'OnlineMediaAuditionController@get']);
 });
-$router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], function () use ($router) {
+$router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsactive']], function () use ($router) {
     Route::get('/performers/tags', ['uses' => 'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);
     Route::get('/performers/contracts', ['uses' => 'PerformersController@getContracts']);
@@ -207,7 +207,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1']], functio
     $router->get('/appointments/{appointment_id}/slots', ['uses' => 'AppoinmentController@getSlots']);
 });
 
-$router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2']], function () use ($router) {
+$router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2', 'checkIsactive']], function () use ($router) {
     //media online submission
     $router->post('media/online', ['uses' => 'OnlineMediaAuditionController@create']);
     // $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);
