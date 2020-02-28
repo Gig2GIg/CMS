@@ -50,7 +50,7 @@
                 <b-table-column
                   field="title"
                   label="Title"
-                  width="250"
+                  width="350"
                   sortable>{{ props.row.title }}</b-table-column>
 
                 <b-table-column 
