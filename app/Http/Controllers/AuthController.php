@@ -35,7 +35,7 @@ class AuthController extends Controller
             $userData = new UserRepository(new User());
             $user = $userData->findbyparam('email', request('email'));
 
-            if(!$user->is_active){
+            if($user && !$user->is_active){
                 return response()->json(['error' => trans('messages.account_deactivated')], 403);
             }
 
