@@ -167,7 +167,7 @@ class PostsController extends Controller
             if (count($posts) > 0) {
                 $postCollect = collect(PostsTopicsWithPostResource::collection($posts));
                 $filterDirectorType = $postCollect->filter(function ($value) { return $value['search_to'] != "director"; });
-                $dataResponse = ['data' => $filterDirectorType];
+                $dataResponse = ['data' => array_values($filterDirectorType->toArray())];
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Not found'];
