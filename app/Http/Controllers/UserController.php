@@ -53,9 +53,10 @@ class UserController extends Controller
         $data = new User();
         if($request->has('type') && $request->type != null){
             $type = $request->type;
+            $typeArray = explode(',',$request->type);
             
-            $allData = $data->whereHas('details', function ($query) use ($type) {
-                $query->where('type', $type);
+            $allData = $data->whereHas('details', function ($query) use ($typeArray) {
+            $query->whereIn('type', $typeArray);
             })->get();
         }else{
             $allData = $data->all();

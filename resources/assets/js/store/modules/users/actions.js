@@ -12,7 +12,7 @@ export default {
 
   async fetch({ commit }) {
     try {
-      const { data: { data } } = await axios.get('/api/cms/users');
+      const { data: { data } } = await axios.get('/api/cms/users?type=1,2'); // only caster and performer type
 
       commit(types.FETCH_USERS_SUCCESS, data);
     } catch (e) {
