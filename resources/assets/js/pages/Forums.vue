@@ -63,10 +63,10 @@
                   label="Type"
                   sortable>{{ props.row.type }}</b-table-column> -->
 
-                <b-table-column 
+                <!-- <b-table-column 
                   field="search_to"
                   label="Search to"
-                  sortable>{{ props.row.search_to }}</b-table-column>
+                  sortable>{{ props.row.search_to }}</b-table-column> -->
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
@@ -113,10 +113,10 @@
                         <strong>By:</strong>
                         {{ props.row.name }}
                       </p>
-                      <div>
+                      <!-- <div>
                         <strong>Search To:</strong>
                         <span> {{ props.row.search_to }}</span>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </article>
@@ -211,7 +211,7 @@
             </b-field> -->
 
 
-            <b-field
+            <!-- <b-field
               label="Search to"
               :type="{'is-danger': errors.has('type')}"
               :message="errors.first('type')"
@@ -229,7 +229,7 @@
                   {{ to }}
                 </option>
               </b-select>
-            </b-field>
+            </b-field> -->
 
             <div class="mb-6">
               <label class="label">Body</label>
