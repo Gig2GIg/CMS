@@ -95,12 +95,12 @@
                 <article class="media is-top">
                   <div class="w-1/2 mx-4">
                     <div class="mb-4 user-avatar">
-                      <img class="w-full " :src="props.row.image && props.row.image.url ? props.row.image.url : defaultImg" @error="defaultImg" >
+                      <img class="w-full " :src="props.row.image && props.row.image.url ? props.row.image.url : props.row.image ? props.row.image : defaultImg" @error="defaultImg" >
                     </div>
                     <div class="content">
                       <p>
                         <strong>Birth Date:</strong>
-                        {{ props.row.details.birth | dateFormat }}
+                        {{ props.row.details.birth | birthDateFormat }}
                       </p>                     
                       
                     </div>
@@ -184,6 +184,9 @@
           <section class="modal-card-body">
             <b-field
               label="Profile Picture"
+            >
+            </b-field>
+            <b-field
               :type="{'is-info': errors.has('image')}"
               :message="errors.first('image')"              
             >
@@ -545,15 +548,18 @@ export default {
             .put(this.profile_file);
 
           this.selectedUser.image = await snapshot.ref.getDownloadURL();          
-        } else {
-          this.selectedUser.image = null;
+        } else if(this.selectedUser.image && this.selectedUser.image.url) {
+          this.selectedUser.image = this.selectedUser.image.url;
+        }
+        if(this.selectedUser.details.birth){
+          this.selectedUser.details.birth = Vue.moment(this.selectedUser.details.birth).format("YYYY-MM-DD");
         }
         
-        // this.selectedUser.details.birth = Vue.moment(this.selectedUser.details.birth).format("YYYY-MM-DD");
         await this.update(this.selectedUser);
 
         this.isModalActive = false;
       } catch (e) {
+        console.log("TCL: updateUser -> e", e)
         this.$setErrorsFromResponse(e.response.data);
       }
     },

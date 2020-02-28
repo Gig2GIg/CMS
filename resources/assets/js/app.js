@@ -31,6 +31,12 @@ Vue.filter("dateFormat", function (value) {
   }
 });
 
+Vue.filter("birthDateFormat", function (value) {
+  if (value) {
+    return Vue.moment(new Date(value).toISOString()).format("YYYY-MM-DD");
+  }
+});
+
 firebase.initializeApp({
   apiKey: 'AIzaSyDTrKkhJCM4ZNbFXRTq0AE2uKzNlpo3_i4',
   projectId: 'dd-gig2gi',

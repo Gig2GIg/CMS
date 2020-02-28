@@ -35,8 +35,9 @@ export default {
     Vue.set(state.userList, index, user);
   },
 
-  [types.DELETE_TOPIC](state, user) {
-    let index = state.userList.indexOf(user);
+  [types.DELETE_USER](state, user) {
+    let current = state.userList.find(x => x.id === user.id);
+    let index = state.userList.indexOf(current);
     state.userList.splice(index, 1);
   },
 };

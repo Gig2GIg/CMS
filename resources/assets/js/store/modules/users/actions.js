@@ -31,7 +31,7 @@ export default {
         "birth":user.details.birth,
         "profesion":user.details.profesion ? user.details.profesion : null,
         "agency_name":user.details.agency_name ? user.details.agency_name : null,
-        "url":user.details.stage_name ? user.details.stage_name : null,
+        "stage_name":user.details.stage_name ? user.details.stage_name : null,
         "url":user.details.url ? user.details.url : null,        
         "gender":user.details.gender ? user.details.gender : null,
         "address":user.details.address,
