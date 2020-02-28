@@ -3,6 +3,7 @@ import Email from '@/pages/auth/password/Email';
 import Home from '@/pages/Home';
 import Auditions from '@/pages/Auditions';
 import AuditionsBanned from '@/pages/AuditionsBanned';
+import Users from '@/pages/Users';
 import Performers from '@/pages/Performers';
 import Contributors from '@/pages/Contributors';
 import Marketplace from '@/pages/Marketplace';
@@ -28,10 +29,11 @@ export default [
   // Authenticated routes.
   ...middleware('auth', [
     { path: '/home', alias: '/', title: 'Home', name: 'home', component: Home },
-    { path: '/auditions', title: 'Auditions', name: 'auditions', component: Auditions },
+    { path: '/auditions', title: 'Auditions', name: 'auditions', component: Auditions },    
     { path: '/auditions-banned', title: 'Auditions Banned', name: 'auditions-banned', component: AuditionsBanned },
     { path: '/auditions/:id/performers', name: 'performers', component: Performers },
     { path: '/auditions/:id/contributors', name: 'contributors', component: Contributors },
+    { path: '/users', title: 'Users', name: 'users', component: Users },
     { path: '/marketplace', title: 'Marketplace Categories', name: 'marketplace', component: Marketplace },
     { path: '/vendors', title: 'Marketplace Vendors', name: 'vendors', component: Vendors },
     { path: '/production-types', title: 'Production Types', name: 'production-types', component: ProductionTypes },
