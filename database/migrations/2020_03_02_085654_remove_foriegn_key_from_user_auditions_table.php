@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class DropUniqueKeyFromInstantFeedbackSettingsTable extends Migration
+class RemoveForiegnKeyFromUserAuditionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class DropUniqueKeyFromInstantFeedbackSettingsTable extends Migration
      */
     public function up()
     {
-        Schema::table('instant_feedback_settings', function (Blueprint $table) {
-            $table->dropUnique('instant_feedback_settings_user_id_unique');
+        Schema::table('user_auditions', function (Blueprint $table) {
+            $table->dropForeign('user_auditions_rol_id_foreign');
         });
     }
 
@@ -25,7 +25,8 @@ class DropUniqueKeyFromInstantFeedbackSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::table('instant_feedback_settings', function (Blueprint $table) {
+        Schema::table('user_auditions', function (Blueprint $table) {
+            //
         });
     }
 }

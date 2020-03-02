@@ -30,7 +30,9 @@ class UserAuditionsResource extends JsonResource
             ->where('type', 'cover')
             ->where('resource_type', 'App\Models\Auditions')
             ->pluck('url');
-        $rolanme = Roles::where('id', '=', $this->rol_id)->get()->pluck('name');
+
+        $roles = explode(",", $this->rol_id);
+        $rolanme = Roles::whereIn('id', '=', $roles)->get()->pluck('name');
         // $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
 
         $slot = $this->slot_id;
@@ -45,7 +47,7 @@ class UserAuditionsResource extends JsonResource
             'auditions_id' => $dataRepo->auditions->id,
             'online' => $dataRepo->auditions->online,
             'rol' => $this->rol_id,
-            'rol_name' => $rolanme[0] ?? null,
+            'rol_name' => $rolanme ?? null,
             'id_user' => $dataRepo->auditions->user_id,
             'title' => $dataRepo->auditions->title,
             'date' => $dataRepo->date,
