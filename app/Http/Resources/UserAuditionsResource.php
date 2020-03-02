@@ -32,7 +32,8 @@ class UserAuditionsResource extends JsonResource
             ->pluck('url');
 
         $roles = explode(",", $this->rol_id);
-        $rolanme = Roles::whereIn('id', '=', $roles)->get()->pluck('name');
+        $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
+        
         // $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
 
         $slot = $this->slot_id;
