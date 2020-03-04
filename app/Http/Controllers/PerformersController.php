@@ -272,7 +272,7 @@ class PerformersController extends Controller
     {
         try {
             $dataRepo = new FeedbackRepository(new Feedbacks());
-            $data = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->get();
+            $data = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
 
             return response()->json(['message' => trans('messages.comment_by_user'), 'data' => CommentListResponse::collection($data)], 200);
             // return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
