@@ -93,7 +93,8 @@ class PerformersController extends Controller
             $data = [
                 'sender' => $sender,
                 'performer' => $performer,
-                'code' => $request->code
+                'code' => $request->code,
+                'link' => $request->link
             ];
             $response = $this->notificator($dataReceiver, $data);
             if (!$response) {

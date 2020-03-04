@@ -17,6 +17,10 @@ use Exception;
 
 class CalendarController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('jwt', ['except' => ['getAll']]);
+    }
     /**
      * Display a listing of the resource.
      *

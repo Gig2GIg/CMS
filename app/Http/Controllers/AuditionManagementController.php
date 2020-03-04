@@ -58,7 +58,7 @@ class AuditionManagementController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => []]);
+        $this->middleware('jwt', ['except' => ['getAuditionListByPerformer', 'getUserProfile', 'listVideosByAudition']]);
         $this->log = new LogManger();
     }
 
