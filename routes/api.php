@@ -13,6 +13,14 @@ use Illuminate\Http\Request;
 |
  */
 
+//Talent Database apis w/o authentication 
+Route::group(['prefix' => 'talentDatabase'], function () use ($router) {
+    $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);
+    $router->get('/auditions/profile/user/{id}', ['uses' => 'AuditionManagementController@getUserProfile']);
+    $router->get('/user/{id}/calendar', ['uses' => 'CalendarController@getAll']);
+    $router->get('/auditions/video/list/{audition_id}/performer/{performer_id}', ['uses' => 'AuditionManagementController@listVideosByAudition']);
+});
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

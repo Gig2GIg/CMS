@@ -111,18 +111,21 @@ class SendMail
         try {
             $push = new NotificationManagementController();
             $email = new Mail();
-
             $email->setFrom(env('SUPPORT_EMAIL'));
             $email->setSubject('Add them to your Talent Database');
             $email->addTo($user->email);
-            $content = sprintf('<strong>%s</strong> has shared <strong>%s</strong> with you! Add them to your Talent Database with code: <strong>%s</strong>. ',
+
+            $content = sprintf('<strong>%s</strong> has shared <strong>%s</strong> with you! Add them to your Talent Database with code: <strong>%s</strong>. <br /> <p>Follow this <a href="%s" target="_blank">Link</a> to visit the Talent Database page.<p>',
                 $data['sender'],
                 $data['performer'],
-                $data['code']);
+                $data['code'],
+                $data['link']);
+
             $contentpush = sprintf('%s has shared %s with you! Add them to your Talent Database with code: %s. ',
-                $data['sender'],
-                $data['performer'],
-                $data['code']);
+            $data['sender'],
+            $data['performer'],
+            $data['code']);
+                
             $email->addContent("text/html", $content);
             $push->sendPushNotification(null, 'cms_to_user', $user, $contentpush);
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
