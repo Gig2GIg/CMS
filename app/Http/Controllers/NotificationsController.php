@@ -91,6 +91,7 @@ class NotificationsController extends Controller
                 if (!empty($userPushkeyExists)) {
                     $userPushkeyExists->update([
                         'device_token' => $device_token,
+                        'device_type' => $device_type
                     ]);
                 } else {
                     $userPushDataDetails = [
