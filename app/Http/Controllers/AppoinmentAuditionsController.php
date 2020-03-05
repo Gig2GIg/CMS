@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Exceptions\NotificationException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
@@ -200,7 +201,14 @@ class AppoinmentAuditionsController extends Controller
     public function sendStoreNotificationToUser($user, $audition): void
     {
         try {
-            $this->pushNotifications('You have been registered for the audition ' . $audition->title, $user, $audition->title);
+
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::CHECK_IN,
+                $user,
+                $audition->title
+            );
+            
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }

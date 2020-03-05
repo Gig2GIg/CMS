@@ -84,6 +84,7 @@ class NotificationsController extends Controller
             $userResult = $userRepo->find($this->getUserLogging());
             $device_id = $request->device_id;
             $device_token = $request->pushkey;
+            $device_type = $request->device_type;
             if ($device_id != '' && $userResult->id != '') {
                 $userPushkeys = new UserPushKeysRepository(new UserPushKeys());
                 $userPushkeyExists = $userPushkeys->findbyparams(['user_id' => $userResult->id, 'device_id' => $device_id])->first();
@@ -96,6 +97,7 @@ class NotificationsController extends Controller
                         'user_id' => $userResult->id,
                         'device_id' => $device_id,
                         'device_token' => $device_token,
+                        'device_type' => $device_type
                     ];
                     $userPushkeys->create($userPushDataDetails);
                 }

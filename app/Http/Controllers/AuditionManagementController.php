@@ -90,11 +90,12 @@ class AuditionManagementController extends Controller
     public function sendSaveAuditionNotificationToUser($user, $audition): void
     {
         try {
-            $this->pushNotifications(
-                'You have been added to upcoming audition ' . $audition->title,
-                $user,
-                $audition->title
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::UPCOMING_AUDITION,
+                $user
             );
+
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -772,10 +773,12 @@ class AuditionManagementController extends Controller
     {
         try {
             if ($user) {
-                $this->pushNotifications(
-                    'Your appointment time to audition ' . $audition->title . ' is update to '. $slot->time,
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::APPOINTMENT_REORDER,
                     $user,
-                    $audition->title
+                    $audition->title,
+                    'Your appointment time to audition ' . $audition->title . ' is update to '. $slot->time
                 );
             }
         } catch (NotFoundException $exception) {

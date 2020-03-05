@@ -588,7 +588,7 @@ class AuditionsController extends Controller
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
-            // dd($exception->getMessage());
+            //dd($exception->getMessage());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
@@ -725,10 +725,12 @@ class AuditionsController extends Controller
     {
         try {
             $audition->contributors->each(function ($user_contributor) use ($audition) {
-                $this->pushNotifications(
-                    'You have been invited for the audition ' . $audition->title,
+                $this->sendPushNotification(
+                    $audition,
+                    SendNotifications::CASTER_AUDITION_INVITE,
                     $user_contributor,
-                    $audition->title
+                    $audition->title,
+                    'You have been invited for the audition ' . $audition->title
                 );
             });
         } catch (NotFoundException $exception) {
@@ -776,7 +778,7 @@ class AuditionsController extends Controller
             }
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
-            // dd($exception->getMessage());
+            //dd($exception->getMessage());
             return response()->json(['error' => trans('messages.data_not_found')], 404);
             // return response()->json(['error' => 'Not Found'], 404);
         }

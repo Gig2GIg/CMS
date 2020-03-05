@@ -80,7 +80,8 @@ class PerformersController extends Controller
             $repoPerformer = new PerformerRepository(new Performers());
             $dataPerfomer = $repoPerformer->findbyparam('uuid', $request->code)->first();
             $dataReceiver = $repoSender->findbyparam('email', $request->email);
-            if (isset($dataReciver->id)) {
+            
+            if (!isset($dataReceiver->id)) {
                 throw new NotFoundException('Not Found User', 404);
             }
 
@@ -130,11 +131,15 @@ class PerformersController extends Controller
         }
     }
 
-    public function notificator($user, $data)
+    public function notificator($user, $data, $type = 0)
     {
         try {
             $email = new SendMail();
-            $email->sendCode($user, $data);
+            if($type == 1){
+                $email->sendTalentDatabaseMail($mail, $data);                
+            }else{
+                $email->sendCode($user, $data);
+            }
             return true;
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());

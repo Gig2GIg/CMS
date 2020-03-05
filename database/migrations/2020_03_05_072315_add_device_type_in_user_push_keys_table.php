@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ChageRoleIdColumnDatatypeToStringInUserAuditionsTable extends Migration
+class AddDeviceTypeInUserPushKeysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class ChageRoleIdColumnDatatypeToStringInUserAuditionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('user_auditions', function (Blueprint $table) {
-            DB::statement("ALTER TABLE `user_auditions` CHANGE `rol_id` `rol_id` VARCHAR( 255 ) NULL DEFAULT NULL");      
+        Schema::table('user_push_keys', function (Blueprint $table) {
+            DB::statement("ALTER TABLE `user_push_keys` ADD `device_type` ENUM('android','ios','web') NULL DEFAULT NULL AFTER `device_token`");
         });
     }
 
@@ -25,7 +25,7 @@ class ChageRoleIdColumnDatatypeToStringInUserAuditionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('user_auditions', function (Blueprint $table) {
+        Schema::table('user_push_keys', function (Blueprint $table) {
             //
         });
     }

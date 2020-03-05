@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\InstantFeedbackRepository;
@@ -100,11 +101,11 @@ class InstantFeedbackController extends Controller
                     }
 
                     // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, $comment);
+                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
                     $this->saveStoreNotificationToUser($user, $audition, $comment);   
                 }  else {
                     // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, $comment);
+                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
                     $this->saveStoreNotificationToUser($user, $audition, $comment);
                 }
 
@@ -330,7 +331,7 @@ class InstantFeedbackController extends Controller
         }
     }
 
-    public function sendStoreNotificationToUser($user, $audition, $comment = ""): void
+    public function sendStoreNotificationToUser($user, $audition, $comment = "", $appointment_id = null): void
     {
         try {
             if($comment == ""){
@@ -338,8 +339,15 @@ class InstantFeedbackController extends Controller
             }else{
                 $message = $comment;
             }
+            
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::INSTANT_FEEDBACK,
+                $user,
+                $appointment_id,
+                $message
+            );
 
-            $this->pushNotifications($message, $user, $audition->title);
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
