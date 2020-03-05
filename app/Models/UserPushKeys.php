@@ -10,6 +10,7 @@ class UserPushKeys extends Model
         'user_id',
         'device_id',
         'device_token',
+        'device_type'
     ];
 
     public function users()
