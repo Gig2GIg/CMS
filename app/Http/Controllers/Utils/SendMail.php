@@ -143,6 +143,37 @@ class SendMail
         }
     }
 
+    public function sendTalentDatabaseMail($mail, $data)
+    {
+        try {
+            $email = new Mail();
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Performer Talent Database Details');
+            $email->addTo($mail);
+
+            $content = sprintf('<strong>%s</strong> has shared <strong>%s</strong> with you! <br /> <p>Follow this <a href="%s" target="_blank">Link</a> to visit the Talent Database page.<p>',
+                $data['sender'],
+                $data['performer'],
+                $data['link']);
+            
+            $email->addContent("text/html", $content);            
+                
+            // $push->sendPushNotification(null, 'cms_to_user', $user, $content);
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
+
     public function sendPerformance($user, $data)
     {
         try {
