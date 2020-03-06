@@ -81,23 +81,36 @@ class PerformersController extends Controller
             $dataPerfomer = $repoPerformer->findbyparam('uuid', $request->code)->first();
             $dataReceiver = $repoSender->findbyparam('email', $request->email);
             
-            if (!isset($dataReceiver->id)) {
-                throw new NotFoundException('Not Found User', 404);
-            }
-
             if (is_null($dataPerfomer)) {
                 throw new NotFoundException('Shared code not found', 404);
             }
+            
             $lastName = is_null($dataSender->details->last_name) ? '' : $dataSender->details->last_name;
             $sender = sprintf('%s %s', $dataSender->details->first_name ?? '',$lastName );
             $performer = sprintf('%s %s', $dataPerfomer->details->first_name ?? '', $dataPerfomer->details->last_name ?? '');
+            
             $data = [
                 'sender' => $sender,
                 'performer' => $performer,
-                'code' => $request->code,
                 'link' => $request->link
             ];
+
+            if (!isset($dataReceiver->id)) {
+
+                $to = $request->email;
+                $response = $this->notificator($to, $data, 1);
+                
+                if (!$response) {
+                    throw new \Exception('Error to notification');
+                }
+                // return response()->json(['data' => 'Code share']);
+                return response()->json(['data' => trans('messages.success')]);
+            }
+  
+            $data['code'] = $request->code;
+
             $response = $this->notificator($dataReceiver, $data);
+
             if (!$response) {
                 throw new \Exception('Error to notification');
             }
@@ -136,7 +149,7 @@ class PerformersController extends Controller
         try {
             $email = new SendMail();
             if($type == 1){
-                $email->sendTalentDatabaseMail($mail, $data);                
+                $email->sendTalentDatabaseMail($user, $data);                
             }else{
                 $email->sendCode($user, $data);
             }
