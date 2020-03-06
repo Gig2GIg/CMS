@@ -48,6 +48,7 @@ class ProfileResource extends JsonResource
             'has_uploaded' => $has_uploaded,
             // 'assign_no' => $assign_no->assign_no ?? null,
             'id' => $this->id,
+            'image' => $this->image,
             'details' => $this->details,
             'education' => $this->educations,
             'credits' => $this->credits,
