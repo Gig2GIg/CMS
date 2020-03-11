@@ -39,7 +39,12 @@ class AuditionRequest extends ApiRequest
             'status',
             'dates',
             'roles' => 'required|array',
-            'appointment' => 'required',
+            'rounds' => 'required|array',
+            'rounds.*.date' => 'required',
+            'rounds.*.time' => 'required',
+            'rounds.*.location' => 'required',
+            'rounds.*.appointment' => 'required',
+
 //            'contributors'=>'required|array',
 //            'media'=>'required|array'
         ];

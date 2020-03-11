@@ -112,18 +112,22 @@ class AuditionsController extends Controller
                     }
                 }
 
-                $dataAppoinment = $this->dataToAppointmentProcess($request, $audition);
-                $appointmentRepo = new AppointmentRepository(new Appointments());
-                $appointment = $appointmentRepo->create($dataAppoinment);
-                if (!$request->online) {
-                    if (isset($request['appointment']['slots'])) {
-                        foreach ($request['appointment']['slots'] as $slot) {
-                            $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
-                            $slotsRepo = new SlotsRepository(new Slots());
-                            $slotsRepo->create($dataSlots);
+                foreach ($request->rounds as $count => $round) {
+                    $status = $count == 0 ? true : 2;
+                    $dataAppoinment = $this->dataToAppointmentProcess($round, $audition, $status, $count+1);
+                    $appointmentRepo = new AppointmentRepository(new Appointments());
+                    $appointment = $appointmentRepo->create($dataAppoinment);
+                    if (!$request->online) {
+                        if (isset($round['appointment']['slots'])) {
+                            foreach ($round['appointment']['slots'] as $slot) {
+                                $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
+                                $slotsRepo = new SlotsRepository(new Slots());
+                                $slotsRepo->create($dataSlots);
+                            }
                         }
                     }
                 }
+
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
                         $this->saveContributor($contrib, $audition);
@@ -236,20 +240,20 @@ class AuditionsController extends Controller
      * @param $audition
      * @return array
      */
-    public function dataToAppointmentProcess($request, $audition): array
+    public function dataToAppointmentProcess($round, $audition, $status = true, $count = null): array
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($request->date) ?? null, //null
-            'time' => $request->time ?? null, //null
-            'location' => json_encode($request->location) ?? null, //null
-            'slots' => $request['appointment']['spaces'] ?? null,
-            'type' => $request['appointment']['type'] ?? null,
-            'length' => $request['appointment']['length'] ?? null,
-            'start' => $request['appointment']['start'] ?? null,
-            'end' => $request['appointment']['end'] ?? null,
-            'status' => true,
-            'round' => 1,
+            'date' => $this->toDate->transformDate($round['date']) ?? null, //null
+            'time' => $round['time'] ?? null, //null
+            'location' => json_encode($round['location']) ?? null, //null
+            'slots' => $round['appointment']['spaces'] ?? null,
+            'type' => $round['appointment']['type'] ?? null,
+            'length' => $round['appointment']['length'] ?? null,
+            'start' => $round['appointment']['start'] ?? null,
+            'end' => $round['appointment']['end'] ?? null,
+            'status' => $status,
+            'round' => $count,
         ];
     }
 
