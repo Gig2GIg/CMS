@@ -54,10 +54,46 @@ class AppoinmentController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
+            $createdNextAuditionRound = $repo->findbyparams(['auditions_id' => $data->auditions_id, "status" => 2, "round" => (($data->round) + 1)])->first();
             $update = $data->update([
                 'status' => $request->status,
                 'is_group_open' => 0
             ]);
+
+            if($createdNextAuditionRound->count() > 0){
+
+                $createdNextAuditionRound->update([
+                    'status' => 1
+                ]);
+
+                $roleRepo = new RolesRepository(new Roles());
+                $roleDataRepo = $roleRepo->findbyparam('auditions_id', $data->auditions_id);
+
+                if ($roleDataRepo->count() > 0) {
+                    
+                    $roles = $roleDataRepo->all();
+                    $auditionRoleId = $roles[0]->id;
+
+                    //Get all users who got feedback in previous round
+                    $feedbacksRepo = new FeedbackRepository(new Feedbacks());
+                    $repoDatafeedbacks = $feedbacksRepo->findbyparams(['appointment_id' => $request->appointment_id, 'favorite' => 1]);
+
+                    if ($repoDatafeedbacks->count() > 0) {
+                        $feedbackData = $repoDatafeedbacks->get();
+
+                        foreach ($feedbackData as $feedback) {
+                            $dataToInsert = [
+                                'user_id' => $feedback->user_id, 
+                                'appointment_id' => $createdNextAuditionRound->id, 
+                                'rol_id' => $auditionRoleId, 
+                                'type' => '1'];
+                            $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                            $UserAudition->create($dataToInsert);
+                        }
+                    }
+                }
+            }
+
             if ($update) {
                 $repoFeeadback = Feedbacks::all()
                     ->where('appointment_id', $request->appointment_id)

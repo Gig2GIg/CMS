@@ -895,10 +895,13 @@ class AuditionManagementController extends Controller
                     $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
                     $auditionRepo = new AuditionRepository(new Auditions());
                     $audition = $auditionRepo->find($auditionsId);
-                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
-                    if (isset($userManager->email) !== null && isset($userManager->notifications)) {
-                        $mail = new SendMail();
-                        $mail->sendManager($userManager->email, $dataMail);
+                    
+                    if($userManager){
+                        $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
+                        if (isset($userManager->email) !== null && isset($userManager->notifications)) {
+                            $mail = new SendMail();
+                            $mail->sendManager($userManager->email, $dataMail);
+                        }
                     }
 
                     $this->sendSaveAuditionNotificationToUser($detailData, $audition);
