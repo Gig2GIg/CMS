@@ -21,4 +21,9 @@ class Slots extends Model
     public function userSlots(){
         return $this->hasMany(UserSlots::class);
     }
+
+    public function userSlot(){
+        return $this->hasOne(UserSlots::class)->where('status', 'checked');
+    }
+
 }

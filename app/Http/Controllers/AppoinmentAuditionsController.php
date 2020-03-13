@@ -13,6 +13,7 @@ use App\Http\Repositories\UserDetailsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\AppointmentDetailsUserResource;
+use App\Http\Resources\AppointmentSlotsResourceWithUsers;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
 use App\Models\Appointments;
@@ -319,7 +320,6 @@ class AppoinmentAuditionsController extends Controller
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
-            // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
@@ -335,7 +335,20 @@ class AppoinmentAuditionsController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
-            // return response()->json(['data' => 'Data Not Found'], 404);
+        }
+    }
+
+    public function showAllWithUsers(Request $request)
+    {
+        try {
+            $dataRepo = new AppointmentRepository(new Appointments());
+            $data = $dataRepo->find($request->id);
+            $dataResponse = new AppointmentSlotsResourceWithUsers($data);
+            return response()->json(['data' => $dataResponse], 200);
+        } catch (\Exception $exception) {
+            dd($exception);
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
 }

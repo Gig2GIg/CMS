@@ -58,6 +58,8 @@ $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use 
     // =======================================
     $router->get('/appointments/show/{id}/walk', ['uses' => 'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk', ['uses' => 'AppoinmentAuditionsController@showListNotWalk']);
+    $router->get('/appointments/show/{id}/allWithUsers', ['uses' => 'AppoinmentAuditionsController@showAllWithUsers']);
+
     //monitor update
     $router->get('/monitor/show/{id}', ['uses' => 'MonitorManagerController@list']);
     $router->get('/monitor/show/{id}/pre', ['uses' => 'MonitorManagerController@listNotificationsCreate']);
