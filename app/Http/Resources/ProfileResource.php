@@ -41,6 +41,15 @@ class ProfileResource extends JsonResource
             $has_uploaded = 1;
         }
 
+        if($this->details->type == 2){
+            if(isset($this->performerShareCode)){
+                $share_code = $this->performerShareCode->uuid;
+            }else{
+                $share_code = null;
+            }
+        }else{
+            $share_code = null;
+        }
 
         return [
             'app' => $request->appointment_id,
@@ -53,6 +62,7 @@ class ProfileResource extends JsonResource
             'education' => $this->educations,
             'credits' => $this->credits,
             'aparence' => $this->aparence,
+            'share_code' => $share_code,
         ];
     }
 }
