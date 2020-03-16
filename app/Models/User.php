@@ -141,4 +141,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserPushKeys::class);
     }
 
+    public function performerShareCode()
+    {
+        return $this->hasOne(Performers::class, 'performer_id');
+    }
+
 }

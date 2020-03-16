@@ -411,7 +411,7 @@ class AuditionManagementController extends Controller
             // print_r($request->appointment_id);
             $userRepo = new UserRepository(new User());
             $data = $userRepo->find($request->id);
-
+            
             if ($data) {
                 $dataResponse = ['data' => new ProfileResource($data)];
                 $code = 200;

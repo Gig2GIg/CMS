@@ -24,8 +24,7 @@ class AuditionRequest extends ApiRequest
     public function rules()
     {
 
-
-        return [
+        $rules = [
             'title' => 'required',
 //            'date'=>'required',
 //            'time'=>'required',
@@ -39,14 +38,14 @@ class AuditionRequest extends ApiRequest
             'status',
             'dates',
             'roles' => 'required|array',
+            'online' => 'required',
             'rounds' => 'required|array',
-            'rounds.*.date' => 'required',
-            'rounds.*.time' => 'required',
-            'rounds.*.location' => 'required',
             'rounds.*.appointment' => 'required',
-
-//            'contributors'=>'required|array',
-//            'media'=>'required|array'
+            'rounds.*.date' => 'required_if:online,false',
+            'rounds.*.time' => 'required_if:online,false',
+            'rounds.*.location' => 'required_if:online,false'
         ];
+
+        return $rules;
     }
 }
