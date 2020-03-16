@@ -120,6 +120,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->put('/auditions/document/shareable/{id}', ['uses' => 'AuditionManagementController@updateDocument']);
     $router->put('auditions/appointments/{id}/slots', ['uses' => 'AuditionManagementController@reorderAppointmentTimes']);
     $router->post('auditions/{id}/contributors', ['uses' => 'AuditionsController@addContruibuitor']);
+    $router->get('/auditions/{id}/individualPerformers', ['uses' => 'AuditionManagementController@getPerformersWithoutManager']);
 
     /// Telent Database Get Auditions by performer and video list
     $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);

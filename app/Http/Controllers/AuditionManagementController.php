@@ -28,6 +28,7 @@ use App\Http\Resources\ContractResponse;
 use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 use App\Http\Resources\CheckGroupStatusResource;
+use App\Http\Resources\PerformerWithoutManagersResource;
 
 use App\Http\Resources\AuditionListByPerformer;
 use App\Http\Resources\NoficationsResource;
@@ -884,13 +885,19 @@ class AuditionManagementController extends Controller
                 return response()->json(['data' => trans('messages.you_already_registered')], 406);
                 // return response()->json(['data' => 'You already registered'], 406);
             } else {
+                $user = new UserManagerRepository(new UserManager());
+                $userManager = $user->findbyparam('user_id', $this->getUserLogging());
+                
+                if(!$userManager){
+                    $data['has_manager'] = 0;
+                }
+
                 $data = $userAuditions->create($data);
+
                 if ($request->type == 2) {
-                    $user = new UserManagerRepository(new UserManager());
                     $userData = new UserRepository(new User());
                     $detailData = $userData->find($this->getUserLogging());
                     $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
-                    $userManager = $user->findbyparam('user_id', $this->getUserLogging());
                     $appoinmetRepo = new AppointmentRepository(new Appointments());
                     $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
                     $auditionRepo = new AuditionRepository(new Auditions());
@@ -1224,6 +1231,30 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.not_processable')], 406);
             // return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function getPerformersWithoutManager(Request $request)
+    {
+        try {
+            $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
+            $appointmentRepo = new AppointmentRepository(new Appointments());
+
+            $appointment = $appointmentRepo->findbyparams(['auditions_id' => $request->id, 'round' => 1])->first();
+            $data = $userAuditionRepo->findbyparams(['appointment_id' => $appointment->id, 'has_manager' => 0])->get();
+        
+            if ($data) {
+                $dataResponse = ['data' => PerformerWithoutManagersResource::collection($data)];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => trans('messages.data_not_found')];
+                $code = 200;
+            }
+            return response()->json($dataResponse, $code);
+
+        } catch (Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.data_not_found')], 406);
         }
     }
 

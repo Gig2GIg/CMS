@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserAuditions extends Model
 {
     protected $fillable =[
-        'user_id','appointment_id','type','rol_id','slot_id','group_no','rejected'
+        'user_id','appointment_id','type','rol_id','slot_id','group_no','rejected','has_manager'
     ];
 
     public function appointments(){

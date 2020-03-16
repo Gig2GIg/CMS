@@ -103,7 +103,7 @@ class AppoinmentAuditionsController extends Controller
     public function store(Request $request)
     {
         try {
-
+            
             $iduser = null;
             $data = null;
             if (isset($request->email)) {
@@ -119,7 +119,17 @@ class AppoinmentAuditionsController extends Controller
                 ->where('slots_id', '=', $request->slot)
                 ->where('status', '=', 'checked');
             if ($dataCompareExistsRegister->count() > 0) {
-                throw new \Exception('You already registered');
+                if($request->revert){
+                    UserSlots::find($dataCompareExistsRegister->id)->update([
+                        'status' => 1
+                    ]);
+                    $data = UserSlots::where('id', '=', $dataCompareExistsRegister->id)->first();
+                    $dataResponse = new AppointmentResource($data);
+                    $code = 200;
+                    return response()->json(['data' => $dataResponse], $code);  
+                }else{
+                    throw new \Exception('You already registered');
+                }
             }
 
             $dataSlotReserved = new UserSlots();
@@ -342,7 +352,7 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
             $dataRepo = new AppointmentRepository(new Appointments());
-            $data = $dataRepo->find($request->id);
+            $data = $dataRepo->findbyparams(['auditions_id' => $request->id, 'status' => 1])->first();
             $dataResponse = new AppointmentSlotsResourceWithUsers($data);
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
