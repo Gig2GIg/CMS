@@ -60,7 +60,7 @@ class AppoinmentController extends Controller
                 'is_group_open' => 0
             ]);
 
-            if($createdNextAuditionRound->count() > 0){
+            if($createdNextAuditionRound && $createdNextAuditionRound->count() > 0){
 
                 $createdNextAuditionRound->update([
                     'status' => 1
