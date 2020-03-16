@@ -145,6 +145,7 @@ class AuditionsController extends Controller
             }
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
+            dd($exception);
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
@@ -244,9 +245,9 @@ class AuditionsController extends Controller
     {
         return [
             'auditions_id' => $audition->id,
-            'date' => $this->toDate->transformDate($round['date']) ?? null, //null
-            'time' => $round['time'] ?? null, //null
-            'location' => json_encode($round['location']) ?? null, //null
+            'date' => isset($round['date']) ? $this->toDate->transformDate($round['date']) : null, //null
+            'time' => isset($round['time']) ? $round['time'] : null, //null
+            'location' => isset($round['location']) ? json_encode($round['location']) : null, //null
             'slots' => $round['appointment']['spaces'] ?? null,
             'type' => $round['appointment']['type'] ?? null,
             'length' => $round['appointment']['length'] ?? null,
