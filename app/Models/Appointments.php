@@ -30,4 +30,8 @@ class Appointments extends Model
     public function auditions(){
         return$this->belongsTo(Auditions::class);
     }
+
+    public function userSlots(){
+        return$this->belongsTo(UserSlots::class, 'id', 'appointment_id');
+    }
 }

@@ -37,7 +37,9 @@ class AuditionFullResponse extends JsonResource
             $item->image;
         });
         $dataProduction = explode(',',$this->production);
-        $appointment = $this->appointment()->latest()->first();
+        
+        $appointment = $this->appointment()->where('status', 1)->first();
+
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appointment["id"])->get();
 //        $location = isset($appointmentData->location) ? $appointment->location:'';

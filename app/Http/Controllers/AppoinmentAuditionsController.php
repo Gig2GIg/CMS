@@ -119,7 +119,8 @@ class AppoinmentAuditionsController extends Controller
                 ->where('slots_id', '=', $request->slot)
                 ->where('status', '=', 'checked');
             if ($dataCompareExistsRegister->count() > 0) {
-                if($request->revert){
+                if($request->has('nonRevert') && !$request->nonRevert){
+                    $dataCompareExistsRegister = $dataCompareExistsRegister->first();
                     UserSlots::find($dataCompareExistsRegister->id)->update([
                         'status' => 1
                     ]);
@@ -352,8 +353,12 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
             $dataRepo = new AppointmentRepository(new Appointments());
-            $data = $dataRepo->findbyparams(['auditions_id' => $request->id, 'status' => 1])->first();
-            $dataResponse = new AppointmentSlotsResourceWithUsers($data);
+            $data = $dataRepo->findbyparams(['auditions_id' => $request->id, 'round' => 1])->first();
+            if($data){
+                $dataResponse = new AppointmentSlotsResourceWithUsers($data);
+            }else{
+                $dataResponse = [];
+            }
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

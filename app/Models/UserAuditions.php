@@ -11,8 +11,6 @@ class UserAuditions extends Model
     ];
 
     public function appointments(){
-        return $this->belongsTo(Appointments::class);
+        return $this->belongsTo(Appointments::class, 'appointment_id');
     }
-
-
 }
