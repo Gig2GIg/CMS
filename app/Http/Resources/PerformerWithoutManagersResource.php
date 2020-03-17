@@ -53,7 +53,7 @@ class PerformerWithoutManagersResource extends JsonResource
             'auditions_id' => $dataRepo->auditions->id,
             'rol' => $this->rol_id,
             'rol_name' => $rolanme ?? null,
-            'user_id' => $dataRepo->auditions->user_id,
+            'user_id' => $this->user_id,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'image' => $userData->image->url,
             'email' => $userData->email ? $userData->email : null,
