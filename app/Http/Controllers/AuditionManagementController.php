@@ -1246,6 +1246,7 @@ class AuditionManagementController extends Controller
                     ->whereHas('appointments.userSlots', function ($q) use($appointment){
                         $q->where('appointment_id', $appointment->id)
                             ->whereRaw('user_id=user_auditions.user_id')
+                            ->whereRaw('roles_id=user_auditions.rol_id')
                             ->where('status', 'reserved');
                     })
                     ->get();
