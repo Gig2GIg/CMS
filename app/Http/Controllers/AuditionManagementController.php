@@ -1243,12 +1243,12 @@ class AuditionManagementController extends Controller
             $appointment = $appointmentRepo->findbyparams(['auditions_id' => $request->id, 'round' => 1])->first();
             
             $data = $userAuditionRepo->findbyparams(['appointment_id' => $appointment->id, 'rejected' => 0, 'type' => 2, 'has_manager' => 0])
-                    ->whereHas('appointments.userSlots', function ($q) use($appointment){
-                        $q->where('appointment_id', $appointment->id)
-                            ->whereRaw('user_id=user_auditions.user_id')
-                            ->whereRaw('roles_id=user_auditions.rol_id')
-                            ->where('status', 'reserved');
-                    })
+                    // ->whereHas('appointments.userSlots', function ($q) use($appointment){
+                    //     $q->where('appointment_id', $appointment->id)
+                    //         ->whereRaw('user_id=user_auditions.user_id')
+                    //         ->whereRaw('roles_id=user_auditions.rol_id')
+                    //         ->where('status', 'reserved');
+                    // })
                     ->get();
 
             if ($data) {
