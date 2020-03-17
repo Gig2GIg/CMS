@@ -26,6 +26,8 @@ return [
     // Feedback Controller
     'feedback_not_add' => 'Feedback not add',
     'feedback_not_update' => 'Feedback not update',
+    'comment_added' => 'Comment added successfully',
+    'comment_not_added' => 'Something went wrong! Comment not added',
 
     // Aparences Controller
     'error_not_processable' => 'Error not Processable',

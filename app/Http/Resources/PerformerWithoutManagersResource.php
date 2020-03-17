@@ -45,8 +45,7 @@ class PerformerWithoutManagersResource extends JsonResource
         }
 
         $userRepo = new UserRepository(new User());
-        $userData = $userRepo->find($dataRepo->auditions->user_id);
-        $user = new UserResource($userData);
+        $userData = $userRepo->find($this->user_id);
 
         $return =  [
             'id' => $this->id,

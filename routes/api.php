@@ -143,8 +143,9 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     //feedback
     $router->post('/feedbacks/add', ['uses' => 'FeedBackController@store']);
     $router->put('/auditions/{id}/feedbacks/update', ['uses' => 'FeedBackController@update']);
-
     $router->get('/feedbacks/list', ['uses' => 'FeedBackController@list']);
+    $router->post('/feedbacks/addIndividualComment', ['uses' => 'FeedBackController@addIndividualComment']);
+
     // =====================================================
     // instant feedback
     $router->post('/instantfeedbacks/add', ['uses' => 'InstantFeedbackController@store']);

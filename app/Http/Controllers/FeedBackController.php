@@ -8,6 +8,7 @@ use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Resources\FeedbackResource;
+use App\Http\Requests\AddCommentRequest;
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Feedbacks;
@@ -232,6 +233,33 @@ class FeedBackController extends Controller
             $this->log->info('Talent add');
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function addIndividualComment(AddCommentRequest $request)
+    {
+        try {
+
+            $data = [
+                'appointment_id' => $request->appointment_id,
+                'user_id' => $request->user_id,
+                'evaluator_id' => $this->getUserLogging(),
+                'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
+                'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
+            ];
+
+            $repo = new FeedbackRepository(new Feedbacks());
+            $data = $repo->create($data);
+            
+            $dataResponse = ['data' => trans('messages.comment_added'), 'comment' => $data];
+            $code = 200;
+           
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.comment_not_added')], 406);
+            // return response()->json(['data' => 'Feedback not add'], 406);
+
         }
     }
 }
