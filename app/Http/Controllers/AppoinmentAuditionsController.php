@@ -120,16 +120,15 @@ class AppoinmentAuditionsController extends Controller
                 ->where('status', '=', 'checked');
             if ($dataCompareExistsRegister->count() > 0) {
                 if($request->has('nonRevert') && !$request->nonRevert){
+                       
+                    //updating user_audition data to type 2 and with slot data
+                    $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+                    $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1'])->first();
+                    $updateAudi = $dataAuditionsUser->update([
+                        'type' => '2',
+                        'slot_id' => NULL
+                    ]);
                     
-                    if($request->has('user_audition_id')){
-                        //updating user_audition data to type 2 and with slot data
-                        $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-                        $dataAuditionsUser = $dataRepoAuditionUser->find($request->user_audition_id);
-                        $updateAudi = $dataAuditionsUser->update([
-                            'type' => '2',
-                            'slot_id' => NULL
-                        ]);
-                    }
 
                     $dataCompareExistsRegister = $dataCompareExistsRegister->first();
                     UserSlots::find($dataCompareExistsRegister->id)->update([
@@ -172,10 +171,10 @@ class AppoinmentAuditionsController extends Controller
                 $data = UserSlots::where('id', '=', $dataCompareExists->id)->first();
             }
 
-            if(($request->has('nonRevert') && !$request->nonRevert) && $request->has('user_audition_id')){
+            if($request->has('nonRevert') && !$request->nonRevert){
                 //updating user_audition data to type 1 and with slot data
                 $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-                $dataAuditionsUser = $dataRepoAuditionUser->find($request->user_audition_id);
+                $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '2'])->first();
                 $updateAudi = $dataAuditionsUser->update([
                     'type' => '1',
                     'slot_id' => $request->slot
