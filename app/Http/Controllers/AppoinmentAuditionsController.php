@@ -121,10 +121,10 @@ class AppoinmentAuditionsController extends Controller
             if ($dataCompareExistsRegister->count() > 0) {
                 if($request->has('nonRevert') && !$request->nonRevert){
                     
-                    if($request->has('audition_id')){
+                    if($request->has('user_audition_id')){
                         //updating user_audition data to type 2 and with slot data
                         $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-                        $dataAuditionsUser = $dataRepoAuditionUser->find($request->audition_id);
+                        $dataAuditionsUser = $dataRepoAuditionUser->find($request->user_audition_id);
                         $updateAudi = $dataAuditionsUser->update([
                             'type' => '2',
                             'slot_id' => NULL
@@ -172,10 +172,10 @@ class AppoinmentAuditionsController extends Controller
                 $data = UserSlots::where('id', '=', $dataCompareExists->id)->first();
             }
 
-            if(($request->has('nonRevert') && !$request->nonRevert) && $request->has('audition_id')){
+            if(($request->has('nonRevert') && !$request->nonRevert) && $request->has('user_audition_id')){
                 //updating user_audition data to type 1 and with slot data
                 $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-                $dataAuditionsUser = $dataRepoAuditionUser->find($request->audition_id);
+                $dataAuditionsUser = $dataRepoAuditionUser->find($request->user_audition_id);
                 $updateAudi = $dataAuditionsUser->update([
                     'type' => '1',
                     'slot_id' => $request->slot
