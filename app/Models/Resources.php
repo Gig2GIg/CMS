@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resources extends Model
 {
-    protected $fillable =['url','type','name', 'shareable'];
+    protected $fillable =['url','thumb_url','type','name', 'shareable'];
     
     public function resources(){
         return $this->morphTo(

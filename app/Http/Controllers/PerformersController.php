@@ -298,15 +298,16 @@ class PerformersController extends Controller
             $dataComments = $commentModel->where('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
             
             if($dataComments && $dataComments->count() > 0){
-                $data = $dataFeedback->merge($dataComments);
+                $data = $dataFeedback->merge($dataComments)->SortByDesc('created_at');
             }else{
-                $data = $dataFeedback;
+                $data = $dataFeedback->SortByDesc('created_at');
             }
             
             return response()->json(['message' => trans('messages.comment_by_user'), 'data' => CommentListResponse::collection($data)], 200);
             // return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
 
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
             // return response()->json(['message' => 'Data not found', 'data' => ''], 404);
