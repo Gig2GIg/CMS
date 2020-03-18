@@ -11,6 +11,7 @@ class AuditionVideos extends Model
         'user_id',
         'appointment_id',
         'url',
+        'thumbnail',
         'contributors_id',
         'slot_id'
     ];

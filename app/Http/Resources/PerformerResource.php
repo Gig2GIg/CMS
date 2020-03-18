@@ -18,9 +18,14 @@ class PerformerResource extends JsonResource
     {
         $repo = new UserRepository(new User());
         $data = $repo->find($this->performer_id);
+        $imageData = $data->image()->where('type','=','cover')->get();
+        $img = $imageData->pluck('url')[0];
+        $thumb = $imageData->pluck('thumbnail')[0] ?? NULL;
+
         return [
             'share_code'=>$this->uuid,
-            'image'=>$data->image()->where('type','=','cover')->get()->pluck('url')[0],
+            'image'=>$img,
+            'thumbnail'=>$thumb,
             'details'=>$data->details,
             'appearance'=>$data->aparence,
             'education'=>$data->educations,

@@ -44,6 +44,14 @@ class AuditionFullResponse extends JsonResource
         $slots = $slotsData->findbyparam('appointment_id',$appointment["id"])->get();
 //        $location = isset($appointmentData->location) ? $appointment->location:'';
         $appoinmentResponse =  ['general' => $appointment, 'slots' => $slots];
+        
+        $coverData = $this->resources()->where('resource_type','=','App\Models\Auditions')
+                    ->where('type','=','cover')
+                    ->get();
+        
+        $coverUrl = $coverData[0]['url'] ?? null;
+        $coverThumb = $coverData[0]['thumbnail'] ?? null;
+
         return [
             'id' => $this->id,
             'appointment_id'=>$appointment["id"],
@@ -63,9 +71,8 @@ class AuditionFullResponse extends JsonResource
             'union' => $this->union,
             'contract' => $this->contract,
             'production' => $dataProduction,
-            'cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')
-                    ->where('type','=','cover')
-                    ->get()[0]['url'] ?? null,
+            'cover'=> $coverUrl,
+            'cover_thumbnail' => $coverThumb,
             'id_cover'=>$this->resources()->where('resource_type','=','App\Models\Auditions')
                     ->where('type','=','cover')
                     ->get()[0]['id'] ?? null,

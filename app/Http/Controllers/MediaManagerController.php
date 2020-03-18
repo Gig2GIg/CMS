@@ -31,6 +31,7 @@ class MediaManagerController extends Controller
             $media = $data->image()->create([
                 'url' => $request->url,
                 'name' => $request->name,
+                'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL,
                 'type' => $request->type
             ]);
             if (isset($media->id)) {

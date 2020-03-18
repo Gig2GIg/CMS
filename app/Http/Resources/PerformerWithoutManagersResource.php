@@ -31,9 +31,11 @@ class PerformerWithoutManagersResource extends JsonResource
         $dataProduction = explode(",", $dataRepo->auditions->production);
         $url_media = $dataRepo->auditions->resources
             ->where('type', 'cover')
-            ->where('resource_type', 'App\Models\Auditions')
-            ->pluck('url');
-
+            ->where('resource_type', 'App\Models\Auditions');
+        
+        $media = $url_media->pluck('url');
+        $url_thumb = $url_media->pluck('thumbnail');
+        
         $roles = explode(",", $this->rol_id);
         $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
 
@@ -56,6 +58,7 @@ class PerformerWithoutManagersResource extends JsonResource
             'user_id' => $this->user_id,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'image' => $userData->image->url,
+            'thumbnail' => $userData->image->thumbnail,
             'email' => $userData->email ? $userData->email : null,
             'birth' => $userData->details->birth ?? null,
             'title' => $dataRepo->auditions->title,
@@ -64,7 +67,8 @@ class PerformerWithoutManagersResource extends JsonResource
             'union' => $dataRepo->auditions->union,
             'contract' => $dataRepo->auditions->contract,
             'production' => $dataProduction,
-            'media' => $url_media[0] ?? null,
+            'media' => $media[0] ?? null,
+            'media_thumbnail' => $url_thumb[0] ?? null,
             'round' => $dataRepo->round
         ];
         

@@ -27,8 +27,10 @@ class AuditionResourceFind extends JsonResource
         $url_media = $media
             ->where('type', 'cover')
             ->where('resource_id', $this->id)
-            ->where('resource_type', 'App\Models\Auditions')
-            ->pluck('url');
+            ->where('resource_type', 'App\Models\Auditions');
+        
+        $media = $url_media->pluck('url');
+        $url_thumb = $url_media->pluck('thumbnail');
 
         $appointmentRepo = new AppointmentRepository(new Appointments());
         $appointment = $appointmentRepo->findbyparam('auditions_id', $this->id)->first();
@@ -62,7 +64,8 @@ class AuditionResourceFind extends JsonResource
             "status" => $this->status,
             "online" => $this->online,
             "user_id" => $this->user_id,
-            "cover" => $url_media[0] ?? null,
+            "cover" => $media[0] ?? null,
+            "cover_thumbnail" =>  $url_thumb[0] ?? null,
             "number_roles" => $countRoles,
             "roles" => $roles,
             // "roles" => $this->roles,

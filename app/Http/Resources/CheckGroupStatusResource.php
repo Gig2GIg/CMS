@@ -75,6 +75,7 @@ class CheckGroupStatusResource extends JsonResource
             'rol_id' => $this->rol_id,
             'appointment_id' => $this->appointment_id,
             'image' => $userData->image->url,
+            'thumbnail' => $userData->image->thumbnail,
             'is_feedback_sent' => $is_feedback_sent,
             'favorite' => $isFeefbackFavorite ?? NULL
         ];

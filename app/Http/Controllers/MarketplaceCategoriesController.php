@@ -49,6 +49,7 @@ class MarketplaceCategoriesController extends Controller
                         $item->marketplace_category_description = $market_cat->description;
                         $item->image;
                         $featured_image = $item->image->url;
+                        $featured_image_thumbnail = $item->image->thumbnail;
                     }
                     $marketResponse->push($item);
                 }
@@ -58,6 +59,7 @@ class MarketplaceCategoriesController extends Controller
                 if ($count !== 0) {
                     return response()->json([
                         'featured_image' => $featured_image,
+                        'featured_image_thumbnail' => $featured_image_thumbnail,
                         'featured' => $marketResponse,
                         'data' => $responseData,
                     ], 200);

@@ -21,8 +21,10 @@ class AuditionListByPerformer extends JsonResource
     {
         $url_media = $this->resources
             ->where('type', 'cover')
-            ->where('resource_type', 'App\Models\Auditions')
-            ->pluck('url');
+            ->where('resource_type', 'App\Models\Auditions');
+        
+        $media = $url_media->pluck('url');
+        $url_thumb = $url_media->pluck('thumbnail');
 
         $appointmentIds = $this->appointment()->get()->pluck('id');
         $videoRepo = new OnlineMediaAuditionsRepository(new OnlineMediaAudition());
@@ -46,7 +48,8 @@ class AuditionListByPerformer extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             "status" => $this->status,
-            "cover" => $url_media[0] ?? null,
+            "cover" => $media[0] ?? null,
+            "cover_thumbnail" =>  $url_thumb[0] ?? null,
             "videos" => $totalcount ?? null,
             // 'other_info' => $this->other_info,
             // 'additional_info' => $this->additional_info,

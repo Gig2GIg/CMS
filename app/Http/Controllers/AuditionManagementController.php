@@ -476,6 +476,7 @@ class AuditionManagementController extends Controller
                         'user_id' => $user_id,
                         'appointment_id' => $request->appointment_id,
                         'url' => $request->url,
+                        'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL,
                         'contributors_id' => $this->getUserLogging(),
                         'slot_id' => $slot_id[$i]
                     );
@@ -504,6 +505,7 @@ class AuditionManagementController extends Controller
                     'user_id' => $request->performer,
                     'appointment_id' => $request->appointment_id,
                     'url' => $request->url,
+                    'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL,
                     'contributors_id' => $this->getUserLogging(),
                     'slot_id' => $request->slot_id,
                 ]);

@@ -85,7 +85,7 @@ class UserController extends Controller
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
 
-            $usert->image()->create(['url' => request('image'), 'type' => 'cover', 'name' => request('resource_name')]);
+            $usert->image()->create(['url' => request('image'), 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
                 $this->storeTablet($request, $usert->id);
             } else {
@@ -284,7 +284,7 @@ class UserController extends Controller
             ];
             
             if($request->has('image') && $request->image != null){
-                $dataUser->image->update(['url' => $request->image]);
+                $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL]);
             }
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
@@ -326,7 +326,7 @@ class UserController extends Controller
             }
             $dataUser->update($data);
             $name = explode(' ', $request->name);
-            $dataUser->image->update(['url' => $request->image]);
+            $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL]);
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $userDataDetails = [

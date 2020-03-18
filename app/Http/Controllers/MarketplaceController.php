@@ -86,6 +86,7 @@ class MarketplaceController extends Controller
             $marketplace_result = $marketplace->create($marketplaceData);
             $marketplace_result->image()->create([
                 'url' => $request->image_url,
+                'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL,
                 'name' => $request->image_name,
                 'type' => '4'
             ]);

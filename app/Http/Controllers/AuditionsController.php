@@ -72,6 +72,7 @@ class AuditionsController extends Controller
                     foreach ($request['media'] as $file) {
                         $auditionFilesData[] = [
                             'url' => $file['url'],
+                            'thumbnail' => isset($file['thumbnail']) ? $file['thumbnail'] : NULL,
                             'type' => $file['type'],
                             'name' => $file['name'],
                             'share' => $file['share'],
@@ -80,6 +81,7 @@ class AuditionsController extends Controller
                 }
                 $auditionFilesData[] = [
                     'url' => $request->cover,
+                    'thumbnail' => $request->has('cover_thumbnail') ? $request->cover_thumbnail : NULL,
                     'type' => 'cover',
                     'name' => $request->cover_name,
                     'share' => 'no',
@@ -89,7 +91,7 @@ class AuditionsController extends Controller
 
                 if ($request->cover != '') {
                     foreach ($auditionFilesData as $file) {
-                        $audition->media()->create(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
+                        $audition->media()->create(['url' => $file['url'], 'thumbnail' => $file['thumbnail'], 'type' => $file['type'], 'name' => $file['name'], 'shareable' => $file['share']]);
                     }
                 }
 
@@ -108,7 +110,8 @@ class AuditionsController extends Controller
                         $rol = $rolesRepo->create($roldata);
                         $imageUrl = $roles['cover'] ?? App::make('url')->to('/') . '/images/roles.png';
                         $imageName = $roles['name_cover'] ?? 'default';
-                        $rol->image()->create(['type' => 4, 'url' => $imageUrl, 'name' => $imageName]);
+                        $imageThumbnail = $roles['cover_thumbnail'] ?? App::make('url')->to('/') . '/images/roles.png';
+                        $rol->image()->create(['type' => 4, 'thumbnail' => $imageThumbnail, 'url' => $imageUrl, 'name' => $imageName]);
                     }
                 }
 
@@ -513,6 +516,7 @@ class AuditionsController extends Controller
                 foreach ($request['media'] as $file) {
                     $auditionFilesData[] = [
                         'url' => $file['url'],
+                        'thumbnail' => isset($file['thumbnail']) ? $file['thumbnail'] : NULL,
                         'type' => $file['type'],
                         'name' => $file['name'],
                     ];
@@ -531,10 +535,11 @@ class AuditionsController extends Controller
                     $audition->resources()->where('id', '=', $request->id_cover)->update([
                         'url' => $request->cover,
                         'name' => $request->cover_name,
+                        'thumbnail' => $request->has('cover_thumbnail') ? $request->cover_thumbnail : NULL
                     ]);
                 }
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->updateOrCreate(['url' => $file['url'], 'type' => $file['type'], 'name' => $file['name']]);
+                    $audition->media()->updateOrCreate(['url' => $file['url'], 'thumbnail' => $file['thumbnail'], 'type' => $file['type'], 'name' => $file['name']]);
                 }
                 if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
@@ -552,7 +557,7 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->find($roles['id']);
-                    $rol->image()->update(['url' => $roles['cover']]);
+                    $rol->image()->update(['url' => $roles['cover'], 'thumbnail' => isset($roles['cover_thumbnail']) ? $roles['cover_thumbnail'] : NULL]);
                     $rol->update($roldata);
                 }
                 if (isset($request->appointment) && isset($request->appointment[0]['slots'])) {

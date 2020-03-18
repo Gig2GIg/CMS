@@ -28,8 +28,10 @@ class UserAuditionsResource extends JsonResource
         $dataProduction = explode(",", $dataRepo->auditions->production);
         $url_media = $dataRepo->auditions->resources
             ->where('type', 'cover')
-            ->where('resource_type', 'App\Models\Auditions')
-            ->pluck('url');
+            ->where('resource_type', 'App\Models\Auditions');
+
+        $media = $url_media->pluck('url');
+        $url_thumb = $url_media->pluck('thumbnail');
 
         $roles = explode(",", $this->rol_id);
         $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
@@ -56,7 +58,8 @@ class UserAuditionsResource extends JsonResource
             'union' => $dataRepo->auditions->union,
             'contract' => $dataRepo->auditions->contract,
             'production' => $dataProduction,
-            'media' => $url_media[0] ?? null,
+            'media' => $media[0] ?? null,
+            'media_thumbnail' => $url_thumb[0] ?? null,
             'number_roles' => count($dataRepo->auditions->roles),
             'round' => $dataRepo->round,
             // ===========================

@@ -21,7 +21,8 @@ class AuditionVideosResource extends JsonResource
         return [
             'id'=>$this->id,
             'name'=>$dataUser->details->first_name." ".$dataUser->details->last_name,
-            'url'=>$this->url
+            'url'=>$this->url,
+            'thumbnail'=>$this->thumbnail,
         ];
     }
 }
