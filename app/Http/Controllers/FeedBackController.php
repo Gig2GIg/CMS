@@ -14,6 +14,7 @@ use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\Performers;
 use App\Models\UserSlots;
+use App\Models\PerformersComment;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -248,7 +249,7 @@ class FeedBackController extends Controller
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
             ];
 
-            $repo = new FeedbackRepository(new Feedbacks());
+            $repo = new PerformersComment();
             $data = $repo->create($data);
             
             $dataResponse = ['data' => trans('messages.comment_added'), 'comment' => $data];

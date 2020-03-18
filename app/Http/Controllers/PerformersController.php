@@ -22,6 +22,7 @@ use App\Models\Tags;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
+use App\Models\PerformersComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Hashids\Hashids;
@@ -291,8 +292,17 @@ class PerformersController extends Controller
     {
         try {
             $dataRepo = new FeedbackRepository(new Feedbacks());
-            $data = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            $commentModel = new PerformersComment();
 
+            $dataFeedback = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            $dataComments = $commentModel->where('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            
+            if($dataComments && $dataComments->count() > 0){
+                $data = $dataFeedback->merge($dataComments);
+            }else{
+                $data = $dataFeedback;
+            }
+            
             return response()->json(['message' => trans('messages.comment_by_user'), 'data' => CommentListResponse::collection($data)], 200);
             // return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
 
