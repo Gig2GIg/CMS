@@ -17,7 +17,7 @@ class AuditionVideosResource extends JsonResource
     public function toArray($request)
     {
         $userRepo = new UserRepository(new User());
-        $dataUser = $userRepo->find($this->user_id);
+        $dataUser = $userRepo->find($this->performer_id);
         return [
             'id'=>$this->id,
             'name'=>$dataUser->details->first_name." ".$dataUser->details->last_name,

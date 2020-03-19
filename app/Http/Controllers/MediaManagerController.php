@@ -6,8 +6,12 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Resources\MediaManagerResource;
+use App\Http\Requests\MediaRenameRequest;
+use App\Http\Requests\UpdateAuditionVideoName;
 use App\Models\Auditions;
 use App\Models\Resources;
+use App\Models\AuditionVideos;
+use App\Models\OnlineMediaAudition;
 use App\Models\User;
 use App\Models\UserAuditionMedia;
 use Illuminate\Http\Request;
@@ -151,6 +155,7 @@ class MediaManagerController extends Controller
             // return response()->json(['data' => 'Not processable'], 406);
         }
     }
+
     public function getbyuser(Request $request)
     {
         try {
@@ -182,6 +187,58 @@ class MediaManagerController extends Controller
                 $code = 200;
             } else {
                 $dataResponse = ['data' => 'Data Not Found'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function updateResourceName(MediaRenameRequest $request)
+    {
+        try {
+            $media = new Resources();
+            $data = $media->find($request->id);
+            $update = $data->update(['name' => $request->name]);
+            if ($update) {
+                $dataResponse = ['data' => 'Media Updated'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Media not updated'];
+                $code = 406;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => 'Not processable'], 406);
+        }
+    }
+
+    public function updateAuditionVideoName(UpdateAuditionVideoName $request)
+    {
+        try {
+
+            $audition = new AuditionRepository(new Auditions());
+            $data = $audition->find($request->audition_id);
+
+            if($data->online){
+                $media = new OnlineMediaAudition();
+            }else{
+                $media = new AuditionVideos();
+            }
+
+            $data = $media->find($request->id);
+            $update = $data->update(['name' => $request->name]);
+            
+            if ($update) {
+                $dataResponse = ['data' => 'Media Updated'];
+                $code = 200;
+            } else {
+                $dataResponse = ['data' => 'Media not updated'];
                 $code = 406;
             }
             return response()->json($dataResponse, $code);
