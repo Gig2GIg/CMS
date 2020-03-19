@@ -111,6 +111,9 @@ class AuditionManagementController extends Controller
 
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
             $dataAuditionsUser = $dataRepoAuditionUser->find($request->id);
+            if($dataAuditionsUser->has_manager == 0){
+                return response()->json(['error' => trans('messages.to_upcomming_not_allowed')], 406);
+            }
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $dataRepo->create([
                 'user_id' => $this->getUserLogging(),
@@ -877,54 +880,65 @@ class AuditionManagementController extends Controller
                 'type' => $request->type,
             ];
             $userAudi = new UserAuditions();
-            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
-                ->where('appointment_id', '=', $data['appointment_id'])
-                ->where('rol_id', '=', $data['rol_id'])
-                ->get();
-            if ($datacompare->count() > 0) {
-                return response()->json(['data' => trans('messages.you_already_registered')], 406);
-                // return response()->json(['data' => 'You already registered'], 406);
-            } else {
-                $user = new UserManagerRepository(new UserManager());
-                $userManager = $user->findbyparam('user_id', $this->getUserLogging());
-                
-                if(!$userManager){
-                    $data['has_manager'] = 0;
-                }
 
-                $data = $userAuditions->create($data);
-
-                if ($request->type == 2) {
-                    $userData = new UserRepository(new User());
-                    $detailData = $userData->find($this->getUserLogging());
-                    $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
-                    $appoinmetRepo = new AppointmentRepository(new Appointments());
-                    $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
-                    $auditionRepo = new AuditionRepository(new Auditions());
-                    $audition = $auditionRepo->find($auditionsId);
-                    
-                    if($userManager){
-                        $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
-                        if (isset($userManager->email) !== null && isset($userManager->notifications)) {
-                            $mail = new SendMail();
-                            $mail->sendManager($userManager->email, $dataMail);
-                        }
+            $roles = explode(",",$request->rol);
+            if(count($roles) > 0){
+                foreach($roles as $r){
+                    $findInSetCheck = $userAudi->where('user_id', '=', $data['user_id'])
+                                        ->where('appointment_id', '=', $data['appointment_id'])
+                                        ->whereRaw('FIND_IN_SET('.$r.',rol_id)')
+                                        ->get();
+                    if ($findInSetCheck->count() > 0) {
+                        return response()->json(['data' => trans('messages.you_already_registered')], 406);
                     }
-
-                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
-
-                    $this->saveAuditionNotificationToUser($detailData, $audition);
-                } else {
-                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                    $dataSlotRepo->create([
-                        'user_id' => $this->getUserLogging(),
-                        'appointment_id' => $request->appointment,
-                        'slots_id' => null,
-                        'roles_id' => $request->rol,
-                        'status' => 1
-                    ]);
                 }
+            }else{
+                throw new \Exception('Provide Role IDs');
             }
+
+            $user = new UserManagerRepository(new UserManager());
+            $userManager = $user->findbyparam('user_id', $this->getUserLogging());
+            
+            if(!$userManager){
+                if($request->type == 1){
+                    return response()->json(['error' => trans('messages.save_audition_not_allowed')], 406);
+                }
+                $data['has_manager'] = 0;
+            }
+
+            $data = $userAuditions->create($data);
+
+            if ($request->type == 2) {
+                $userData = new UserRepository(new User());
+                $detailData = $userData->find($this->getUserLogging());
+                $userDetailname = $detailData->details->first_name . " " . $detailData->details->last_name;
+                $appoinmetRepo = new AppointmentRepository(new Appointments());
+                $auditionsId = $appoinmetRepo->find($request->appointment)->auditions->id;
+                $auditionRepo = new AuditionRepository(new Auditions());
+                $audition = $auditionRepo->find($auditionsId);
+                
+                if($userManager){
+                    $dataMail = ['name' => $userDetailname, 'audition' => $audition->title, 'url' => $audition->url];
+                    if (isset($userManager->email) !== null && isset($userManager->notifications)) {
+                        $mail = new SendMail();
+                        $mail->sendManager($userManager->email, $dataMail);
+                    }
+                }
+
+                $this->sendSaveAuditionNotificationToUser($detailData, $audition);
+
+                $this->saveAuditionNotificationToUser($detailData, $audition);
+            } else {
+                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                $dataSlotRepo->create([
+                    'user_id' => $this->getUserLogging(),
+                    'appointment_id' => $request->appointment,
+                    'slots_id' => null,
+                    'roles_id' => $request->rol,
+                    'status' => 1
+                ]);
+            }
+            
             return response()->json(['data' => trans('messages.audition_saved')], 201);
             // return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {
@@ -950,29 +964,38 @@ class AuditionManagementController extends Controller
                 'rol_id' => $request->rol,
                 'type' => $request->type,
             ];
+
             $userAudi = new UserAuditions();
-            $datacompare = $userAudi->where('user_id', '=', $data['user_id'])
-                ->where('appointment_id', '=', $data['appointment_id'])
-                ->where('rol_id', '=', $data['rol_id'])
-                ->get();
-            if ($datacompare->count() > 0) {
-                return response()->json(['data' => trans('messages.you_already_registered')], 406);
-                // return response()->json(['data' => 'You already registered'], 406);
-            } else {
-                $data = $userAuditions->create($data);
-                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                $dataSlotRepo->create([
-                    'user_id' => $this->getUserLogging(),
-                    'appointment_id' => $request->appointment,
-                    'slots_id' => factory(Slots::class)->create([
-                        'appointment_id' => $request->appointment,
-                        'time' => "00:00",
-                        'status' => false,
-                    ])->id,
-                    'roles_id' => $request->rol,
-                    'status' => 2
-                ]);
+
+            $roles = explode(",",$request->rol);
+            if(count($roles) > 0){
+                foreach($roles as $r){
+                    $findInSetCheck = $userAudi->where('user_id', '=', $data['user_id'])
+                                        ->where('appointment_id', '=', $data['appointment_id'])
+                                        ->whereRaw('FIND_IN_SET('.$r.',rol_id)')
+                                        ->get();
+                    if ($findInSetCheck->count() > 0) {
+                        return response()->json(['data' => trans('messages.you_already_registered')], 406);
+                    }
+                }
+            }else{
+                throw new \Exception('Provide Role IDs');
             }
+
+            $data = $userAuditions->create($data);
+            $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+            $dataSlotRepo->create([
+                'user_id' => $this->getUserLogging(),
+                'appointment_id' => $request->appointment,
+                'slots_id' => factory(Slots::class)->create([
+                    'appointment_id' => $request->appointment,
+                    'time' => "00:00",
+                    'status' => false,
+                ])->id,
+                'roles_id' => $request->rol,
+                'status' => 2
+            ]);
+            
             return response()->json(['data' => trans('messages.audition_saved')], 201);
             // return response()->json(['data' => 'Audition Saved'], 201);
         } catch (Exception $exception) {

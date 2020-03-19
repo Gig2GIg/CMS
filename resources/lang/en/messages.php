@@ -67,6 +67,8 @@ return [
     'assign_number_not_created' => 'Failed to Create Assign Number',
     'number_already_assigned' => 'Number Already Assigned',
     'number_already_used' => 'Number already Used, Change the number',
+    'to_upcomming_not_allowed' => 'Sorry! Moving to upcoming is not allowed for this request',
+    'save_audition_not_allowed' => 'Sorry! Saving this audition is not allowed without Manager',
 
     // Auditions Controller
     'contruibuitors_add' => 'Contributors Add',
