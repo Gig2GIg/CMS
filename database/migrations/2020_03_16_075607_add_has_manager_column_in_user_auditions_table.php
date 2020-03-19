@@ -14,6 +14,7 @@ class AddHasManagerColumnInUserAuditionsTable extends Migration
     public function up()
     {
         Schema::table('user_auditions', function (Blueprint $table) {
+            $table->string('url', 700)->change();
             $table->boolean('has_manager')->after('rejected')->default(1);
         });
     }
