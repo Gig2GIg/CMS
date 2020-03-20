@@ -32,6 +32,7 @@ class UserAuditionsResource extends JsonResource
 
         $media = $url_media->pluck('url');
         $url_thumb = $url_media->pluck('thumbnail');
+        $cover_name = $url_media->pluck('name');
 
         $roles = explode(",", $this->rol_id);
         $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
@@ -60,6 +61,7 @@ class UserAuditionsResource extends JsonResource
             'production' => $dataProduction,
             'media' => $media[0] ?? null,
             'media_thumbnail' => $url_thumb[0] ?? null,
+            'media_name' => $cover_name[0] ?? null,
             'number_roles' => count($dataRepo->auditions->roles),
             'round' => $dataRepo->round,
             // ===========================

@@ -36,6 +36,7 @@ class AuditionResponse extends JsonResource
 
         $media = $url_media->pluck('url');
         $url_thumb = $url_media->pluck('thumbnail');
+        $cover_name = $url_media->pluck('name');
         
         $userDataRepo = new UserDetailsRepository(new UserDetails());
         $data = $userDataRepo->findbyparam('user_id', $this->user_id);
@@ -66,6 +67,7 @@ class AuditionResponse extends JsonResource
             "online"=>$this->online,
             "user_id" => $this->user_id,
             "cover" => $media[0] ?? null,
+            "cover_name" =>  $cover_name[0] ?? null,
             "cover_thumbnail" =>  $url_thumb[0] ?? null,
             "number_roles" => $count,
 

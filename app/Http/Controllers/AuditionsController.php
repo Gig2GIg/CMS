@@ -246,11 +246,20 @@ class AuditionsController extends Controller
      */
     public function dataToAppointmentProcess($round, $audition, $status = true, $count = null): array
     {
+        $lat = NULL;
+        $lng = NULL;
+        if(isset($round['location'])){
+            $lat = $round['location']['latitude'];
+            $lng = $round['location']['longitude']; 
+        }
+
         return [
             'auditions_id' => $audition->id,
             'date' => isset($round['date']) ? $this->toDate->transformDate($round['date']) : null, //null
             'time' => isset($round['time']) ? $round['time'] : null, //null
             'location' => isset($round['location']) ? json_encode($round['location']) : null, //null
+            'lat' => $lat,
+            'lng' => $lng,
             'slots' => $round['appointment']['spaces'] ?? null,
             'type' => $round['appointment']['type'] ?? null,
             'length' => $round['appointment']['length'] ?? null,
