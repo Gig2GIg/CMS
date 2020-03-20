@@ -223,6 +223,9 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
 
     //GET slots by appointment id
     $router->get('/appointments/{appointment_id}/slots', ['uses' => 'AppoinmentController@getSlots']);
+
+    //this route is to be deleted soon...
+    $router->get('/appointments/updateOldLocationData', ['uses' => 'AppoinmentController@updateOldLocationData']);
 });
 
 $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2', 'checkIsactive']], function () use ($router) {

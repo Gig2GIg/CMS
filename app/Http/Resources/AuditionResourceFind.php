@@ -34,7 +34,7 @@ class AuditionResourceFind extends JsonResource
         $cover_name = $url_media->pluck('name');
 
         $appointmentRepo = new AppointmentRepository(new Appointments());
-        $appointment = $appointmentRepo->findbyparam('auditions_id', $this->id)->first();
+        $appointment = $appointmentRepo->findbyparams(['auditions_id' => $this->id, 'status' => 1])->first();
 
         // $this->roles->each(function ($item) {
         //     $item->image;

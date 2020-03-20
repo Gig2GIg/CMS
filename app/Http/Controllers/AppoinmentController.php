@@ -168,11 +168,19 @@ class AppoinmentController extends Controller
         $this->log->info($lastid);
         $this->toDate = new ManageDates();
         try {
+            $lat = NULL;
+            $lng = NULL;
+            if($request->has('location')){
+                $lat = $request->location['latitude'];
+                $lng = $request->location['longitude']; 
+            }
             $repo = new AppointmentRepository(new Appointments());
             $appointment = [
                 'date' => $this->toDate->transformDate($request->date),
                 'time' => $request->time,
                 'location' => json_encode($request->location),
+                'lat' => $lat,
+                'lng' => $lng,
                 'slots' => $request->number_slots,
                 'type' => $request->type,
                 'length' => $request->length,
@@ -280,11 +288,19 @@ class AppoinmentController extends Controller
         $lastid = $repoDataA->orderBy('id', 'desc')->first();
         $this->toDate = new ManageDates();
         try {
+            $lat = NULL;
+            $lng = NULL;
+            if($request->has('location')){
+                $lat = $request->location['latitude'];
+                $lng = $request->location['longitude']; 
+            }
             $repo = new AppointmentRepository(new Appointments());
             $appointment = [
                 'date' => $this->toDate->transformDate($request->date),
                 'time' => $request->time,
                 'location' => json_encode($request->location),
+                'lat' => $lat,
+                'lng' => $lng,
                 'slots' => $request->number_slots,
                 'type' => $request->type,
                 'length' => $request->length,
@@ -385,6 +401,26 @@ class AppoinmentController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.round_not_create'), 'data' => []], 406);
             // return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+        }
+    }
+
+    public function updateOldLocationData(){
+        try {
+            $data = Appointments::select('id','location')->whereNotNull('location')->where('location',"!=" ,'null')->get();
+
+            foreach($data as $d) {
+                echo $d->id;
+                echo "<br/>";
+                $dd = json_decode(trim($d->location, '"'), true);
+                echo "<br/>";
+                Appointments::where('id', $d->id)->update(['lat' => $dd['latitude'], 'lng' => $dd['longitude']]);
+            }
+            
+            return response()->json(['data' => $data->toArray()], 200);
+        } catch (\Exception $exception) {
+            dd($exception);
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => []], 404);
         }
     }
 }

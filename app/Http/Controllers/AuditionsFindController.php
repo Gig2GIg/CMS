@@ -35,6 +35,24 @@ class AuditionsFindController extends Controller
                 $elementResponse->where('contract', strtoupper($request->contract));
             }
 
+            if (isset($request->lat) && isset($request->lng)) {
+                $elementResponse->whereHas('appointments', function($q) use($request){
+                    $q->whereRaw(
+                        "(DEGREES(
+                            ACOS(
+                             SIN(RADIANS(" . $request->lat . "))
+                                * SIN(RADIANS(appointments.lat))
+                                + COS(RADIANS(" . $request->lat . "))
+                                * COS(RADIANS(appointments.lat))
+                                * COS(RADIANS(" . $request->lng . " - appointments.lng))
+                                )
+                            ) * 60 * 1.1515) <= ?",
+                        env("FINDBY_LOCATION_DISTANCE")
+                    );
+                    $q->where('appointments.status', 1);
+                });
+            }
+
             // if (isset($request->union)) {
             //     $elementResponse->where('union', '=', strtoupper($request->union));
             // }
@@ -74,15 +92,35 @@ class AuditionsFindController extends Controller
         try {
             $elementResponse = new Collection();
 
-            if (isset($request->production) && $request->production != 'ANY') {
+            if ((isset($request->production) && $request->production != 'ANY') || (isset($request->lat) && isset($request->lng))) {
+                if (isset($request->lat) && isset($request->lng)) {
 
-                $split_elements = explode(',', $request->production);
-                foreach ($split_elements as $item) {
-                    $query = DB::table('auditions')
-                        ->whereRaw('FIND_IN_SET(?,production)', [$item])
-                        ->get();
-                    foreach ($query as $items) {
-                        $elementResponse->push($items);
+                    $elementResponse = Auditions::whereHas('appointments', function($q) use($request) {
+                                $q->whereRaw(
+                                    "(DEGREES(
+                                        ACOS(
+                                         SIN(RADIANS(" . $request->lat . "))
+                                            * SIN(RADIANS(appointments.lat))
+                                            + COS(RADIANS(" . $request->lat . "))
+                                            * COS(RADIANS(appointments.lat))
+                                            * COS(RADIANS(" . $request->lng . " - appointments.lng))
+                                            )
+                                        ) * 60 * 1.1515) <= ?",
+                                    env("FINDBY_LOCATION_DISTANCE")
+                                );
+                                $q->where('appointments.status', 1);
+                            })->get();      
+                } 
+
+                if(isset($request->production) && $request->production != 'ANY'){
+                    $split_elements = explode(',', $request->production);
+                    foreach ($split_elements as $item) {
+                        $query = DB::table('auditions')
+                            ->whereRaw('FIND_IN_SET(?,production)', [$item])
+                            ->get();
+                        foreach ($query as $items) {
+                            $elementResponse->push($items);
+                        }
                     }
                 }
 
