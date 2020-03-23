@@ -523,12 +523,31 @@ class AuditionsController extends Controller
         try {
             if (isset($request['media']) && is_array($request['media'])) {
                 foreach ($request['media'] as $file) {
+                    /*
                     $auditionFilesData[] = [
                         'url' => $file['url'],
                         'thumbnail' => isset($file['thumbnail']) ? $file['thumbnail'] : NULL,
                         'type' => $file['type'],
                         'name' => $file['name'],
                     ];
+                    */
+                    if(isset($file['id']) && isset($file['id']) != "") {
+                        $auditionFilesData[] = [
+                            'id' => $file['id'],
+                            'url' => $file['url'],
+                            'thumbnail' => isset($file['thumbnail']) ? $file['thumbnail'] : NULL,
+                            'type' => $file['type'],
+                            'name' => $file['name'],
+                        ];
+                    } else {
+
+                        $auditionFilesData[] = [
+                            'url' => $file['url'],
+                            'thumbnail' => isset($file['thumbnail']) ? $file['thumbnail'] : NULL,
+                            'type' => $file['type'],
+                            'name' => $file['name'],
+                        ];
+                    }
                 }
             }
 
