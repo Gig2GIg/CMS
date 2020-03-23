@@ -531,7 +531,7 @@ class AuditionsController extends Controller
                         'name' => $file['name'],
                     ];
                     */
-                    if(isset($file['id']) && isset($file['id']) != "") {
+                    if(isset($file['id']) && $file['id'] != "") {
                         $auditionFilesData[] = [
                             'id' => $file['id'],
                             'url' => $file['url'],
