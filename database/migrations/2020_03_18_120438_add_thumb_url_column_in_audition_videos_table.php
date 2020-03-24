@@ -14,8 +14,8 @@ class AddThumbUrlColumnInAuditionVideosTable extends Migration
     public function up()
     {
         Schema::table('audition_videos', function (Blueprint $table) {
-            $table->string('url', 700)->change();
-            $table->string('thumbnail', 700)->after('url')->nullable();            
+            DB::statement("ALTER TABLE  `audition_videos` CHANGE  `url`  `url` VARCHAR( 700 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL");
+            DB::statement("ALTER TABLE  `audition_videos` CHANGE  `thumbnail`  `thumbnail` VARCHAR( 700 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL");
         });
     }
 
