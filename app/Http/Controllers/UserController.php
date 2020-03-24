@@ -284,7 +284,7 @@ class UserController extends Controller
             ];
             
             if($request->has('image') && $request->image != null){
-                $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL]);
+                $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
             }
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
