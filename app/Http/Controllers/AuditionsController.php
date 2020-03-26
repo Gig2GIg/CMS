@@ -567,7 +567,8 @@ class AuditionsController extends Controller
                     ]);
                 }
                 foreach ($auditionFilesData as $file) {
-                    $audition->media()->updateOrCreate(['url' => $file['url'], 'thumbnail' => $file['thumbnail'], 'type' => $file['type'], 'name' => $file['name']]);
+                    // $audition->media()->updateOrCreate(['url' => $file['url'], 'thumbnail' => $file['thumbnail'], 'type' => $file['type'], 'name' => $file['name']]);
+                    $audition->media()->updateOrCreate($file);
                 }
                 if (isset($request['dates']) && is_array($request['dates'])) {
                     foreach ($request['dates'] as $date) {
