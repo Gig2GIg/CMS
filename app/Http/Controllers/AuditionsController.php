@@ -14,6 +14,7 @@ use App\Http\Repositories\AuditionsDatesRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\Notification\NotificationHistoryRepository;
 use App\Http\Repositories\Notification\NotificationRepository;
+use App\Http\Repositories\ResourcesRepository;
 use App\Http\Repositories\RolesRepository;
 use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserAuditionsRepository;
@@ -32,6 +33,7 @@ use App\Models\Dates;
 use App\Models\Feedbacks;
 use App\Models\Notifications\Notification;
 use App\Models\Notifications\NotificationHistory;
+use App\Models\Resources;
 use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
@@ -570,9 +572,11 @@ class AuditionsController extends Controller
                     // $audition->media()->updateOrCreate(['url' => $file['url'], 'thumbnail' => $file['thumbnail'], 'type' => $file['type'], 'name' => $file['name']]);
                     
                     if(isset($file['id'])) {
-                        $audition->media()->update($file);
+                        $auditionsResourcesRepo = new ResourcesRepository(new Resources());
+                        $auditionsResources = $auditionsResourcesRepo->find($file['id']);
+                        $auditionsResources->update($file);
                     } else {
-                        // $audition->media()->create($file);
+                        $audition->media()->create($file);
                     }
                 }
                 if (isset($request['dates']) && is_array($request['dates'])) {
@@ -591,8 +595,25 @@ class AuditionsController extends Controller
                     $roldata = $this->dataRolesToProcess($audition, $roles);
                     $rolesRepo = new RolesRepository(new Roles());
                     $rol = $rolesRepo->find($roles['id']);
-                    $rol->image()->update(['url' => $roles['cover'], 'thumbnail' => isset($roles['cover_thumbnail']) ? $roles['cover_thumbnail'] : NULL]);
-                    $rol->update($roldata);
+
+                    $rolUpdateData = array();
+
+                    if (isset($roles['cover'])) {
+                        $rolUpdateData['url'] = $roles['cover'];
+                    }
+
+                    if (isset($roles['cover_thumbnail'])) {
+                        $rolUpdateData['thumbnail'] = $roles['cover_thumbnail'];
+                    }
+
+                    if (isset($roles['cover_name'])) {
+                        $rolUpdateData['name'] = $roles['cover_name'];
+                    }
+
+                    if(!empty($rolUpdateData)) {
+                        $rol->image()->update($rolUpdateData);
+                        $rol->update($roldata);
+                    }
                 }
                 if (isset($request->appointment) && isset($request->appointment[0]['slots'])) {
                     foreach ($request->appointment[0]['slots'] as $slot) {
