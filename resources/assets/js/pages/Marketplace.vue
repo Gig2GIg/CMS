@@ -112,7 +112,7 @@
             >
               <b-input
                 v-model="selectedCategory.name"
-                v-validate="'required|max:255'"
+                v-validate="'required|max:150'"
                 name="name"
                 autofocus
               />
@@ -125,7 +125,7 @@
             >
               <b-input
                 v-model="selectedCategory.description"
-                v-validate="'required'"
+                v-validate="'required|min:50|max:2000'"
                 type="textarea"
                 name="description"
               />
