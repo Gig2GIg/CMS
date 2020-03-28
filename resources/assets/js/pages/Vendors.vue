@@ -240,7 +240,6 @@
             >
               <b-input
                 v-model="selectedVendor.address"
-                v-validate="'required'"
                 name="address"
               />
             </b-field>
@@ -251,7 +250,6 @@
             >
               <b-input
                 v-model="selectedVendor.phone_number"
-                v-validate="'required'"
                 name="phone"
               />
             </b-field>
