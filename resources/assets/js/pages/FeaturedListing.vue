@@ -98,7 +98,7 @@
 import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
-  name: "FeatureListing",
+  name: "Marketplace Featured Listing",
   data: () => ({
     loaded: false,
     perPage: 10,

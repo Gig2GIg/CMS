@@ -165,8 +165,8 @@
             >
               <b-input
                 v-model="selectedBlog.url_media"
-                v-validate="'required|max:255'"
-                name="url_media"
+                v-validate="'max:255'"
+                name="url media"
                 autofocus
               />
             </b-field>
