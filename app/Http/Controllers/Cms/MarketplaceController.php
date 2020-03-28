@@ -74,12 +74,12 @@ class MarketplaceController extends Controller
 
                 $marketplaceData = [
                     'title' => $request->title,
-                    'address' => $request->address,
+                    'address' => $request->address ? $request->address : '',
                     'services' => $request->services,
                     'email' => $request->email,
                     'marketplace_category_id' => $request->marketplace_category_id,
                     'featured' => $request->featured,
-                    'phone_number' => $request->phone_number,
+                    'phone_number' => $request->phone_number ? $request->phone_number : '',
                     'url_web' => $request->url_web,
                 ];
 

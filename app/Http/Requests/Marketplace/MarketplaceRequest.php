@@ -24,7 +24,7 @@ class MarketplaceRequest extends FormRequest
     public function rules()
     {
         return [
-            'address' => 'required|string|max:50',
+            // 'address' => 'required|string|max:50',
             'title' => 'required|string|max:50',
             'email' => 'required|string|email',
             'services' => 'required|string|max:100',

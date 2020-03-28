@@ -24,11 +24,11 @@ class MarketplaceEditRequest extends FormRequest
     public function rules()
     {
         return [
-            'address' => 'string|max:50',
+            // 'address' => 'string|max:50',
             'title' => 'string|max:50',
             'email' => 'string|email',
             'services' => 'string|max:100',
-            'phone_number' => 'string|max:20',
+            // 'phone_number' => 'string|max:20',
             'image_url' => 'nullable|string',
             'image_name' => 'nullable|string',
             'url_web' => 'required|string'
