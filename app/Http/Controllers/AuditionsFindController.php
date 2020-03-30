@@ -72,7 +72,7 @@ class AuditionsFindController extends Controller
 
             if (count($data2) === 0) {
                 $dataResponse = ['error' => 'Not Found'];
-                $code = 404;
+                $code = 200;
             } else {
                 $dataResponse = ['data' => $response];
                 $code = 200;
@@ -82,7 +82,7 @@ class AuditionsFindController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             // return response()->json(['error' => 'Not Found'], 404);
-            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 200);
         }
 
     }
@@ -140,7 +140,7 @@ class AuditionsFindController extends Controller
 
             if (count($elementResponse) === 0) {
                 $dataResponse = ['error' => 'Not Found'];
-                $code = 404;
+                $code = 200;
             } else {
                 $dataResponse = ['data' => $response];
                 $code = 200;
@@ -150,7 +150,7 @@ class AuditionsFindController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             // return response()->json(['error' => 'Not Found'], 404);
-            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            return response()->json(['error' => trans('messages.data_not_found')], 200);
 
         }
 
