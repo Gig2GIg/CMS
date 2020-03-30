@@ -12,6 +12,8 @@ class Appointments extends Model
         'date',
         'time',
         'location',
+        'lat',
+        'lng',
         'type',
         'length',
         'start',
