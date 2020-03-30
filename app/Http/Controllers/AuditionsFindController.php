@@ -68,7 +68,7 @@ class AuditionsFindController extends Controller
             }
 
             $data2 = $elementResponse->where('status' , "!=", 2)->get()->sortByDesc('created_at');
-            $response = AuditionResourceFind::collection($data2);
+            $response = AuditionResourceFind::collection($data2)->unique();
 
             if (count($data2) === 0) {
                 $dataResponse = ['error' => 'Not Found'];
@@ -136,7 +136,7 @@ class AuditionsFindController extends Controller
                 $elementResponse = $elementResponse->where('contract', strtoupper($request->contract));
             }
 
-            $response = AuditionResourceFind::collection($elementResponse->where('status' , "!=", 2)->sortByDesc('created_at'));
+            $response = AuditionResourceFind::collection($elementResponse->where('status' , "!=", 2)->sortByDesc('created_at'))->unique();
 
             if (count($elementResponse) === 0) {
                 $dataResponse = ['error' => 'Not Found'];
