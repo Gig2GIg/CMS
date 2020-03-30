@@ -169,13 +169,18 @@ class MediaManagerController extends Controller
                 $cover = $dataAuditions->resources()
                     ->where('resource_type','=','App\Models\Auditions')
                     ->where('type','=','cover')
-                    ->first()['url'];
+                    ->first();
+
+                $coverImg = $cover->url;
+                $coverThumb = $cover->thumbnail;
+
                 $filter = $media->filter(function($item){
                     return $item->type !== 'cover';
                 });
                 $this->dataArray[] = [
                     'name'=>$dataAuditions->title,
-                    'cover'=>$cover ?? null,
+                    'cover'=>$coverImg ?? null,
+                    'cover_thumbnail'=>$coverThumb ?? null,
                     'files'=>$filter
                     ];
             });
