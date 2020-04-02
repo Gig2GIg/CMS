@@ -26,7 +26,7 @@ class MarketplaceEditRequest extends FormRequest
         return [
             // 'address' => 'string|max:50',
             'title' => 'string|max:50',
-            'email' => 'string|email',
+            // 'email' => 'string|email',
             'services' => 'string|max:100',
             // 'phone_number' => 'string|max:20',
             'image_url' => 'nullable|string',

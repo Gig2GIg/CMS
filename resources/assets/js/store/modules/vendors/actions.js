@@ -34,9 +34,13 @@ export default {
       vendor.image_url = await image.ref.getDownloadURL();
 
       // Save changes
-      const { data: { data } } = await axios.post(`/api/cms/marketplace_categories/${vendor.marketplace_category_id}/marketplaces/create`, vendor);
-      commit(types.CREATE_VENDOR, data);
-
+      if(vendor.marketplace_category_id){
+        const { data: { data } } = await axios.post(`/api/cms/marketplace_categories/${vendor.marketplace_category_id}/marketplaces/create`, vendor);
+        commit(types.CREATE_VENDOR, data);
+      } else {
+        const { data: { data } } = await axios.post(`/api/cms/marketplaces/create`, vendor);
+        commit(types.CREATE_VENDOR, data);
+      }
       dispatch('toast/showMessage', 'Vendor created.', { root: true });
     } catch (e) {
       throw e;

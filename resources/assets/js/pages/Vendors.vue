@@ -162,7 +162,7 @@
             >
               <b-input
                 v-model="selectedVendor.email"
-                v-validate="'required|email'"
+                v-validate="'email'"
                 name="email"
               />
             </b-field>
@@ -175,7 +175,7 @@
               <b-select
                 name="category"
                 v-model="selectedVendor.marketplace_category_id"
-                v-validate="'required'"
+                v-validate="''"
                 placeholder="Select a category"
               >
                 <option
@@ -195,7 +195,7 @@
               <b-select
                 name="featured"
                 v-model="selectedVendor.featured"
-                v-validate="'required'"
+                v-validate="''"
                 placeholder="Select a "
               >
                 <option
