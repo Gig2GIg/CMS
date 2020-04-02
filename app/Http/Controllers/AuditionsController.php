@@ -518,7 +518,6 @@ class AuditionsController extends Controller
 
     public function update(AuditionEditRequest $request)
     {
-
         $this->log->info("UPDATE AUDITION");
         $this->log->info($request);
         $auditionFilesData = [];
@@ -557,6 +556,17 @@ class AuditionsController extends Controller
             $audition = $auditionRepo->find($request->id);
 
             if (isset($audition->id)) {
+
+                $appointmentRepo = new AppointmentRepository(new Appointments());
+                $appointment = $appointmentRepo->findbyparam('auditions_id', $audition->id)->first();
+
+                if (isset($appointment->id) && isset($request->location) && isset($request->location['latitude']) &&  isset($request->location['longitude'])) {
+                    $appointment->update([
+                        'location' => json_encode($request->location),
+                        'lat' => $request->location['latitude'],
+                        'lng' => $request->location['longitude']
+                    ]);
+                }
                 DB::beginTransaction();
                 $updateRepo = new AuditionRepository($audition);
                 $auditionData = $this->dataAuditionToProcess($request);
@@ -650,10 +660,12 @@ class AuditionsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+            $this->log->error($exception->getLine());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
-            //dd($exception->getMessage());
+            dd($exception->getMessage());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
