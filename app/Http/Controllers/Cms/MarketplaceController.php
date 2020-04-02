@@ -50,7 +50,7 @@ class MarketplaceController extends Controller
                 'phone_number' => $request->phone_number,
                 'marketplace_category_id' => $marketplaceCategory->id,
                 'url_web' => $request->url_web,
-                'featured' => $request->featured,
+                'featured' => $request->featured ? $request->featured : 'no',
             ];
 
             $marketplace = new MarketplaceRepo(new Marketplace);

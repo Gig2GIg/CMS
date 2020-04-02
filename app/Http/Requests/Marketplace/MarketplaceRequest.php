@@ -26,7 +26,7 @@ class MarketplaceRequest extends FormRequest
         return [
             // 'address' => 'required|string|max:50',
             'title' => 'required|string|max:50',
-            'email' => 'required|string|email',
+            // 'email' => 'required|string|email',
             'services' => 'required|string|max:100',
             // 'phone_number' => 'required|string|max:20',
             'image_url' => 'required|string',
