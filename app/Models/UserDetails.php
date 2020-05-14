@@ -20,6 +20,7 @@ class UserDetails extends Model
         'profesion',
         'stage_name',
         'url',
+        'country',
         'zip',
         'agency_name',
         'twitter',

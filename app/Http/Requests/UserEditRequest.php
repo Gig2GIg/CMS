@@ -26,14 +26,15 @@ class UserEditRequest extends ApiRequest
         return [
             'email'=>'required|email',
             'first_name'=>'required|string|max:50',
-            'address'=>'required|max:150',
+            //'address'=>'required|max:150',
 //            'city'=>'required|string|max:50',
-            'state'=>'required|integer',
+            //'state'=>'required|integer',
             // 'birth'=>'required|date',
 //            'location'=>'required',
 //            'stage_name'=>'required',
+            'country'=>'required|integer',
             'profesion'=>'required',
-            'zip'=>'required'
+            //'zip'=>'required'
         ];
     }
 }
