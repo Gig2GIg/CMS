@@ -35,7 +35,7 @@ class UserRequest extends ApiRequest
                 // 'state' => 'required|integer',
                 // 'birth' => 'required',
 //                'location' => 'required',
-                'country' => 'required|integer',
+                //'country' => 'required|integer',
                 // 'zip' => 'required',
                 'agency_name' => 'required',
                 'image' => 'required|url',
@@ -62,5 +62,11 @@ class UserRequest extends ApiRequest
 
     }
 
+    public function messages()
+    {
+        return [
+            'country.required' => 'Please select :attribute',
+        ];
+    }
 
 }

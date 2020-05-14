@@ -280,7 +280,7 @@ class UserController extends Controller
                 'stage_name' => $request->stage_name,
                 'profesion' => $request->profesion,
                 'url' => $request->url,
-                'country' => $request->country,
+                'country' => isset($request->country) ? $request->country : null,
                 //'location' => $request->location,
                 'zip' => isset($request->zip) ? $request->zip : null,
             ];
@@ -341,7 +341,7 @@ class UserController extends Controller
                 'gender' => $request->gender,
                 'agency_name' => $request->agency_name,
                 'profesion' => $request->profesion,
-                'country' => $request->country,
+                'country' => isset($request->country) ? $request->country : null,
                 //'location' => $request->location,
                 'zip' => isset($request->zip) ? $request->zip : null,
             ];

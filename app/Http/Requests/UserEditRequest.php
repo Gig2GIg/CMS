@@ -32,7 +32,7 @@ class UserEditRequest extends ApiRequest
             // 'birth'=>'required|date',
 //            'location'=>'required',
 //            'stage_name'=>'required',
-            'country'=>'required|integer',
+            //'country'=>'required|integer',
             'profesion'=>'required',
             //'zip'=>'required'
         ];
