@@ -36,8 +36,6 @@ class UserRepository implements IUserRepository
 
     public function create(array $data): User
     {
-
-
         try {
             return $this->model->create($data);
             $this->log->info($this->model);

@@ -31,9 +31,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Traits\StipeTraits;
 
 class UserController extends Controller
 {
+    use StipeTraits;
+
     const NOT_FOUND_DATA = "Not found Data";
     protected $log;
     protected $date;
@@ -84,6 +87,7 @@ class UserController extends Controller
 
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
+            $customer = $this->createCustomer($usert);
 
             $usert->image()->create(['url' => request('image'), 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
@@ -99,6 +103,7 @@ class UserController extends Controller
 
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             DB::rollback();
             // return response()->json(['error' => 'ERROR'], 500);
