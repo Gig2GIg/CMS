@@ -28,14 +28,15 @@ class UserTabletEdit extends FormRequest
 //            'name'=>'required|string|max:50',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
-            'address'=>'required|max:150',
+            //'address'=>'required|max:150',
 //            'city'=>'required|string|max:50',
-            'state'=>'required|integer',
+            //'state'=>'required|integer',
             // 'birth'=>'required|date',
 //            'location'=>'required',
+            'country'=>'required|integer',
             'agency_name'=>'required',
             'profesion'=>'required',
-            'zip'=>'required'
+            //'zip'=>'required'
         ];
     }
 }

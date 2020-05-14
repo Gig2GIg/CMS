@@ -113,18 +113,18 @@ class UserController extends Controller
             'type' => $request->type,
             'first_name' => $request->first_name, //$dataName[0] ?? "null",
             'last_name' => $request->last_name, //$dataName[1] ?? "",
-            'address' => $request->address,
+            'address' => isset($request->address) ? $request->address : null,
             'city' => isset($request->city) ? $request->city : "",
-            'state' => $request->state,
+            'state' => isset($request->state) ? $request->state : null,
             'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'agency_name' => $request->agency_name,
             'image' => $request->image,
             'profesion' => $request->profesion,
+            'country' => $request->country,
             //            'location' => $request->location,
-            'zip' => $request->zip,
+            'zip' => isset($request->zip) ? $request->zip : null,
             'user_id' => $id,
         ];
-
         $userDetails = new UserDetailsRepository(new UserDetails());
 
         try {
@@ -150,17 +150,18 @@ class UserController extends Controller
             'type' => $request->type,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'address' => $request->address,
+            'address' => isset($request->address) ? $request->address : null,
             'city' => isset($request->city) ? $request->city : "",
-            'state' => $request->state,
+            'state' => isset($request->state) ? $request->state : null,
             'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
             'gender' => $request->gender,
             'stage_name' => $request->stage_name ?? null,
             'image' => $request->image,
             'url' => $request->url ?? null,
             'profesion' => $request->profesion,
+            'country' => $request->country,
             //            'location' => $request->location,
-            'zip' => $request->zip,
+            'zip' => isset($request->zip) ? $request->zip : null,
             'user_id' => $id,
         ];
         try {
@@ -271,16 +272,17 @@ class UserController extends Controller
             $userDataDetails = [
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'address' => $request->address,
+                'address' => isset($request->address) ? $request->address : null,
                 'city' => isset($request->city) ? $request->city : "",
-                'state' => $request->state,
+                'state' => isset($request->state) ? $request->state : null,
                 'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
                 'gender' => $request->gender,
                 'stage_name' => $request->stage_name,
                 'profesion' => $request->profesion,
                 'url' => $request->url,
+                'country' => $request->country,
                 //'location' => $request->location,
-                'zip' => $request->zip,
+                'zip' => isset($request->zip) ? $request->zip : null,
             ];
             
             if($request->has('image') && $request->image != null){
@@ -330,18 +332,18 @@ class UserController extends Controller
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $userDataDetails = [
-
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'address' => $request->address,
+                'address' => isset($request->address) ? $request->address : null,
                 'city' => isset($request->city) ? $request->city : "",
-                'state' => $request->state,
+                'state' => isset($request->state) ? $request->state : null,
                 'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
                 'gender' => $request->gender,
                 'agency_name' => $request->agency_name,
                 'profesion' => $request->profesion,
-                //                    'location' => $request->location,
-                'zip' => $request->zip,
+                'country' => $request->country,
+                //'location' => $request->location,
+                'zip' => isset($request->zip) ? $request->zip : null,
             ];
             $dat = $dataUserDetails->update($userDataDetails);
             if ($dat) {
