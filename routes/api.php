@@ -40,6 +40,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 });
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
+    $router->post('/users/subscribe', ['uses' => 'UserController@subscribe']);
     $router->get('/users/settings', ['uses' => 'UserSettingsController@list']);
     $router->put('/users/settings/{id}', ['uses' => 'UserSettingsController@update']);
     $router->post('/auditions/findby', ['uses' => 'AuditionsController@findby']);

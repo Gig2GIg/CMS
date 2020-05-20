@@ -19,6 +19,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserStatusRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
+use App\Http\Requests\SubscribeRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -103,7 +104,6 @@ class UserController extends Controller
 
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
-            dd($exception);
             $this->log->error($exception->getMessage());
             DB::rollback();
             // return response()->json(['error' => 'ERROR'], 500);
@@ -625,6 +625,47 @@ class UserController extends Controller
             
             if ($userDetails = UserDetails::where('user_id', $request->user_id)->first()) {
                 $userDetails->update($storeData);
+                $responseOut = ['data' => trans('messages.success')];
+                $code = 200;
+            } else {
+                $responseOut = ['data' => self::NOT_FOUND_DATA];
+                $code = 406;
+            }
+
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function subscribe(SubscribeRequest $request)
+    {
+        try {
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($request->user_id);
+
+            $cardData = array();
+            $cardData['exp_year'] = $request->exp_year;
+            $cardData['exp_month'] = $request->exp_month;
+            $cardData['cvc'] = $request->cvc;
+            $cardData['number'] = $request->number;
+
+            $cardToken = $this->createCardToken($cardData);
+            $this->updateDefaultSrc($user, $cardToken);
+
+            $paymentMethod = $user->defaultPaymentMethod();
+
+            $planData = array();
+            $planData['stripe_plan_id'] = $request->stripe_plan_id;
+            $planData['stripe_plan_name'] = $request->stripe_plan_name;
+
+            if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
+                //$userDetails->update($storeData);
                 $responseOut = ['data' => trans('messages.success')];
                 $code = 200;
             } else {

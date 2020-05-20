@@ -14,99 +14,34 @@ trait StipeTraits
         return $customer['id'];
     }
 
-    // /* retrieve stripe customer */
-    // public function retrieveCustomer($customer = '')
-    // {
-    //     return $customer = Stripe::customers()->find($customer);
-    // }
+    public function updateDefaultSrc($user, $card = '')
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        $customer = \Stripe\Customer::createSource($user->stripe_id, [
+            'source' => $card['id'],
+        ]);
 
-    // public function updateDefaultSrc($customer = '', $card = '')
-    // {
-    //     return $customer = Stripe::customers()->update($customer, [
-    //         'default_source' => $card,
-    //     ]);
-    // }
+        return $user->updateDefaultPaymentMethod($customer['id']);
+    }
 
-    // /* create card token */
-    // public function createCardToken($card = array())
-    // {
-    //     $token = Stripe::tokens()->create([
-    //         'card' => [
-    //             'number'    => $card['number'],
-    //             'exp_month' => $card['exp_month'],
-    //             'cvc'       => $card['cvc'],
-    //             'exp_year'  => $card['exp_year']
-    //         ],
-    //     ]);
+    /* create card token */
+    public function createCardToken($card = array())
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        $token = \Stripe\Token::create([
+            'card' => [
+                'number'    => $card['number'],
+                'exp_month' => $card['exp_month'],
+                'cvc'       => $card['cvc'],
+                'exp_year'  => $card['exp_year']
+            ],
+        ]);
 
-    //     return $token['id'];
-    // }
+        return $token;
+    }
 
-    // /* create card from token */
-    // public function createCardFromToken($customer = '', $token = '')
-    // {
-    //     $card = Stripe::cards()->create($customer, $token);
-
-    //     return $card;
-    // }
-
-    // /* create card from number and cvv */
-    // public function createCard($customer = '', $card = array())
-    // {
-    //     $token = $this->createCardToken($card);
-        
-    //     $card = Stripe::cards()->create($customer, $token);
-
-    //     return $card;
-    // }
-
-    // /* get customer cards */
-    // public function getCustomerCards($customer = '')
-    // {
-    //     $cards = Stripe::cards()->all($customer);
-
-    //     return $cards;
-    // }
-
-    // /* delete card */
-    // public function deleteCard($customer = '', $card = '')
-    // {
-    //     $card = Stripe::cards()->delete($customer, $card);
-
-    //     return $card;
-    // }
-
-    // /* create charge // amount in doller not in cent */
-    // public function createCharge($customer = '', $amount = 0, $source = NULL)
-    // {
-    //     $charge = Stripe::charges()->create([
-    //         'customer' => $customer,
-    //         'currency' => env('STRIPE_CURRENCY', 'USD'),
-    //         'amount'   => $amount,
-    //         'source'   => $source // optional
-    //     ]);
-        
-    //     return $charge['id'];
-    // }
-
-    // /* retrieve charge */
-    // public function retrieveCharge($charge = '')
-    // {
-    //     return $charge = Stripe::charges()->find($charge);
-    // }
-
-    // /* refund charge // amount and reason optional */
-    // public function refundCharge($charge = '', $amount = 0, $reason = '')
-    // {
-    //     try {
-    //         $refund = Stripe::refunds()->create(
-    //             $charge, $amount ? $amount : NULL,            
-    //             ['reason' => $reason ? $reason : 'requested_by_customer']
-    //         );
-    
-    //         return $refund['id'];
-    //     } catch (\Exception $e) {
-    //         throw new \Exception($e->getErrorType());
-    //     }
-    // }
+    public function subscribeUser($user, $planData = array(), $paymentMethod)
+    {
+        return $user->newSubscription($planData['stripe_plan_name'], $planData['stripe_plan_id'])->create($paymentMethod->paymentMethod, []);
+    }
 }
