@@ -24,7 +24,11 @@ class UserResource extends JsonResource
             'billing_details' => $this->billingDetails,
             'union_members' => $this->memberunions,
             'subscription'=> $this->subscriptions,
-            'is_active' => $this->is_active
+            'is_active' => $this->is_active,
+            'is_premium' => $this->is_premium,
+            'stripe_id' => $this->stripe_id,
+            'card_brand' => $this->card_brand,
+            'card_last_four' => $this->card_last_four,
         ];
     }
 }

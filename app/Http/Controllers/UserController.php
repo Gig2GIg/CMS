@@ -717,7 +717,7 @@ class UserController extends Controller
             if ($e instanceof NotFoundException) {
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
             } else {
-                return response()->json(['data' => trans('not_processable')], 406);
+                return response()->json(['data' => $e->getMessage()], 406);
             }
         }
     }
