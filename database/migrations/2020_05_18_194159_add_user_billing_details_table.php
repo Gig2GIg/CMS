@@ -19,6 +19,8 @@ class AddUserBillingDetailsTable extends Migration
             $table->text('address')->nullable();
             $table->string('state', 255)->nullable();
             $table->string('city', 255)->nullable();
+            $table->string('country')->nullable();
+            $table->string('zip', 15)->nullable();
             $table->date('birth')->nullable();
             $table->timestamps();
         });

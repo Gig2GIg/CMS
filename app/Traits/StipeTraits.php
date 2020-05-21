@@ -44,4 +44,12 @@ trait StipeTraits
     {
         return $user->newSubscription($planData['stripe_plan_name'], $planData['stripe_plan_id'])->create($paymentMethod->paymentMethod, []);
     }
+
+    public function listAllPlans()
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        $plans = \Stripe\Plan::all(['product' => env('SUBS_PROD')]);
+        
+        return $plans;
+    }
 }

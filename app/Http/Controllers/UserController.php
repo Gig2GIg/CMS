@@ -25,6 +25,7 @@ use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserBillingDetails;
 use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
 use Illuminate\Database\QueryException;
@@ -655,25 +656,62 @@ class UserController extends Controller
             $cardData['cvc'] = $request->cvc;
             $cardData['number'] = $request->number;
 
-            $cardToken = $this->createCardToken($cardData);
-            $this->updateDefaultSrc($user, $cardToken);
+            if(!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1)
+            {
+                $cardToken = $this->createCardToken($cardData);
+                $this->updateDefaultSrc($user, $cardToken);
 
-            $paymentMethod = $user->defaultPaymentMethod();
+                $paymentMethod = $user->defaultPaymentMethod();
 
-            $planData = array();
-            $planData['stripe_plan_id'] = $request->stripe_plan_id;
-            $planData['stripe_plan_name'] = $request->stripe_plan_name;
+                $planData = array();
+                $planData['stripe_plan_id'] = $request->stripe_plan_id;
+                $planData['stripe_plan_name'] = $request->stripe_plan_name;
 
-            if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
-                //$userDetails->update($storeData);
-                $responseOut = ['data' => trans('messages.success')];
-                $code = 200;
-            } else {
-                $responseOut = ['data' => self::NOT_FOUND_DATA];
+                if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
+                    $user->update(array('is_premium' => 1));
+                    $userBillingDetails = new UserBillingDetails();
+                    $billingDetails = [
+                        'user_id' => $user->id,
+                        'address' => isset($request->address) ? $request->address : null,
+                        'city' => isset($request->city) ? $request->city : null,
+                        'state' => isset($request->state) ? $request->state : null,
+                        'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
+                        'country' => isset($request->country) ? $request->country : null,
+                        'zip' => isset($request->zip) ? $request->zip : null,
+                    ];
+                    $userBillingDetails->create($billingDetails);
+                    $responseOut = ['data' => trans('messages.subscribe_success')];
+                    $code = 200;
+                } else {
+                    $responseOut = ['data' => trans('messages.subscribe_failed')];
+                    $code = 406;
+                }    
+            }else{
+                $responseOut = ['data' => trans('messages.subscribed_already')];
                 $code = 406;
             }
-
+            
             return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => $e->getMessage()], 406);
+            }
+        }
+    }
+
+    public function listSubscriptionPlans(Request $request)
+    {
+        try {
+
+            $plans = $this->listAllPlans();
+
+            $responseData = ['data' => $plans];
+            $code = 200;
+            
+            return response()->json($responseData, $code);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
