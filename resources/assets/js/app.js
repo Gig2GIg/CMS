@@ -20,8 +20,8 @@ Vue.config.productionTip = false;
 
 
 Vue.filter("dateTimeFormatBlogs", function (value) {
-  if (value && value != '' && Vue.moment(value).isValid()) {
-    let newValue = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+  value = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+  if (value && value != '' && Vue.moment(value).isValid()) {    
     console.log("dateTimeFormatBlogs ::: newValue ::::", newValue)
     return Vue.moment(new Date(newValue + ' UTC').toISOString(), "YYYY-MM-DD hh:mm:ss A");
   } else {
