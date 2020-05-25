@@ -21,7 +21,7 @@ Vue.config.productionTip = false;
 
 Vue.filter("dateTimeFormatBlogs", function (value) {
   if (value && value != '' && Vue.moment(value).isValid()) {
-    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    let newValue = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
     return Vue.moment(new Date(newValue + ' UTC').toISOString()).format("YYYY/MM/DD hh:mm:ss A").value.replace(/\//g, "-");
   } else {
     return '';
@@ -30,7 +30,7 @@ Vue.filter("dateTimeFormatBlogs", function (value) {
 
 Vue.filter("dateFormat", function (value) {
   if (value && value != '' && Vue.moment(value).isValid()) {
-    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    let newValue = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
     return Vue.moment(new Date(newValue + ' UTC').toISOString()).format("YYYY-MM-DD");
   } else {
     return '';
@@ -39,7 +39,7 @@ Vue.filter("dateFormat", function (value) {
 
 Vue.filter("birthDateFormat", function (value) {
   if (value && value != '' && Vue.moment(value).isValid()) {
-    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    let newValue = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
     return Vue.moment(new Date(newValue).toISOString()).format("YYYY-MM-DD");
   } else {
     return '';
