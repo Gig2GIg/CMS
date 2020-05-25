@@ -19,6 +19,8 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserStatusRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\SubscriptionResource;
+use App\Http\Resources\InvitedUserResource;
 use App\Http\Requests\SubscribeRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
@@ -32,6 +34,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Traits\StipeTraits;
 
@@ -718,6 +721,46 @@ class UserController extends Controller
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
             } else {
                 return response()->json(['data' => $e->getMessage()], 406);
+            }
+        }
+    }
+
+    public function subscriptionDetails(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if($user->is_premium == 1 && $user->stripe_id != null)
+            {
+                $subscriptionData = $user->subscriptions()->first();
+                $subscriptionData->card_brand = $user->card_brand;
+                $subscriptionData->card_last_four = $user->card_last_four;
+
+                $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
+                
+                if ($subscriptionData)
+                {
+                    $response = (object)[
+                        'subscription' => $subscriptionData,
+                        'invitedUsers' => $invitedUsers
+                    ];
+                    $responseData = ['data' => $response];
+                    $code = 200;
+                }else {
+                    $responseData = ['data' => self::NOT_FOUND_DATA];
+                    $code = 406;
+                }
+            }else {
+                $responseData = ['data' => self::NOT_FOUND_DATA];
+                $code = 406;
+            }
+            
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => trans('not_processable')], 406);
             }
         }
     }
