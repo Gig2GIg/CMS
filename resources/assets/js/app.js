@@ -20,9 +20,10 @@ Vue.config.productionTip = false;
 
 
 Vue.filter("dateTimeFormatBlogs", function (value) {
-  value = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
-  if (value && value != '' && Vue.moment(value).isValid()) {    
-    console.log("dateTimeFormatBlogs ::: newValue ::::", newValue)
+  let newValue = value.replace(/[-,.]/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+  console.log("dateTimeFormatBlogs ::: newValue :::: out side", newValue);
+  if (newValue && newValue != '' && Vue.moment(newValue).isValid()) {    
+    console.log("dateTimeFormatBlogs ::: newValue :::: in side ", newValue);
     return Vue.moment(new Date(newValue + ' UTC').toISOString(), "YYYY-MM-DD hh:mm:ss A");
   } else {
     return '';
