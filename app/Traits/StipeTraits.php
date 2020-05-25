@@ -48,8 +48,12 @@ trait StipeTraits
     public function listAllPlans()
     {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $plans = \Stripe\Plan::all(['product' => env('SUBS_PROD')]);
-        
-        return $plans;
+        return \Stripe\Plan::all(['product' => env('SUBS_PROD')]);
+    }
+
+    public function getSubscriptionDetails($user)
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        return \Stripe\Subscription::all(['customer' => $user->stripe_id, 'status' => 'active']);        
     }
 }
