@@ -20,20 +20,20 @@ Vue.config.productionTip = false;
 
 
 Vue.filter("dateTimeFormatBlogs", function (value) {
-  if (value) {
-    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY-MM-DD hh:mm:ss A");
+  if (value && value != '') {
+    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY/MM/DD hh:mm:ss A").replace(/\//g, "-");
   }
 });
 
 Vue.filter("dateFormat", function (value) {
-  if (value) {
-    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY-MM-DD");
+  if (value && value != '') {
+    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY/MM/DD").replace(/\//g, "-");
   }
 });
 
 Vue.filter("birthDateFormat", function (value) {
-  if (value) {
-    return Vue.moment(new Date(value).toISOString()).format("YYYY-MM-DD");
+  if (value && value != '') {
+    return Vue.moment(new Date(value).toISOString()).format("YYYY/MM/DD").replace(/\//g, "-");
   }
 });
 
