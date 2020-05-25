@@ -24,7 +24,7 @@ Vue.filter("dateTimeFormatBlogs", function (value) {
   console.log("dateTimeFormatBlogs ::: newValue :::: out side", newValue);
   if (newValue && newValue != '' && Vue.moment(newValue).isValid()) {    
     console.log("dateTimeFormatBlogs ::: newValue :::: in side ", newValue);
-    return Vue.moment(new Date(newValue + ' UTC').toISOString(), "YYYY-MM-DD hh:mm:ss A");
+    return Vue.moment(new Date(newValue + ' UTC').toISOString(), "YYYY-MM-DD hh:mm:ss A").format('YYYY-MM-DD hh:mm:ss A');
   } else {
     return '';
   }
