@@ -21,7 +21,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'email', 'password', 'pushkey', 'password_reset_token', 'is_active'
+        'email', 'password', 'pushkey', 'password_reset_token', 'is_active', 'is_premium', 'card_brand', 'card_last_four', 'trial_ends_at', 'stripe_id',
     ];
 
     /**
@@ -65,6 +65,11 @@ class User extends Authenticatable implements JWTSubject
     public function details()
     {
         return $this->hasOne(UserDetails::class);
+    }
+
+    public function billingDetails()
+    {
+        return $this->hasOne(UserBillingDetails::class);
     }
 
     public function userSubscription()

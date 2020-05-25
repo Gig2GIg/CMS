@@ -177,7 +177,7 @@ return [
 //        App\Providers\TelescopeServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         \Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
-
+        Laravel\Cashier\CashierServiceProvider::class,
     ],
 
     /*

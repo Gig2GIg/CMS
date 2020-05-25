@@ -19,11 +19,13 @@ use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserStatusRequest;
 use App\Http\Requests\UserTabletEdit;
 use App\Http\Resources\UserResource;
+use App\Http\Requests\SubscribeRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserBillingDetails;
 use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
 use Illuminate\Database\QueryException;
@@ -31,9 +33,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Traits\StipeTraits;
 
 class UserController extends Controller
 {
+    use StipeTraits;
+
     const NOT_FOUND_DATA = "Not found Data";
     protected $log;
     protected $date;
@@ -84,6 +89,7 @@ class UserController extends Controller
 
             $user = new UserRepository(new User());
             $usert = $user->create($userData);
+            $customer = $this->createCustomer($usert);
 
             $usert->image()->create(['url' => request('image'), 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'type' => 'cover', 'name' => request('resource_name')]);
             if ($request->type === '1') {
@@ -634,6 +640,84 @@ class UserController extends Controller
                 return response()->json(['data' => self::NOT_FOUND_DATA], 404);
             } else {
                 return response()->json(['data' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function subscribe(SubscribeRequest $request)
+    {
+        try {
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($request->user_id);
+
+            $cardData = array();
+            $cardData['exp_year'] = $request->exp_year;
+            $cardData['exp_month'] = $request->exp_month;
+            $cardData['cvc'] = $request->cvc;
+            $cardData['number'] = $request->number;
+
+            if(!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1)
+            {
+                $cardToken = $this->createCardToken($cardData);
+                $this->updateDefaultSrc($user, $cardToken);
+
+                $paymentMethod = $user->defaultPaymentMethod();
+
+                $planData = array();
+                $planData['stripe_plan_id'] = $request->stripe_plan_id;
+                $planData['stripe_plan_name'] = $request->stripe_plan_name;
+
+                if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
+                    $user->update(array('is_premium' => 1));
+                    $userBillingDetails = new UserBillingDetails();
+                    $billingDetails = [
+                        'user_id' => $user->id,
+                        'address' => isset($request->address) ? $request->address : null,
+                        'city' => isset($request->city) ? $request->city : null,
+                        'state' => isset($request->state) ? $request->state : null,
+                        'birth' => isset($request->birth) ? $this->date->transformDate($request->birth) : null,
+                        'country' => isset($request->country) ? $request->country : null,
+                        'zip' => isset($request->zip) ? $request->zip : null,
+                    ];
+                    $userBillingDetails->create($billingDetails);
+                    $responseOut = ['data' => trans('messages.subscribe_success')];
+                    $code = 200;
+                } else {
+                    $responseOut = ['data' => trans('messages.subscribe_failed')];
+                    $code = 406;
+                }    
+            }else{
+                $responseOut = ['data' => trans('messages.subscribed_already')];
+                $code = 406;
+            }
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => $e->getMessage()], 406);
+            }
+        }
+    }
+
+    public function listSubscriptionPlans(Request $request)
+    {
+        try {
+
+            $plans = $this->listAllPlans();
+
+            $responseData = ['data' => $plans];
+            $code = 200;
+            
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => $e->getMessage()], 406);
             }
         }
     }

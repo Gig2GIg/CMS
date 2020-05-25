@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "77a23b4ea135934a79fd8ab2406d6905",
+    "content-hash": "6b9d7919231723159bf18304a5333d02",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2583,16 +2583,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v6.43.1",
+            "version": "v6.40.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "42fcdaf99c44bb26937223f8eae1f263491d5ab8"
+                "reference": "9c22ffab790ef4dae0f371929de50e8b53c9ec8d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/42fcdaf99c44bb26937223f8eae1f263491d5ab8",
-                "reference": "42fcdaf99c44bb26937223f8eae1f263491d5ab8",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/9c22ffab790ef4dae0f371929de50e8b53c9ec8d",
+                "reference": "9c22ffab790ef4dae0f371929de50e8b53c9ec8d",
                 "shasum": ""
             },
             "require": {
@@ -2635,7 +2635,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2019-08-29T16:56:12+00:00"
+            "time": "2019-06-27T23:24:51+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
