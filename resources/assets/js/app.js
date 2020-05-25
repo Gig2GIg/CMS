@@ -20,23 +20,29 @@ Vue.config.productionTip = false;
 
 
 Vue.filter("dateTimeFormatBlogs", function (value) {
-  const dateValue = value ? Vue.moment(value) : null;
-  if (dateValue && dateValue != '' && dateValue.isValid()) {
-    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY/MM/DD hh:mm:ss A").replace(/\//g, "-");
+  if (value && value != '' && Vue.moment(value).isValid()) {
+    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    return Vue.moment(new Date(newValue + ' UTC').toISOString()).format("YYYY-MM-DD hh:mm:ss A");
+  } else {
+    return '';
   }
 });
 
 Vue.filter("dateFormat", function (value) {
-  const dateValue = value ? Vue.moment(value) : null;
-  if (dateValue && dateValue != '' && dateValue.isValid()) {
-    return Vue.moment(new Date(value+' UTC').toISOString()).format("YYYY/MM/DD").replace(/\//g, "-");
+  if (value && value != '' && Vue.moment(value).isValid()) {
+    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    return Vue.moment(new Date(newValue + ' UTC').toISOString()).format("YYYY-MM-DD");
+  } else {
+    return '';
   }
 });
 
 Vue.filter("birthDateFormat", function (value) {
-  const dateValue = value ? Vue.moment(value) : null;
-  if (dateValue && dateValue != '' && dateValue.isValid()) {
-    return Vue.moment(new Date(value).toISOString()).format("YYYY/MM/DD").replace(/\//g, "-");
+  if (value && value != '' && Vue.moment(value).isValid()) {
+    let newValue = value.replace(/-/g, "/"); // safari not ssupported formate so replace it from - to / and make new format
+    return Vue.moment(new Date(newValue).toISOString()).format("YYYY-MM-DD");
+  } else {
+    return '';
   }
 });
 
@@ -46,7 +52,7 @@ firebase.initializeApp({
   storageBucket: 'dd-gig2gig.appspot.com',
 });
 
-Array.prototype.search = function(needle) {
+Array.prototype.search = function (needle) {
   const match = item => Object.values(item).some(value => {
     if (value && typeof value === 'object') {
       return match(value);
