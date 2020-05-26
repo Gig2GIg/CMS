@@ -729,7 +729,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            if($user->is_premium == 1 && $user->stripe_id != null)
+            if($user->is_premium == 1 && $user->stripe_id != null && $user->invited_by == null)
             {
                 $subscriptionData = $user->subscriptions()->first();
                 $subscriptionData->card_brand = $user->card_brand;
