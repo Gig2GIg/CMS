@@ -747,11 +747,11 @@ class UserController extends Controller
                     $code = 200;
                 }else {
                     $responseData = ['data' => self::NOT_FOUND_DATA];
-                    $code = 406;
+                    $code = 404;
                 }
             }else {
                 $responseData = ['data' => self::NOT_FOUND_DATA];
-                $code = 406;
+                $code = 404;
             }
             
             return response()->json($responseData, $code);

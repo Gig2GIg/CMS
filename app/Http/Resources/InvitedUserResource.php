@@ -16,6 +16,7 @@ class InvitedUserResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'details' => $this->details,
             'email' => $this->email,
             'image' => $this->image,
             'is_active' => $this->is_active,
