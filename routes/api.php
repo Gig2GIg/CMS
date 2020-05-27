@@ -37,6 +37,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/remember', ['uses' => 'UserController@forgotPassword']);
     $router->post('/reset-password', ['uses' => 'UserController@resetPassword']);
 
+    $router->get('/users/listSubscriptionPlans', ['uses' => 'UserController@listSubscriptionPlans']);
 });
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
@@ -82,7 +83,7 @@ $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use 
 
 $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsactive']], function () use ($router) {
     $router->post('/users/subscribe', ['uses' => 'UserController@subscribe']);
-    $router->get('/users/listSubscriptionPlans', ['uses' => 'UserController@listSubscriptionPlans']);
+    $router->post('/users/inviteCaster', ['uses' => 'UserController@inviteCaster']);
 
     Route::get('/performers/tags', ['uses' => 'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);

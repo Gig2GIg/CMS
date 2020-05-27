@@ -48,7 +48,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -752,6 +752,48 @@ class UserController extends Controller
             }else {
                 $responseData = ['data' => self::NOT_FOUND_DATA];
                 $code = 404;
+            }
+            
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['data' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function inviteCaster(Request $request)
+    {
+        try {
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($request->user_id);
+
+            if($user->is_premium == 1 && $user->stripe_id != null)
+            {
+                $subscriptionData = $user->subscriptions()->first();
+                $subscriptionData->card_brand = $user->card_brand;
+                $subscriptionData->card_last_four = $user->card_last_four;
+
+                $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
+                
+                if ($subscriptionData)
+                {
+                    $response = (object)[
+                        'subscription' => $subscriptionData,
+                        'invitedUsers' => $invitedUsers
+                    ];
+                    $responseData = ['data' => $response];
+                    $code = 200;
+                }else {
+                    $responseData = ['data' => self::NOT_FOUND_DATA];
+                    $code = 404;
+                }
+            }else {
+                $responseData = ['data' => trans('not_processable')];
+                $code = 400;
             }
             
             return response()->json($responseData, $code);
