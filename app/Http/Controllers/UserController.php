@@ -22,6 +22,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\InvitedUserResource;
 use App\Http\Requests\SubscribeRequest;
+use App\Http\Requests\InviteCasterRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -421,10 +422,10 @@ class UserController extends Controller
                 $password = Str::random(4) . '' . $faker->numberBetween(2345, 4565);
                 if ($data->update(['password' => Hash::make($password)])) {
                     $response->send($password, $data->email);
-                    $dataResponse = ['data' => "email send"];
+                    $dataResponse = ['data' => "email sent"];
                     $code = 200;
                 } else {
-                    $dataResponse = ['data' => "email not send"];
+                    $dataResponse = ['data' => "email not sent"];
                     $code = 406;
                 }
             } else {
@@ -456,10 +457,10 @@ class UserController extends Controller
                 $password = $faker->word . '' . $faker->numberBetween(2345, 4565);
                 if ($data->update(['password' => Hash::make($password)])) {
                     $response->send($password, $data->email);
-                    $dataResponse = ['data' => "email send"];
+                    $dataResponse = ['data' => "email sent"];
                     $code = 200;
                 } else {
-                    $dataResponse = ['data' => "email not send"];
+                    $dataResponse = ['data' => "email not sent"];
                     $code = 406;
                 }
             } else {
@@ -545,10 +546,10 @@ class UserController extends Controller
                     $userUpdate = $userRepo->find($user->id);
                     if ($userUpdate->update(['password_reset_token' => $password_reset_token])) {
                         $response->sendForgotPasswordLink($password_reset_token, $user);
-                        $dataResponse = ['data' => "email send"];
+                        $dataResponse = ['data' => "email sent"];
                         $code = 200;
                     } else {
-                        $dataResponse = ['data' => "email not send"];
+                        $dataResponse = ['data' => "email not sent"];
                         $code = 406;
                     }
                 }else{
@@ -771,32 +772,71 @@ class UserController extends Controller
         }
     }
 
-    public function inviteCaster(Request $request)
+    public function inviteCaster(InviteCasterRequest $request)
     {
         try {
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($request->user_id);
 
-            if($user->is_premium == 1 && $user->stripe_id != null)
+            if($user->is_premium == 1 && $user->stripe_id != null && $user->invited_by == null)
             {
-                $subscriptionData = $user->subscriptions()->first();
-                $subscriptionData->card_brand = $user->card_brand;
-                $subscriptionData->card_last_four = $user->card_last_four;
+                $data = collect($request->data);
+                foreach ($data as $item) {
+                    //check if user_email exists in system
+                    $exist = $userRepo->findbyparam('email', $item['email']);
+                    if(!isset($exist->id))
+                    {
+                        // storing user data
+                        $password = str_random(8); //random password for invited users
 
-                $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
-                
-                if ($subscriptionData)
-                {
-                    $response = (object)[
-                        'subscription' => $subscriptionData,
-                        'invitedUsers' => $invitedUsers
-                    ];
-                    $responseData = ['data' => $response];
-                    $code = 200;
-                }else {
-                    $responseData = ['data' => self::NOT_FOUND_DATA];
-                    $code = 404;
-                }
+                        $userData = [
+                            'email' => $item['email'],
+                            'password' => bcrypt($password),
+                            'invited_by' => $user->id,
+                            'is_premium' => 1
+                        ];
+
+                        $cuser = new UserRepository(new User());
+                        $usert = $cuser->create($userData);
+                        $customer = $this->createCustomer($usert);    
+
+                        //storing user_details
+                        $dataName = explode(" ", $item['name']);
+                        $userDataDetails = [
+                            'type' => 1,
+                            'first_name' => $dataName[0] ?? null,
+                            'last_name' => $dataName[1] ?? null,
+                            'user_id' => $usert->id,
+                        ];
+                        $userDetails = new UserDetailsRepository(new UserDetails());
+
+                        try {
+                            $userDetails->create($userDataDetails);
+                            $this->create_setting(['AUDITIONS', 'CONTRIBUTORS'], $usert->id);
+
+                            $mail = new SendMail(); 
+                            $emailData = array();
+                            $emailData['name'] = $user->first_name . ' ' . $user->last_name; 
+                            if(!$mail->sendInvitedCaster($password, $item['email'], $emailData)){
+                                $responseData = ['data' => 'Something went wrong with sending email'];
+                                $code = 400;
+                                return response()->json($responseData, $code);
+                            }
+                        } catch (CreateException $e) {
+                            $this->log->error($e->getMessage());
+                            $responseData = ['data' => trans('something_went_wrong')];
+                            $code = 400;
+                            return response()->json($responseData, $code);
+                        }
+                    }else {
+                        $responseData = ['data' => 'Sorry! The email '. $item['email'] .' is already registered with us'];
+                        $code = 400;
+                        return response()->json($responseData, $code);
+                    }                    
+                };
+
+                $responseData = ['data' => trans('messages.success')];
+                $code = 200;
             }else {
                 $responseData = ['data' => trans('not_processable')];
                 $code = 400;

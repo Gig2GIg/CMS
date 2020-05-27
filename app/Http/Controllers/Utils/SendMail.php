@@ -236,4 +236,28 @@ class SendMail
         }
     }
 
+    public function sendInvitedCaster($password, $emailTo, $data)
+    {   
+        try {
+            $email = new Mail();
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Gig2Gig+ Caster Invitation');
+            $email->addTo($emailTo);
+            $email->addContent("text/html", "Congratulations! You are invited by ". $data['name'] ." for accessing Gig2Gig+.<br />Your new password is: <strong>" .
+                $password . "</strong><br/>Please, change the password now.");
+
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
 }

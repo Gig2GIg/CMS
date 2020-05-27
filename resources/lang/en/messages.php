@@ -20,7 +20,7 @@ return [
     'data_not_update' => 'Data Not Update',
     'unauthorized' => 'Unauthorized',
     'server_error' => 'Server Error',
-    'something_went_wrong' => 'Something went Wrong',
+    'something_went_wrong' => 'Something went wrong',
     'account_deactivated' => 'Sorry! your account has been deactivated by administration',
 
     // Feedback Controller
