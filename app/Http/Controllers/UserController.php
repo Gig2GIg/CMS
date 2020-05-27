@@ -709,7 +709,13 @@ class UserController extends Controller
     {
         try {
 
-            $plans = $this->listAllPlans();
+            $plans = collect($this->listAllPlans());
+                        
+            $plans['data'] = collect($plans['data'])->sortBy('amount')->values()->map(function ($item, $key) {
+                $item['amount'] = $item['amount'] / 100;
+                $item['name'] = 'Tier ' . ($key + 1);
+                return $item;
+            });
 
             $responseData = ['data' => $plans];
             $code = 200;
