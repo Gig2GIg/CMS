@@ -800,6 +800,8 @@ class UserController extends Controller
                         $usert = $cuser->create($userData);
                         $customer = $this->createCustomer($usert);    
 
+                        $usert->image()->create(['url' => url('/images/roles.jpg'), 'thumbnail' => url('/images/roles.jpg'), 'type' => 'cover', 'name' => 'user_default.jpg']);
+
                         //storing user_details
                         $dataName = explode(" ", $item['name']);
                         $userDataDetails = [
