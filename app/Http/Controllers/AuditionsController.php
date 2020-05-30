@@ -150,7 +150,7 @@ class AuditionsController extends Controller
             }
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
-            dd($exception);
+            // dd($exception);
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
@@ -665,7 +665,7 @@ class AuditionsController extends Controller
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+            // dd($exception->getMessage());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();

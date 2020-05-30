@@ -81,7 +81,7 @@ class MonitorManagerController extends Controller
                     SendNotifications::AUDITION_CREATED,
                     $user_director,
                     $audition->title,
-                    'Audition ' . $audition->title . ' has been created',
+                    'Audition ' . $audition->title . ' has been created'
                 );
             });
         } catch (NotFoundException $exception) {
@@ -97,7 +97,7 @@ class MonitorManagerController extends Controller
                     'title' => $audition->title,
                     'code' => 'create_audition',
                     'status' => 'unread',
-                    'message' => 'Audition ' . $audition->title . ' has been created',
+                    'message' => 'Audition ' . $audition->title . ' has been created'
                 ]);
             }
         } catch (NotFoundException $exception) {
