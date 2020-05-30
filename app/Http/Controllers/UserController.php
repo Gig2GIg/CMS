@@ -659,6 +659,7 @@ class UserController extends Controller
             $cardData['exp_month'] = $request->exp_month;
             $cardData['cvc'] = $request->cvc;
             $cardData['number'] = $request->number;
+            $cardData['name_on_card'] = $request->name_on_card;
 
             if(!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1)
             {
@@ -684,14 +685,14 @@ class UserController extends Controller
                         'zip' => isset($request->zip) ? $request->zip : null,
                     ];
                     $userBillingDetails->create($billingDetails);
-                    $responseOut = ['data' => trans('messages.subscribe_success')];
+                    $responseOut = ['message' => trans('messages.subscribe_success')];
                     $code = 200;
                 } else {
-                    $responseOut = ['data' => trans('messages.subscribe_failed')];
+                    $responseOut = ['message' => trans('messages.subscribe_failed')];
                     $code = 406;
                 }    
             }else{
-                $responseOut = ['data' => trans('messages.subscribed_already')];
+                $responseOut = ['message' => trans('messages.subscribed_already')];
                 $code = 406;
             }
             
@@ -699,9 +700,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
-                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
-                return response()->json(['data' => $e->getMessage()], 406);
+                return response()->json(['message' => $e->getMessage()], 406);
             }
         }
     }
@@ -725,9 +726,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
-                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
-                return response()->json(['data' => $e->getMessage()], 406);
+                return response()->json(['message' => $e->getMessage()], 406);
             }
         }
     }
@@ -753,11 +754,11 @@ class UserController extends Controller
                     $responseData = ['data' => $response];
                     $code = 200;
                 }else {
-                    $responseData = ['data' => self::NOT_FOUND_DATA];
+                    $responseData = ['message' => self::NOT_FOUND_DATA];
                     $code = 404;
                 }
             }else {
-                $responseData = ['data' => self::NOT_FOUND_DATA];
+                $responseData = ['message' => self::NOT_FOUND_DATA];
                 $code = 404;
             }
             
@@ -765,9 +766,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
-                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
-                return response()->json(['data' => trans('not_processable')], 406);
+                return response()->json(['message' => trans('not_processable')], 406);
             }
         }
     }
@@ -820,27 +821,27 @@ class UserController extends Controller
                             $emailData = array();
                             $emailData['name'] = $user->first_name . ' ' . $user->last_name; 
                             if(!$mail->sendInvitedCaster($password, $item['email'], $emailData)){
-                                $responseData = ['data' => 'Something went wrong with sending email'];
+                                $responseData = ['message' => 'Something went wrong with sending email'];
                                 $code = 400;
                                 return response()->json($responseData, $code);
                             }
                         } catch (CreateException $e) {
                             $this->log->error($e->getMessage());
-                            $responseData = ['data' => trans('something_went_wrong')];
+                            $responseData = ['message' => trans('something_went_wrong')];
                             $code = 400;
                             return response()->json($responseData, $code);
                         }
                     }else {
-                        $responseData = ['data' => 'Sorry! The email '. $item['email'] .' is already registered with us'];
+                        $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is already registered with us'];
                         $code = 400;
                         return response()->json($responseData, $code);
                     }                    
                 };
 
-                $responseData = ['data' => trans('messages.success')];
+                $responseData = ['message' => trans('messages.success')];
                 $code = 200;
             }else {
-                $responseData = ['data' => trans('not_processable')];
+                $responseData = ['message' => trans('not_processable')];
                 $code = 400;
             }
             
@@ -848,9 +849,9 @@ class UserController extends Controller
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
-                return response()->json(['data' => self::NOT_FOUND_DATA], 404);
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
-                return response()->json(['data' => trans('not_processable')], 406);
+                return response()->json(['message' => trans('not_processable')], 406);
             }
         }
     }

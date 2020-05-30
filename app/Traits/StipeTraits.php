@@ -33,7 +33,8 @@ trait StipeTraits
                 'number'    => $card['number'],
                 'exp_month' => $card['exp_month'],
                 'cvc'       => $card['cvc'],
-                'exp_year'  => $card['exp_year']
+                'exp_year'  => $card['exp_year'],
+                'name'      => isset($card['name_on_card']) ? $card['name_on_card'] : NULL,
             ],
         ]);
 

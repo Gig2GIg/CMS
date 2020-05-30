@@ -32,6 +32,7 @@ class SubscribeRequest extends ApiRequest
             'exp_month'=> ['required'],
             'cvc'=> ['required'],
             'exp_year'=> ['required'],
+            'name_on_card' => ['required'],
             // 'address'=> ['required'],
             // 'city'=> ['required'],
             // 'state'=> ['required'],
