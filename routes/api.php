@@ -235,6 +235,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
 });
 
 $router->group(['prefix' => 'a', 'middleware' => ['jwt.auth', 'acl:2', 'checkIsactive']], function () use ($router) {
+    $router->post('users/inAppPurchaseSuccess',  ['uses' => 'UserController@inAppSuccess']);
     //media online submission
     $router->post('media/online', ['uses' => 'OnlineMediaAuditionController@create']);
     // $router->delete('/auditions/video/delete/{id}', ['uses' => 'AuditionManagementController@deleteVideo']);

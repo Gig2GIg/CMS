@@ -18,6 +18,7 @@ use App\Http\Requests\UserEditRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\UserStatusRequest;
 use App\Http\Requests\UserTabletEdit;
+use App\Http\Requests\InAppSuccessRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\InvitedUserResource;
@@ -31,6 +32,7 @@ use App\Models\UserDetails;
 use App\Models\UserBillingDetails;
 use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
+use App\Models\UserSubscription;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -846,6 +848,46 @@ class UserController extends Controller
             }
             
             return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function inAppSuccess(InAppSuccessRequest $request)
+    {
+        try {
+            $userRepo = new UserRepository(new User());
+            $user = $userRepo->find($request->user_id);
+
+            $subscription = new UserSubscription;
+            $insertData = array();
+            $insertData['user_id'] = $request->user_id;
+            $insertData['name'] = $request->name;
+            $insertData['product_id'] = $request->product_id;
+            $insertData['original_transaction'] = $request->original_transaction;
+            $insertData['current_transaction'] = $request->current_transaction;
+            $insertData['purchase_platform'] = $request->purchase_platform;
+            $insertData['purchased_at'] = $request->purchased_at;
+            $insertData['stripe_status'] = 'active';
+            if($request->has('ends_at')){
+                $insertData['ends_at'] = $request->ends_at;
+            }
+
+            if($subscription->create($insertData) && $user->update(array('is_premium' => 1)))
+            {
+                $responseOut = ['message' => trans('messages.success')];
+                $code = 200;    
+            }else{
+                $responseOut = ['message' => trans('something_went_wrong')];
+                $code = 400;
+            }
+            
+            return response()->json($responseOut, $code);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
