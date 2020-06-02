@@ -30,6 +30,7 @@ class UserRequest extends ApiRequest
 //                'name' => 'required|string|max:150',
                 'first_name' => 'required|string|max:50',
                 'last_name' => 'required|string|max:50',
+                'country' => 'required|integer',
                 // 'address' => 'required|max:150',
 //                'city' => 'required|string|max:50',
                 // 'state' => 'required|integer',
@@ -37,7 +38,7 @@ class UserRequest extends ApiRequest
 //                'location' => 'required',
                 //'country' => 'required|integer',
                 // 'zip' => 'required',
-                'agency_name' => 'required',
+                // 'agency_name' => 'required',
                 'image' => 'required|url',
                 'profesion' => 'required'
             ];
