@@ -38,6 +38,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->post('/reset-password', ['uses' => 'UserController@resetPassword']);
 
     $router->get('/users/listSubscriptionPlans', ['uses' => 'UserController@listSubscriptionPlans']);
+
+    Route::post('users/changeStatus', ['uses' => 'UserController@changeStatus']);
+
 });
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
