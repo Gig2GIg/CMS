@@ -869,13 +869,15 @@ class UserController extends Controller
             $insertData['user_id'] = $request->user_id;
             $insertData['name'] = $request->name;
             $insertData['product_id'] = $request->product_id;
-            $insertData['original_transaction'] = $request->original_transaction;
             $insertData['current_transaction'] = $request->current_transaction;
             $insertData['purchase_platform'] = $request->purchase_platform;
             $insertData['purchased_at'] = $request->purchased_at;
             $insertData['stripe_status'] = 'active';
             if($request->has('ends_at')){
                 $insertData['ends_at'] = $request->ends_at;
+            }
+            if($request->has('original_transaction')){
+                $insertData['original_transaction'] = $request->original_transaction;
             }
 
             if($subscription->create($insertData) && $user->update(array('is_premium' => 1)))
