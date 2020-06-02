@@ -887,7 +887,10 @@ class UserController extends Controller
 
             if($subscription->create($insertData) && $user->update(array('is_premium' => 1)))
             {
-                $responseOut = ['message' => trans('messages.success')];
+                $responseOut = [
+                    'message' => trans('messages.success'),
+                    'data' => new UserResource($user)
+                ];
                 $code = 200;    
             }else{
                 $responseOut = ['message' => trans('something_went_wrong')];
