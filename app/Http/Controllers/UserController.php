@@ -654,7 +654,12 @@ class UserController extends Controller
     {
         try {
             $userRepo = new UserRepository(new User());
-            $user = $userRepo->find($request->user_id);
+            $user = $userRepo->find($request->user_id); 
+
+            // creating stripe customer 
+            if($user->stripe_id == null || $user->stripe_id == ''){
+                $customer = $this->createCustomer($user);
+            }
 
             $cardData = array();
             $cardData['exp_year'] = $request->exp_year;
