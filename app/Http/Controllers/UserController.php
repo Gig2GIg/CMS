@@ -24,6 +24,7 @@ use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\InvitedUserResource;
 use App\Http\Requests\SubscribeRequest;
 use App\Http\Requests\InviteCasterRequest;
+use App\Http\Requests\ChangePaymentRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -929,6 +930,48 @@ class UserController extends Controller
                 return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
                 return response()->json(['message' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function changeDefaultPaymentMethod(ChangePaymentRequest $request)
+    {
+        try {
+            $user = Auth::user(); 
+
+            //removing old card to avoid card redundancy
+            $this->deletePaymentMethod($user);
+
+            // creating stripe customer 
+            if($user->stripe_id == null || $user->stripe_id == ''){
+                $customer = $this->createCustomer($user);
+            }
+
+            $cardData = array();
+            $cardData['exp_year'] = $request->exp_year;
+            $cardData['exp_month'] = $request->exp_month;
+            $cardData['cvc'] = $request->cvc;
+            $cardData['number'] = $request->number;
+            $cardData['name_on_card'] = $request->name_on_card;
+
+            $cardToken = $this->createCardToken($cardData);
+            $this->updateDefaultSrc($user, $cardToken);
+
+            $paymentMethod = $user->defaultPaymentMethod();
+               
+            $responseOut = [
+                'message' => trans('messages.change_payment_success'),
+                'data' => $user
+            ];
+            $code = 200;
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => $e->getMessage()], 406);
             }
         }
     }

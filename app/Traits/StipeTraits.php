@@ -24,6 +24,11 @@ trait StipeTraits
         return $user->updateDefaultPaymentMethod($customer['id']);
     }
 
+    public function deletePaymentMethod($user)
+    {
+        return $user->paymentMethods()->first()->delete();
+    }
+
     /* create card token */
     public function createCardToken($card = array())
     {

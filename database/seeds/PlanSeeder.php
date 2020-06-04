@@ -111,7 +111,7 @@ class PlanSeeder extends Seeder
 	            'allowed_performers'=> 0,
 	            'description' => 'Access all free features + Casting Feedback, Push Notification, and Marketplace',
 	            'amount' => 120,
-	            'type' => 'monthly',
+	            'type' => 'annual',
 	            'user_type' => 2,
 	            'created_at' => $now,
 	            'updated_at' => $now
