@@ -889,6 +889,9 @@ class UserController extends Controller
             if($request->has('ends_at')){
                 $insertData['ends_at'] = $request->ends_at;
             }
+            if($request->has('transaction_receipt')){
+                $insertData['transaction_receipt'] = $request->transaction_receipt;
+            }
             if($request->has('original_transaction')){
                 $insertData['original_transaction'] = $request->original_transaction;
             }

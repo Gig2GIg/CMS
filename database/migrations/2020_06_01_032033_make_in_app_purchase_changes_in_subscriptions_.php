@@ -20,6 +20,8 @@ class MakeInAppPurchaseChangesInSubscriptions extends Migration
 
             DB::statement("ALTER TABLE `subscriptions` ADD `product_id` VARCHAR(255) NULL AFTER `stripe_plan`, ADD `original_transaction` VARCHAR(255) NULL AFTER `product_id`, ADD `current_transaction` VARCHAR(255) NULL AFTER `original_transaction`");
 
+            DB::statement("ALTER TABLE `subscriptions` ADD `transaction_receipt` TEXT NULL AFTER `current_transaction`");
+
             DB::statement("ALTER TABLE `subscriptions` ADD `purchased_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `purchase_platform`");
 
         });
