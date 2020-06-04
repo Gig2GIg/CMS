@@ -34,6 +34,7 @@ use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
 use App\Models\UserSubscription;
 use App\Models\Performers;
+use App\Models\Plan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -719,13 +720,15 @@ class UserController extends Controller
     {
         try {
 
-            $plans = collect($this->listAllPlans());
+            // $plans = collect($this->listAllPlans());
                         
-            $plans['data'] = collect($plans['data'])->sortBy('amount')->values()->map(function ($item, $key) {
-                $item['amount'] = $item['amount'] / 100;
-                $item['name'] = 'Tier ' . ($key + 1);
-                return $item;
-            });
+            // $plans['data'] = 1collect($plans['data'])->sortBy('amount')->values()->map(function ($item, $key) {
+            //     $item['amount'] = $item['amount'] / 100;
+            //     return $item;
+            // });
+
+            $repo = new Plan();
+            $plans = $repo->where('user_type', 1)->get()->sortBy('amount')->values();
 
             $responseData = ['data' => $plans];
             $code = 200;

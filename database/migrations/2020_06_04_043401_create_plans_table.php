@@ -16,6 +16,7 @@ class CreatePlansTable extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
+            $table->string('stripe_plan')->nullable();
             $table->integer('allowed_performers')->default(0);
             $table->text('description')->description();
             $table->float('amount')->default(0);
