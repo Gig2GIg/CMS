@@ -150,5 +150,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Performers::class, 'performer_id');
     }
-
 }

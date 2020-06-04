@@ -27,6 +27,7 @@ class SubscribeRequest extends ApiRequest
         return [
             'user_id' => ['required'],
             'stripe_plan_id'=> ['required'],
+            'plan_id' => ['required'],
             'stripe_plan_name'=> ['required'],
             'number'=> ['required'],
             'exp_month'=> ['required'],

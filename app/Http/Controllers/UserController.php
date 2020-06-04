@@ -682,6 +682,11 @@ class UserController extends Controller
                 $planData['stripe_plan_name'] = $request->stripe_plan_name;
 
                 if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
+
+                    $repo = new UserSubscription;
+                    $subscription = $repo->where('user_id', $request->user_id)->where('stripe_plan', $request->stripe_plan_id)->first(); 
+                    $subscription->update(array('plan_id' => $request->plan_id));
+                    
                     $user->update(array('is_premium' => 1));
                     $userBillingDetails = new UserBillingDetails();
                     $billingDetails = [
@@ -755,10 +760,16 @@ class UserController extends Controller
                 $subscriptionData->card_last_four = $user->card_last_four;
                 if($user->details->type == 1){
                     $repo = new Performers();
-                    $allowedCount = $repo->where('director_id', $user->id)->get()->count();
-                    $subscriptionData->total_performers = $allowedCount;
+                    $total_performers = $repo->where('director_id', $user->id)->get()->count();
+                    
+                    $planRepo = new PLan();
+                    $allowed_performers = $planRepo->find($subscriptionData->plan_id);
+                    
+                    $subscriptionData->total_performers = $total_performers;
+                    $subscriptionData->allowed_performers = $allowed_performers->allowed_performers;
                 }else{
                     $subscriptionData->total_performers = 0;
+                    $subscriptionData->allowed_performers = 0;
                 }
 
                 $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
