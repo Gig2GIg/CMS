@@ -33,6 +33,7 @@ use App\Models\UserBillingDetails;
 use App\Models\UserSettings;
 use App\Models\UserUnionMembers;
 use App\Models\UserSubscription;
+use App\Models\Performers;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -749,6 +750,13 @@ class UserController extends Controller
                 $subscriptionData = $user->subscriptions()->first();
                 $subscriptionData->card_brand = $user->card_brand;
                 $subscriptionData->card_last_four = $user->card_last_four;
+                if($user->details->type == 1){
+                    $repo = new Performers();
+                    $allowedCount = $repo->where('director_id', $user->id)->get()->count();
+                    $subscriptionData->total_performers = $allowedCount;
+                }else{
+                    $subscriptionData->total_performers = 0;
+                }
 
                 $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
                 
