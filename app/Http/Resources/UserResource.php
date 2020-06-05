@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Performers;
 
 class UserResource extends JsonResource
 {
@@ -14,9 +15,8 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-
-
-        return [
+        
+        $return = [
             'id' => $this->id,
             'email' => $this->email,
             'image' => $this->image,
@@ -29,7 +29,14 @@ class UserResource extends JsonResource
             'is_invited' => $this->invited_by ? true : false,
             'stripe_id' => $this->stripe_id,
             'card_brand' => $this->card_brand,
-            'card_last_four' => $this->card_last_four,
+            'card_last_four' => $this->card_last_four
         ];
+
+        if($this->details->type == 1){
+            $repo = new Performers();
+            $return['total_performers'] = $repo->where('director_id', $this->id)->get()->count();
+        }
+
+        return $return; 
     }
 }
