@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Traits\StipeTraits;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -655,6 +656,7 @@ class UserController extends Controller
 
     public function subscribe(SubscribeRequest $request)
     {
+
         try {
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($request->user_id); 
@@ -684,9 +686,12 @@ class UserController extends Controller
 
                 if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
 
+                    //getting next billing date as ends at
+                    $ends_at = Carbon::createFromTimeStamp($user->asStripeCustomer()["subscriptions"]->data[0]["current_period_end"])->format('Y-m-d H:i:s');
+                    
                     $repo = new UserSubscription;
                     $subscription = $repo->where('user_id', $request->user_id)->where('stripe_plan', $request->stripe_plan_id)->first(); 
-                    $subscription->update(array('plan_id' => $request->plan_id));
+                    $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_at' => Carbon::now('UTC')));
                     
                     $user->update(array('is_premium' => 1));
                     $userBillingDetails = new UserBillingDetails();
