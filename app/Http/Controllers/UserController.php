@@ -765,9 +765,13 @@ class UserController extends Controller
                     
                     $planRepo = new PLan();
                     $allowed_performers = $planRepo->find($subscriptionData->plan_id);
-                    
+                    if($allowed_performers){
+                        $allowedCount = $allowed_performers->allowed_performers;
+                    }else{
+                        $allowedCount = 0;
+                    }
                     $subscriptionData->total_performers = $total_performers;
-                    $subscriptionData->allowed_performers = $allowed_performers->allowed_performers;
+                    $subscriptionData->allowed_performers = $allowedCount;
                 }else{
                     $subscriptionData->total_performers = 0;
                     $subscriptionData->allowed_performers = 0;
