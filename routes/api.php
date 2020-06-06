@@ -41,6 +41,8 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
     Route::post('users/changeStatus', ['uses' => 'UserController@changeStatus']);
 
+    $router->post('/handleAppleSubscription', ['uses' => 'UserController@handleAppleSubscription']);
+
 });
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {

@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -983,5 +983,19 @@ class UserController extends Controller
                 return response()->json(['message' => $e->getMessage()], 406);
             }
         }
+    }
+
+    public function handleAppleSubscription(Request $request)
+    {
+        $data = json_encode($request->all());
+
+        \DB::statement("INSERT INTO `sampleAppleWebhook` (`id`, `data`, `created_at`) VALUES (NULL, '" . $data . "', current_timestamp())");
+
+        $responseOut = [
+            'message' => trans('messages.success'),
+        ];
+        $code = 200;
+        
+        return response()->json($responseOut, $code);
     }
 }

@@ -131,7 +131,15 @@ class PerformersController extends Controller
     {
         try {
             $repo = new PerformerRepository(new Performers());
-            $data = $repo->findbyparam('director_id', $this->getUserLogging())->get();
+            $ownData = $repo->findbyparam('director_id', $this->getUserLogging())->get();
+
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            $invitedUsersData = $repo->findByMultiVals('director_id', $invitedUserIds)->get();
+
+            $data = $ownData->merge($invitedUsersData);
+
             if ($data->count() == 0) {
                 throw new \Exception('Not found data');
             }
@@ -142,7 +150,7 @@ class PerformersController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Not found data'], 404);
-        }
+        }   
     }
 
     public function notificator($user, $data, $type = 0)
