@@ -209,15 +209,24 @@ class PerformersController extends Controller
             //pushing own ID into WHERE IN constraint
             $allIdsToInclude->push($this->getUserLogging()); 
 
-            $repoPerformer = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->pluck('performer_id')->toArray();            
+            $repoPerformer = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->pluck('performer_id')->toArray();
+
             $base = $this->filterBase($request->base, $repoPerformer);
             $dataResponse = $base;
+
             if (isset($request->union)) {
                 $dataResponse = $this->filterUnion($request->union, $dataResponse);
             }
             if (isset($request->gender)) {
                 $dataResponse = $this->filterGender($request->gender, $dataResponse);
             }
+
+            // //passing all Ids to collection as an additional param
+            // $dataResponse->put('allIdsToInclude', ));
+            // $new = $dataResponse->toArray();
+            // $new['allIdsToInclude'] = json_encode($allIdsToInclude->unique()->values()->toArray());
+            // dd($repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->toArray());
+
             return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -234,6 +243,7 @@ class PerformersController extends Controller
             $name = explode(' ', $value);
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
+
             if (count($name) == 1) {
                 $nameColl = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
@@ -258,8 +268,6 @@ class PerformersController extends Controller
                     return mb_strripos($item->last_name, $name[1]) === false;
                 });
             }
-
-
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
             return collect();
@@ -300,10 +308,9 @@ class PerformersController extends Controller
     public function filterGender($gender, $userDetails)
     {
         try {
-            if ($gender === 'ANY') {
+            if ($gender === 'any' || $gender === 'ANY') {
                 $dataFilter = $userDetails;
             } else {
-
                 $dataFilter = $userDetails->filter(function ($element) use ($gender) {
                     return $element->gender == $gender;
                 });
