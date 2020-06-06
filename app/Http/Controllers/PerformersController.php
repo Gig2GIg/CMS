@@ -26,6 +26,7 @@ use App\Models\PerformersComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Hashids\Hashids;
+use Illuminate\Support\Facades\Auth;
 
 class PerformersController extends Controller
 {
@@ -130,15 +131,30 @@ class PerformersController extends Controller
     public function list(Request $request)
     {
         try {
-            $repo = new PerformerRepository(new Performers());
-            $ownData = $repo->findbyparam('director_id', $this->getUserLogging())->get();
 
+            $user = Auth::user();            
+            $repo = new PerformerRepository(new Performers());
+
+            //it is to fetch logged in user's invited users data if any
             $userRepo = new User();
             $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
 
-            $invitedUsersData = $repo->findByMultiVals('director_id', $invitedUserIds)->get();
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
 
-            $data = $ownData->merge($invitedUsersData);
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            $data = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get();            
 
             if ($data->count() == 0) {
                 throw new \Exception('Not found data');
