@@ -189,14 +189,33 @@ class PerformersController extends Controller
     {
         try {
             $repo = new PerformerRepository(new Performers());
-            $repoPerformer = $repo->findbyparam('director_id', $this->getUserLogging())->get()->pluck('performer_id')->toArray();
+
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
+
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            $repoPerformer = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->pluck('performer_id')->toArray();            
             $base = $this->filterBase($request->base, $repoPerformer);
             $dataResponse = $base;
             if (isset($request->union)) {
                 $dataResponse = $this->filterUnion($request->union, $dataResponse);
             }
             if (isset($request->gender)) {
-
                 $dataResponse = $this->filterGender($request->gender, $dataResponse);
             }
             return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
