@@ -131,7 +131,6 @@ class PerformersController extends Controller
     public function list(Request $request)
     {
         try {
-
             $user = Auth::user();            
             $repo = new PerformerRepository(new Performers());
 
@@ -188,6 +187,7 @@ class PerformersController extends Controller
     public function filter(Request $request)
     {
         try {
+            $user = Auth::user();            
             $repo = new PerformerRepository(new Performers());
 
             //it is to fetch logged in user's invited users data if any
@@ -350,7 +350,6 @@ class PerformersController extends Controller
             // return response()->json(['message' => 'comment by user', 'data' => CommentListResponse::collection($data)], 200);
 
         } catch (\Exception $exception) {
-            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
             // return response()->json(['message' => 'Data not found', 'data' => ''], 404);
