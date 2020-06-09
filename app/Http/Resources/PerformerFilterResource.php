@@ -23,9 +23,8 @@ class PerformerFilterResource extends JsonResource
         $repo = new UserRepository(new User());
         $data = $repo->find($this->user_id);
         $repoPerfomer = new PerformerRepository(new Performers());
-        //$dataUUID = $repoPerfomer->findbyparam('director_id', Auth::user()->getAuthIdentifier())->get()->where('performer_id',$this->user_id)->first();
-        $dataUUID = $repoPerfomer->findbyparam('performer_id',$this->user_id)->get()->first();
-        // dd(\DB::getQueryLog())  ;
+        $dataUUID = $repoPerfomer->findByMultiVals('director_id', $request->allIdsToInclude->unique()->values())->get()->where('performer_id',$this->user_id)->first();
+       
         $imageData = $data->image()->where('type','=','cover')->get();
         $img = $imageData->pluck('url')[0] ?? NULL;
         $thumb = $imageData->pluck('thumbnail')[0] ?? NULL;

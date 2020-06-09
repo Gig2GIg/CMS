@@ -39,6 +39,7 @@ class PerformersController extends Controller
         $dateHash = new \DateTime();
         $dataTime = $dateHash->getTimestamp();
         try {
+            $user = Auth::user();            
             $repo = new PerformerRepository(new Performers());
             $data = $repo->findbyparam('uuid', $request->code)->first();
 
@@ -46,8 +47,26 @@ class PerformersController extends Controller
                 return response()->json(['data' => "This performer does not exist!"], 406);
             }
 
-            $count = $data->where('director_id',$this->getUserLogging())
-                ->where('performer_id',$data->performer_id);
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
+
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            $count = $data->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id',$data->performer_id);
 
             $this->log->info($data);
             if ($count->count() > 0) {
@@ -221,12 +240,9 @@ class PerformersController extends Controller
                 $dataResponse = $this->filterGender($request->gender, $dataResponse);
             }
 
-            // //passing all Ids to collection as an additional param
-            // $dataResponse->put('allIdsToInclude', ));
-            // $new = $dataResponse->toArray();
-            // $new['allIdsToInclude'] = json_encode($allIdsToInclude->unique()->values()->toArray());
-            // dd($repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->toArray());
-
+            //passing all Ids to collection as an additional param
+            $request->request->add(['allIdsToInclude' => $allIdsToInclude]);
+            
             return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());

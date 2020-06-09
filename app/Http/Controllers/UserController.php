@@ -920,18 +920,19 @@ class UserController extends Controller
                 $insertData['original_transaction'] = $request->original_transaction;
             }
 
-            if($subscription->create($insertData) && $user->update(array('is_premium' => 1)))
-            {
-                $responseOut = [
-                    'message' => trans('messages.success'),
-                    'data' => new UserResource($user)
-                ];
-                $code = 200;    
-            }else{
-                $responseOut = ['message' => trans('something_went_wrong')];
-                $code = 400;
-            }
-            
+            $subscription->updateOrCreate(
+                ['user_id' => $request->user_id],
+                $insertData
+            );
+
+            $user->update(array('is_premium' => 1));
+
+            $responseOut = [
+                'message' => trans('messages.success'),
+                'data' => new UserResource($user)
+            ];
+            $code = 200; 
+                        
             return response()->json($responseOut, $code);
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());
