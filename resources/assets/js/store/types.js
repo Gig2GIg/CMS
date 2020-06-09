@@ -78,3 +78,7 @@ export const FETCH_USERS_FAILURE = 'Fetch Users failed';
 export const UPDATE_USER = 'Update User';
 export const DELETE_USER = 'Delete User';
 export const USER_STATUS_CHANGE_SUCCESS = 'User status change successful';
+
+// Payments
+export const FETCH_PLANS_SUCCESS = 'Fetch Plans Successful';
+export const FETCH_PLANS_FAILURE = 'Fetch Plans Failed';
