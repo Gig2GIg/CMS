@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
  */
+//IOS webhook URL
+Route::post('/handle_apple_subscription', ['uses' => 'UserController@handleAppleSubscription']);
 
 //Talent Database apis w/o authentication 
 Route::group(['prefix' => 'talentDatabase'], function () use ($router) {
@@ -40,8 +42,6 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     $router->get('/users/listSubscriptionPlans', ['uses' => 'UserController@listSubscriptionPlans']);
 
     Route::post('users/changeStatus', ['uses' => 'UserController@changeStatus']);
-
-    $router->post('/handleAppleSubscription', ['uses' => 'UserController@handleAppleSubscription']);
 
 });
 

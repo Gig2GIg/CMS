@@ -986,17 +986,93 @@ class UserController extends Controller
         }
     }
 
+    //webhook function for IOS
     public function handleAppleSubscription(Request $request)
     {
-        $data = json_encode($request->all());
+        try {
+            $userRepo = new UserRepository(new User());
+            $subscriptionRepo = new UserSubscription;
 
-        \DB::statement("INSERT INTO `sampleAppleWebhook` (`id`, `data`, `created_at`) VALUES (NULL, '" . $data . "', current_timestamp())");
+            $data = $request->all();
+            
+            $latestReceipt = !empty($data['unified_receipt']) && !empty($data['unified_receipt']['latest_receipt_info']) && !empty($data['unified_receipt']['latest_receipt_info'][0]) ? $data['unified_receipt']['latest_receipt_info'][0] : null;
 
-        $responseOut = [
-            'message' => trans('messages.success'),
-        ];
-        $code = 200;
-        
-        return response()->json($responseOut, $code);
+            if($latestReceipt){
+                $conditions = array();
+                $conditions['product_id'] = $latestReceipt['product_id'];
+                $conditions['purchase_platform'] = 'ios';
+                $conditions['original_transaction'] = $latestReceipt['original_transaction_id'];
+
+                $subscription = $subscriptionRepo->where($conditions)->first();
+
+                if($subscription){
+                    $user = $userRepo->find($subscription->user_id);
+                    
+                    if(!$user){
+                        $subscription->destroy();
+                        $responseOut = [
+                            'message' => trans('messages.success'),
+                        ];
+                        $code = 200;
+                        
+                        return response()->json($responseOut, $code);
+                    }else if($subscription['current_transaction'] == $latestReceipt['transaction_id']){
+                        $responseOut = [
+                            'message' => trans('messages.success'),
+                        ];
+                        $code = 200;
+                        
+                        return response()->json($responseOut, $code);
+                    }
+                }else{
+                    $responseOut = [
+                        'message' => trans('messages.success'),
+                    ];
+                    $code = 200;
+                    
+                    return response()->json($responseOut, $code);
+                }
+
+                $insertData = array();
+                $insertData['user_id'] = $subscription->user_id;
+                $insertData['name'] = $latestReceipt['product_id'] == 'com.g2g.phone.ios.monthMembership' ? 'Monthly' : 'Annual';
+                $insertData['quantity'] = $latestReceipt['quantity'];
+                $insertData['product_id'] = $latestReceipt['product_id'];
+                $insertData['current_transaction'] = $latestReceipt['transaction_id'];
+                $insertData['purchase_platform'] = 'ios';
+                $insertData['purchased_at'] = Carbon::parse($latestReceipt['purchase_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $insertData['stripe_status'] = $data['auto_renew_status'] == "false" ? 'canceled' : 'active';
+                $insertData['ends_at'] = $data['auto_renew_status'] == "false" ? Carbon::now('UTC') : Carbon::parse($latestReceipt['expires_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $insertData['transaction_receipt'] = !empty($data['unified_receipt']) ? $data['unified_receipt']['latest_receipt'] : NULL;
+                $insertData['original_transaction'] = $latestReceipt['original_transaction_id'];
+                $insertData['current_transaction'] = $latestReceipt['transaction_id'];
+                
+                $subscriptionRepo->updateOrCreate(
+                    ['original_transaction' => $latestReceipt['original_transaction_id'], 'product_id' => $latestReceipt['product_id']],
+                    $insertData
+                );
+
+                if($data['auto_renew_status'] == "false"){
+                    $user->update(array('is_premium' => 0));
+                }else{
+                    $user->update(array('is_premium' => 1));
+                }
+            }
+
+            $responseOut = [
+                'message' => trans('messages.success'),
+            ];
+            $code = 200;
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error("APPLE WEBHOOK ERR: " . $e->getMessage());
+            $responseOut = [
+                'message' => trans('messages.something_went_wrong'),
+            ];
+            $code = 400;
+            
+            return response()->json($responseOut, $code);
+        }
     }
 }
