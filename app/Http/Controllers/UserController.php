@@ -55,7 +55,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -1085,7 +1085,7 @@ class UserController extends Controller
 
             $data = $request->all();
             
-            \Storage::disk('local')->put(Carbon::now('UTC')->->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));           
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));           
 
             $responseOut = [
                 'message' => trans('messages.success'),
@@ -1094,8 +1094,7 @@ class UserController extends Controller
             
             return response()->json($responseOut, $code);
         } catch (\Exception $e) {
-
-            \Storage::disk('local')->put(Carbon::now('UTC')->->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', 'ERR-ANDROID--- '.json_encode($data));
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', 'ERR-ANDROID--- '.json_encode($data));
 
             $this->log->error("ANDROID WEBHOOK ERR: " . $e->getMessage());
             $responseOut = [
