@@ -44,8 +44,9 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
     $router->get('/users/listSubscriptionPlans', ['uses' => 'UserController@listSubscriptionPlans']);
 
-    Route::post('users/changeStatus', ['uses' => 'UserController@changeStatus']);
+    Route::post('/users/changeStatus', ['uses' => 'UserController@changeStatus']);
 
+    $router->post('/users/handle_expired_users', ['uses' => 'UserController@handleExpiredUsers']);
 });
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {

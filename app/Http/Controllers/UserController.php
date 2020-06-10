@@ -25,6 +25,7 @@ use App\Http\Resources\InvitedUserResource;
 use App\Http\Requests\SubscribeRequest;
 use App\Http\Requests\InviteCasterRequest;
 use App\Http\Requests\ChangePaymentRequest;
+use App\Http\Requests\HandleExpiredUsersRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -55,7 +56,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -986,6 +987,47 @@ class UserController extends Controller
         }
     }
 
+    public function handleExpiredUsers(HandleExpiredUsersRequest $request)
+    {
+        try {
+            $userRepo = new User();
+            $subscriptionRepo = new UserSubscription;
+
+            $user = $userRepo->find($request->user_id);
+
+            $conditions = array();
+            $conditions['user_id'] = $request->user_id;
+            if($request->has('original_transaction') && $request->original_transaction != "" && $request->original_transaction != null){
+                $conditions['original_transaction'] = $request->original_transaction;
+            }
+            $subscription = $subscriptionRepo->where($conditions)->first();
+
+            if($subscription && $subscription->count() != 0){
+                $subscription->update(['stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')]);
+                $user->update(array('is_premium' => 0));
+
+                $responseOut = [
+                    'message' => trans('messages.success'),
+                ];
+                $code = 200;
+            }else{
+                $responseOut = [
+                    'message' => self::NOT_FOUND_DATA,
+                ];
+                $code = 400;            
+            } 
+            
+            return response()->json($responseOut, $code);                        
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => trans('messages.something_went_wrong')], 400);
+            }
+        }
+    }
+
     //webhook function for IOS
     public function handleAppleSubscription(Request $request)
     {
@@ -994,6 +1036,8 @@ class UserController extends Controller
             $subscriptionRepo = new UserSubscription;
 
             $data = $request->all();
+
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'IOSwebhook.json', json_encode($data));
             
             $latestReceipt = !empty($data['unified_receipt']) && !empty($data['unified_receipt']['latest_receipt_info']) && !empty($data['unified_receipt']['latest_receipt_info'][0]) ? $data['unified_receipt']['latest_receipt_info'][0] : null;
 
@@ -1084,7 +1128,8 @@ class UserController extends Controller
             $subscriptionRepo = new UserSubscription;
 
             $data = $request->all();
-            
+            // dd(base64_decode($data['message']['data']));
+
             \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));           
 
             $responseOut = [

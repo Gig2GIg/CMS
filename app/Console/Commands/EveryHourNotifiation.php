@@ -58,7 +58,7 @@ class EveryHourNotifiation extends Command
             $now = Carbon::now('UTC')->format('Y-m-d H:i:s');
             $subscription = $subscriptionRepo->whereDate('ends_at', '<', $now)->get();
 
-            if($subscription->count() != 0){
+            if($subscription && $subscription->count() != 0){
                 $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('stripe_status' => 'canceled'));
                 $userRepo->whereIn('id', $subscription->pluck('user_id'))->update(array('is_premium' => 0));
             }                         
