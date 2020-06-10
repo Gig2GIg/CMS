@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
  */
+//ANDROID webhook URL
+Route::post('/handle_android_subscription', ['uses' => 'UserController@handleAndroidSubscription']);
+
 //IOS webhook URL
 Route::post('/handle_apple_subscription', ['uses' => 'UserController@handleAppleSubscription']);
 

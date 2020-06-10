@@ -1075,4 +1075,35 @@ class UserController extends Controller
             return response()->json($responseOut, $code);
         }
     }
+
+    //webhook function for IOS
+    public function handleAndroidSubscription(Request $request)
+    {
+        try {
+            $userRepo = new UserRepository(new User());
+            $subscriptionRepo = new UserSubscription;
+
+            $data = $request->all();
+            
+            \Storage::disk('local')->put(Carbon::now('UTC')->->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));           
+
+            $responseOut = [
+                'message' => trans('messages.success'),
+            ];
+            $code = 200;
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+
+            \Storage::disk('local')->put(Carbon::now('UTC')->->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', 'ERR-ANDROID--- '.json_encode($data));
+
+            $this->log->error("ANDROID WEBHOOK ERR: " . $e->getMessage());
+            $responseOut = [
+                'message' => trans('messages.something_went_wrong'),
+            ];
+            $code = 400;
+            
+            return response()->json($responseOut, $code);
+        }
+    }
 }
