@@ -27,7 +27,7 @@ class MarketplaceRequest extends FormRequest
             // 'address' => 'required|string|max:50',
             'title' => 'required|string|max:255',
             // 'email' => 'required|string|email',
-            'services' => 'required|string|max:255',
+            'services' => 'required|string',
             // 'phone_number' => 'required|string|max:20',
             'image_url' => 'required|string',
             'image_name' => 'required|string',
