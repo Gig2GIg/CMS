@@ -240,6 +240,7 @@
             >
               <b-input
                 v-model="selectedVendor.address"
+                v-validate="'max:255'"
                 name="address"
               />
             </b-field>
