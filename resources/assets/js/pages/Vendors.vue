@@ -209,7 +209,7 @@
 
             <label class="label">Cover image</label>
             <div class="columns is-vcentered pb-2">
-              <p class="image">
+              <p class="image vendor-image">
                 <img
                   :src="selectedFile.preview ? selectedFile.preview : (selectedVendor.image ? selectedVendor.image.url : 'images/default.jpg')"
                 >
@@ -271,7 +271,7 @@
             >
               <b-input
                 v-model="selectedVendor.services"
-                v-validate="'required|max:100'"
+                v-validate="'required|max:500'"
                 type="textarea"
                 name="services"
               />
