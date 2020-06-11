@@ -320,6 +320,7 @@ export default {
   },
   methods: {
     ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy', 'updateFeatured', 'updateNotFeatured']),
+    ...mapActions({getCategories : 'categories/fetch'}),
     ...mapActions('toast', ['showError']),
 
     confirmDelete(vendor) {
@@ -434,6 +435,7 @@ export default {
 
   async created() {
     await this.fetch();
+    await this.getCategories();    
     this.loaded = true;
   }
 };
