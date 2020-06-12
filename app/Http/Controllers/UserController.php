@@ -692,7 +692,7 @@ class UserController extends Controller
                     
                     $repo = new UserSubscription;
                     $subscription = $repo->where('user_id', $request->user_id)->where('stripe_plan', $request->stripe_plan_id)->first(); 
-                    $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_at' => Carbon::now('UTC')));
+                    $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')));
                     
                     $user->update(array('is_premium' => 1));
                     $userBillingDetails = new UserBillingDetails();
@@ -907,7 +907,6 @@ class UserController extends Controller
             $insertData['user_id'] = $request->user_id;
             $insertData['name'] = $request->name;
             $insertData['product_id'] = $request->product_id;
-            $insertData['current_transaction'] = $request->current_transaction;
             $insertData['purchase_platform'] = $request->purchase_platform;
             $insertData['purchased_at'] = $request->purchased_at;
             $insertData['stripe_status'] = 'active';
@@ -919,6 +918,9 @@ class UserController extends Controller
             }
             if($request->has('original_transaction')){
                 $insertData['original_transaction'] = $request->original_transaction;
+            }
+            if($request->has('current_transaction')){
+                $insertData['current_transaction'] = $request->current_transaction;
             }
 
             $subscription->updateOrCreate(
@@ -1003,7 +1005,7 @@ class UserController extends Controller
             $subscription = $subscriptionRepo->where($conditions)->first();
 
             if($subscription && $subscription->count() != 0){
-                $subscription->update(['stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')]);
+                $subscription->update(['stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
                 $user->update(array('is_premium' => 0));
 
                 $responseOut = [
@@ -1079,17 +1081,16 @@ class UserController extends Controller
 
                 $insertData = array();
                 $insertData['user_id'] = $subscription->user_id;
-                $insertData['name'] = $latestReceipt['product_id'] == 'com.g2g.phone.ios.monthMembership' ? 'Monthly' : 'Annual';
+                $insertData['name'] = $latestReceipt['product_id'] == env('IOS_PROD_MONTHLY') ? 'Monthly' : 'Annual';
                 $insertData['quantity'] = $latestReceipt['quantity'];
                 $insertData['product_id'] = $latestReceipt['product_id'];
                 $insertData['current_transaction'] = $latestReceipt['transaction_id'];
                 $insertData['purchase_platform'] = 'ios';
                 $insertData['purchased_at'] = Carbon::parse($latestReceipt['purchase_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $insertData['stripe_status'] = $data['auto_renew_status'] == "false" ? 'canceled' : 'active';
-                $insertData['ends_at'] = $data['auto_renew_status'] == "false" ? Carbon::now('UTC') : Carbon::parse($latestReceipt['expires_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
+                $insertData['ends_at'] = $data['auto_renew_status'] == "false" ? Carbon::now('UTC')->format('Y-m-d H:i:s') : Carbon::parse($latestReceipt['expires_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $insertData['transaction_receipt'] = !empty($data['unified_receipt']) ? $data['unified_receipt']['latest_receipt'] : NULL;
                 $insertData['original_transaction'] = $latestReceipt['original_transaction_id'];
-                $insertData['current_transaction'] = $latestReceipt['transaction_id'];
                 
                 $subscriptionRepo->updateOrCreate(
                     ['original_transaction' => $latestReceipt['original_transaction_id'], 'product_id' => $latestReceipt['product_id']],
@@ -1128,9 +1129,73 @@ class UserController extends Controller
             $subscriptionRepo = new UserSubscription;
 
             $data = $request->all();
-            // dd(base64_decode($data['message']['data']));
+            $latestReceipt = json_decode(base64_decode($data['message']['data']));
+            
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));  
 
-            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));           
+            $notificationType = $latestReceipt->subscriptionNotification ? $latestReceipt->subscriptionNotification->notificationType : NULL;
+            
+            if($notificationType){
+                $conditions = array();
+                $conditions['product_id'] = $latestReceipt->subscriptionNotification->subscriptionId;
+                $conditions['purchase_platform'] = 'android';
+                $conditions['original_transaction'] = $latestReceipt->subscriptionNotification->purchaseToken;
+
+                $subscription = $subscriptionRepo->where($conditions)->first();
+
+                if($subscription){
+                    $user = $userRepo->find($subscription->user_id);
+                
+                    if(!$user){
+                        $subscription->destroy();
+                        $responseOut = [
+                            'message' => trans('messages.success'),
+                        ];
+                        $code = 200;
+                        
+                        return response()->json($responseOut, $code);
+                    }
+                }else{
+                    $responseOut = [
+                        'message' => trans('messages.success'),
+                    ];
+                    $code = 200;
+                    
+                    return response()->json($responseOut, $code);
+                }
+            }
+
+            $autoRenewStatus = true;
+
+            if($notificationType == 3 || $notificationType == 5 || $notificationType == 10 || $notificationType == 12 || $notificationType == 13){
+                //revoke premium flag from user
+                $autoRenewStatus = false;
+                $user->update(array('is_premium' => 0));
+            }else if($notificationType == 1 || $notificationType == 2 || $notificationType == 4 || $notificationType == 7){
+                //Make user a premium user again
+                $autoRenewStatus = true;
+                $user->update(array('is_premium' => 1));
+            }
+
+            $expiryDate = $latestReceipt->subscriptionNotification->subscriptionId == env('ANDROID_PROD_MONTHLY') ? Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addMonth()->format('Y-m-d H:i:s') : Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addYear()->format('Y-m-d H:i:s');
+
+            $insertData = array();
+            $insertData['user_id'] = $subscription->user_id;
+            $insertData['name'] = $latestReceipt->subscriptionNotification->subscriptionId == env('ANDROID_PROD_MONTHLY') ? 'Monthly' : 'Annual';
+            $insertData['quantity'] = 1;
+            $insertData['product_id'] = $latestReceipt->subscriptionNotification->subscriptionId;
+            $insertData['current_transaction'] = NULL;
+            $insertData['purchase_platform'] = 'android';
+            $insertData['purchased_at'] = Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->format('Y-m-d H:i:s');
+            $insertData['stripe_status'] = $autoRenewStatus == false ? 'canceled' : 'active';
+            $insertData['ends_at'] = $autoRenewStatus == false ? Carbon::now('UTC')->format('Y-m-d H:i:s') : $expiryDate;
+            $insertData['transaction_receipt'] = $data['message']['data'];
+            $insertData['original_transaction'] = $latestReceipt->subscriptionNotification->purchaseToken;
+            
+            $subscriptionRepo->updateOrCreate(
+                ['original_transaction' => $latestReceipt->subscriptionNotification->purchaseToken, 'product_id' => $latestReceipt->subscriptionNotification->subscriptionId],
+                $insertData
+            );         
 
             $responseOut = [
                 'message' => trans('messages.success'),

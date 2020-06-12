@@ -29,7 +29,7 @@ class InAppSuccessRequest extends ApiRequest
             'name'=> ['required'],
             'product_id'=> ['required'],
             'original_transaction'=> [''],
-            'current_transaction'=> ['required'],
+            'current_transaction'=> [''],
             'ends_at'=> [''],
             'purchase_platform'=> ['required', Rule::in(['web', 'android', 'ios'])],
             'purchased_at' => ['required'],
