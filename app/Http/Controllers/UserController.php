@@ -740,7 +740,7 @@ class UserController extends Controller
             // });
 
             $repo = new Plan();
-            $plans = $repo->where('user_type', 1)->get()->sortBy('amount')->values();
+            $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
 
             $responseData = ['data' => $plans];
             $code = 200;
