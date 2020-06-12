@@ -19,67 +19,73 @@ class PlanSeeder extends Seeder
         DB::table('plans')->insert([
         	[
         		'name' => 'Tier 1',
-        		'stripe_plan' => 'plan_HHdYi0UHzWwZhM',
-	            'allowed_performers'=> 500,
-	            'description' => 'Store Upto 500 Performers in the Talent Database',
-	            'amount' => 160,
+        		'stripe_plan' => 'price_1Gt5eJIoqeSHJzJwdXvYuHOo',
+	            'allowed_performers'=> 100,
+	            'description' => 'Store Upto 100 Performers in the Talent Database',
+	            'amount' => 75,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
         	[
         		'name' => 'Tier 2',
-        		'stripe_plan' => 'tier2',
+        		'stripe_plan' => 'price_1Gt5eJIoqeSHJzJwbBkiEF41',
 	            'allowed_performers'=> 1000,
 	            'description' => 'Store Upto 1000 Performers in the Talent Database',
-	            'amount' => 300,
+	            'amount' => 125,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
         	[
         		'name' => 'Tier 3',
-        		'stripe_plan' => 'price_HJxnpQ8ePBtytD',
+        		'stripe_plan' => 'price_1Gt5eKIoqeSHJzJwajgI5s0j',
 	            'allowed_performers'=> 2000,
 	            'description' => 'Store Upto 2000 Performers in the Talent Database',
-	            'amount' => 500,
+	            'amount' => 250,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
         	[
         		'name' => 'Tier 4',
-        		'stripe_plan' => 'price_HJxqKVinKh0b0H',
+        		'stripe_plan' => 'price_1Gt5eKIoqeSHJzJwAwZxEi85',
 	            'allowed_performers'=> 3500,
 	            'description' => 'Store Upto 3500 Performers in the Talent Database',
-	            'amount' => 800,
+	            'amount' => 350,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
         	[
         		'name' => 'Tier 5',
-        		'stripe_plan' => 'price_HJxquoUxR1NYFO',
+        		'stripe_plan' => 'price_1Gt5eKIoqeSHJzJwczT4TzPO',
 	            'allowed_performers'=> 5000,
 	            'description' => 'Store Upto 5000 Performers in the Talent Database',
-	            'amount' => 1500,
+	            'amount' => 725,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
         	[
         		'name' => 'Tier 6',
-        		'stripe_plan' => 'price_HJxr8Z7GsmKiVF',
+        		'stripe_plan' => 'price_1Gt5eKIoqeSHJzJw5X2HQscH',
 	            'allowed_performers'=> 10000,
 	            'description' => 'Store Upto 10000 Performers in the Talent Database',
-	            'amount' => 2000,
+	            'amount' => 950,
 	            'type' => 'monthly',
 	            'user_type' => 1,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
@@ -91,6 +97,7 @@ class PlanSeeder extends Seeder
 	            'amount' => 0,
 	            'type' => NULL,
 	            'user_type' => 2,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
@@ -102,6 +109,7 @@ class PlanSeeder extends Seeder
 	            'amount' => 12.99,
 	            'type' => 'monthly',
 	            'user_type' => 2,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
         	],
@@ -113,9 +121,22 @@ class PlanSeeder extends Seeder
 	            'amount' => 120,
 	            'type' => 'annual',
 	            'user_type' => 2,
+	            'is_custom' => 0,
 	            'created_at' => $now,
 	            'updated_at' => $now
-        	]  
+        	],
+        	[
+        		'name' => 'Custom',
+        		'stripe_plan' => NULL,
+	            'allowed_performers'=> 10000,
+	            'description' => 'Custom plan',
+	            'amount' => NULL,
+	            'type' => 'monthly',
+	            'user_type' => 1,
+	            'is_custom' => 1,
+	            'created_at' => $now,
+	            'updated_at' => $now
+        	]    
         ]);
     }
 }

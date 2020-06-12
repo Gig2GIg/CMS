@@ -22,6 +22,7 @@ class CreatePlansTable extends Migration
             $table->float('amount')->default(0);
             $table->enum('type',['monthly','annual','quarterly'])->nullable()->default('monthly');
             $table->integer('user_type')->nullable();
+            $table->boolean('is_custom')->default(false);
             $table->timestamps();
         });
     }
