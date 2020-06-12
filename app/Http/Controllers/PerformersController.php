@@ -179,6 +179,12 @@ class PerformersController extends Controller
             }
 
             $dataResponse = PerformerResource::collection($data);
+            $dataResponse->each(function ($value, $key) use($dataResponse) { 
+                if(is_null($value->details)){
+                    $dataResponse->forget($key);
+                }
+            });
+
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
@@ -242,8 +248,10 @@ class PerformersController extends Controller
 
             //passing all Ids to collection as an additional param
             $request->request->add(['allIdsToInclude' => $allIdsToInclude]);
+
+            $finalResponse = PerformerFilterResource::collection($dataResponse);
             
-            return response()->json(['data' => PerformerFilterResource::collection($dataResponse)], 200);
+            return response()->json(['data' => $finalResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
