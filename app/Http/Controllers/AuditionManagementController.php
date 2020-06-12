@@ -285,6 +285,7 @@ class AuditionManagementController extends Controller
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($this->getUserLogging());
             $userCount = count($user->notification_history);
+            $unreadNotificationsCount = 0;
 
             if ($userCount > 0) {
                 $responseData = NoficationsResource::collection($user->notification_history->where('status', 'unread'));
