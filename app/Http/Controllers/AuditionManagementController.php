@@ -251,7 +251,14 @@ class AuditionManagementController extends Controller
         try {
             $this->collection = new Collection();
             $dataAuditions = new AuditionRepository(new Auditions());
-            $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
+
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //pushing own ID into WHERE IN constraint
+            $invitedUserIds->push($this->getUserLogging()); 
+            $data = $dataAuditions->findByMultiVals('user_id', $invitedUserIds);          
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
             $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
@@ -266,7 +273,7 @@ class AuditionManagementController extends Controller
 
 
             $data->each(function ($item) {
-                if ($item['status'] != 2 && $item['user_id'] === $this->getUserLogging()) {
+                if ($item['status'] != 2) {
                     $this->collection->push($item);
                 }
             });
@@ -274,7 +281,7 @@ class AuditionManagementController extends Controller
             /**
              * Get all unread notifications
              */
-            $unreadNotificationsCount = 0;
+            $unreadNotificationsgetUpcomingMangementCount = 0;
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($this->getUserLogging());
             $userCount = count($user->notification_history);
@@ -297,7 +304,7 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            echo $exception->getMessage();
+            // echo $exception->getMessage();
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Not Found Data'], 404);
         }
@@ -842,7 +849,14 @@ class AuditionManagementController extends Controller
     {
         $collection = new Collection();
         $dataAuditions = new AuditionRepository(new Auditions());
-        $data = $dataAuditions->findbyparam('user_id', $this->getUserLogging());
+
+        //it is to fetch logged in user's invited users data if any
+        $userRepo = new User();
+        $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+        //pushing own ID into WHERE IN constraint
+        $invitedUserIds->push($this->getUserLogging()); 
+        $data = $dataAuditions->findByMultiVals('user_id', $invitedUserIds);       
 
         $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
         $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');

@@ -73,25 +73,31 @@ class AuditionRepository implements IAuditionsRepository
     public function findbyparam($colum, $value)
     {
         try{
-
             return $this->model->where($colum,'=',$value)->get();
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
+    }
 
+    public function findByMultiVals($column, $value)
+    {
+        try{
+            return $this->model->whereIn($column, $value)->get();
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }
     }
 
     public function findbyPattern($colum, $value)
     {
         try{
-
             return $this->model->where($colum,'like',"%{$value}%")->get();
         }catch (ModelNotFoundException $e){
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
-
     }
 
     public function findMediaByParams($value)
@@ -102,6 +108,5 @@ class AuditionRepository implements IAuditionsRepository
             $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
             throw new NotFoundException("Not found Data");
         }
-
     }
 }
