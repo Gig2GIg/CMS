@@ -43,6 +43,12 @@ class AuditionResponse extends JsonResource
 
         $userRepo = new UserRepository(new User());
         $user = $userRepo->find($this->user_id);
+
+        if($user){
+            $admin_id = $user->invited_by;
+        }else{
+            $admin_id = NULL;
+        }
         
         $appointment = $this->appointment()->latest()->first();
 
@@ -74,7 +80,7 @@ class AuditionResponse extends JsonResource
             "cover_name" =>  $cover_name[0] ?? null,
             "cover_thumbnail" =>  $url_thumb[0] ?? null,
             "number_roles" => $count,
-            "admin_id" => $user->invited_by
+            "admin_id" => $admin_id
         ];
     }
 }

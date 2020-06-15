@@ -25,8 +25,15 @@ class AuditionFullResponse extends JsonResource
      */
     public function toArray($request)
     {
+        $user = new UserRepository(new User());
+        $uData = $user->find($this->user_id);
+        if($uData){
+            $admin_id = $uData->invited_by;
+        }else{
+            $admin_id = NULL;
+        }
+
         $this->contributors->each(function ($item) {
-            $user = new UserRepository(new User());
             $userData = $user->find($item->user_id);
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
@@ -88,7 +95,8 @@ class AuditionFullResponse extends JsonResource
                 ->get(),
             'apointment' => $appoinmentResponse,
             'contributors' => $this->contributors,
-            'banned' => $this->banned
+            'banned' => $this->banned,
+            'admin_id' => $admin_id
         ];
     }
 }
