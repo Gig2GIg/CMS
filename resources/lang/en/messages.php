@@ -35,6 +35,9 @@ return [
     // Appointments Auditions Controller
     'appointment_not_assigned' => 'Appointment not assigned',
 
+    'slot_reserved' => 'Slot reserved successfully',
+    'slot_vacant' => 'Slot emptied successfully',
+
     // Appointment Controller
     'round_closed_successfully' => 'Round closed successfully',
     // 'round_close_successful' => 'Round closed successfully',

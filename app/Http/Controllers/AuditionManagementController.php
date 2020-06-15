@@ -29,9 +29,10 @@ use App\Http\Resources\ProfileResource;
 use App\Http\Resources\UserAuditionsResource;
 use App\Http\Resources\CheckGroupStatusResource;
 use App\Http\Resources\PerformerWithoutManagersResource;
-
 use App\Http\Resources\AuditionListByPerformer;
 use App\Http\Resources\NoficationsResource;
+
+use App\Http\Requests\UpcommingRequest;
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
@@ -46,6 +47,7 @@ use App\Models\UserSlots;
 use App\Models\Resources;
 use App\Models\Slots;
 use App\Models\OnlineMediaAudition;
+use Illuminate\Support\Facades\Auth;
 
 use Exception;
 use Illuminate\Http\Request;
@@ -111,9 +113,11 @@ class AuditionManagementController extends Controller
 
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
             $dataAuditionsUser = $dataRepoAuditionUser->find($request->id);
+
             if($dataAuditionsUser->has_manager == 0){
                 return response()->json(['error' => trans('messages.to_upcomming_not_allowed')], 406);
             }
+            
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $dataRepo->create([
                 'user_id' => $this->getUserLogging(),
@@ -139,6 +143,56 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             // return response()->json(['error' => 'Audition not update'], 406);
             return response()->json(['error' => trans('messages.audition_not_update')], 406);
+        }
+    }
+
+    public function dropPerformer(UpcommingRequest $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $dataRepo = new UserSlotsRepository(new UserSlots());
+            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+            $dataAuditionsUser = $dataRepoAuditionUser->find($request->id);
+            
+            $dataExist = $dataRepo->findbyparams(['appointment_id' => $request->appointment_id, 'roles_id' => $request->rol, 'slots_id' => $request->slot, 'user_id' => $request->user])->first();
+            if($dataExist){
+                $dataExist->delete();
+
+                $updateAudi = $dataAuditionsUser->update([
+                    'type' => '2',
+                    'slot_id' => NULL
+                ]);
+
+                $code = 200;
+                $responseData = trans('messages.slot_vacant');
+                DB::commit();
+                return response()->json(['data' => $responseData], $code);
+            }
+
+            $dataRepo->create([
+                'user_id' => $request->user,
+                'appointment_id' => $request->appointment_id,
+                'slots_id' => $request->slot,
+                'roles_id' => $request->rol,
+                'status' => 1
+            ]);
+
+            $updateAudi = $dataAuditionsUser->update([
+                'type' => '1',
+                'slot_id' => $request->slot
+            ]);
+            if (!$updateAudi) {
+                throw new UpdateException('Not Update audition status');
+            }
+            $code = 200;
+            $responseData = trans('messages.slot_reserved');
+            DB::commit();
+            return response()->json(['data' => $responseData], $code);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $this->log->error($exception->getMessage());
+            return response()->json(['error' => trans('messages.not_processable')], 406);
         }
     }
 
@@ -171,7 +225,6 @@ class AuditionManagementController extends Controller
     public function getPassed()
     {
         try {
-// dd("Helllo");
             $data = DB::table('appointments')
 
                 ->select(
@@ -532,8 +585,8 @@ class AuditionManagementController extends Controller
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
             $this->log->error($exception->getMessage());
-            return response()->json(['data' => $exception->getMessage()], 406);
-            // return response()->json(['data' => trans('messages.not_processable')], 406);
+            // return response()->json(['data' => $exception->getMessage()], 406);
+            return response()->json(['data' => trans('messages.not_processable')], 406);
             // return response()->json(['data' => 'Not processable'], 406);
         }
     }

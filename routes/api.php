@@ -153,6 +153,9 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->get('/audition/{audition_id}/round/{round_id}/videos', ['uses' => 'AuditionVideosController@getVideos']);
     // =========================
 
+    //for drag and drop performer to reserve the slot
+    $router->put('/auditions/dropPerformer', ['uses' => 'AuditionManagementController@dropPerformer']);
+
     //auditions BANNED
     $router->post('/auditions/banned', ['uses' => 'AuditionManagementController@bannedAuditionsFromCms']);
 
