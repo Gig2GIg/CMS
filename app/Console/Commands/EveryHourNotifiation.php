@@ -71,5 +71,4 @@ class EveryHourNotifiation extends Command
             $this->log->error($e->getMessage());
         }
     }
-    }
 }
