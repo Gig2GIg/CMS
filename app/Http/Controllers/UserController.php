@@ -1007,6 +1007,7 @@ class UserController extends Controller
             if($subscription && $subscription->count() != 0){
                 $subscription->update(['stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
                 $user->update(array('is_premium' => 0));
+                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
 
                 $responseOut = [
                     'message' => trans('messages.success'),
@@ -1034,7 +1035,7 @@ class UserController extends Controller
     public function handleAppleSubscription(Request $request)
     {
         try {
-            $userRepo = new UserRepository(new User());
+            $userRepo = new User();
             $subscriptionRepo = new UserSubscription;
 
             $data = $request->all();
@@ -1099,8 +1100,10 @@ class UserController extends Controller
 
                 if($data['auto_renew_status'] == "false"){
                     $user->update(array('is_premium' => 0));
+                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
                 }else{
                     $user->update(array('is_premium' => 1));
+                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
                 }
             }
 
@@ -1125,7 +1128,7 @@ class UserController extends Controller
     public function handleAndroidSubscription(Request $request)
     {
         try {
-            $userRepo = new UserRepository(new User());
+            $userRepo = new User();
             $subscriptionRepo = new UserSubscription;
 
             $data = $request->all();
@@ -1171,10 +1174,12 @@ class UserController extends Controller
                 //revoke premium flag from user
                 $autoRenewStatus = false;
                 $user->update(array('is_premium' => 0));
+                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
             }else if($notificationType == 1 || $notificationType == 2 || $notificationType == 4 || $notificationType == 7){
                 //Make user a premium user again
                 $autoRenewStatus = true;
                 $user->update(array('is_premium' => 1));
+                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
             }
 
             $expiryDate = $latestReceipt->subscriptionNotification->subscriptionId == env('ANDROID_PROD_MONTHLY') ? Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addMonth()->format('Y-m-d H:i:s') : Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addYear()->format('Y-m-d H:i:s');
