@@ -9,6 +9,7 @@ use App\Http\Controllers\Utils\StripeManagementController;
 use App\Http\Repositories\UserRepository;
 use App\Http\Resources\SubsCriptionUserResource;
 use App\Models\User;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 
 class SubscriptionController extends Controller
@@ -166,33 +167,16 @@ class SubscriptionController extends Controller
 
     public function getallSubscription()
     {
-        $dataUser = User::with('userSubscription')->get();
-        $filter = $dataUser->filter(function ($item) {
-            return $item->details['type'] === '2';
-        })->filter(function ($item) {
-            return $item->details['subscription'] !== '1';
-        });
+        // $dataUser = User::with('userSubscription')->get();
+        // $filter = $dataUser->filter(function ($item) {
+        //     return $item->details['subscription'] !== '1';
+        // });
 
-        $stripe = new StripeManagementController();
-        $subscriptions = $stripe->getStripeSubscriptions();
-
-        $filter->each(function ($subscription) use ($subscriptions) {
-            $data = DB::table('subscriptions')->where('user_id', $subscription->id)->first();
-
-            if ($data) {
-                $sub = $subscriptions->where('id', $data->stripe_id)->first();
-            } else {
-                $sub = null;
-            }
-
-            if ($sub) {
-                $subscription->expiration = Carbon::createFromTimestamp($sub->current_period_end)->format('m/d/Y g:i A');
-            } else {
-                $subscription->expiration = '';
-            }
-        });
-
-        return SubsCriptionUserResource::collection($filter);
+        $subRepo = new UserSubscription();
+        $dataUser = $subRepo->with('user')->orderBy('created_at', 'desc')->get();
+        // $stripe = new StripeManagementController();
+        // $subscriptions = $stripe->getStripeSubscriptions();
+        return SubsCriptionUserResource::collection($dataUser);
     }
 
     public function updateCardData(Request $request)
