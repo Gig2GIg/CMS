@@ -13,7 +13,7 @@ use Exception;
  *
  */
 
-class EveryHourNotifiation extends Command
+class EveryHalfHourNotifiation extends Command
 {
 
     /**
@@ -21,7 +21,7 @@ class EveryHourNotifiation extends Command
      *
      * @var string
      */
-    protected $signature = 'notification:sendEveryHour';
+    protected $signature = 'notification:sendEveryHalfHour';
 
     /**
      * The console command description.

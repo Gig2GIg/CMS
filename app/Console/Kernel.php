@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\EveryHourNotifiation::class,
+        \App\Console\Commands\EveryHalfHourNotifiation::class,
     ];
 
     /**
@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(Commands\EveryHourNotifiation::class)->hourly()->appendOutputTo(storage_path('logs/scheduler.log'));
+        $schedule->command(Commands\EveryHalfHourNotifiation::class)->everyThirtyMinutes()->appendOutputTo(storage_path('logs/scheduler.log'));
     }
 
     /**

@@ -657,9 +657,8 @@ class UserController extends Controller
 
     public function subscribe(SubscribeRequest $request)
     {
-
         try {
-            $userRepo = new UserRepository(new User());
+            $userRepo = new User();
             $user = $userRepo->find($request->user_id); 
 
             // creating stripe customer 
@@ -695,6 +694,8 @@ class UserController extends Controller
                     $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')));
                     
                     $user->update(array('is_premium' => 1));
+                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+
                     $userBillingDetails = new UserBillingDetails();
                     $billingDetails = [
                         'user_id' => $user->id,
@@ -899,7 +900,7 @@ class UserController extends Controller
     public function inAppSuccess(InAppSuccessRequest $request)
     {
         try {
-            $userRepo = new UserRepository(new User());
+            $userRepo = new User();
             $user = $userRepo->find($request->user_id);
 
             $subscription = new UserSubscription;
@@ -929,6 +930,7 @@ class UserController extends Controller
             );
 
             $user->update(array('is_premium' => 1));
+            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
 
             $responseOut = [
                 'message' => trans('messages.success'),

@@ -176,6 +176,7 @@ class PostsController extends Controller
             return response()->json($dataResponse, $code);
         } catch (\Exception $ex) {
             $this->log->error($ex->getMessage());
+            dd($ex);
             return response()->json(['error' => trans('messages.error')], 422);
             // return response()->json(['error' => 'ERROR'], 422);
         }
