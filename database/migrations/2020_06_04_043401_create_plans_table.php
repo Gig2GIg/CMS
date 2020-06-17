@@ -19,7 +19,7 @@ class CreatePlansTable extends Migration
             $table->string('stripe_plan')->nullable();
             $table->integer('allowed_performers')->default(0);
             $table->text('description')->description();
-            $table->float('amount')->default(0);
+            $table->float('amount')->nullable()->default(0);
             $table->enum('type',['monthly','annual','quarterly'])->nullable()->default('monthly');
             $table->integer('user_type')->nullable();
             $table->boolean('is_custom')->default(false);
