@@ -1042,7 +1042,7 @@ class UserController extends Controller
 
             $data = $request->all();
 
-            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'IOSwebhook.json', json_encode($data));
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y_m_d_H:i:s') . 'IOSwebhook.json', json_encode($data));
             
             $latestReceipt = !empty($data['unified_receipt']) && !empty($data['unified_receipt']['latest_receipt_info']) && !empty($data['unified_receipt']['latest_receipt_info'][0]) ? $data['unified_receipt']['latest_receipt_info'][0] : null;
 
@@ -1117,6 +1117,7 @@ class UserController extends Controller
             return response()->json($responseOut, $code);
         } catch (\Exception $e) {
             $this->log->error("APPLE WEBHOOK ERR: " . $e->getMessage());
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y_m_d_H:i:s') . 'IOSwebhook.json', 'APPLE WEBHOOK ERR: ' .json_encode($data));
             $responseOut = [
                 'message' => trans('messages.something_went_wrong'),
             ];
@@ -1136,7 +1137,7 @@ class UserController extends Controller
             $data = $request->all();
             $latestReceipt = json_decode(base64_decode($data['message']['data']));
             
-            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', json_encode($data));  
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y_m_d_H:i:s') . 'ANDROIDwebhook.json', json_encode($data));  
 
             $notificationType = $latestReceipt->subscriptionNotification ? $latestReceipt->subscriptionNotification->notificationType : NULL;
             
@@ -1211,7 +1212,7 @@ class UserController extends Controller
             
             return response()->json($responseOut, $code);
         } catch (\Exception $e) {
-            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y-m-d H:i:s') . 'ANDROIDwebhook.json', 'ERR-ANDROID--- '.json_encode($data));
+            \Storage::disk('local')->put(Carbon::now('UTC')->format('Y_m_d_H:i:s') . 'ANDROIDwebhook.json', 'ERR-ANDROID--- '.json_encode($data));
 
             $this->log->error("ANDROID WEBHOOK ERR: " . $e->getMessage());
             $responseOut = [
