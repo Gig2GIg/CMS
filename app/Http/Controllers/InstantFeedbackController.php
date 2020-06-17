@@ -365,9 +365,31 @@ class InstantFeedbackController extends Controller
             $dateHash = new \DateTime();
             $dataTime = $dateHash->getTimestamp();
             $repo = new PerformerRepository(new Performers());
-            $dataRepo = $repo->findbyparam('director_id', $this->getUserLogging())->get();
-            $count = $dataRepo->where('performer_id', $performer_id)->count();
-            if ($count > 0) {
+
+            $user = Auth::user();            
+            
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
+
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            $count = $data->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id', $performer_id);
+
+            if ($count->count() > 0) {
                 throw new \Exception("User exists in your database");
             }
             $register = [
