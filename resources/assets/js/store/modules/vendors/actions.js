@@ -100,11 +100,13 @@ export default {
       dispatch('toggleSpinner');
       // Delete image
       await firebase.storage().ref(`vendors/${vendor.image.name}`).delete();
-      commit(types.DELETE_VENDOR, vendor);
+      // commit(types.DELETE_VENDOR, vendor);
     } catch(e) {
       //
     } finally {
-      // 
+      //
+      commit(types.DELETE_VENDOR, vendor); 
+      dispatch('toggleSpinner');
     }
   },
 

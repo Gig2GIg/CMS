@@ -320,7 +320,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy', 'updateFeatured', 'updateNotFeatured']),
+    ...mapActions('vendors', ['fetch', 'store', 'update', 'destroy', 'updateFeatured', 'updateNotFeatured' , 'destroyFirebase']),
     ...mapActions({getCategories : 'categories/fetch'}),
     ...mapActions('toast', ['showError']),
 

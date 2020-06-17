@@ -47,10 +47,10 @@
 
                 <b-table-column
                   field="allowed_performers"
-                  label="Allow Performer"
+                  label="Allowed Performers"
                   sortable
-                >{{ props.row.allowed_performers }}</b-table-column>
-                <b-table-column field="amount" label="Amount" sortable>${{ props.row.amount }}</b-table-column>
+                >{{ props.row.allowed_performers }}{{ props.row.is_custom == 1 ? '+' :''}}</b-table-column>
+                <b-table-column field="amount" label="Amount" sortable>{{ props.row.is_custom == 1 ? '-' :   '$'+props.row.amount }}</b-table-column>
                 <b-table-column field="updated_at" label="Date" sortable>{{ props.row.updated_at }}</b-table-column>
               </template>
 

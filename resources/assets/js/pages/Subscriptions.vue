@@ -42,10 +42,10 @@
                   sortable
                 >{{ props.row.user.first_name }} {{ props.row.user.last_name }}</b-table-column>
 
-                <b-table-column field="plan" label="Plan" sortable>Plan {{ props.row.plan }}</b-table-column>
-                <b-table-column field="subscription.ends_at" label="Expiration" sortable>{{ props.row.expiration }}</b-table-column>
+                <b-table-column field="plan" label="Plan" sortable>{{ props.row.plan }}</b-table-column>
+                <b-table-column field="expiration" label="Expiration" sortable>{{ props.row.expiration }}</b-table-column>
 
-                <b-table-column field="actions" width="40">
+                <!-- <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
                     <button class="button is-info" slot="trigger">
                       <b-icon icon="menu-down"></b-icon>
@@ -54,7 +54,7 @@
                        <a @click.prevent.stop="showUpdateModal(props.row)">Edit</a>
                     </b-dropdown-item>
                   </b-dropdown>
-                </b-table-column>
+                </b-table-column> -->
               </template>
 
               <template slot="empty">
