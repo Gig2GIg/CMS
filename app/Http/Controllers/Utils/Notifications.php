@@ -119,58 +119,14 @@ class Notifications
 
             if ($type == 'cms' || $type == 'cms_to_user') {
                 if ($to == 'ONE') {
-                    $user->notification_history()->create([
-                        'title' => $title,
-                        'code' => $type,
-                        'status' => 'unread',
-                        'message' => $title,
-                    ]);
-                    
-                    $tokenArray = new Collection();
-                    $webTokenArray = new Collection();
-                    $user->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
-                        if($user_token_detail->device_token){
-                            if($user_token_detail->device_type == 'web'){
-                                $webTokenArray->push($user_token_detail->device_token);
-                            }else{
-                                $tokenArray->push($user_token_detail->device_token);
-                            }
-                        }
-                    });
-
-                    $tokens = $tokenArray->unique()->toArray();
-                    $webTokens = $webTokenArray->unique()->toArray();
-                    
-                    $notification = array();
-                    $notification['title'] = $title;
-                    $notification['body'] = $message;
-                    $notification['icon'] = self::ICON;
-                    $notification['click_action'] = '';
-                    
-                    $fcm = fcm();
-
-                    $fcm->to($tokens);
-                    $fcm->notification($notification);
-                    $fcm->send();
-
-                    //send to web with click action
-                    if(count($webTokens) != 0){
-                        $notification['click_action'] = $clickToSend;
-
-                        $fcm->to($webTokens);
-                        $fcm->notification($notification);
-                        $fcm->send();
-                    }
-                } else {
-                    $user = User::all();
-                    $user->each(function ($user) use ($title, $type, $message, $clickToSend) {
+                    if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         $user->notification_history()->create([
                             'title' => $title,
                             'code' => $type,
                             'status' => 'unread',
-                            'message' => $message,
+                            'message' => $title,
                         ]);
-
+                        
                         $tokenArray = new Collection();
                         $webTokenArray = new Collection();
                         $user->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
@@ -182,15 +138,16 @@ class Notifications
                                 }
                             }
                         });
+
                         $tokens = $tokenArray->unique()->toArray();
                         $webTokens = $webTokenArray->unique()->toArray();
-
+                        
                         $notification = array();
                         $notification['title'] = $title;
                         $notification['body'] = $message;
                         $notification['icon'] = self::ICON;
                         $notification['click_action'] = '';
-
+                        
                         $fcm = fcm();
 
                         $fcm->to($tokens);
@@ -204,6 +161,53 @@ class Notifications
                             $fcm->to($webTokens);
                             $fcm->notification($notification);
                             $fcm->send();
+                        }
+                    }    
+                } else {
+                    $user = User::all();
+                    $user->each(function ($user) use ($title, $type, $message, $clickToSend) {
+                        if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                            $user->notification_history()->create([
+                                'title' => $title,
+                                'code' => $type,
+                                'status' => 'unread',
+                                'message' => $message,
+                            ]);
+
+                            $tokenArray = new Collection();
+                            $webTokenArray = new Collection();
+                            $user->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                                if($user_token_detail->device_token){
+                                    if($user_token_detail->device_type == 'web'){
+                                        $webTokenArray->push($user_token_detail->device_token);
+                                    }else{
+                                        $tokenArray->push($user_token_detail->device_token);
+                                    }
+                                }
+                            });
+                            $tokens = $tokenArray->unique()->toArray();
+                            $webTokens = $webTokenArray->unique()->toArray();
+
+                            $notification = array();
+                            $notification['title'] = $title;
+                            $notification['body'] = $message;
+                            $notification['icon'] = self::ICON;
+                            $notification['click_action'] = '';
+
+                            $fcm = fcm();
+
+                            $fcm->to($tokens);
+                            $fcm->notification($notification);
+                            $fcm->send();
+
+                            //send to web with click action
+                            if(count($webTokens) != 0){
+                                $notification['click_action'] = $clickToSend;
+
+                                $fcm->to($webTokens);
+                                $fcm->notification($notification);
+                                $fcm->send();
+                            }
                         }
                     });
                 }
@@ -228,45 +232,47 @@ class Notifications
                             $tomsg = !empty($message) ? $message : $title;
                             $userRepo = new UserRepository(new User);
                             $user_result = $userRepo->find($useraudition->user_id);
-                            $user_result->notification_history()->create([
-                                'title' => $title,
-                                'code' => $type,
-                                'status' => 'unread',
-                                'message' => $tomsg,
-                            ]);
+                            if($user_result->details && (($user_result->details->type == 2 && $user_result->is_premium == 1) || $user_result->details->type != 2)){
+                                $user_result->notification_history()->create([
+                                    'title' => $title,
+                                    'code' => $type,
+                                    'status' => 'unread',
+                                    'message' => $tomsg,
+                                ]);
 
-                            $tokenArray = new Collection();
-                            $webTokenArray = new Collection();
-                            $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
-                                if($user_token_detail->device_token){
-                                    if($user_token_detail->device_type == 'web'){
-                                        $webTokenArray->push($user_token_detail->device_token);
-                                    }else{
-                                        $tokenArray->push($user_token_detail->device_token);
+                                $tokenArray = new Collection();
+                                $webTokenArray = new Collection();
+                                $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                                    if($user_token_detail->device_token){
+                                        if($user_token_detail->device_type == 'web'){
+                                            $webTokenArray->push($user_token_detail->device_token);
+                                        }else{
+                                            $tokenArray->push($user_token_detail->device_token);
+                                        }
                                     }
-                                }
-                            });
-                            $tokens = $tokenArray->unique()->toArray();
-                            $webTokens = $webTokenArray->unique()->toArray();
-                        
-                            $notification = array();
-                            $notification['title'] = $title;
-                            $notification['body'] = $tomsg;
-                            $notification['icon'] = self::ICON;
-                            $notification['click_action'] = '';
+                                });
+                                $tokens = $tokenArray->unique()->toArray();
+                                $webTokens = $webTokenArray->unique()->toArray();
+                            
+                                $notification = array();
+                                $notification['title'] = $title;
+                                $notification['body'] = $tomsg;
+                                $notification['icon'] = self::ICON;
+                                $notification['click_action'] = '';
 
-                            $fcm = fcm();
-                            $fcm->to($tokens);
-                            $fcm->notification($notification);
-                            $fcm->send();
-
-                            //send to web with click action
-                            if(count($webTokens) != 0){
-                                $notification['click_action'] = $clickToSend;
-
-                                $fcm->to($webTokens);
+                                $fcm = fcm();
+                                $fcm->to($tokens);
                                 $fcm->notification($notification);
                                 $fcm->send();
+
+                                //send to web with click action
+                                if(count($webTokens) != 0){
+                                    $notification['click_action'] = $clickToSend;
+
+                                    $fcm->to($webTokens);
+                                    $fcm->notification($notification);
+                                    $fcm->send();
+                                }
                             }
                         });
                     } else {

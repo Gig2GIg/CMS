@@ -814,9 +814,10 @@ class AuditionManagementController extends Controller
                 $mail = new SendMail();
                 $mail->sendPerformance($user, $dataMail);
 
-                $this->saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot);
-
-                $this->sendReorderAppointmentTimesNotification($user, $audition, $slot);
+                if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                    $this->saveReorderAppointmentTimesNotificationToUser($user, $audition, $slot);
+                    $this->sendReorderAppointmentTimesNotification($user, $audition, $slot);
+                }
             }
 
             if ($userSlotRepo) {
@@ -995,9 +996,10 @@ class AuditionManagementController extends Controller
                     }
                 }
 
-                $this->sendSaveAuditionNotificationToUser($detailData, $audition);
-
-                $this->saveAuditionNotificationToUser($detailData, $audition);
+                if($detailData->details && (($detailData->details->type == 2 && $detailData->is_premium == 1) || $detailData->details->type != 2)){
+                    $this->sendSaveAuditionNotificationToUser($detailData, $audition);
+                    $this->saveAuditionNotificationToUser($detailData, $audition);    
+                }
             } else {
                 $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                 $dataSlotRepo->create([

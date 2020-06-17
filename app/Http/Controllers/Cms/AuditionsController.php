@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Cms;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
-use App\Http\Controllers\Utils\Notifications as SendNotifications;
-use App\Http\Controllers\Utils\SendMail;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
 

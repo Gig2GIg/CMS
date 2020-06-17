@@ -100,13 +100,18 @@ class InstantFeedbackController extends Controller
                             ]);
                     }
 
-                    // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
-                    $this->saveStoreNotificationToUser($user, $audition, $comment);   
+                    if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        // send notification
+                        $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
+                        $this->saveStoreNotificationToUser($user, $audition, $comment); 
+                    }
+                      
                 }  else {
-                    // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
-                    $this->saveStoreNotificationToUser($user, $audition, $comment);
+                    if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        // send notification
+                        $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
+                        $this->saveStoreNotificationToUser($user, $audition, $comment);
+                    }
                 }
 
                 $this->addTalenteToDatabase($request->user);

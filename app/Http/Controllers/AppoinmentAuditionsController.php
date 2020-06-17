@@ -196,8 +196,10 @@ class AppoinmentAuditionsController extends Controller
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $auditionsRepo->find($appoinmentData->auditions_id);
 
-                $this->sendStoreNotificationToUser($user, $audition);
-                $this->saveStoreNotificationToUser($user, $audition);
+                if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                    $this->sendStoreNotificationToUser($user, $audition);
+                    $this->saveStoreNotificationToUser($user, $audition);
+                }
             } catch (NotificationException $exception) {
                 $this->log->error($exception->getMessage());
             }
