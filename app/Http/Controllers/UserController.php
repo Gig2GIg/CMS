@@ -1065,13 +1065,6 @@ class UserController extends Controller
                         $code = 200;
                         
                         return response()->json($responseOut, $code);
-                    }else if($subscription['current_transaction'] == $latestReceipt['transaction_id']){
-                        $responseOut = [
-                            'message' => trans('messages.success'),
-                        ];
-                        $code = 200;
-                        
-                        return response()->json($responseOut, $code);
                     }
                 }else{
                     $responseOut = [
