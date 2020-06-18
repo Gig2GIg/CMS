@@ -13,7 +13,7 @@ class MakeMarketplaceTableColumnsLarge extends Migration
      */
     public function up()
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
+        Schema::table('marketplaces', function (Blueprint $table) {
             DB::statement("ALTER TABLE `marketplaces` CHANGE `address` `address` VARCHAR( 255 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL , CHANGE `title` `title` VARCHAR( 255 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL ,CHANGE `url_web` `url_web` VARCHAR( 255 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
         });
     }
@@ -25,7 +25,7 @@ class MakeMarketplaceTableColumnsLarge extends Migration
      */
     public function down()
     {
-        Schema::table('subscriptions', function (Blueprint $table) {
+        Schema::table('marketplaces', function (Blueprint $table) {
      
         });   
     }

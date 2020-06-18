@@ -59,7 +59,7 @@ class EveryHalfHourNotifiation extends Command
             $subscription = $subscriptionRepo->where('ends_at', '<', $now)->where('stripe_status', '!=', 'canceled')->get();
         
             if($subscription && $subscription->count() != 0){
-                $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('stripe_status' => 'canceled'));
+                $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('updated_by' => 'cron', 'stripe_status' => 'canceled'));
 
                 $adminCasterIds = $subscription->pluck('user_id');
                 $invitedUserIds = $userRepo->whereIn('invited_by', $subscription->pluck('user_id'))->get()->pluck('id');
