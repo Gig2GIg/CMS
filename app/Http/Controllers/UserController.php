@@ -739,6 +739,9 @@ class UserController extends Controller
             {
                 $user->subscriptions->each(function ($subscription) {
                     $subscription->cancel();
+                    $subscription->grace_period = 1;
+
+                    $subscription->save();
                 });
 
                 $responseOut = ['message' => trans('messages.subscribe_cancelled')];
@@ -941,6 +944,7 @@ class UserController extends Controller
             $insertData['purchase_platform'] = $request->purchase_platform;
             $insertData['purchased_at'] = $request->purchased_at;
             $insertData['stripe_status'] = 'active';
+            $insertData['updated_by'] = 'mobile';
             if($request->has('ends_at')){
                 $insertData['ends_at'] = $request->ends_at;
             }
@@ -1117,6 +1121,7 @@ class UserController extends Controller
                 $insertData['ends_at'] = $data['auto_renew_status'] == "false" ? Carbon::now('UTC')->format('Y-m-d H:i:s') : Carbon::parse($latestReceipt['expires_date'])->setTimezone('UTC')->format('Y-m-d H:i:s');
                 $insertData['transaction_receipt'] = !empty($data['unified_receipt']) ? $data['unified_receipt']['latest_receipt'] : NULL;
                 $insertData['original_transaction'] = $latestReceipt['original_transaction_id'];
+                $insertData['updated_by'] = 'webhook';
                 
                 $subscriptionRepo->updateOrCreate(
                     ['original_transaction' => $latestReceipt['original_transaction_id'], 'product_id' => $latestReceipt['product_id']],
@@ -1222,6 +1227,7 @@ class UserController extends Controller
             $insertData['ends_at'] = $autoRenewStatus == false ? Carbon::now('UTC')->format('Y-m-d H:i:s') : $expiryDate;
             $insertData['transaction_receipt'] = $data['message']['data'];
             $insertData['original_transaction'] = $latestReceipt->subscriptionNotification->purchaseToken;
+            $insertData['updated_by'] = 'webhook';
             
             $subscriptionRepo->updateOrCreate(
                 ['original_transaction' => $latestReceipt->subscriptionNotification->purchaseToken, 'product_id' => $latestReceipt->subscriptionNotification->subscriptionId],
