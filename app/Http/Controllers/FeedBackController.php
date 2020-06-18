@@ -220,7 +220,7 @@ class FeedBackController extends Controller
             $hasid = new Hashids('g2g');
             $dateHash = new \DateTime();
             $dataTime = $dateHash->getTimestamp();
-            $repo = new PerformerRepository(new Performers());
+            $repo = new Performers();
 
             $user = Auth::user();            
             
@@ -243,7 +243,7 @@ class FeedBackController extends Controller
             //pushing own ID into WHERE IN constraint
             $allIdsToInclude->push($this->getUserLogging()); 
 
-            $count = $data->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id', $performer_id);
+            $count = $repo->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id', $performer_id);
 
             if ($count->count() > 0) {
                 throw new \Exception("User exists in your database");
