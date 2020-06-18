@@ -23,7 +23,7 @@ class FinalCastResource extends JsonResource
         $dataDetUser = $repoUserDet->findbyparam('user_id',$this->performer_id)->first();
         $dataRol = $repoRol->find($this->rol_id);
         $fname = $dataDetUser->first_name ?? '';
-          $lname=$dataDetUser->last_name ?? '';
+        $lname=$dataDetUser->last_name ?? '';
        return [
            'id'=>$this->id,
            'user_id'=>$this->performer_id,

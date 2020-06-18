@@ -36,7 +36,7 @@ class UserResource extends JsonResource
         if($this->details->type == 1){
             $repo = new Performers();
             $return['total_performers'] = $repo->where('director_id', $this->id)->get()->count(); 
-            $return['on_grace_period'] = $this->subscriptions()->first()->onGracePeriod();
+            $return['on_grace_period'] = $this->subscriptions()->first() ? $this->subscriptions()->first()->onGracePeriod() : false;
         }
 
         return $return; 
