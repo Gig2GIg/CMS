@@ -12,6 +12,11 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
  */
+//Stripe Webhook
+Route::post(
+    'stripe/webhook',
+    '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook'
+);
 
 //ANDROID webhook URL
 Route::post('/handle_android_subscription', ['uses' => 'UserController@handleAndroidSubscription']);
