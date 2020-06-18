@@ -13,9 +13,12 @@ use Illuminate\Http\Request;
 |
  */
 //Stripe Webhook
+// Route::post(
+//     'stripe/webhook',
+//     '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook'
+// );
 Route::post(
-    'stripe/webhook',
-    '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook'
+    'stripe/webhook', ['uses' => 'StripeWebhookController@handleWebhook']
 );
 
 //ANDROID webhook URL
