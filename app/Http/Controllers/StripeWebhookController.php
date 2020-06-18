@@ -26,7 +26,6 @@ class StripeWebhookController extends CashierController
     public function __construct()
     {
         $this->log = new LogManger();
-        $this->date = new ManageDates();
     }
 
     //webhook function for Stripe
@@ -43,6 +42,8 @@ class StripeWebhookController extends CashierController
             $user->update(array('is_premium' => 0));
             $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
         }
+
+        $this->log->info('STRIPE WEBHOOK:: Subscription cancelled for User ID '. $user->id);
 
         return $this->successMethod();
     }
