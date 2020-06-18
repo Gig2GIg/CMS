@@ -260,4 +260,28 @@ class SendMail
             return false;
         }
     }
+
+    public function sendUpgradeMail($emailTo, $data)
+    {   
+        try {
+            $email = new Mail();
+            $email->setFrom(env('SUPPORT_EMAIL'));
+            $email->setSubject('Gig2Gig+ Caster Subscription Upgradation');
+            $email->addTo($emailTo);
+            $email->addContent("text/html", "Congratulations! " . $data['name'] ., "<br />You are upgraded to new plan in which you can ". $data['new_sub'] ." Previous plan was having limit of " . $data['old_sub'] . " Performer Profiles in the Talent Database.");
+
+            $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
+
+            $response = $sendgrid->send($email);
+            if ($response->statusCode() === 202) {
+                return true;
+            } else {
+                $this->log->error($response->body() . " " . $response->statusCode());
+                return false;
+            }
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return false;
+        }
+    }
 }

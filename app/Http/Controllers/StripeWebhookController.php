@@ -113,7 +113,7 @@ class StripeWebhookController extends CashierController
     public function handleinvoicePaymentSucceeded(array $payload)
     {
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
-            $user->subscriptions->filter(function ($subscription) use ($payload) {
+            $user->subscriptions->each(function ($subscription) use ($payload) {
                
                 // Period ending date...
                 if (isset($data['period_end'])) {
