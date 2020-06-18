@@ -729,6 +729,36 @@ class UserController extends Controller
         }
     }
 
+    public function cancelSubscriptionManually(Request $request)
+    {
+        try {
+            $userRepo = new User();
+            $user = Auth::user();
+
+            if($user->is_premium != 0)
+            {
+                $user->subscriptions->each(function ($subscription) {
+                    $subscription->cancel();
+                });
+
+                $responseOut = ['message' => trans('messages.subscribe_cancelled')];
+                $code = 200;    
+            }else{
+                $responseOut = ['message' => trans('not_processable')];
+                $code = 406;
+            }
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => $e->getMessage()], 406);
+            }
+        }
+    }
+
     public function listSubscriptionPlans(Request $request)
     {
         try {

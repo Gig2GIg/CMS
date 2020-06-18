@@ -30,7 +30,8 @@ class UserResource extends JsonResource
             'stripe_id' => $this->stripe_id,
             'card_brand' => $this->card_brand,
             'card_last_four' => $this->card_last_four,
-            'admin_id' => $this->invited_by
+            'admin_id' => $this->invited_by,
+            'on_grace_period' => $this->subscriptions()->first()->onGracePeriod()
         ];
 
         if($this->details->type == 1){

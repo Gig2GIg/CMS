@@ -58,6 +58,7 @@ class StripeWebhookController extends CashierController
             })->each(function (Subscription $subscription) use ($data) {
                 if (isset($data['status']) && $data['status'] === 'incomplete_expired') {
                     $subscription->delete();
+                    $this->updateUserPremiumStatus($user, 0);
 
                     return;
                 }
