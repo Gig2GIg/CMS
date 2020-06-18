@@ -1007,7 +1007,7 @@ class UserController extends Controller
             $subscription = $subscriptionRepo->where($conditions)->first();
 
             if($subscription && $subscription->count() != 0){
-                $subscription->update(['stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
+                $subscription->update(['updated_by' => 'mobile', 'stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
                 $user->update(array('is_premium' => 0));
                 $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
 

@@ -14,7 +14,7 @@ class AddUpdatedByColumnInSubscriptionsTable extends Migration
     public function up()
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            DB::statement("ALTER TABLE `subscriptions` ADD `updated_by` ENUM('cron','webhook') NOT NULL DEFAULT 'webhook' AFTER `purchased_at`");
+            DB::statement("ALTER TABLE `subscriptions` ADD `updated_by` ENUM('cron','webhook','mobile') NOT NULL DEFAULT 'webhook' AFTER `purchased_at`");
         });
     }
 
