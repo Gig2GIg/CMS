@@ -30,7 +30,7 @@ class StripeWebhookController extends CashierController
         $this->log = new LogManger();
     }
 
-    //webhook function for Stripe
+    //webhook functions for Stripe
     public function handleCustomerSubscriptionDeleted(array $payload)
     {
         $userRepo = new User;
@@ -46,6 +46,32 @@ class StripeWebhookController extends CashierController
         }
 
         $this->log->info('STRIPE WEBHOOK:: Subscription cancelled for User ID '. $user->id);
+
+        return $this->successMethod();
+    }
+
+    public function handleinvoicePaymentSucceeded(array $payload)
+    {
+        $userRepo = new User;
+        if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
+            $user->subscriptions->filter(function ($subscription) use ($payload) {
+               
+                // Period ending date...
+                if (isset($data['period_end'])) {
+                    $period_ends = Carbon::createFromTimestamp($data['period_end']);
+
+                    $subscription->ends_at = $period_ends;
+                    $subscription->stripe_status = 'active';
+                } 
+
+                $subscription->save();
+            });
+
+            $user->update(array('is_premium' => 1));
+            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+        }
+
+        $this->log->info('STRIPE WEBHOOK:: Subscription payment suceeded for User ID '. $user->id);
 
         return $this->successMethod();
     }
