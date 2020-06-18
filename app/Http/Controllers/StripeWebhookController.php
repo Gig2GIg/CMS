@@ -95,8 +95,10 @@ class StripeWebhookController extends CashierController
                 // Status...
                 if (isset($data['status'])) {
                     $subscription->stripe_status = $data['status'];
-                    if($data['status'] == 'past_due'){
+                    if($data['status'] == 'past_due' || $data['status'] == 'incomplete_expired' || $data['status'] == 'canceled'){
                         $this->updateUserPremiumStatus($user, 0);
+                    }else{
+                        $this->updateUserPremiumStatus($user, 1);
                     } 
                 }
 
