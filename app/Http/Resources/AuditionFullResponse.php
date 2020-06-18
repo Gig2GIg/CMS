@@ -33,7 +33,7 @@ class AuditionFullResponse extends JsonResource
             $admin_id = NULL;
         }
 
-        $this->contributors->each(function ($item) {
+        $this->contributors->each(function ($item) use($user) {
             $userData = $user->find($item->user_id);
             $userData->push($userData->details);
             $item['contributor_info'] = $userData;
