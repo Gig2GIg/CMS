@@ -33,7 +33,6 @@ class StripeWebhookController extends CashierController
     //webhook functions for Stripe
     public function handleCustomerSubscriptionDeleted(array $payload)
     {
-        $userRepo = new User;
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
             $user->subscriptions->filter(function ($subscription) use ($payload) {
                 return $subscription->stripe_id === $payload['data']['object']['id'];
@@ -41,8 +40,7 @@ class StripeWebhookController extends CashierController
                 $subscription->markAsCancelled();
             });
 
-            $user->update(array('is_premium' => 0));
-            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
+            $this->updateUserPremiumStatus($user, 0);
         }
 
         $this->log->info('STRIPE WEBHOOK:: Subscription cancelled for User ID '. $user->id);
@@ -50,9 +48,67 @@ class StripeWebhookController extends CashierController
         return $this->successMethod();
     }
 
+    public function handleCustomerSubscriptionUpdated(array $payload)
+    {
+        if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
+            $data = $payload['data']['object'];
+
+            $user->subscriptions->filter(function (Subscription $subscription) use ($data) {
+                return $subscription->stripe_id === $data['id'];
+            })->each(function (Subscription $subscription) use ($data) {
+                if (isset($data['status']) && $data['status'] === 'incomplete_expired') {
+                    $subscription->delete();
+
+                    return;
+                }
+
+                // Quantity...
+                if (isset($data['quantity'])) {
+                    $subscription->quantity = $data['quantity'];
+                }
+
+                // Plan...
+                if (isset($data['plan']['id'])) {
+                    $subscription->stripe_plan = $data['plan']['id'];
+                }
+
+                // Trial ending date...
+                if (isset($data['trial_end'])) {
+                    $trial_ends = Carbon::createFromTimestamp($data['trial_end']);
+
+                    if (! $subscription->trial_ends_at || $subscription->trial_ends_at->ne($trial_ends)) {
+                        $subscription->trial_ends_at = $trial_ends;
+                    }
+                }
+
+                // Cancellation date...
+                if (isset($data['cancel_at_period_end'])) {
+                    if ($data['cancel_at_period_end']) {
+                        $subscription->ends_at = $subscription->onTrial()
+                            ? $subscription->trial_ends_at
+                            : Carbon::createFromTimestamp($data['current_period_end']);
+                    } else {
+                        $subscription->ends_at = null;
+                    }
+                }
+
+                // Status...
+                if (isset($data['status'])) {
+                    $subscription->stripe_status = $data['status'];
+                    if($data['status'] == 'past_due'){
+                        $this->updateUserPremiumStatus($user, 0);
+                    } 
+                }
+
+                $subscription->save();
+            });
+        }
+
+        return $this->successMethod();
+    }
+
     public function handleinvoicePaymentSucceeded(array $payload)
     {
-        $userRepo = new User;
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
             $user->subscriptions->filter(function ($subscription) use ($payload) {
                
@@ -67,8 +123,7 @@ class StripeWebhookController extends CashierController
                 $subscription->save();
             });
 
-            $user->update(array('is_premium' => 1));
-            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+            $this->updateUserPremiumStatus($user, 1);
         }
 
         $this->log->info('STRIPE WEBHOOK:: Subscription payment suceeded for User ID '. $user->id);
@@ -83,6 +138,20 @@ class StripeWebhookController extends CashierController
         }
 
         return (new User)->where('stripe_id', $stripeId)->first();
+    }
+
+    protected function updateUserPremiumStatus($user = null, $status)
+    {
+        if ($status === null) {
+            return;
+        }
+
+        $userRepo = new User;
+
+        $user->update(array('is_premium' => $status));
+        $userRepo->where('invited_by', $user->id)->update(array('is_premium' => $status));
+
+        return true;
     }
 
     protected function successMethod($parameters = [])
