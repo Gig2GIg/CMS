@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Traits\StipeTraits;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Laravel\Cashier\Subscription;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 
 class StripeWebhookController extends CashierController
