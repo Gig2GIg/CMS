@@ -70,6 +70,7 @@ class AuditionsController extends Controller
             if ($request->isJson()) {
                 $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
+                $auditionData['user_id'] = Auth::user()->getAuthIdentifier();
                 if (isset($request['media'])) {
                     foreach ($request['media'] as $file) {
                         $auditionFilesData[] = [
@@ -206,9 +207,7 @@ class AuditionsController extends Controller
             'contract' => strtoupper($request->contract),
             'production' => strtoupper($request->production),
             'status' => false,
-            'online' => $request->online ?? false,
-            'user_id' => Auth::user()->getAuthIdentifier(),
-
+            'online' => $request->online ?? false
         ];
     }
 
