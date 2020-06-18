@@ -21,6 +21,7 @@ use App\Models\UserAuditions;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use stdClass;
 

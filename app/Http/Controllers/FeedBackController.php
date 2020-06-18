@@ -17,6 +17,8 @@ use App\Models\UserSlots;
 use App\Models\PerformersComment;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 
 class FeedBackController extends Controller
