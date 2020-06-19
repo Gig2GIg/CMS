@@ -921,7 +921,6 @@ class UserController extends Controller
             
             return response()->json($responseData, $code);
         } catch (\Exception $e) {
-            dd($e);
             $this->log->error($e->getMessage());
             if ($e instanceof NotFoundException) {
                 return response()->json(['message' => self::NOT_FOUND_DATA], 404);
