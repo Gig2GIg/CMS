@@ -684,6 +684,12 @@ class UserController extends Controller
                 $planData['stripe_plan_id'] = $request->stripe_plan_id;
                 $planData['stripe_plan_name'] = $request->stripe_plan_name;
 
+                //cancelling and removing other subscriptions if any 
+                $user->subscriptions->each(function ($subscription) {
+                    $subscription->cancelNow();
+                    $subscription->delete();
+                });
+
                 if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
 
                     //getting next billing date as ends at
