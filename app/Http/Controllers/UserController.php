@@ -673,7 +673,7 @@ class UserController extends Controller
             $cardData['number'] = $request->number;
             $cardData['name_on_card'] = $request->name_on_card;
 
-            if(!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1)
+            if((!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1) || $user->subscription($request->stripe_plan_name)->cancelled())
             {
                 $cardToken = $this->createCardToken($cardData);
                 $this->updateDefaultSrc($user, $cardToken);
