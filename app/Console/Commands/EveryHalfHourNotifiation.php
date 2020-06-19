@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\UserSubscription;
+use App\Http\Controllers\Utils\LogManger;
+
 use Exception;
 
 /**
@@ -15,6 +17,8 @@ use Exception;
 
 class EveryHalfHourNotifiation extends Command
 {
+
+    protected $log;
 
     /**
      * The name and signature of the console command.
@@ -28,7 +32,7 @@ class EveryHalfHourNotifiation extends Command
      *
      * @var string
      */
-    protected $description = 'Check expired users every Hour';
+    protected $description = 'Check expired users every Half Hour';
 
     /**
      * Create a new command instance.
@@ -38,6 +42,7 @@ class EveryHalfHourNotifiation extends Command
     public function __construct()
     {
         parent::__construct();
+        $this->log = new LogManger();
     }
 
     /**
@@ -55,8 +60,8 @@ class EveryHalfHourNotifiation extends Command
         try {
             $userRepo = new User();
             $subscriptionRepo = new UserSubscription;
-            $now = Carbon::now('UTC')->format('Y-m-d H:i:s');
-            $subscription = $subscriptionRepo->where('ends_at', '<', $now)->where('stripe_status', '!=', 'canceled')->get();
+            $compare = Carbon::now('UTC')->subDays(1)->format('Y-m-d H:i:s');
+            $subscription = $subscriptionRepo->where('ends_at', '<', $compare)->where('stripe_status', '!=', 'canceled')->get();
         
             if($subscription && $subscription->count() != 0){
                 $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('updated_by' => 'cron', 'stripe_status' => 'canceled'));

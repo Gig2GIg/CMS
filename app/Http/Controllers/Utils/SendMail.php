@@ -268,7 +268,7 @@ class SendMail
             $email->setFrom(env('SUPPORT_EMAIL'));
             $email->setSubject('Gig2Gig+ Caster Subscription Upgradation');
             $email->addTo($emailTo);
-            $email->addContent("text/html", "Congratulations! " . $data['name'] . ",<br />You are upgraded to new plan in which you can ". $data['new_sub'] ." Previous plan was having limit of " . $data['old_sub'] . " Performer Profiles in the Talent Database.");
+            $email->addContent("text/html", "Congratulations! " . $data['name'] . ",<br />You are upgraded to new plan in which you can ". $data['new_sub'] ." Previous plan was having limit of " . $data['old_sub'] . " Performer Profiles in the Talent Database.<br />You will be charged <strong>$" . $data['new_amount'] . "</strong> for Upgraded Subscription on next billing cycle dated <strong>". $data['next_billing_date'] ." UTC</strong>.");
 
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 

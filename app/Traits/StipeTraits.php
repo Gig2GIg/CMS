@@ -62,4 +62,10 @@ trait StipeTraits
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         return \Stripe\Subscription::all(['customer' => $user->stripe_id, 'status' => 'active']);        
     }
+
+    public function getUpcomingInvoice($user)
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        return \Stripe\Invoice::upcoming(["customer" => $user->stripe_id, 'subscription' => $user->subscriptions()->first()->stripe_id]);
+    }
 }
