@@ -21,7 +21,7 @@ Route::post(
     'stripe/webhook', ['uses' => 'StripeWebhookController@handleWebhook']
 );
 
-Route::get('/upgradePlan', ['uses' => 'UserController@upgradePlan']);
+// Route::get('/upgradePlan', ['uses' => 'UserController@upgradePlan']);
 
 //ANDROID webhook URL
 Route::post('/handle_android_subscription', ['uses' => 'UserController@handleAndroidSubscription']);
