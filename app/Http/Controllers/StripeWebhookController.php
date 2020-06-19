@@ -34,7 +34,7 @@ class StripeWebhookController extends CashierController
     public function handleCustomerSubscriptionDeleted(array $payload)
     {
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
-            $user->subscriptions->filter(function ($subscription) use ($payload) {
+            $user->subscriptions->filter(function ($subscription) use ($payload, $user) {
                 return $subscription->stripe_id === $payload['data']['object']['id'];
             })->each(function ($subscription) {
                 $subscription->markAsCancelled();
@@ -53,9 +53,9 @@ class StripeWebhookController extends CashierController
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
             $data = $payload['data']['object'];
 
-            $user->subscriptions->filter(function (Subscription $subscription) use ($data) {
+            $user->subscriptions->filter(function (Subscription $subscription) use ($data, $user) {
                 return $subscription->stripe_id === $data['id'];
-            })->each(function (Subscription $subscription) use ($data) {
+            })->each(function (Subscription $subscription) use ($data, $user) {
                 if (isset($data['status']) && $data['status'] === 'incomplete_expired') {
                     $subscription->delete();
                     $this->updateUserPremiumStatus($user, 0);
@@ -113,7 +113,7 @@ class StripeWebhookController extends CashierController
     public function handleinvoicePaymentSucceeded(array $payload)
     {
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
-            $user->subscriptions->each(function ($subscription) use ($payload) {
+            $user->subscriptions->each(function ($subscription) use ($payload, $user) {
                
                 // Period ending date...
                 if (isset($data['period_end'])) {
