@@ -83,7 +83,7 @@ class EveryFourHourNotifiation extends Command
 
                     $currentSubscription = $userData->subscriptions()->first();
                     //swapping next upgraded plan for user
-                    $currentSubscription->swap($upgradedPlan->stripe_plan);
+                    $currentSubscription->noProrate()->swap($upgradedPlan->stripe_plan);
 
                     $this->log->info("User subscription upgraded by CRON: From " . $currentSubscription->stripe_plan . " To ". $upgradedPlan->stripe_plan . " @" . Carbon::now('UTC')->format('Y-m-d H:i:s'));
 
