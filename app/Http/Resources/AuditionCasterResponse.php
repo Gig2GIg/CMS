@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class AuditionCasterResponse extends JsonResource
 {
@@ -26,32 +27,23 @@ class AuditionCasterResponse extends JsonResource
     public function toArray($request)
     {
         $user = new User();
+        $collection = new Collection();
+
         $uData = $user->with(['details','image'])->where('id', $this->user_id)->first();
-        $admin_data = NULL;
-        $admin_id = NULL;
+
+        $collection->push(collect($uData));
 
         if($uData){
-            $admin_id = $uData->invited_by;
-            if($admin_id)
+            if($uData->invited_by)
                 $admin_data = $user->with(['details','image'])->where('id', $uData->invited_by)->first();
+                $collection->push(collect($admin_data));
         }
 
         $this->contributors->each(function ($item) use($user) {
             $userData = $user->with(['details','image'])->where('id', $item->user_id)->first();
-
-            $userData->push($userData->details);
-            $item['contributor_info'] = $userData;
+            $collection->push(collect($userData));
         });
 
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'create'=>$this->created_at,
-            'user_id' => $this->user_id,
-            'director' => $uData,
-            'contributors' => $this->contributors,
-            'admin_id' => $admin_id,
-            'admin_data' => $admin_data,
-        ];
+        return $collection;
     }
 }
