@@ -196,16 +196,22 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function getUpcoming()
+    public function getUpcoming(Request $request)
     {
         try {
-            $dataAuditions = DB::table('appointments')
+            $data = DB::table('appointments')
                 ->select('UA.id', 'UA.user_id', 'UA.appointment_id', 'UA.rol_id', 'UA.slot_id', 'UA.type', 'UA.created_at', 'UA.updated_at', 'UA.assign_no')
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('appointments.status', 1)
-                ->where('UA.type', 1)
-                ->get()->sortByDesc('created_at');
+                ->where('UA.type', 1);
+
+            if($request->has('only_online') && ($request->only_online == 1 || $request->only_online == 0)){
+                $data->Join('auditions AS A', 'A.id', '=', 'appointments.auditions_id')
+                    ->where('A.online', $request->only_online);
+            }
+
+            $dataAuditions = $data->get()->sortByDesc('created_at');
 
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
@@ -222,7 +228,7 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function getPassed()
+    public function getPassed(Request $request)
     {
         try {
             $data = DB::table('appointments')
@@ -248,8 +254,13 @@ class AuditionManagementController extends Controller
 
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
-                ->where('appointments.status', 0)
-                ->get()->sortByDesc('created_at');
+                ->where('appointments.status', 0);
+
+            if($request->has('only_online') && ($request->only_online == 1 || $request->only_online == 0)){
+                $data->where('A.online', $request->only_online);
+            }
+
+            $dataAuditions = $data->get()->sortByDesc('created_at');
 
                 // dd($data);
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
@@ -269,8 +280,8 @@ class AuditionManagementController extends Controller
             // });
             // print_r($data);exit;
 
-            if ($data->count() > 0) {
-                $dataResponse = ['data' => UserAuditionsResource::collection($data)];
+            if ($dataAuditions->count() > 0) {
+                $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             } else {
                 $dataResponse = ['data' => []];
             }
@@ -385,14 +396,21 @@ class AuditionManagementController extends Controller
         }
     }
 
-    public function getRequested()
+    public function getRequested(Request $request)
     {
         try {
-            $userAuditions = new UserAuditionsRepository(new UserAuditions());
+            $userAuditions = new UserAuditions();
+            
+            $data = $userAuditions->where('user_auditions.user_id', $this->getUserLogging())->where('user_auditions.type', '=', '2');
 
-            $data = $userAuditions->getByParam('user_id', $this->getUserLogging());
+            if($request->has('only_online') && ($request->only_online == 1 || $request->only_online == 0)){
+                $data->whereHas('appointments.auditions', function ($q) use($request){
+                    $q->where('auditions.online', $request->only_online);    
+                });
+            }
 
-            $dataAuditions = $data->where('type', '=', '2')->sortByDesc('created_at');
+            $dataAuditions = $data->get()->sortByDesc('created_at');
+
             if ($dataAuditions->count() > 0) {
                 $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
             } else {
