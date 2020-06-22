@@ -686,7 +686,7 @@ class UserController extends Controller
 
                 //cancelling and removing other subscriptions if any 
                 $user->subscriptions->each(function ($subscription) {
-                    $subscription->cancelNow();
+                    // $subscription->cancelNow();
                     $subscription->delete();
                 });
 

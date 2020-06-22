@@ -41,9 +41,10 @@ class StripeWebhookController extends CashierController
             });
 
             $this->updateUserPremiumStatus($user, 0);
-        }
 
-        $this->log->info('STRIPE WEBHOOK:: Subscription cancelled for User ID '. $user->id);
+            $this->log->info('STRIPE WEBHOOK:: Subscription cancelled for User ID '. $user->id);
+
+        }
 
         return $this->successMethod();
     }
@@ -127,9 +128,10 @@ class StripeWebhookController extends CashierController
             });
 
             $this->updateUserPremiumStatus($user, 1);
-        }
 
-        $this->log->info('STRIPE WEBHOOK:: Subscription payment suceeded for User ID '. $user->id);
+            $this->log->info('STRIPE WEBHOOK:: Subscription payment suceeded for User ID '. $user->id);
+
+        }
 
         return $this->successMethod();
     }
