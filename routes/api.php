@@ -72,6 +72,7 @@ $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use 
     $router->get('/auditions/show', ['uses' => 'AuditionsController@getAll']);
     $router->get('/auditions/showfull', ['uses' => 'AuditionsController@getFullData']);
     $router->get('/auditions/show/{id}', ['uses' => 'AuditionsController@get']);
+    $router->get('/auditions/getAuditionUserData/{id}', ['uses' => 'AuditionsController@getAuditionUserData']);
     $router->post('/appointments/auditions', ['uses' => 'AppoinmentAuditionsController@store']);
     $router->get('/appointments/auditions', ['uses' => 'AppoinmentAuditionsController@preStore']);
     $router->get('/appointments/auditions/{audition}', ['uses' => 'AppoinmentAuditionsController@show']);

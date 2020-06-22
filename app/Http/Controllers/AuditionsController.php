@@ -26,6 +26,7 @@ use App\Http\Resources\AuditionFullResponse;
 use App\Http\Resources\AuditionAnalyticsResponse;
 use App\Http\Resources\AuditionResponse;
 use App\Http\Resources\ContributorsResource;
+use App\Http\Resources\AuditionCasterResponse;
 use App\Models\Appointments;
 use App\Models\AuditionContributors;
 use App\Models\Auditions;
@@ -474,6 +475,27 @@ class AuditionsController extends Controller
 
             if (isset($data->id)) {
                 $responseData = new AuditionFullResponse($data);
+                $dataResponse = ['data' => $responseData];
+                $code = 200;
+            } else {
+                $dataResponse = ['error' => 'Not Found'];
+                $code = 404;
+            }
+            return response()->json($dataResponse, $code);
+        } catch (NotFoundException $exception) {
+            return response()->json(['error' => trans('messages.data_not_found')], 404);
+            // return response()->json(['error' => 'Not Found'], 404);
+        }
+    }
+
+    public function getAuditionUserData(Request $request)
+    {
+        try {
+            $audition = new AuditionRepository(new Auditions());
+            $data = $audition->find($request->id);
+
+            if (isset($data->id)) {
+                $responseData = new AuditionCasterResponse($data);
                 $dataResponse = ['data' => $responseData];
                 $code = 200;
             } else {
