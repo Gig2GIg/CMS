@@ -38,7 +38,7 @@ class AuditionCasterResponse extends JsonResource
             $collection->push(collect($admin_data));
         }
 
-        $this->contributors->each(function ($item) use($user) {
+        $this->contributors->each(function ($item) use($user, $collection) {
             $userData = $user->with(['details','image'])->where('id', $item->user_id)->first();
             $collection->push(collect($userData));
         });
