@@ -33,10 +33,9 @@ class AuditionCasterResponse extends JsonResource
 
         $collection->push(collect($uData));
 
-        if($uData){
-            if($uData->invited_by)
-                $admin_data = $user->with(['details','image'])->where('id', $uData->invited_by)->first();
-                $collection->push(collect($admin_data));
+        if($uData && $uData->invited_by){
+            $admin_data = $user->with(['details','image'])->where('id', $uData->invited_by)->first();
+            $collection->push(collect($admin_data));
         }
 
         $this->contributors->each(function ($item) use($user) {
