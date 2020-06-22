@@ -231,6 +231,8 @@ class AuditionManagementController extends Controller
     public function getPassed(Request $request)
     {
         try {
+            \DB::enableQueryLog();
+
             $data = DB::table('appointments')
 
                 ->select(
@@ -262,6 +264,9 @@ class AuditionManagementController extends Controller
 
             $dataAuditions = $data->get()->sortByDesc('created_at');
 
+            dd(\DB::getQueryLog());
+
+
                 // dd($data);
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
             // $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
@@ -291,6 +296,58 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             // dd($exception->getMessage());
             // return response()->json(['data' => 'Not Found Data'], 404);
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+    }
+
+    public function getPassedWithFeedback(Request $request)
+    {
+        try {
+            \DB::enableQueryLog();
+            $data = DB::table('appointments')
+
+                ->select(
+                    'UA.id',
+                    'UA.appointment_id',
+                    'UA.rol_id',
+                    'UA.slot_id',
+                    'UA.type',
+                    'UA.created_at',
+                    'UA.updated_at',
+                    'F.comment',
+                    'appointments.status',
+                    'UA.assign_no')
+
+                ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
+                ->leftJoin('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
+                ->where(function ($q) {
+                    $q->whereRaw("EXISTS(SELECT * from feedbacks AS FI WHERE appointments.id = FI.appointment_id)");
+                    $q->orWhereRaw("EXISTS(SELECT * from instant_feedback AS I WHERE appointments.id = I.appointment_id)");
+                })
+                ->Join('auditions AS A', function ($join) {
+                    $join->on('appointments.auditions_id', '=', 'A.id');
+                })
+                ->where('UA.user_id', $this->getUserLogging())
+                ->where('appointments.status', 0);
+
+            if($request->has('only_online') && ($request->only_online == 1 || $request->only_online == 0)){
+                $data->where('A.online', $request->only_online);
+            }
+
+            $dataAuditions = $data->get()->sortByDesc('created_at');
+
+            dd(\DB::getQueryLog());
+
+            if ($dataAuditions->count() > 0) {
+                $dataResponse = ['data' => UserAuditionsResource::collection($dataAuditions)];
+            } else {
+                $dataResponse = ['data' => []];
+            }
+
+            return response()->json($dataResponse, 200);
+        } catch (Exception $exception) {
+            dd($exception);
+            $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         }
     }
