@@ -84,7 +84,7 @@ class EveryFourHourNotifiation extends Command
                 if($subscription['plan']['allowed_performers'] && ($subscription['plan']['allowed_performers'] < $performerCount)){
                     
                     //Get next plan that suits the caster for their respective performer count in the talent DB
-                    $upgradedPlan = $planRepo->where('allowed_performers', '>', $performerCount)->where('user_type', 1)->where('is_custom', 0)->get()->sortBy('allowed_performers')->first();
+                    $upgradedPlan = $planRepo->where('allowed_performers', '>', $performerCount)->where('user_type', 1)->where('is_custom', 0)->where('is_active', 1)->get()->sortBy('allowed_performers')->first();
 
                     $userData = $userRepo->find($subscription->user_id);
 

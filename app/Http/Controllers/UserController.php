@@ -800,6 +800,7 @@ class UserController extends Controller
             $plans = DB::table('plans')
                         ->select('*')
                         ->where('user_type', 1)
+                        ->where('is_active', 1)
                         ->orderByRaw('ISNULL(amount), amount ASC')
                         ->get();
 

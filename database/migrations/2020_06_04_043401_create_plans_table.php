@@ -23,6 +23,7 @@ class CreatePlansTable extends Migration
             $table->enum('type',['monthly','annual','quarterly','daily'])->nullable()->default('monthly');
             $table->integer('user_type')->nullable();
             $table->boolean('is_custom')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
