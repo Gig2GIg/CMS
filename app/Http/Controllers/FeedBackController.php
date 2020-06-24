@@ -58,6 +58,7 @@ class FeedBackController extends Controller
                 'favorite' => $request->favorite,
                 'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
+                'rating' => $request->rating && $request->rating != null && $request->rating != "" ? $request->rating : null,
             ];
 
             $repo = new FeedbackRepository(new Feedbacks());
@@ -113,6 +114,7 @@ class FeedBackController extends Controller
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
+                'rating' => $request->rating && $request->rating != null && $request->rating != "" ? $request->rating : null,
             ];
             
             $feedbackRepo = new FeedbackRepository(new Feedbacks());

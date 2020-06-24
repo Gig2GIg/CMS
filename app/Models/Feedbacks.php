@@ -11,6 +11,7 @@ class Feedbacks extends Model
         'user_id',
         'evaluator_id',
         'evaluation',
+        'rating',
         'callback',
         'work',
         'favorite',
