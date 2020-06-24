@@ -72,8 +72,15 @@ class EveryFourHourNotifiation extends Command
             $subscriptions->each(function ($subscription) use ($performersRepo) {
                 $userRepo = new User();
                 $planRepo = new Plan();
+                
+                //it is to fetch logged in user's invited users data if any
+                $invitedUserIds = $userRepo->where('invited_by', $subscription->user_id)->get()->pluck('id');
 
-                $performerCount = $performersRepo->where('director_id', $subscription->user_id)->get()->count();
+                //pushing own ID into WHERE IN constraint
+                $invitedUserIds->push($subscription->user_id); 
+
+                $performerCount = $performersRepo->whereIn('director_id', $invitedUserIds->unique()->values())->get()->count();
+
                 if($subscription['plan']['allowed_performers'] && ($subscription['plan']['allowed_performers'] < $performerCount)){
                     
                     //Get next plan that suits the caster for their respective performer count in the talent DB
