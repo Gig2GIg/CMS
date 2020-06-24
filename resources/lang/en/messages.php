@@ -132,7 +132,7 @@ return [
 
     'default_instant_feedback_message' => "Thanks for attending. That's all we need today",
 
-    'subscribe_success' => "Subscription successful",
+    'subscribe_success' => "Subscription created successfully",
     'subscribed_already' => "Sorry! You already have active subscription",
     'subscribe_failed' => "Sorry! We couldn't subscribe you to this plan, try again later",
     'subscribe_cancelled' => 'Your subscription has been cancelled successfully',
