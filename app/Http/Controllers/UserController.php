@@ -797,8 +797,16 @@ class UserController extends Controller
             //     return $item;
             // });
 
-            $repo = new Plan();
-            $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
+            $plans = DB::table('plans')
+                        ->select('*')
+                        ->where('user_type', 1)
+                        ->orderByRaw('ISNULL(amount), amount ASC')
+                        ->get();
+
+            // $repo = new Plan();
+            // $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
+
+            //dd($plans->toArray());
 
             $responseData = ['data' => $plans];
             $code = 200;
