@@ -241,10 +241,9 @@ class SendMail
         try {
             $email = new Mail();
             $email->setFrom(env('SUPPORT_EMAIL'));
-            $email->setSubject('Gig2Gig+ Caster Invitation');
+            $email->setSubject('Gig2Gig+ Casting Team Invitation');
             $email->addTo($emailTo);
-            $email->addContent("text/html", "Congratulations! You are invited by ". $data['name'] ." for accessing Gig2Gig+.<br />Your new password is: <strong>" .
-                $password . "</strong><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click here to Log In</a><br />Please, change the password right away after logging in.");
+            $email->addContent("text/html", "Congratulations!<br/><br/>". $data['name'] ." has invited you to join their Gig2Gig+ team.<br/><br/>To access your account login with this email address.<br/><br/>Your temporary password is : <strong>" . $password . "</strong><br/><br/>You'll have the ability to change your password during your first login.<br/><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click Here to Login</a><br/>Thanks,<br/><br/>The Gig2Gig Team");
 
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 

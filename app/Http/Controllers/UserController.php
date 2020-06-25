@@ -285,6 +285,7 @@ class UserController extends Controller
             if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                 $data['password'] = Hash::make($request->password);
             }
+            $data['is_profile_completed'] = 1;
             $dataUser->update($data);
             $userDataDetails = [
                 'first_name' => $request->first_name,
@@ -343,6 +344,7 @@ class UserController extends Controller
             if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                 $data['password'] = Hash::make($request->password);
             }
+            $data['is_profile_completed'] = 1;
             $dataUser->update($data);
             $name = explode(' ', $request->name);
             $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
@@ -926,7 +928,7 @@ class UserController extends Controller
 
                             $mail = new SendMail(); 
                             $emailData = array();
-                            $emailData['name'] = $user->first_name . ' ' . $user->last_name; 
+                            $emailData['name'] = $user->details ? $user->details->first_name . ' ' . $user->details->last_name : 'A Gig2Gig Caster User'; 
                             if(!$mail->sendInvitedCaster($password, $item['email'], $emailData)){
                                 $responseData = ['message' => 'Something went wrong with sending email'];
                                 $code = 400;

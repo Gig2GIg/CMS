@@ -27,6 +27,7 @@ class UserResource extends JsonResource
             'subscription'=> $this->subscriptions()->first(),
             'is_active' => $this->is_active,
             'is_premium' => $this->is_premium,
+            'is_profile_completed' => $this->is_profile_completed,
             'is_invited' => $this->invited_by ? true : false,
             'stripe_id' => $this->stripe_id,
             'card_brand' => $this->card_brand,
