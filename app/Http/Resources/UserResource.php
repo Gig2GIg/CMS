@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\Performers;
+use App\Models\User;
 
 class UserResource extends JsonResource
 {
@@ -34,8 +35,17 @@ class UserResource extends JsonResource
         ];
 
         if($this->details->type == 1){
-            $repo = new Performers();
-            $return['total_performers'] = $repo->where('director_id', $this->id)->get()->count(); 
+            $repo = new Performers();           
+            $userRepo = new User();
+            
+            //it is to fetch logged in user's invited users data if any
+            $invitedUserIds = $userRepo->where('invited_by', $this->id)->get()->pluck('id');
+
+            //pushing own ID into WHERE IN constraint
+            $invitedUserIds->push($this->id); 
+
+            $return['total_performers'] = $repo->whereIn('director_id', $invitedUserIds->unique()->values())->get()->count(); 
+
             $return['on_grace_period'] = $this->subscriptions()->first() && $this->subscriptions()->first()->grace_period ? true : false;
         }
 

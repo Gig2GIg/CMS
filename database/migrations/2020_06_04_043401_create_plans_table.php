@@ -20,9 +20,10 @@ class CreatePlansTable extends Migration
             $table->integer('allowed_performers')->default(0);
             $table->text('description')->description();
             $table->float('amount')->nullable()->default(0);
-            $table->enum('type',['monthly','annual','quarterly'])->nullable()->default('monthly');
+            $table->enum('type',['monthly','annual','quarterly','daily'])->nullable()->default('monthly');
             $table->integer('user_type')->nullable();
             $table->boolean('is_custom')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

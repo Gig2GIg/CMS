@@ -673,7 +673,7 @@ class UserController extends Controller
             $cardData['number'] = $request->number;
             $cardData['name_on_card'] = $request->name_on_card;
 
-            if((!$user->subscribed($request->stripe_plan_name) && $user->is_premium != 1) || $user->subscription($request->stripe_plan_name)->cancelled())
+            if((!$user->subscribed($request->stripe_plan_name) || ($user->subscription($request->stripe_plan_name) && $user->subscription($request->stripe_plan_name)->stripe_status == 'canceled')) && $user->is_premium != 1)
             {
                 $cardToken = $this->createCardToken($cardData);
                 $this->updateDefaultSrc($user, $cardToken);
@@ -685,9 +685,23 @@ class UserController extends Controller
                 $planData['stripe_plan_name'] = $request->stripe_plan_name;
 
                 //cancelling and removing other subscriptions if any 
+                // $user->subscriptions->each(function ($subscription) {
+                //     $subscription = $subscription->asStripeSubscription();
+                //     // $subscription->cancelNow();
+                //     $subscription->delete();
+                // });
                 $user->subscriptions->each(function ($subscription) {
-                    // $subscription->cancelNow();
-                    $subscription->delete();
+                    try{
+                        if($subscription->asStripeSubscription()){
+                            $subscription->cancelNow();
+                            $subscription->delete();
+                        }else{
+                            $subscription->delete();
+                        }
+                    }catch (\Exception $e) {
+                        $subscription->delete();
+                        return true;
+                    }
                 });
 
                 if ($response = $this->subscribeUser($user, $planData, $paymentMethod)) {
@@ -696,8 +710,12 @@ class UserController extends Controller
                     $ends_at = Carbon::createFromTimeStamp($user->asStripeCustomer()["subscriptions"]->data[0]["current_period_end"])->format('Y-m-d H:i:s');
                     
                     $repo = new UserSubscription;
+                    $plan = new Plan();
+                    $planData = $plan->find($request->plan_id);
+                    $planPrice = $planData ? $planData->amount : NULL; 
+
                     $subscription = $repo->where('user_id', $request->user_id)->where('stripe_plan', $request->stripe_plan_id)->first(); 
-                    $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')));
+                    $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_price' => $planPrice , 'purchased_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')));
                     
                     $user->update(array('is_premium' => 1));
                     $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
@@ -779,8 +797,17 @@ class UserController extends Controller
             //     return $item;
             // });
 
-            $repo = new Plan();
-            $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
+            $plans = DB::table('plans')
+                        ->select('*')
+                        ->where('user_type', 1)
+                        ->where('is_active', 1)
+                        ->orderByRaw('ISNULL(amount), amount ASC')
+                        ->get();
+
+            // $repo = new Plan();
+            // $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
+
+            //dd($plans->toArray());
 
             $responseData = ['data' => $plans];
             $code = 200;
@@ -949,6 +976,7 @@ class UserController extends Controller
             $insertData['product_id'] = $request->product_id;
             $insertData['purchase_platform'] = $request->purchase_platform;
             $insertData['purchased_at'] = $request->purchased_at;
+            $insertData['purchased_price'] = $request->purchased_price;
             $insertData['stripe_status'] = 'active';
             $insertData['updated_by'] = 'mobile';
             if($request->has('ends_at')){
