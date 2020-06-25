@@ -26,6 +26,7 @@ use App\Http\Requests\SubscribeRequest;
 use App\Http\Requests\InviteCasterRequest;
 use App\Http\Requests\ChangePaymentRequest;
 use App\Http\Requests\HandleExpiredUsersRequest;
+use App\Http\Requests\ImportRequest;
 use App\Models\Admin;
 use App\Models\Notifications\NotificationSetting;
 use App\Models\Notifications\NotificationSettingUser;
@@ -37,6 +38,7 @@ use App\Models\UserUnionMembers;
 use App\Models\UserSubscription;
 use App\Models\Performers;
 use App\Models\Plan;
+use App\Models\TempUserImportedList;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +47,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Traits\StipeTraits;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
+use App\Exports\importedUserExport;
+use Excel;
 
 class UserController extends Controller
 {
@@ -56,7 +61,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsersFromXls', 'exportImportedUsers']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -1298,4 +1303,85 @@ class UserController extends Controller
             return response()->json($responseOut, $code);
         }
     }
-}
+
+    public function importUsersFromXls(ImportRequest $request)
+    {
+        try{
+            $userRepo = new UserRepository(new User());
+            $userDetailsRepo = new UserDetailsRepository(new UserDetails());
+            $subscriptionRepo = new UserSubscription;
+            $tempUserImportRepo = new TempUserImportedList;
+
+            $path = $request->file('importFile')->getRealPath();
+            $data = Excel::toCollection('', $path, null, \Maatwebsite\Excel\Excel::XLSX)[0];
+            // $final = new Collection();
+
+            $data->each(function ($value, $index) use($final, $userRepo, $userDetailsRepo, $subscriptionRepo, $tempUserImportRepo) { 
+                if(($value[0] != NULL || $value[0] != '') && $index >= 2)
+                {
+                    //$final->push($value[0]);
+                    //Storing user data
+                    $password = str_random(8);
+
+                    $userData = [
+                        'email' => $value[0],
+                        'password' => bcrypt($password),
+                        'is_profile_completed' => 0,
+                        'is_premium' => 1
+                    ];
+
+                    $user = $userRepo->create($userData);
+
+                    if($user){
+                        //Storing user_details
+                        $userDataDetails = [
+                            'type' => 2,
+                            'user_id' => $user->id,
+                        ];
+
+                        $userDetails = $userDetailsRepo->create($userDataDetails);    
+
+                        if($userDetails){
+                            //Storing user annual free subscription data 
+                            $userSubDetails = [
+                                'name' => 'FREE_ANNUAL',
+                                'user_id' => $user->id,
+                                'stripe_status' => 'active',
+                                'ends_at' => Carbon::now('UTC')->addYear()->format('Y-m-d H:i:s')
+                            ];
+
+                            $subscription = $subscriptionRepo->create($userSubDetails);
+
+                            if($subscription){
+                                //Storing imported information
+                                $tempUserImportDetails = [
+                                    'email' => $value[0],
+                                    'password' => $password
+                                ];
+
+                                $tempUserImport = $tempUserImportRepo->create($tempUserImportDetails);
+                            }
+                        }
+                    }
+                }
+            });   
+
+            $responseOut = [
+                'message' => trans('messages.success'),
+            ];
+            $code = 200;
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 406);
+        }
+    }
+
+    public function exportImportedUsers()
+    {
+        try{
+            return Excel::download(new importedUserExport, 'imported_users.xlsx');
+        } catch(\Exception $e) {
+            $this->log->error($e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 406);
+        }
+    }

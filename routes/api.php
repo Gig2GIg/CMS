@@ -58,7 +58,10 @@ $router->group(['middleware' => ['api']], function () use ($router) {
     Route::post('/users/changeStatus', ['uses' => 'UserController@changeStatus']);
 
     $router->post('/users/handle_expired_users', ['uses' => 'UserController@handleExpiredUsers']);
-});
+
+    $router->post('/users/importUsers', ['uses' => 'UserController@importUsersFromXls']);
+    $router->get('/users/exportImportedUsers', ['uses' => 'UserController@exportImportedUsers']);
+}); 
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
     $router->get('/users/subscriptionDetails', ['uses' => 'UserController@subscriptionDetails']);
