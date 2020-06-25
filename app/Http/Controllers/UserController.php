@@ -304,7 +304,11 @@ class UserController extends Controller
             ];
             
             if($request->has('image') && $request->image != null){
-                $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
+                if($dataUser->image){
+                    $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);    
+                }else{
+                    $dataUser->image()->create(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'type' => 'cover', 'name' => $request->has('file_name') ? $request->file_name : 'user_cover']);
+                }
             }
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
@@ -347,7 +351,13 @@ class UserController extends Controller
             $data['is_profile_completed'] = 1;
             $dataUser->update($data);
             $name = explode(' ', $request->name);
-            $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
+
+            if($dataUser->image){
+                $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
+            }else{
+                $dataUser->image()->create(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'type' => 'cover', 'name' => $request->has('file_name') ? $request->file_name : 'user_cover']);
+            }
+            
             $userDetails = new UserDetailsRepository(new UserDetails());
             $dataUserDetails = $userDetails->findbyparam('user_id', $request->id);
             $userDataDetails = [
