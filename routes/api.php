@@ -59,7 +59,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
     $router->post('/users/handle_expired_users', ['uses' => 'UserController@handleExpiredUsers']);
 
-    $router->post('/users/importUsers', ['uses' => 'UserController@importUsersFromXls']);
+    $router->post('/importUsers', ['uses' => 'UserController@importUsers']);
     $router->get('/users/exportImportedUsers', ['uses' => 'UserController@exportImportedUsers']);
 }); 
 

@@ -49,6 +49,7 @@ use App\Traits\StipeTraits;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use App\Exports\importedUserExport;
+use App\Imports\UsersImport;
 use Excel;
 
 class UserController extends Controller
@@ -61,7 +62,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsersFromXls', 'exportImportedUsers']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -1304,73 +1305,64 @@ class UserController extends Controller
         }
     }
 
-    public function importUsersFromXls(ImportRequest $request)
+    public function importUsers(Request $request)
     {
         try{
-            $userRepo = new UserRepository(new User());
-            $userDetailsRepo = new UserDetailsRepository(new UserDetails());
-            $subscriptionRepo = new UserSubscription;
+            ini_set ('max_execution_time', 0);
+
+            $userRepo = new User();
+            $userImport = new UsersImport;
             $tempUserImportRepo = new TempUserImportedList;
+            $userDetailsRepo = new UserDetails;
+            $subscriptionRepo = new UserSubscription;
 
-            $path = $request->file('importFile')->getRealPath();
-            $data = Excel::toCollection('', $path, null, \Maatwebsite\Excel\Excel::XLSX)[0];
-            // $final = new Collection();
+            $subArray = array();
+            $userDataDetailsArray = array();
+            $tempUserImportArray = new Collection();
 
-            $data->each(function ($value, $index) use($final, $userRepo, $userDetailsRepo, $subscriptionRepo, $tempUserImportRepo) { 
-                if(($value[0] != NULL || $value[0] != '') && $index >= 2)
-                {
-                    //$final->push($value[0]);
-                    //Storing user data
-                    $password = str_random(8);
+            $startUserId = $userRepo->latest('id')->first()->id;
 
-                    $userData = [
-                        'email' => $value[0],
-                        'password' => bcrypt($password),
-                        'is_profile_completed' => 0,
-                        'is_premium' => 1
-                    ];
+            $path = $request->file('importFile')->getRealPath();;
+            Excel::import($userImport, $path, null, \Maatwebsite\Excel\Excel::XLSX);
 
-                    $user = $userRepo->create($userData);
+            $latestUserId = $userRepo->latest('id')->first()->id;
 
-                    if($user){
-                        //Storing user_details
-                        $userDataDetails = [
-                            'type' => 2,
-                            'user_id' => $user->id,
-                        ];
+            //Storing imported information
+            for ($i=((int)$startUserId + 1); $i <= (int)$latestUserId; $i++) { 
+                $j = 0;
+                $subArray[$j] = [
+                    'name' => 'FREE_ANNUAL',
+                    'user_id' => $i,
+                    'stripe_status' => 'active',
+                    'ends_at' => Carbon::now('UTC')->addYear()->format('Y-m-d H:i:s')
+                ];
 
-                        $userDetails = $userDetailsRepo->create($userDataDetails);    
+                $userDataDetailsArray[$j] = [
+                    'type' => 2,
+                    'user_id' => $i,
+                ];
 
-                        if($userDetails){
-                            //Storing user annual free subscription data 
-                            $userSubDetails = [
-                                'name' => 'FREE_ANNUAL',
-                                'user_id' => $user->id,
-                                'stripe_status' => 'active',
-                                'ends_at' => Carbon::now('UTC')->addYear()->format('Y-m-d H:i:s')
-                            ];
+                $j++;
+            }
 
-                            $subscription = $subscriptionRepo->create($userSubDetails);
+            $userDetails = $userDetailsRepo->create($userDataDetailsArray);   
 
-                            if($subscription){
-                                //Storing imported information
-                                $tempUserImportDetails = [
-                                    'email' => $value[0],
-                                    'password' => $password
-                                ];
+            $subscription = $subscriptionRepo->create($subArray);
+            
+            //fetching user data from user table
+            $importedUserData = $userRepo->where('id', '>=', ((int)$startUserId + 1))->where('id', '<=', (int)$latestUserId)->get();
 
-                                $tempUserImport = $tempUserImportRepo->create($tempUserImportDetails);
-                            }
-                        }
-                    }
-                }
-            });   
+            $importedUserData->each(function ($value, $index) use($tempUserImportArray) { 
+                $tempUserImportArray->push(['email' => $value->email, 'password' => $value->temp_pass]);
+            });
+            
+            $tempUserImport = $tempUserImportRepo->insert($tempUserImportArray->toArray());
 
-            $responseOut = [
-                'message' => trans('messages.success'),
-            ];
-            $code = 200;
+            $userRepo->update(['temp_pass' => NULL]);
+            
+            return response()->json(['message' => trans('messages.success')], 200);
         } catch (\Exception $e) {
+            // dd($e);
             $this->log->error($e->getMessage());
             return response()->json(['message' => $e->getMessage()], 406);
         }
@@ -1385,3 +1377,4 @@ class UserController extends Controller
             return response()->json(['message' => $e->getMessage()], 406);
         }
     }
+}
