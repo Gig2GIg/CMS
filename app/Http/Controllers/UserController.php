@@ -285,6 +285,7 @@ class UserController extends Controller
             if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                 $data['password'] = Hash::make($request->password);
             }
+            $data['is_profile_completed'] = 1;
             $dataUser->update($data);
             $userDataDetails = [
                 'first_name' => $request->first_name,
@@ -343,6 +344,7 @@ class UserController extends Controller
             if (isset($request->password) && $dataUser->password !== bcrypt($request->password)) {
                 $data['password'] = Hash::make($request->password);
             }
+            $data['is_profile_completed'] = 1;
             $dataUser->update($data);
             $name = explode(' ', $request->name);
             $dataUser->image->update(['url' => $request->image, 'thumbnail' => $request->has('thumbnail') ? $request->thumbnail : NULL, 'name' => $request->has('file_name') ? $request->file_name : NULL]);
