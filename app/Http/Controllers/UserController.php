@@ -926,7 +926,7 @@ class UserController extends Controller
 
                             $mail = new SendMail(); 
                             $emailData = array();
-                            $emailData['name'] = $user->first_name . ' ' . $user->last_name; 
+                            $emailData['name'] = $user->details ? $user->details->first_name . ' ' . $user->details->last_name : 'A Gig2Gig Caster User'; 
                             if(!$mail->sendInvitedCaster($password, $item['email'], $emailData)){
                                 $responseData = ['message' => 'Something went wrong with sending email'];
                                 $code = 400;
