@@ -1327,9 +1327,9 @@ class UserController extends Controller
 
             $latestUserId = $userRepo->latest('id')->first()->id;
 
+            $j=0;
             //Storing imported information
             for ($i=((int)$startUserId + 1); $i <= (int)$latestUserId; $i++) { 
-                $j = 0;
                 $subArray[$j] = [
                     'name' => 'FREE_ANNUAL',
                     'user_id' => $i,
@@ -1345,9 +1345,9 @@ class UserController extends Controller
                 $j++;
             }
 
-            $userDetails = $userDetailsRepo->create($userDataDetailsArray);   
+            $userDetails = $userDetailsRepo->insert($userDataDetailsArray);   
 
-            $subscription = $subscriptionRepo->create($subArray);
+            $subscription = $subscriptionRepo->insert($subArray);
             
             //fetching user data from user table
             $importedUserData = $userRepo->where('id', '>=', ((int)$startUserId + 1))->where('id', '<=', (int)$latestUserId)->get();
@@ -1358,11 +1358,10 @@ class UserController extends Controller
             
             $tempUserImport = $tempUserImportRepo->insert($tempUserImportArray->toArray());
 
-            $userRepo->update(['temp_pass' => NULL]);
+            $userRepo->where('id', '>=', ((int)$startUserId + 1))->where('id', '<=', (int)$latestUserId)->update(['temp_pass' => NULL]);
             
             return response()->json(['message' => trans('messages.success')], 200);
         } catch (\Exception $e) {
-            // dd($e);
             $this->log->error($e->getMessage());
             return response()->json(['message' => $e->getMessage()], 406);
         }
