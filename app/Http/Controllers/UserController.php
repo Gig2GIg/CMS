@@ -1335,7 +1335,7 @@ class UserController extends Controller
                     'name' => 'FREE_ANNUAL',
                     'user_id' => $i,
                     'stripe_status' => 'active',
-                    'purchase_platform' => 'android'
+                    'purchase_platform' => 'android',
                     'ends_at' => Carbon::now('UTC')->addYear()->format('Y-m-d H:i:s')
                 ];
 
