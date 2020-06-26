@@ -61,7 +61,12 @@ class EveryHalfHourNotifiation extends Command
             $userRepo = new User();
             $subscriptionRepo = new UserSubscription;
             $compare = Carbon::now('UTC')->subDays(1)->format('Y-m-d H:i:s');
-            $subscription = $subscriptionRepo->where('ends_at', '<', $compare)->where('stripe_status', '!=', 'canceled')->get();
+            $compareForFree = Carbon::now('UTC')->format('Y-m-d H:i:s');
+
+            $subscription = $subscriptionRepo
+                                ->whereRaw('(name = "FREE_ANNUAL" AND ends_at < "'. $compareForFree . '") OR (name != "FREE_ANNUAL" AND ends_at < "'. $compare . '")')
+                                ->where('stripe_status', '!=', 'canceled')
+                                ->get();
         
             if($subscription && $subscription->count() != 0){
                 $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('updated_by' => 'cron', 'stripe_status' => 'canceled'));
