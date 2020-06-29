@@ -241,7 +241,7 @@ class SendMail
         try {
             $email = new Mail();
             $email->setFrom(env('SUPPORT_EMAIL'));
-            $email->setSubject('Gig2Gig+ Casting Team Invitation');
+            $email->setSubject('Gig2Gig Casting Team Member');
             $email->addTo($emailTo);
             $email->addContent("text/html", "Congratulations!<br/><br/>". $data['name'] ." has invited you to join their Gig2Gig+ team.<br/><br/>To access your account login with this email address.<br/><br/>Your temporary password is : <strong>" . $password . "</strong><br/><br/>You'll have the ability to change your password during your first login.<br/><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click Here to Login</a><br/>Thanks,<br/><br/>The Gig2Gig Team");
 
@@ -265,7 +265,7 @@ class SendMail
         try {
             $email = new Mail();
             $email->setFrom(env('SUPPORT_EMAIL'));
-            $email->setSubject('Gig2Gig+ Caster Subscription Upgradation');
+            $email->setSubject('Gig2Gig Caster Subscription Upgradation');
             $email->addTo($emailTo);
             $email->addContent("text/html", "Congratulations! " . $data['name'] . ",<br />You are upgraded to new plan in which you can ". $data['new_sub'] ." Previous plan was having limit of " . $data['old_sub'] . " Performer Profiles in the Talent Database.<br />You will be charged <strong>$" . $data['new_amount'] . "</strong> for Upgraded Subscription on next billing cycle dated <strong>". $data['next_billing_date'] ." UTC</strong>.");
 
