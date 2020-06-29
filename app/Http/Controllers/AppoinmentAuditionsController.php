@@ -270,7 +270,7 @@ class AppoinmentAuditionsController extends Controller
 
 
 
-                if ($dataUserDet->type == 1 && $userAuditionData->rejected == 0) {
+                if ($dataUserDet->type == 1 && $userAuditionData && $userAuditionData->rejected == 0) {
                     $finalResponse->push($item);
                 } else if($dataUserDet->type == 2) {
                     $finalResponse->push($item);
