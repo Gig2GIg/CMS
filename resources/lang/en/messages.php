@@ -28,6 +28,7 @@ return [
     'feedback_not_update' => 'Feedback not update',
     'comment_added' => 'Comment added successfully',
     'comment_not_added' => 'Something went wrong! Comment not added',
+    'already_kept_future' => 'Performer already added to keep for future list',
 
     // Aparences Controller
     'error_not_processable' => 'Error not Processable',

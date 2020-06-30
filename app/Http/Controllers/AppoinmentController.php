@@ -74,9 +74,17 @@ class AppoinmentController extends Controller
                     $roles = $roleDataRepo->all();
                     $auditionRoleId = $roles[0]->id;
 
-                    //Get all users who got feedback in previous round
+                    //Get all users who got starred feedback in previous round
                     $feedbacksRepo = new FeedbackRepository(new Feedbacks());
                     $repoDatafeedbacks = $feedbacksRepo->findbyparams(['appointment_id' => $request->appointment_id, 'favorite' => 1]);
+
+                    //getting those with future kept flag
+                    $slotRepo = new UserSlots();
+                    $slotData = $slotRepo->where('appointment_id', $request->appointment_id)
+                    ->where(function ($query) {
+                        $query->where('future_kept', 1);
+                    })
+                    ->get();
 
                     if ($repoDatafeedbacks->count() > 0) {
                         $feedbackData = $repoDatafeedbacks->get();
@@ -84,6 +92,18 @@ class AppoinmentController extends Controller
                         foreach ($feedbackData as $feedback) {
                             $dataToInsert = [
                                 'user_id' => $feedback->user_id, 
+                                'appointment_id' => $createdNextAuditionRound->id, 
+                                'rol_id' => $auditionRoleId, 
+                                'type' => '1'];
+                            $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                            $UserAudition->create($dataToInsert);
+                        }
+                    }
+
+                    if ($slotData->count() > 0) {
+                        foreach ($slotData as $uslot) {
+                            $dataToInsert = [
+                                'user_id' => $uslot->user_id, 
                                 'appointment_id' => $createdNextAuditionRound->id, 
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
@@ -259,6 +279,26 @@ class AppoinmentController extends Controller
                                 // ]);
                             }
                         }
+
+                        //getting those with future kept flag
+                        $slotRepo = new UserSlots();
+                        $slotData = $slotRepo->where('appointment_id', $lasApponitmentId)
+                        ->where(function ($query) {
+                            $query->where('future_kept', 1);
+                        })
+                        ->get();
+
+                        if ($slotData->count() > 0) {
+                            foreach ($slotData as $uslot) {
+                                $dataToInsert = [
+                                    'user_id' => $uslot->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId, 
+                                    'type' => '1'];
+                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                                $UserAudition->create($dataToInsert);
+                            }
+                        }
                     }
                 }
             }
@@ -379,6 +419,39 @@ class AppoinmentController extends Controller
                                 // $testDebug['dataToInsert'] = $dataToInsert;
                                 // $testDebug['after'] = "After";
                                 // $testDebug['UserAudition'] = $UserAudition;
+                            }
+                        }
+
+                        //getting those with future kept flag
+                        $slotRepo = new UserSlots();
+                        $slotData = $slotRepo->where('appointment_id', $lasApponitmentId)
+                        ->where(function ($query) {
+                            $query->where('future_kept', 1);
+                        })
+                        ->get();
+
+                        if ($slotData->count() > 0) {
+                            foreach ($slotData as $uslot) {
+                                $dataToInsert = [
+                                    'user_id' => $uslot->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId, 
+                                    'type' => '1'];
+                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                                $UserAudition->create($dataToInsert);
+
+                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                $dataSlotRepo->create([
+                                    'user_id' => $uslots->user_id,
+                                    'appointment_id' => $newAppointmentId,
+                                    'slots_id' => factory(Slots::class)->create([
+                                        'appointment_id' => $newAppointmentId,
+                                        'time' => "00:00",
+                                        'status' => false,
+                                    ])->id,
+                                    'roles_id' => $auditionRoleId,
+                                    'status' => 2,
+                                ]);
                             }
                         }
                     }

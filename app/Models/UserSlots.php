@@ -13,6 +13,7 @@ class UserSlots extends Model
         'appointment_id',
         'roles_id',
         'favorite',
+        'future_kept',
         'status'
     ];
 
