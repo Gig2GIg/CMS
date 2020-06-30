@@ -92,39 +92,6 @@ class FeedBackController extends Controller
         }
     }
 
-    public function keepForFuture(KeepForFutureRequest $request)
-    {
-        try {            
-            $appointmentRepo = new AppointmentRepository(new Appointments());
-            $appointmentData = $appointmentRepo->find($request->appointment_id);
-            if ($appointmentData->auditions->user_id == $request->evaluator) {
-
-                $slotRepo = new UserSlotsRepository(new UserSlots());
-                $slotData = $slotRepo->findbyparams(['slots_id' => $request->slot_id, 'appointment_id' => $request->appointment_id])->first();
-
-                if (isset($slotData) && $slotData->future_kept == 0) {
-                    $update = $slotData->update([
-                        'future_kept' => 1,
-                    ]);
-                } else {
-                    $dataResponse = ['data' => trans('messages.already_kept_future')];
-                    $code = 406;
-
-                    return response()->json($dataResponse, $code);
-                }
-            }
-            $this->addTalenteToDatabase($request->user);
-            $dataResponse = ['data' => trans('success')];
-            $code = 201;
-            
-            return response()->json($dataResponse, $code);
-        } catch (\Exception $exception) {
-            $this->log->error($exception->getMessage());
-            return response()->json(['data' => trans('messages.something_went_wrong')], 406);
-            // return response()->json(['data' => 'Feedback not add'], 406);
-        }
-    }
-
     public function update(Request $request)
     {
         try {

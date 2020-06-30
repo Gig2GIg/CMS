@@ -6,6 +6,7 @@ use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\AuditionRepository;
+use App\Http\Repositories\UserSlotsRepository;
 use App\Http\Repositories\InstantFeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\UserAuditionsRepository;
@@ -17,6 +18,7 @@ use App\Models\InstantFeedback;
 use App\Models\InstantFeedbackSettings;
 use App\Models\Performers;
 use App\Models\User;
+use App\Models\UserSlots;
 use App\Models\UserAuditions;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
@@ -42,14 +44,18 @@ class InstantFeedbackController extends Controller
             $data = [
                 'appointment_id' => $request->appointment_id,
                 'user_id' => $request->user,
-                'evaluator_id' => $request->evaluator,
-                'comment' => $request->comment,
-                'suggested_appointment_id' => $request->suggested_appointment_id,
+                'evaluator_id' => $request->evaluator
             ];
 
             $repo = new InstantFeedbackRepository(new InstantFeedback());
-            $dataCreated = $repo->create($data);
-            if ($dataCreated->id) {
+            
+            $exists = $repo->findbyparams($data)->get();
+        
+            if ($exists->count() == 0) {
+                $data['comment'] = $request->comment;
+                $data['suggested_appointment_id'] = $request->has('suggested_appointment_id') ? $request->suggested_appointment_id : NULL;
+                
+                $dataCreated = $repo->create($data);
 
                 $userRepo = new UserRepository(new User());
                 $user = $userRepo->find($request->user);
@@ -107,7 +113,39 @@ class InstantFeedbackController extends Controller
                         $this->saveStoreNotificationToUser($user, $audition, $comment); 
                     }
                       
-                }  else {
+                } elseif ($request->accepted == 2) {
+                    $appointmentRepo = new AppointmentRepository(new Appointments());
+                    $appointmentData = $appointmentRepo->find($request->appointment_id);
+                    if ($appointmentData->auditions->user_id == $request->evaluator) {
+
+                        $slotRepo = new UserSlotsRepository(new UserSlots());
+                        $condition = array();
+                        if($request->has('slots_id') && ($request->slot_id != null || $request->slot_id != '')){
+                            $condition['slots_id'] = $request->slot_id;
+                        }
+                        $condition['appointment_id'] = $request->appointment_id;
+                        $condition['user_id'] = $request->user;
+
+                        $slotData = $slotRepo->findbyparams($condition)->first();
+
+                        if (isset($slotData) && $slotData->future_kept == 0) {
+                            $update = $slotData->update([
+                                'future_kept' => 1,
+                            ]);
+                        } else {
+                            $dataResponse = ['data' => trans('messages.already_kept_future')];
+                            $code = 406;
+
+                            return response()->json($dataResponse, $code);
+                        }
+                    }
+
+                    if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        // send notification
+                        $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
+                        $this->saveStoreNotificationToUser($user, $audition, $comment); 
+                    }
+                } else {
                     if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         // send notification
                         $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
