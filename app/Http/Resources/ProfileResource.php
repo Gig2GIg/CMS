@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Models\AuditionVideos;
 use App\Models\UserAuditions;
+use App\Models\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProfileResource extends JsonResource
@@ -21,6 +22,13 @@ class ProfileResource extends JsonResource
         $assign_number = UserAuditions::where('appointment_id', $request->appointment_id)
             ->select('assign_no')
             ->where('user_id', $this->id)
+            ->first();
+
+        $media = new Resources();
+        $doc = $media->where('resource_id','=',$this->id)
+            ->where('resource_type','=','App\Models\User')
+            ->where('type','=','doc')
+            ->latest('id')
             ->first();
 
         // $assign_no = $this->details;
@@ -55,8 +63,10 @@ class ProfileResource extends JsonResource
             'app' => $request->appointment_id,
             'assign_number' => $assign_number->assign_no ?? null,
             'has_uploaded' => $has_uploaded,
+            'resume' => $doc ? $doc->url : null,
             // 'assign_no' => $assign_no->assign_no ?? null,
             'id' => $this->id,
+            'email' => $this->email,
             'image' => $this->image,
             'details' => $this->details,
             'education' => $this->educations,
