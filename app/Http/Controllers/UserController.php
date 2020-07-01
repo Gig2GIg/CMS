@@ -70,50 +70,75 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
+    // public function getAll(Request $request): \Illuminate\Http\JsonResponse
+    // {
+    //     // \DB::enableQueryLog();
+    //     $data = new User();
+
+    //     $allData = $data->select('users.*', 'user_details.id AS userDetailId', 'user_details.first_name', 'user_details.last_name', 'user_details.type', 'user_details.created_at')->leftJoin('user_details', 'users.id', '=', 'user_details.user_id');
+
+    //     $allData = $allData->whereHas('details', function ($query) use ($request) 
+    //     {
+    //         if($request->has('type') && $request->type != null) {
+    //             $type = $request->type;
+    //             $typeArray = explode(',',$request->type);
+    //             $query->whereIn('type', $typeArray);
+    //         }    
+    //         if ($request->has('search') && $request->search != null) {
+    //             $query->where(function ($q) use ($request) {
+    //                 $q->where('user_details.first_name', 'like', "%{$request->search}%")
+    //                     ->orWhere('user_details.last_name', 'like', "%{$request->search}%")
+    //                     ->orWhere('email', 'like', "%{$request->search}%")
+    //                     ->orWhere('user_details.created_at', 'like', "%{$request->search}%");
+    //             });
+    //         }
+    //     });
+
+    //     if ($request->has('order_by') && $request->order_by != null) {
+    //         if($request->has('order_type') && ($request->order_type == 'ASC' || $request->order_type == 'DESC')) {
+    //             $orderType = $request->order_type;
+    //         }else{
+    //             $orderType = "DESC";
+    //         }
+    //         $allData = $allData->orderBy($request->order_by, $orderType);
+    //     } else {
+    //         $allData = $allData->orderBy('id', 'DESC');
+    //     }
+
+    //     $allData = $allData->paginate($request->per_page);
+
+    //     // dd(\DB::getQueryLog());
+        
+    //     $allData = UserResource::collection($allData)->appends($request->all());
+        
+    //     $code = 200;
+        
+    //     return response()->json($allData, $code);
+    // }
+
     public function getAll(Request $request): \Illuminate\Http\JsonResponse
     {
-        // \DB::enableQueryLog();
         $data = new User();
-
-        $allData = $data->select('users.*', 'user_details.id AS userDetailId', 'user_details.first_name', 'user_details.last_name', 'user_details.type', 'user_details.created_at')->leftJoin('user_details', 'users.id', '=', 'user_details.user_id');
-
-        $allData = $allData->whereHas('details', function ($query) use ($request) 
-        {
-            if($request->has('type') && $request->type != null) {
-                $type = $request->type;
-                $typeArray = explode(',',$request->type);
-                $query->whereIn('type', $typeArray);
-            }    
-            if ($request->has('search') && $request->search != null) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('user_details.first_name', 'like', "%{$request->search}%")
-                        ->orWhere('user_details.last_name', 'like', "%{$request->search}%")
-                        ->orWhere('email', 'like', "%{$request->search}%")
-                        ->orWhere('user_details.created_at', 'like', "%{$request->search}%");
-                });
-            }
-        });
-
-        if ($request->has('order_by') && $request->order_by != null) {
-            if($request->has('order_type') && ($request->order_type == 'ASC' || $request->order_type == 'DESC')) {
-                $orderType = $request->order_type;
-            }else{
-                $orderType = "DESC";
-            }
-            $allData = $allData->orderBy($request->order_by, $orderType);
-        } else {
-            $allData = $allData->orderBy('id', 'DESC');
+        if($request->has('type') && $request->type != null){
+            $type = $request->type;
+            $typeArray = explode(',',$request->type);
+            
+            $allData = $data->whereHas('details', function ($query) use ($typeArray) {
+            $query->whereIn('type', $typeArray);
+            })->get();
+        }else{
+            $allData = $data->all();
         }
-
-        $allData = $allData->paginate($request->per_page);
-
-        // dd(\DB::getQueryLog());
         
-        $allData = UserResource::collection($allData)->appends($request->all());
-        
-        $code = 200;
-        
-        return response()->json($allData, $code);
+        $count = count($allData);
+        if ($count !== 0) {
+            $responseData = ['data' => UserResource::collection($allData)];
+            $code = 200;
+        } else {
+            $responseData = ['data' => self::NOT_FOUND_DATA];
+            $code = 404;
+        }
+        return response()->json($responseData, $code);
     }
 
     public function store(UserRequest $request)
