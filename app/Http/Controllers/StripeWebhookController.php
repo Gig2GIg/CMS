@@ -89,9 +89,10 @@ class StripeWebhookController extends CashierController
                         $subscription->ends_at = $subscription->onTrial()
                             ? $subscription->trial_ends_at
                             : Carbon::createFromTimestamp($data['current_period_end']);
-                    } else {
-                        $subscription->ends_at = null;
                     }
+                    // } else {
+                    //     $subscription->ends_at = null;
+                    // }
                 }
 
                 // Status...
