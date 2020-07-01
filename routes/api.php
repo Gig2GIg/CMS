@@ -109,6 +109,7 @@ $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use 
 $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsactive']], function () use ($router) {
     $router->post('/users/subscribe', ['uses' => 'UserController@subscribe']);
     $router->get('/users/cancelSubscription', ['uses' => 'UserController@cancelSubscriptionManually']);
+    $router->get('/users/resumeSubscription', ['uses' => 'UserController@resumeCanceledSubscription']);
     $router->post('/users/inviteCaster', ['uses' => 'UserController@inviteCaster']);
 
     Route::get('/performers/tags', ['uses' => 'PerformersController@getTags']);
