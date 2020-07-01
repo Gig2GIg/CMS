@@ -137,6 +137,7 @@ return [
     'subscribed_already' => "Sorry! You already have active subscription",
     'subscribe_failed' => "Sorry! We couldn't subscribe you to this plan, try again later",
     'subscribe_cancelled' => 'Your subscription has been cancelled successfully',
+    'subscribe_resumed' => 'Your subscription has been resumed successfully',
 
     'change_payment_success' => "Payment method changed successfully",
 
