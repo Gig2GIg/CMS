@@ -26,17 +26,23 @@
                 </b-select>
               </b-field>
             </div>
+            
+            <p class="mt-3">Current Page: {{ currentPage }}</p>
+
 
             <b-table
               :data="filter"
-              :per-page="perPage"
               :loading="isLoading"
-              :paginated="!!filter.length"
               :show-detail-icon="true"
+              :per-page="0"
               detail-key="id"
-              detailed
-              hoverable
+             
             >
+             <!-- detailed
+              hoverable -->
+            <!-- :data="filter" -->
+            <!-- :per-page="perPage" -->
+            <!-- :paginated="!!filter.length" -->
               <template slot-scope="props" v-if="props.row.details">
                 <b-table-column
                   field="email"
@@ -169,6 +175,12 @@
                 </section>
               </template>
             </b-table>
+            <b-pagination
+              v-on:change="onPageChange" 
+              v-model="currentPage"
+              :total-rows="rows"
+              :per-page="5"              
+            ></b-pagination>
           </div>
         </div>
       </section>
@@ -458,7 +470,7 @@ export default {
   name: "Users",
   data: () => ({
     loaded: false,
-    perPage: 10,
+    // perPage: 5,
     isModalActive: false,
     searchText: "",
     selectedUser: {},
@@ -475,19 +487,36 @@ export default {
         value: 'Other',
       }],
     showWeekNumber : false,
-    profile_file : null
+    profile_file : null,
+    currentPage: 1,
+    perPage: 10,
+    items : []
   }),
   computed: {
     ...mapState('users', ['userList', 'isLoading']),
     ...mapGetters('users', ['search']),
 
     filter: function() {
-      return this.search(this.searchText);
+      // return this.search(this.searchText);
+      const items = this.search(this.searchText);
+      // Return just page of items needed
+      return items.slice(
+        (this.currentPage - 1) * this.perPage,
+        this.currentPage * this.perPage
+      )
+    },
+    rows() {
+      console.log("rows -> this.search(this.searchText).length", this.search(this.searchText).length)
+      return this.search(this.searchText).length
     }
   },
   methods: {
     ...mapActions('users', ['fetch', 'update', 'destroy', 'status_change', 'dateChange']),
     ...mapActions('toast', ['showError']),
+    onPageChange($event) {
+    console.log("onPageChange -> $event", $event)
+
+    },
     confirmDelete(user) {
       this.selectedUser = Object.assign({}, user);
 
@@ -571,6 +600,8 @@ export default {
 
   async created() {
     await this.fetch();
+    this.items = this.userList;
+    console.log("created -> this.items", this.items)
     this.loaded = true;
   }
 };
