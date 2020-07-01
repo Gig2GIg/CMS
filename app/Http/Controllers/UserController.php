@@ -111,10 +111,9 @@ class UserController extends Controller
         
         $allData = UserResource::collection($allData)->appends($request->all());
         
-        $responseData = ['data' => $allData];
         $code = 200;
         
-        return response()->json($responseData, $code);
+        return response()->json($allData, $code);
     }
 
     public function store(UserRequest $request)
