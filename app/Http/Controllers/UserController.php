@@ -815,6 +815,9 @@ class UserController extends Controller
                 $user->subscriptions->each(function ($subscription) {
                     $subscription->resume();
                     $subscription->grace_period = 0;
+                    $stripeSubscription = $subscription->asStripeSubscription();
+
+                    $subscription->ends_at = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
 
                     $subscription->save();
                 });
