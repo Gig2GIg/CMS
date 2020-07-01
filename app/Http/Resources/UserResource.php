@@ -15,14 +15,13 @@ class UserResource extends JsonResource
      * @return array
      */
     public function toArray($request)
-    {
-        
+    {        
         $return = [
             'id' => $this->id,
             'email' => $this->email,
             'image' => $this->image,
             'details' => $this->details,
-            'billing_details' => $this->billingDetails,
+            //'billing_details' => $this->billingDetails,
             'union_members' => $this->memberunions,
             'subscription'=> $this->subscriptions()->first(),
             'is_active' => $this->is_active,
