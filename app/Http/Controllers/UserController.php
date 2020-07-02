@@ -70,6 +70,52 @@ class UserController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse
      */
+    // public function getAll(Request $request): \Illuminate\Http\JsonResponse
+    // {
+    //     // \DB::enableQueryLog();
+    //     $data = new User();
+
+    //     $allData = $data->select('users.*', 'user_details.id AS userDetailId', 'user_details.first_name', 'user_details.last_name', 'user_details.type', 'user_details.created_at')->leftJoin('user_details', 'users.id', '=', 'user_details.user_id');
+
+    //     $allData = $allData->whereHas('details', function ($query) use ($request) 
+    //     {
+    //         if($request->has('type') && $request->type != null) {
+    //             $type = $request->type;
+    //             $typeArray = explode(',',$request->type);
+    //             $query->whereIn('type', $typeArray);
+    //         }    
+    //         if ($request->has('search') && $request->search != null) {
+    //             $query->where(function ($q) use ($request) {
+    //                 $q->where('user_details.first_name', 'like', "%{$request->search}%")
+    //                     ->orWhere('user_details.last_name', 'like', "%{$request->search}%")
+    //                     ->orWhere('email', 'like', "%{$request->search}%")
+    //                     ->orWhere('user_details.created_at', 'like', "%{$request->search}%");
+    //             });
+    //         }
+    //     });
+
+    //     if ($request->has('order_by') && $request->order_by != null) {
+    //         if($request->has('order_type') && ($request->order_type == 'ASC' || $request->order_type == 'DESC')) {
+    //             $orderType = $request->order_type;
+    //         }else{
+    //             $orderType = "DESC";
+    //         }
+    //         $allData = $allData->orderBy($request->order_by, $orderType);
+    //     } else {
+    //         $allData = $allData->orderBy('id', 'DESC');
+    //     }
+
+    //     $allData = $allData->paginate($request->per_page);
+
+    //     // dd(\DB::getQueryLog());
+        
+    //     $allData = UserResource::collection($allData)->appends($request->all());
+        
+    //     $code = 200;
+        
+    //     return response()->json($allData, $code);
+    // }
+
     public function getAll(Request $request): \Illuminate\Http\JsonResponse
     {
         $data = new User();
@@ -787,6 +833,42 @@ class UserController extends Controller
                 });
 
                 $responseOut = ['message' => trans('messages.subscribe_cancelled')];
+                $code = 200;    
+            }else{
+                $responseOut = ['message' => trans('not_processable')];
+                $code = 406;
+            }
+            
+            return response()->json($responseOut, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => $e->getMessage()], 406);
+            }
+        }
+    }
+
+    public function resumeCanceledSubscription(Request $request)
+    {
+        try {
+            $userRepo = new User();
+            $user = Auth::user();
+
+            if($user->subscriptions->first()->grace_period == 1)
+            {
+                $user->subscriptions->each(function ($subscription) {
+                    $subscription->resume();
+                    $subscription->grace_period = 0;
+                    $stripeSubscription = $subscription->asStripeSubscription();
+
+                    $subscription->ends_at = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+
+                    $subscription->save();
+                });
+
+                $responseOut = ['message' => trans('messages.subscribe_resumed')];
                 $code = 200;    
             }else{
                 $responseOut = ['message' => trans('not_processable')];

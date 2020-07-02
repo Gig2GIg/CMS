@@ -55,7 +55,7 @@ export default {
 
       if (imageData.file) {
         // Remove current image
-        await firebase.storage().ref(`vendors/${vendor.image.name}`).delete();
+        // await firebase.storage().ref(`vendors/${vendor.image.name}`).delete();
 
         // Upload image
         const imageName = `${uuid()}.${imageData.extension}`;
@@ -91,6 +91,7 @@ export default {
     } catch(e) {
       dispatch('toast/showError', 'Something went wrong.', { root: true });
     } finally {
+      commit(types.DELETE_VENDOR, vendor);
       dispatch('toggleSpinner');
     }
   },

@@ -171,6 +171,9 @@ class MarketplaceController extends Controller
             $marketplace = new MarketplaceRepo(new Marketplace());
             $dataMarketplace = $marketplace->find($request->id);
             $dataMarketplace->delete();
+            if($dataMarketplace->image()){
+                $dataMarketplace->image()->delete();
+            }
 
             return response()->json(['data' => 'Marketplace  deleted'], 200);
         } catch (NotFoundException $e) {
