@@ -365,6 +365,7 @@ export default {
     },
 
     showUpdateModal(vendor) {
+      this.selectedFile = {};
       this.selectedVendor = Object.assign({}, vendor);
       this.isModalActive = true;
     },
@@ -423,6 +424,7 @@ export default {
         });
 
         this.isModalActive = false;
+        this.selectedFile = {};
       } catch(e) {
         this.$setErrorsFromResponse(e.response.data);
       }
