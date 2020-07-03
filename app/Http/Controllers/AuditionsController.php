@@ -237,6 +237,7 @@ class AuditionsController extends Controller
             'personal_information' => $request->personal_information,
             'phone' => $request->phone, //null
             'email' => $request->email, //null
+            'end_date' => isset( $request->end_date ) && $request->end_date != null && $request->end_date != '' ? $request->end_date : null,
             'other_info' => $request->other_info, //null
             'additional_info' => $request->additional_info,
             'union' => strtoupper($request->union),
