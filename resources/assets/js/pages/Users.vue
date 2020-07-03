@@ -12,13 +12,14 @@
       <section v-if="loaded">
         <div class="card">
           <div class="card-content">
-            <div class="columns" v-if="userList.length">
+            <!-- <div class="columns" v-if="userList.data.length"> -->
+            <div class="columns">
               <b-field class="column">
-                <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search"/>
+                <b-input v-model="searchText" placeholder="Search..." icon="magnify" type="search" @input="searchUsers" />
               </b-field>
 
               <b-field class="column" position="is-right" grouped>
-                <b-select v-model="perPage">
+                <b-select v-model="perPage" @input="perPageChage">
                   <option value="5">5 per page</option>
                   <option value="10">10 per page</option>
                   <option value="15">15 per page</option>
@@ -28,15 +29,25 @@
             </div>
 
             <b-table
-              :data="filter"
-              :per-page="perPage"
-              :loading="isLoading"
-              :paginated="!!filter.length"
-              :show-detail-icon="true"
-              detail-key="id"
+              :data="userList.data"
+              :loading="!loaded"
+              paginated
               detailed
               hoverable
+              backend-pagination
+              :total="total"
+              :per-page="perPage"
+              :current-page="page"
+              @page-change="onPageChange"              
+              backend-sorting
+              :default-sort-direction="defaultSortOrder"
+              :default-sort="[sortField, sortOrder]"
+              @sort="onSort"
             >
+            <!-- aria-next-label="Next page"
+              aria-previous-label="Previous page"
+              aria-page-label="Page"
+              aria-current-label="Current page" -->
               <template slot-scope="props" v-if="props.row.details">
                 <b-table-column
                   field="email"
@@ -45,13 +56,13 @@
                   sortable
                 >{{ props.row.email }}</b-table-column>
                 <b-table-column
-                  field="first_name"
+                  field="user_details.first_name"
                   label="First Name"
                   width="100"
                   sortable
                 >{{ props.row.details.first_name ? props.row.details.first_name : ""}}</b-table-column>
                 <b-table-column
-                  field="last_name"
+                  field="user_details.last_name"
                   label="Last Name"
                   width="100"
                   sortable
@@ -65,13 +76,13 @@
                 >{{ props.row.is_active ? 'Active' : 'De-active' }}</b-table-column>
 
                 <b-table-column
-                  field="type"
+                  field="user_details.type"
                   label="Type"
                   width="100"
                   sortable
                 >{{ user_type[props.row.details.type] ? user_type[props.row.details.type] : '' }}</b-table-column>
 
-                <b-table-column width="100" field="created_at" label="Date" sortable>{{ props.row.details.created_at | dateFormat}}</b-table-column>
+                <b-table-column width="100" field="user_details.created_at" label="Date" sortable>{{ props.row.details.created_at | dateFormat}}</b-table-column>
 
                 <b-table-column field="actions" width="40">
                   <b-dropdown position="is-bottom-left">
@@ -475,18 +486,26 @@ export default {
         value: 'Other',
       }],
     showWeekNumber : false,
-    profile_file : null
+    profile_file : null,
+    data: [],
+    total: 0,    
+    sortField: "user_details.created_at",
+    sortOrder: "desc",
+    defaultSortOrder: "desc",
+    page: 1,
+    searchTimeout : null
   }),
   computed: {
     ...mapState('users', ['userList', 'isLoading']),
     ...mapGetters('users', ['search']),
 
-    filter: function() {
-      return this.search(this.searchText);
-    }
+    // filter: function() {
+    //   return this.search(this.searchText);
+    // }
   },
   methods: {
-    ...mapActions('users', ['fetch', 'update', 'destroy', 'status_change', 'dateChange']),
+    // ...mapActions('users', ['fetch', 'getlist', 'update', 'destroy', 'status_change', 'dateChange']),
+    ...mapActions('users', ['getlist', 'update', 'destroy', 'status_change', 'dateChange']),
     ...mapActions('toast', ['showError']),
     confirmDelete(user) {
       this.selectedUser = Object.assign({}, user);
@@ -514,9 +533,13 @@ export default {
 
     async deleteUser() {
       await this.destroy(this.selectedUser);
+      this.selectedUser = {};
+      await this.loadAsyncData();
     },
     async statusChangeUser() {
       await this.status_change(this.selectedUser);
+      this.selectedUser = {};
+      await this.loadAsyncData();
     },
     defaultImg(event){
       event.target.src = DEFINE.user_default_img;      
@@ -540,24 +563,25 @@ export default {
           this.showError('Please check the fields.');
           return;
         }
-
+        let requestParam = JSON.parse(JSON.stringify(this.selectedUser));
         if(this.profile_file){
           const imageName = this.profile_file.name;
           const snapshot = await firebase.storage()
             .ref(`profileImage/${uuid()}.${imageName.split('.').pop()}`)
             .put(this.profile_file);
 
-          this.selectedUser.image = await snapshot.ref.getDownloadURL();          
-        } else if(this.selectedUser.image && this.selectedUser.image.url) {
-          this.selectedUser.image = this.selectedUser.image.url;
+          requestParam.image = await snapshot.ref.getDownloadURL();          
+        } else if(requestParam.image && requestParam.image.url) {
+          requestParam.image = requestParam.image.url;
         }
-        if(this.selectedUser.details.birth){
-          this.selectedUser.details.birth = Vue.moment(this.selectedUser.details.birth).format("YYYY-MM-DD");
+        if(requestParam.details.birth){
+          requestParam.details.birth = Vue.moment(requestParam.details.birth).format("YYYY-MM-DD");
         }
         
-        await this.update(this.selectedUser);
-
+        await this.update(requestParam);        
         this.isModalActive = false;
+        this.selectedUser = {};
+        await this.loadAsyncData();
       } catch (e) {
         console.log("TCL: updateUser -> e", e)
         this.$setErrorsFromResponse(e.response.data);
@@ -566,13 +590,69 @@ export default {
     getStateName(state_id) {
       let foundState = states.find(x => x.value == state_id);
       return foundState ? foundState.label : '';
-    }
+    },
+    /*
+     * Load async data
+     */
+    async loadAsyncData() {
+      const params = [        
+        `per_page=${this.perPage}`,
+        `page=${this.page}`,
+        `order_by=${this.sortField}`,
+        `order_type=${this.sortOrder.toUpperCase()}`,
+        `search=${this.searchText}`        
+      ].join("&");
+      await this.getlist(params);      
+      this.total = this.userList.total ?? 0;
+
+    },
+    /*
+     * Handle page-change event
+     */
+    onPageChange(page) {
+      this.page = page;
+      this.loadAsyncData();
+    },
+    /*
+     * Handle per-page-change event
+     */
+    perPageChage() {
+      this.page = 1;
+      this.loadAsyncData();
+    },
+    /*
+     * Handle search box event
+     */
+    searchUsers() {
+      if (this.searchTimeout) {  
+        this.page = 1;
+        clearTimeout(this.searchTimeout);
+      }
+      this.searchTimeout = setTimeout(() => {
+        this.loadAsyncData();
+      }, 100);
+      
+    },
+    /*
+     * Handle sort event
+     */
+    onSort(field, order) {
+      this.sortField = field;
+      this.sortOrder = order;
+      this.loadAsyncData();
+    },
   },
 
-  async created() {
-    await this.fetch();
+  async mounted() {
+    await this.loadAsyncData();    
     this.loaded = true;
-  }
+  },
+  // async created() {
+  //   await this.loadAsyncData();
+  //   // await this.fetch();    
+  //   
+  //   this.loaded = true;
+  // }
 };
 </script>
 <style>
