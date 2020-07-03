@@ -356,7 +356,6 @@ class AppoinmentController extends Controller
             $testDebug['newAppointmentId'] = $newAppointmentId;
 
             // Check is it for next round or not
-            // Check is it for next round or not
             if ($request->round > 1) {
                 $testDebug['In Round'] = $request->round;
                 $AuditionId = $request->audition_id;

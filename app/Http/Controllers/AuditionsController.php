@@ -144,6 +144,10 @@ class AuditionsController extends Controller
 
                 DB::commit();
 
+                if($request->online){
+                    $this->onlineSubmision($audition);
+                }
+
                 $responseData = ['data' => ['message' => 'Auditions create', 'data' => $audition]];
                 $code = 201;
             } else {
@@ -158,6 +162,37 @@ class AuditionsController extends Controller
             $this->log->error($exception->getLine());
             return response()->json(['error' => trans('messages.not_processable')], 406);
             // return response()->json(['error' => 'Unprocessable '], 406);
+        }
+    }
+
+    public function onlineSubmision($audition)
+    {
+        try {            
+            $repo = new AppointmentRepository(new Appointments());
+            $appointment = [
+                'date' => '',
+                'time' => '0',
+                'location' => '0',
+                'lat' => '0',
+                'lng' => '0',
+                'slots' => '0',
+                'type' => '1',
+                'length' => '0',
+                'start' => '0',
+                'end' => '0',
+                'round' => 1,
+                'status' => true,
+                'auditions_id' => $audition->id,
+            ];
+            $data = $repo->create($appointment);
+            $testDebug = array();
+            $newAppointmentId = $data->id;
+            $testDebug['newAppointmentId'] = $newAppointmentId;
+
+            // return response()->json(['message' => 'Round create', 'data' => $data], 200);
+            return true;
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 
