@@ -1,3 +1,3 @@
 export default {
-  search: state => term => state.userList.search(term)
+  // search: state => term => state.userList.data.search(term)
 };
