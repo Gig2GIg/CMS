@@ -27,6 +27,7 @@ class Notifications
     const INSTANT_FEEDBACK = 'instant_feedback';
     const CASTER_AUDITION_INVITE = 'caster_audition_invite';
     const AUDITION_CREATED = 'audition_created';
+    const NEW_ONLINE_MEDIA = 'new_online_media';
 
     public static function send($audition = null, $type, $user = null, $title = null, $message = null, $clickToSend = "")
     {
@@ -111,6 +112,11 @@ class Notifications
                     break;
                 case self::AUDITION_CREATED:
                     $log->info("PUSH NOTIFICATION FROM CMS TO DIRECTOR ABOUT AUDITION CREATED WITH TITLE" . $audition->title);
+                    $to = 'ONLY_ONE_WITHOUT_CHECK';
+                    $clickToSend = env('CASTER_URL');
+                    break;
+                case self::NEW_ONLINE_MEDIA:
+                    $log->info("PUSH NOTIFICATION FROM CMS TO DIRECTOR ABOUT NEW ONLINE MEDIA SUBMITTED IN AUDITION CREATED WITH TITLE" . $audition->title);
                     $to = 'ONLY_ONE_WITHOUT_CHECK';
                     $clickToSend = env('CASTER_URL');
                     break;

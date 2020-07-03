@@ -1065,8 +1065,8 @@ class AuditionManagementController extends Controller
 
                 if($detailData->details && (($detailData->details->type == 2 && $detailData->is_premium == 1) || $detailData->details->type != 2)){
                     $this->sendSaveAuditionNotificationToUser($detailData, $audition);
-                    $this->saveAuditionNotificationToUser($detailData, $audition);    
                 }
+                $this->saveAuditionNotificationToUser($detailData, $audition);    
             } else {
                 $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                 $dataSlotRepo->create([

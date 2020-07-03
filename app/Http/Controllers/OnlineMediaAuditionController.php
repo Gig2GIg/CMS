@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
+use App\Http\Exceptions\NotificationException;
 use App\Http\Repositories\MediaOnlineRepository;
 use App\Models\OnlineMediaAudition;
+use App\Models\Appointments;
+use App\Models\Auditions;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class OnlineMediaAuditionController extends Controller
 {
@@ -22,16 +28,38 @@ class OnlineMediaAuditionController extends Controller
                 'appointment_id' => $request->appointment_id,
                 'performer_id' => $this->getUserLogging()
             ];
-            $res = $repo->create($data);
-            if (is_null($res->id)) {
-                throw new CreateException('media not created');
+
+            $appointment = Appointments::find($request->appointment_id);
+            $audition = Auditions::find($appointment->auditions_id);
+            $cuser = User::find($user_id);
+
+            if($audition->end_date > Carbon::now('UTC')->format('Y-m-d'))
+            {
+                $res = $repo->create($data);
+                if (is_null($res->id)) {
+                    throw new CreateException('media not created');
+                }
+
+                try {
+                    if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
+                        $this->sendStoreNotificationToUser($cuser, $audition);
+                    }
+                    $this->saveStoreNotificationToUser($cuser, $audition);
+
+                } catch (NotificationException $exception) {
+                    $this->log->error($exception->getMessage());
+                }
+
+                return response()->json([
+                    'message' => trans('messages.media_created'),
+                    'data' => $res
+                ], 201);
+            } else {
+                return response()->json([
+                    'message' => trans('messages.online_audition_past'),
+                    'data' => []
+                ], 400);
             }
-
-
-            return response()->json([
-                'message' => trans('messages.media_created'),
-                'data' => $res
-            ], 201);
         } catch (\Exception $exception) {
             $this->log->error("ONLINEMEDIA:: " . $exception->getMessage());
             $this->log->error("ONLINEMEDIA:: " . $exception->getLine());
@@ -113,4 +141,38 @@ class OnlineMediaAuditionController extends Controller
             ], 404);
         }
     }
+
+    public function saveStoreNotificationToUser($user, $audition): void
+    {
+        try {
+            if ($user instanceof User) {
+                $history = $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'new_online_media',
+                    'status' => 'unread',
+                    'message' => 'New media has been submitted in the audition ' . $audition->title,
+                ]);
+                $this->log->info('saveStoreNotificationToUser:: ', $history);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function sendStoreNotificationToUser($user, $audition): void
+    {
+        try {
+
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::NEW_ONLINE_MEDIA,
+                $user,
+                $audition->title,
+                'New media has been submitted in the audition ' . $audition->title,
+            );
+            
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }   
 }

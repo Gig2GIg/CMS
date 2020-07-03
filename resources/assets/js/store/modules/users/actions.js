@@ -8,12 +8,22 @@ export default {
 
   async init({ dispatch }) {
     await dispatch('fetch');
+    // await dispatch('getlist', '');
   },
 
   async fetch({ commit }) {
     try {
       const { data: { data } } = await axios.get('/api/cms/users?type=1,2'); // only caster and performer type
 
+      commit(types.FETCH_USERS_SUCCESS, data);
+    } catch (e) {
+      commit(types.FETCH_USERS_FAILURE);
+    }
+  },
+
+  async getlist({ commit }, queryParam) {
+    try {
+      const  { data } = await axios.get(`/api/cms/users?type=1,2&${queryParam}`); // only caster and performer type with server side pagination, search and sorting
       commit(types.FETCH_USERS_SUCCESS, data);
     } catch (e) {
       commit(types.FETCH_USERS_FAILURE);

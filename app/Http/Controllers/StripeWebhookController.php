@@ -89,10 +89,13 @@ class StripeWebhookController extends CashierController
                         $subscription->ends_at = $subscription->onTrial()
                             ? $subscription->trial_ends_at
                             : Carbon::createFromTimestamp($data['current_period_end']);
+
+                        $subscription->grace_period = 1;
+                    } else {
+                        $subscription->grace_period = 0;
                     }
-                    // } else {
-                    //     $subscription->ends_at = null;
-                    // }
+                } else {
+                    $subscription->grace_period = 0;
                 }
 
                 // Status...
@@ -115,7 +118,9 @@ class StripeWebhookController extends CashierController
     public function handleinvoicePaymentSucceeded(array $payload)
     {
         if ($user = $this->getUserByStripeId($payload['data']['object']['customer'])) {
-            $user->subscriptions->each(function ($subscription) use ($payload, $user) {
+            $data = $payload['data']['object'];
+
+            $user->subscriptions->each(function ($subscription) use ($data, $payload, $user) {
                
                 // Period ending date...
                 if (isset($data['period_end'])) {
@@ -124,6 +129,8 @@ class StripeWebhookController extends CashierController
                     $subscription->ends_at = $period_ends;
                     $subscription->stripe_status = 'active';
                 } 
+
+                $subscription->grace_period = 0;
 
                 $subscription->save();
             });
