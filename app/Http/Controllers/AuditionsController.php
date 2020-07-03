@@ -71,6 +71,9 @@ class AuditionsController extends Controller
             if ($request->isJson()) {
                 $this->log->info($request);
                 $auditionData = $this->dataAuditionToProcess($request);
+                if($request->online){
+                    $auditionData['status'] = true;
+                }
                 $auditionData['user_id'] = Auth::user()->getAuthIdentifier();
                 if (isset($request['media'])) {
                     foreach ($request['media'] as $file) {
@@ -144,9 +147,9 @@ class AuditionsController extends Controller
 
                 DB::commit();
 
-                if($request->online){
-                    $this->onlineSubmision($audition);
-                }
+                // if($request->online){
+                //     $this->onlineSubmision($audition);
+                // }
 
                 $responseData = ['data' => ['message' => 'Auditions create', 'data' => $audition]];
                 $code = 201;
