@@ -580,7 +580,7 @@ export default {
         
         await this.update(requestParam);        
         this.isModalActive = false;
-        this.selectedUser = {};
+        // this.selectedUser = {};
         await this.loadAsyncData();
       } catch (e) {
         console.log("TCL: updateUser -> e", e)
@@ -595,6 +595,7 @@ export default {
      * Load async data
      */
     async loadAsyncData() {
+      this.loaded = false;
       const params = [        
         `per_page=${this.perPage}`,
         `page=${this.page}`,
@@ -604,7 +605,7 @@ export default {
       ].join("&");
       await this.getlist(params);      
       this.total = this.userList.total ?? 0;
-
+      this.loaded = true;
     },
     /*
      * Handle page-change event
@@ -645,7 +646,6 @@ export default {
 
   async mounted() {
     await this.loadAsyncData();    
-    this.loaded = true;
   },
   // async created() {
   //   await this.loadAsyncData();
