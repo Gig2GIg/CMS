@@ -594,8 +594,7 @@ export default {
     /*
      * Load async data
      */
-    async loadAsyncData() {
-      this.loaded = false;
+    async loadAsyncData() {      
       const params = [        
         `per_page=${this.perPage}`,
         `page=${this.page}`,
@@ -604,8 +603,7 @@ export default {
         `search=${this.searchText}`        
       ].join("&");
       await this.getlist(params);      
-      this.total = this.userList.total ?? 0;
-      this.loaded = true;
+      this.total = this.userList.total ?? 0;      
     },
     /*
      * Handle page-change event
@@ -645,7 +643,8 @@ export default {
   },
 
   async mounted() {
-    await this.loadAsyncData();    
+    await this.loadAsyncData();
+    this.loaded = true;
   },
   // async created() {
   //   await this.loadAsyncData();
