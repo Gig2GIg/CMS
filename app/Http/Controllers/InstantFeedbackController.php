@@ -110,9 +110,8 @@ class InstantFeedbackController extends Controller
                     if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         // send notification
                         $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
-                        $this->saveStoreNotificationToUser($user, $audition, $comment); 
                     }
-                      
+                    $this->saveStoreNotificationToUser($user, $audition, $comment);
                 } elseif ($request->accepted == 2) {
                     $appointmentRepo = new AppointmentRepository(new Appointments());
                     $appointmentData = $appointmentRepo->find($request->appointment_id);
@@ -143,14 +142,14 @@ class InstantFeedbackController extends Controller
                     if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         // send notification
                         $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
-                        $this->saveStoreNotificationToUser($user, $audition, $comment); 
                     }
+                    $this->saveStoreNotificationToUser($user, $audition, $comment); 
                 } else {
                     if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         // send notification
                         $this->sendStoreNotificationToUser($user, $audition, $comment, $request->appointment_id);
-                        $this->saveStoreNotificationToUser($user, $audition, $comment);
                     }
+                    $this->saveStoreNotificationToUser($user, $audition, $comment);
                 }
 
                 $this->addTalenteToDatabase($request->user);

@@ -198,8 +198,8 @@ class AppoinmentAuditionsController extends Controller
 
                 if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                     $this->sendStoreNotificationToUser($user, $audition);
-                    $this->saveStoreNotificationToUser($user, $audition);
                 }
+                $this->saveStoreNotificationToUser($user, $audition);
             } catch (NotificationException $exception) {
                 $this->log->error($exception->getMessage());
             }

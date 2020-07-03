@@ -141,7 +141,7 @@ return [
 
     'change_payment_success' => "Payment method changed successfully",
 
-
+    'online_audition_past' => "The audition media submission has ended",
 
     // Market Place Categories Controller
     // Managers Controller
