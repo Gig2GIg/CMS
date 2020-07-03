@@ -62,7 +62,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers', 'setCreatedAt']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -1456,28 +1456,6 @@ class UserController extends Controller
     {
         try{
             return Excel::download(new importedUserExport, 'imported_users.xlsx');
-        } catch(\Exception $e) {
-            $this->log->error($e->getMessage());
-            return response()->json(['message' => $e->getMessage()], 406);
-        }
-    }
-
-    public function setCreatedAt(Request $request)
-    {
-        try{
-            if($request->has('start_id') && $request->has('end_id') && $request->start_id < $request->end_id){
-                $users = User::where('id', '>=', $request->start_id)->where('id', '<=', $request->end_id)->get();   
-
-                foreach ($users as $e) {
-                    $date = $e->created_at;
-
-                    $e->details->update(['created_at' => $date]);
-                }
-
-                echo "success";
-            } else {
-                echo "Failed";
-            }
         } catch(\Exception $e) {
             $this->log->error($e->getMessage());
             return response()->json(['message' => $e->getMessage()], 406);
