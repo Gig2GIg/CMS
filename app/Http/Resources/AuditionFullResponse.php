@@ -14,7 +14,7 @@ use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
-class AuditionFullResponse extends JsonResource
+class AuditionFullResponse extends` JsonResource
 {
 
     /**
@@ -73,6 +73,7 @@ class AuditionFullResponse extends JsonResource
             'additional_info'=>$this->additional_info,
             'phone'=>$this->phone,
             'email'=>$this->email,
+            'ends_date'=>$this->ends_date,
             'other_info'=>$this->other_info,
             'dates'=>$this->datesall,
             'union' => $this->union,

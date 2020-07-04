@@ -53,6 +53,7 @@ class UserAuditionsResource extends JsonResource
             'rol' => $this->rol_id,
             'rol_name' => $rolanme ?? null,
             'id_user' => $dataRepo->auditions->user_id,
+            'end_date'=> $dataRepo->auditions->end_date,
             'title' => $dataRepo->auditions->title,
             'date' => $dataRepo->date,
             'hour' => $dataHour,

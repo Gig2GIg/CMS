@@ -48,6 +48,7 @@ class AuditionListByPerformer extends JsonResource
             "url" => $this->url,
             'phone' => $this->phone,
             'email' => $this->email,
+            'end_date' => $this->end_date,
             "status" => $this->status,
             "cover" => $media[0] ?? null,
             "cover_name" => $cover_name[0] ?? null,
