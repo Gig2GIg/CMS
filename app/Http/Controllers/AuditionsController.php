@@ -617,7 +617,7 @@ class AuditionsController extends Controller
 
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
-            $oldAudition = AuditionFullResponse::collection($audition);
+            $oldAudition = new AuditionFullResponse($audition);
 
             if (isset($audition->id)) {
 
@@ -716,7 +716,7 @@ class AuditionsController extends Controller
                 DB::commit();
 
                 // Tracking audition update records
-                $this->trackAuditionUpdate($oldAudition, AuditionFullResponse::collection($audition));
+                $this->trackAuditionUpdate($oldAudition, new AuditionFullResponse($audition));
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
@@ -727,12 +727,14 @@ class AuditionsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
             // dd($exception->getMessage());
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
