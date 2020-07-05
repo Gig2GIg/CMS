@@ -617,7 +617,7 @@ class AuditionsController extends Controller
 
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
-            $oldAudition = new AuditionFullResponse($audition);
+            $oldAudition = (new AuditionFullResponse($audition))->toResponse(app('request'));
 
             if (isset($audition->id)) {
 
@@ -716,8 +716,9 @@ class AuditionsController extends Controller
                 DB::commit();
 
                 // Tracking audition update records
-                $newAudition = new AuditionFullResponse($auditionRepo->find($request->id));
-                $this->trackAuditionUpdate($oldAudition->toArray(), $newAudition->toArray());
+                $newAudition = (new AuditionFullResponse($auditionRepo->find($request->id)))->toResponse(app('request'));
+
+                $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
@@ -1106,7 +1107,7 @@ class AuditionsController extends Controller
             return true;
         } catch (NotFoundException $exception) {
             $this->log->error("ERR IN AUDITION UPDATE TRACK:::: " . $exception->getMessage());
-            return false;
+            return true;
         }
     }
 }
