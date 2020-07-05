@@ -101,7 +101,7 @@ class StripeWebhookController extends CashierController
                 // Status...
                 if (isset($data['status'])) {
                     $subscription->stripe_status = $data['status'];
-                    if($data['status'] == 'past_due' || $data['status'] == 'incomplete_expired' || $data['status'] == 'canceled'){
+                    if($data['status'] == 'incomplete_expired' || $data['status'] == 'canceled'){
                         $this->updateUserPremiumStatus($user, 0);
                     }else{
                         $this->updateUserPremiumStatus($user, 1);
@@ -122,16 +122,10 @@ class StripeWebhookController extends CashierController
 
             $user->subscriptions->each(function ($subscription) use ($data, $payload, $user) {
                
-                // Period ending date...
-                if (isset($data['period_end'])) {
-                    // $period_ends = Carbon::createFromTimestamp($data['period_end']);
+                $stripeSubscription = $subscription->asStripeSubscription();
 
-                    // $subscription->ends_at = $period_ends;
-                    $stripeSubscription = $subscription->asStripeSubscription();
-
-                    $subscription->ends_at = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
-                    $subscription->stripe_status = 'active';
-                } 
+                $subscription->ends_at = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+                $subscription->stripe_status = 'active'; 
 
                 $subscription->grace_period = 0;
 

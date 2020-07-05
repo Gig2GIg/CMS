@@ -889,7 +889,6 @@ class UserController extends Controller
     public function listSubscriptionPlans(Request $request)
     {
         try {
-
             // $plans = collect($this->listAllPlans());
                         
             // $plans['data'] = 1collect($plans['data'])->sortBy('amount')->values()->map(function ($item, $key) {
@@ -932,6 +931,9 @@ class UserController extends Controller
                 $subscriptionData = $user->subscriptions()->first();
                 $subscriptionData->card_brand = $user->card_brand;
                 $subscriptionData->card_last_four = $user->card_last_four;
+                if($subscriptionData->stripe_status == 'past_due'){
+                    $subscriptionData->attempt_url = route('cashier.payment', [$subscriptionData->latestPayment()->id, 'redirect' => env('CASTER_BASE_URL')]);
+                }
                 if($user->details->type == 1){
                     $repo = new Performers();
                     $total_performers = $repo->where('director_id', $user->id)->get()->count();
