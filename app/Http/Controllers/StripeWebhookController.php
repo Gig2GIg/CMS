@@ -124,9 +124,12 @@ class StripeWebhookController extends CashierController
                
                 // Period ending date...
                 if (isset($data['period_end'])) {
-                    $period_ends = Carbon::createFromTimestamp($data['period_end']);
+                    // $period_ends = Carbon::createFromTimestamp($data['period_end']);
 
-                    $subscription->ends_at = $period_ends;
+                    // $subscription->ends_at = $period_ends;
+                    $stripeSubscription = $subscription->asStripeSubscription();
+
+                    $subscription->ends_at = Carbon::createFromTimestamp($stripeSubscription->current_period_end);
                     $subscription->stripe_status = 'active';
                 } 
 
