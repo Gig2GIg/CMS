@@ -14,7 +14,7 @@ use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 
-class AuditionFullResponse extends` JsonResource
+class AuditionFullResponse extends JsonResource
 {
 
     /**
