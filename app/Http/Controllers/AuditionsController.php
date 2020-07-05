@@ -716,7 +716,8 @@ class AuditionsController extends Controller
                 DB::commit();
 
                 // Tracking audition update records
-                $this->trackAuditionUpdate($oldAudition, new AuditionFullResponse($audition));
+                $newAudition = new AuditionFullResponse($auditionRepo->find($request->id));
+                $this->trackAuditionUpdate($oldAudition, $newAudition);
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
@@ -937,8 +938,6 @@ class AuditionsController extends Controller
     public function trackAuditionUpdate($oldData = null, $newData = null)
     {
         try {
-            $newData = $newData['data'];
-            $oldData = $oldData['data'];
             //checking diff in two arrays old and new
             $diff_old = array_diff(array_map('serialize', $oldData), array_map('serialize', $newData));
             $diff_new = array_diff(array_map('serialize', $newData), array_map('serialize', $oldData));
