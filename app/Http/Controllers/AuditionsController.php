@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\auditionLogsExport;
 use Excel;
 
 class AuditionsController extends Controller
@@ -57,7 +58,7 @@ class AuditionsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['']]);
+        $this->middleware('jwt', ['except' => ['exportAuditionLogs']]);
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
@@ -1108,6 +1109,25 @@ class AuditionsController extends Controller
         } catch (NotFoundException $exception) {
             $this->log->error("ERR IN AUDITION UPDATE TRACK:::: " . $exception->getMessage());
             return true;
+        }
+    }
+
+    public function exportAuditionLogs(Request $request)
+    {
+        try{
+            $audition = new AuditionRepository(new Auditions());
+            $audition = $audition->find($request->audition_id);
+
+            $count = AuditionLog::where('audition_id', $audition->id)->count();
+            
+            if($count > 0){
+                return Excel::download(new auditionLogsExport($audition->id), 'AUDITION_'. $audition->title .'_logs.xlsx');    
+            }else{
+                return response()->json(['message' => trans('messages.data_not_found')], 404);
+            }
+        } catch(\Exception $e) {
+            $this->log->error("ERR IN EXPORTING AUDITION LOGS ::: " . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 406);
         }
     }
 }
