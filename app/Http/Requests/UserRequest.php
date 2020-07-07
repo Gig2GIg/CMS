@@ -67,7 +67,7 @@ class UserRequest extends ApiRequest
     {
         return [
             'country.required' => 'Please select :attribute',
-            'email.unique' => 'This user is already registered, please try again or reset your password.',
+            // 'email.unique' => 'This user is already registered, please try again or reset your password.',
         ];
     }
 
