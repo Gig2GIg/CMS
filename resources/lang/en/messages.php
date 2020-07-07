@@ -18,7 +18,7 @@ return [
     'not_processable' => 'Not processable',
     'unprocesable_entity' => 'Unprocessable Entity',
     'data_not_update' => 'Data Not Update',
-    'unauthorized' => 'Unauthorized',
+    'unauthorized' => 'This user is already registered, please try again or reset your password',
     'server_error' => 'Server Error',
     'something_went_wrong' => 'Something went wrong',
     'account_deactivated' => 'Sorry! your account has been deactivated by administration',
