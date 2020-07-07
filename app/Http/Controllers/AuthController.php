@@ -46,12 +46,12 @@ class AuthController extends Controller
 
             $type = request('type');
             if ($type != $details['type']) {
-                return response()->json(['error' => trans('messages.unauthorized')], 401);
+                return response()->json(['error' => trans('messages.unauthorized')], 403);
             }
 
             JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
-                return response()->json(['error' => trans('messages.unauthorized')], 401);
+                return response()->json(['error' => trans('messages.unauthorized')], 403);
                 // return response()->json(['error' => 'Unauthorized'], 401);
             }
 
@@ -59,7 +59,7 @@ class AuthController extends Controller
 
             return $this->respondWithToken($token, $expiration, $dataResponse);
         } catch (NotFoundException $exception) {
-            return response()->json(['error' => trans('messages.unauthorized')], 401);
+            return response()->json(['error' => trans('messages.unauthorized')], 403);
             // return response()->json(['error' => 'Unauthorized'], 401);
         }
     }
