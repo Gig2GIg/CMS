@@ -169,7 +169,7 @@ class OnlineMediaAuditionController extends Controller
                 SendNotifications::NEW_ONLINE_MEDIA,
                 $user,
                 $audition->title,
-                'New media has been submitted in the audition ' . $audition->title,
+                'New media has been submitted in the audition ' . $audition->title
             );
             
         } catch (NotFoundException $exception) {

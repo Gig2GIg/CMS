@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\auditionLogsExport;
 use Excel;
 
 class AuditionsController extends Controller
@@ -57,7 +58,7 @@ class AuditionsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['']]);
+        $this->middleware('jwt', ['except' => ['exportAuditionLogs']]);
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
@@ -617,7 +618,7 @@ class AuditionsController extends Controller
 
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
-            $oldAudition = AuditionFullResponse::collection($audition);
+            $oldAudition = (new AuditionFullResponse($audition))->toResponse(app('request'));
 
             if (isset($audition->id)) {
 
@@ -716,7 +717,9 @@ class AuditionsController extends Controller
                 DB::commit();
 
                 // Tracking audition update records
-                $this->trackAuditionUpdate($oldAudition, AuditionFullResponse::collection($audition));
+                $newAudition = (new AuditionFullResponse($auditionRepo->find($request->id)))->toResponse(app('request'));
+
+                $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
@@ -727,12 +730,14 @@ class AuditionsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
             // dd($exception->getMessage());
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
@@ -935,8 +940,6 @@ class AuditionsController extends Controller
     public function trackAuditionUpdate($oldData = null, $newData = null)
     {
         try {
-            $newData = $newData['data'];
-            $oldData = $oldData['data'];
             //checking diff in two arrays old and new
             $diff_old = array_diff(array_map('serialize', $oldData), array_map('serialize', $newData));
             $diff_new = array_diff(array_map('serialize', $newData), array_map('serialize', $oldData));
@@ -1105,7 +1108,26 @@ class AuditionsController extends Controller
             return true;
         } catch (NotFoundException $exception) {
             $this->log->error("ERR IN AUDITION UPDATE TRACK:::: " . $exception->getMessage());
-            return false;
+            return true;
+        }
+    }
+
+    public function exportAuditionLogs(Request $request)
+    {
+        try{
+            $audition = new AuditionRepository(new Auditions());
+            $audition = $audition->find($request->audition_id);
+
+            $count = AuditionLog::where('audition_id', $audition->id)->count();
+            
+            if($count > 0){
+                return Excel::download(new auditionLogsExport($audition->id), 'AUDITION_'. $audition->title .'_logs.xlsx');    
+            }else{
+                return response()->json(['message' => trans('messages.data_not_found')], 404);
+            }
+        } catch(\Exception $e) {
+            $this->log->error("ERR IN EXPORTING AUDITION LOGS ::: " . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 406);
         }
     }
 }

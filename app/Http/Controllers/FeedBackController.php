@@ -16,11 +16,13 @@ use App\Models\Feedbacks;
 use App\Models\Performers;
 use App\Models\UserSlots;
 use App\Models\PerformersComment;
+use App\Models\AuditionLog;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class FeedBackController extends Controller
 {
@@ -64,7 +66,10 @@ class FeedBackController extends Controller
 
             $repo = new FeedbackRepository(new Feedbacks());
             $data = $repo->create($data);
+
             if ($data->id) {
+                $this->addFeedbackAddTrack($data);
+
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
                 if ($appointmentData->auditions->user_id === $request->evaluator) {
@@ -120,11 +125,15 @@ class FeedBackController extends Controller
             
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
+            $oldFeedback = $feedbacks->where('user_id', $request->user_id)->first();
             $feedback = $feedbacks->where('user_id', $request->user_id)->first();
-            
-            $update = $feedback->update($data); 
+
+            $update = $feedback->update($data);
+
+            $newFeedback = $feedbacks->where('user_id', $request->user_id)->first();
 
             if ($update) {
+                $this->updateFeedbackAddTrack($oldFeedback, $newFeedback);
                 $dataResponse = ['data' => 'Feedback update'];
                 $code = 200;
             } else {
@@ -289,6 +298,75 @@ class FeedBackController extends Controller
             return response()->json(['data' => trans('messages.comment_not_added')], 406);
             // return response()->json(['data' => 'Feedback not add'], 406);
 
+        }
+    }
+
+    public function addFeedbackAddTrack($data = null){
+        try {
+            $data = $data->toArray();
+
+            $insertData = array();
+            $repoAppointment = new AppointmentRepository(new Appointments());
+            $appointment = $repoAppointment->find($data['appointment_id']);
+
+            foreach ($data as $key => $value) {
+                if($appointment && $appointment->auditions_id && $key != 'id' && $key != 'created_at' && $key != 'updated_at'){
+                    $d = array();   
+                    $d['audition_id'] = $appointment->auditions_id;
+                    $d['edited_by'] = $this->getUserLogging();
+                    $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
+                    $d['key'] = 'feedback_' . $key;
+                    $d['old_value'] = null;
+                    $d['new_value'] = $value;
+
+                    array_push($insertData, $d);   
+                }
+            }
+
+            AuditionLog::insert($insertData);
+           
+            return true;
+        } catch (\Exception $exception) {
+            $this->log->error("ERR IN ADDING TRACK OF FEEDBACK ADD::: " . $exception->getMessage());
+            return true;
+        }
+    }
+
+    public function updateFeedbackAddTrack($oldData = null, $newData = null){
+        try {
+            $oldData = $oldData->toArray();
+            $newData = $newData->toArray();
+
+            //checking diff in two arrays old and new
+            $diff_old = array_diff(array_map('serialize', $oldData), array_map('serialize', $newData));
+            $diff_new = array_diff(array_map('serialize', $newData), array_map('serialize', $oldData));
+            $multidimensional_diff_old = array_map('unserialize', $diff_old);
+            $multidimensional_diff_new = array_map('unserialize', $diff_new);
+
+            $insertData = array();
+            $repoAppointment = new AppointmentRepository(new Appointments());
+            $appointment = $repoAppointment->find($oldData['appointment_id']);
+
+            foreach ($multidimensional_diff_old as $key => $value) {
+                if($appointment && $appointment->auditions_id && $key != 'updated_at'){
+                    $d = array();   
+                    $d['audition_id'] = $appointment->auditions_id;
+                    $d['edited_by'] = $this->getUserLogging();
+                    $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
+                    $d['key'] = 'feedback_' . $key;
+                    $d['old_value'] = $value;
+                    $d['new_value'] = $multidimensional_diff_new[$key];
+
+                    array_push($insertData, $d);   
+                }
+            }
+
+            AuditionLog::insert($insertData);
+           
+            return true;
+        } catch (\Exception $exception) {
+            $this->log->error("ERR IN UPDATING TRACK OF FEEDBACK ADD::: " . $exception->getMessage());
+            return true;
         }
     }
 }

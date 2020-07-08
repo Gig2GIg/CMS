@@ -9,6 +9,7 @@ use App\Models\Feedbacks;
 use App\Models\Roles;
 use App\Models\Slots;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 use stdClass;
 
 class UserAuditionsResource extends JsonResource
@@ -71,6 +72,10 @@ class UserAuditionsResource extends JsonResource
             'assign_no' => $this->assign_no ?? NULL,
             // ===========================
         ];
+
+        if($dataRepo->auditions->online == 1){
+            $return['has_ended'] = $dataRepo->auditions->end_date && (Carbon::now('UTC')->format('Y-m-d') > $dataRepo->auditions->end_date) ? true : false; 
+        }
         return $return;
     }
 }
