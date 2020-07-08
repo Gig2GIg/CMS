@@ -255,6 +255,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->get('/appointment/{audition_id}/rounds', ['uses' => 'AppoinmentController@getRounds']);
     $router->post('/appointment/{audition_id}/rounds', ['uses' => 'AppoinmentController@createRound']);
     $router->put('/appointment/{appointment_id}/rounds', ['uses' => 'AppoinmentController@updateRound']);
+    $router->put('/appointment/{appointment_id}/reOpenRound', ['uses' => 'AppoinmentController@reOpenRound']);
 
     // ROLES
     $router->get('/roles', ['uses' => 'RolesController@getRoles']);

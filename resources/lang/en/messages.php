@@ -42,7 +42,9 @@ return [
 
     // Appointment Controller
     'round_closed_successfully' => 'Round closed successfully',
-    // 'round_close_successful' => 'Round closed successfully',
+    'round_opened_already' => 'This round is already active',
+    'round_reopened' => 'Round re-opened successfully',
+    'round_not_reopened' => 'Round could not be re-opened',
     'round_not_close' => 'Round not close',
     'list_by_slots' => 'List by slots',
     'round_create' => 'Round Create',

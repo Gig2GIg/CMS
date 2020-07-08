@@ -49,6 +49,50 @@ class AppoinmentController extends Controller
         return $this->onlineSubmision($request);
     }
 
+    public function reOpenRound(Request $request)
+    {
+        try {
+            $repo = new AppointmentRepository(new Appointments());
+            $data = $repo->find($request->appointment_id);
+
+            if($data){
+                if($data->status == 1){
+                    $res = ['message' => trans('messages.round_opened_already')];
+                    $code = 200;    
+                } else {
+                    $existingStarted = $repo->findbyparams(['auditions_id' => $data->auditions_id, "status" => 1])->first(); 
+
+                    if(!$existingStarted){
+                        $update = $data->update([
+                            'status' => true,
+                            'is_group_open' => 0
+                        ]);
+
+                        if($update){
+                            $res = ['message' => trans('messages.round_reopened'), 'data' => $data];
+                            $code = 200;    
+                        }else{
+                            $res = ['message' => trans('messages.something_went_wrong')];
+                            $code = 400;    
+                        }
+                    } else {
+                        $res = ['message' => trans('messages.round_not_reopened'), 'data' => $existingStarted->round];
+                        $code = 400;
+                    }
+                }
+            }else{
+                $res = ['message' => trans('messages.data_not_found')];
+                $code = 400;
+            }
+
+            return response()->json($res, $code);  
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            $this->log->error($exception->getFile());
+            return response()->json(['message' => trans('messages.round_not_reopened'), 'data' => []], 406);
+        }
+    }
+
     public function updateRound(Request $request)
     {
         try {
@@ -96,7 +140,11 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
                             $UserAudition = new UserAuditionsRepository(new UserAuditions());
-                            $UserAudition->create($dataToInsert);
+                            $UserAudition->updateOrCreate($dataToInsert, [
+                                'user_id' => $feedback->user_id, 
+                                'appointment_id' => $createdNextAuditionRound->id, 
+                                'rol_id' => $auditionRoleId]
+                            );
                         }
                     }
 
@@ -108,7 +156,11 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
                             $UserAudition = new UserAuditionsRepository(new UserAuditions());
-                            $UserAudition->create($dataToInsert);
+                            $UserAudition->updateOrCreate($dataToInsert, [
+                                'user_id' => $uslot->user_id, 
+                                'appointment_id' => $createdNextAuditionRound->id, 
+                                'rol_id' => $auditionRoleId]
+                            );
                         }
                     }
                 }
@@ -267,8 +319,12 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
                                 $UserAudition = new UserAuditionsRepository(new UserAuditions());
-                                $UserAudition->create($dataToInsert);
-
+                                // $UserAudition->create($dataToInsert);
+                                $UserAudition->updateOrCreate($dataToInsert, [
+                                    'user_id' => $feedback->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId]
+                                );
                                 // $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                                 // $dataSlotRepo->create([
                                 //     'user_id' => $feedback->user_id,
@@ -296,7 +352,12 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
                                 $UserAudition = new UserAuditionsRepository(new UserAuditions());
-                                $UserAudition->create($dataToInsert);
+                                $UserAudition->updateOrCreate($dataToInsert, [
+                                    'user_id' => $uslot->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId]
+                                );
+                                // $UserAudition->create($dataToInsert);
                             }
                         }
                     }
@@ -400,20 +461,27 @@ class AppoinmentController extends Controller
                                     'type' => '1',
                                 ];
 
-                                $UserAudition->create($dataToInsert);
-
-                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                                $dataSlotRepo->create([
+                                $exists = $UserAudition->findbyparams([
                                     'user_id' => $feedback->user_id,
                                     'appointment_id' => $newAppointmentId,
-                                    'slots_id' => factory(Slots::class)->create([
+                                    'rol_id' => $auditionRoleId
+                                ])->get();
+                                if(!$exists){
+                                    $UserAudition->create($dataToInsert);
+
+                                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                    $dataSlotRepo->create([
+                                        'user_id' => $feedback->user_id,
                                         'appointment_id' => $newAppointmentId,
-                                        'time' => "00:00",
-                                        'status' => false,
-                                    ])->id,
-                                    'roles_id' => $auditionRoleId,
-                                    'status' => 2,
-                                ]);
+                                        'slots_id' => factory(Slots::class)->create([
+                                            'appointment_id' => $newAppointmentId,
+                                            'time' => "00:00",
+                                            'status' => false,
+                                        ])->id,
+                                        'roles_id' => $auditionRoleId,
+                                        'status' => 2,
+                                    ]);
+                                }
 
                                 // $testDebug['dataToInsert'] = $dataToInsert;
                                 // $testDebug['after'] = "After";
@@ -437,20 +505,28 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
                                 $UserAudition = new UserAuditionsRepository(new UserAuditions());
-                                $UserAudition->create($dataToInsert);
 
-                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                                $dataSlotRepo->create([
-                                    'user_id' => $uslots->user_id,
-                                    'appointment_id' => $newAppointmentId,
-                                    'slots_id' => factory(Slots::class)->create([
+                                $exists = $UserAudition->findbyparams([
+                                    'user_id' => $uslot->user_id, 
+                                    'appointment_id' => $newAppointmentId, 
+                                    'rol_id' => $auditionRoleId, 
+                                ])->get();
+                                if(!$exists){
+                                    $UserAudition->create($dataToInsert);
+
+                                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                    $dataSlotRepo->create([
+                                        'user_id' => $uslot->user_id,
                                         'appointment_id' => $newAppointmentId,
-                                        'time' => "00:00",
-                                        'status' => false,
-                                    ])->id,
-                                    'roles_id' => $auditionRoleId,
-                                    'status' => 2,
-                                ]);
+                                        'slots_id' => factory(Slots::class)->create([
+                                            'appointment_id' => $newAppointmentId,
+                                            'time' => "00:00",
+                                            'status' => false,
+                                        ])->id,
+                                        'roles_id' => $auditionRoleId,
+                                        'status' => 2,
+                                    ]);
+                                }
                             }
                         }
                     }
