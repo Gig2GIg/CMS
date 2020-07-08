@@ -1118,9 +1118,9 @@ class AuditionsController extends Controller
             $audition = new AuditionRepository(new Auditions());
             $audition = $audition->find($request->audition_id);
 
-            $count = AuditionLog::where('audition_id', $audition->id)->count();
+            // $count = AuditionLog::where('audition_id', $audition->id)->count();
             
-            if($count > 0){
+            if($audition){
                 return Excel::download(new auditionLogsExport($audition->id), 'AUDITION_'. $audition->title .'_logs.xlsx');    
             }else{
                 return response()->json(['message' => trans('messages.data_not_found')], 404);
