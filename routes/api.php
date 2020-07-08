@@ -61,6 +61,10 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
     $router->post('/importUsers', ['uses' => 'UserController@importUsers']);
     $router->get('/users/exportImportedUsers', ['uses' => 'UserController@exportImportedUsers']);
+
+    $router->post('/users/testTrack', ['uses' => 'AuditionsController@testTract']);
+
+    $router->get('/exportAuditionLogs/{audition_id}', ['uses' => 'AuditionsController@exportAuditionLogs']);
 }); 
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {

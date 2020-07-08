@@ -78,6 +78,7 @@ class AuditionResponseInstantFeedback extends JsonResource
             'personal_information' => $this->personal_information,
             'phone' => $this->phone,
             'email' => $this->email,
+            'end_date' => $this->end_date,
             'other_info' => $this->other_info,
             'additional_info' => $this->additional_info,
             "union" => $this->union,

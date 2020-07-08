@@ -39,11 +39,15 @@ use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAuditions;
+use App\Models\AuditionLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Exports\auditionLogsExport;
+use Excel;
 
 class AuditionsController extends Controller
 {
@@ -54,7 +58,7 @@ class AuditionsController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => []]);
+        $this->middleware('jwt', ['except' => ['exportAuditionLogs']]);
         $this->log = new LogManger();
         $this->find = new AuditionsFindController();
         $this->toDate = new ManageDates();
@@ -364,7 +368,7 @@ class AuditionsController extends Controller
 
     /**
      * @param $contrib
-     * @param $audition
+     * @param $auditionappointment
      * @throws NotFoundException
      * @throws \App\Http\Exceptions\CreateException
      */
@@ -614,6 +618,7 @@ class AuditionsController extends Controller
 
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
+            $oldAudition = (new AuditionFullResponse($audition))->toResponse(app('request'));
 
             if (isset($audition->id)) {
 
@@ -711,6 +716,11 @@ class AuditionsController extends Controller
                 }
                 DB::commit();
 
+                // Tracking audition update records
+                $newAudition = (new AuditionFullResponse($auditionRepo->find($request->id)))->toResponse(app('request'));
+
+                $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
+
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
             } else {
@@ -720,12 +730,14 @@ class AuditionsController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (NotFoundException $exception) {
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             // return response()->json(['data' => 'Data Not Found'], 404);
             return response()->json(['data' => trans('messages.data_not_found')], 404);
         } catch (\Exception $exception) {
             // dd($exception->getMessage());
+            $this->log->error($exception->getFile());
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
             DB::rollBack();
@@ -918,6 +930,204 @@ class AuditionsController extends Controller
             //dd($exception->getMessage());
             return response()->json(['error' => trans('messages.data_not_found')], 404);
             // return response()->json(['error' => 'Not Found'], 404);
+        }
+    }
+
+    // public function testTract(Request $request){
+    //     $this->trackAuditionUpdate($request->oldData, $request->newData);
+    // }
+
+    public function trackAuditionUpdate($oldData = null, $newData = null)
+    {
+        try {
+            //checking diff in two arrays old and new
+            $diff_old = array_diff(array_map('serialize', $oldData), array_map('serialize', $newData));
+            $diff_new = array_diff(array_map('serialize', $newData), array_map('serialize', $oldData));
+            $multidimensional_diff_old = array_map('unserialize', $diff_old);
+            $multidimensional_diff_new = array_map('unserialize', $diff_new);
+
+            $oldCount = count($multidimensional_diff_old);
+            $newCount = count($multidimensional_diff_new);
+
+            $greater = $oldCount >= $newCount ? 'old' : 'new';
+
+            $loopArr = $oldCount >= $newCount ? $multidimensional_diff_old : $multidimensional_diff_new;
+            $diffArray = $oldCount < $newCount ? $multidimensional_diff_old : $multidimensional_diff_new;
+
+            $insertData = array();
+
+            foreach ($loopArr as $key => $value) {
+                $d = array();
+                $d['audition_id'] = $oldData['id'];
+                $d['edited_by'] = $this->getUserLogging();
+                $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
+                
+                if($key != 'cover_thumbnail' && $key != 'apointment') {
+                    if($key == 'dates') {
+                        // checking dates array diffrances
+                        $date_old = array_diff(array_map('serialize', $oldData['dates']), array_map('serialize', $newData['dates']));
+                        $date_new = array_diff(array_map('serialize', $newData['dates']), array_map('serialize', $oldData['dates']));
+                        $multidimensional_date_old = array_map('unserialize', $date_old);
+                        $multidimensional_date_new = array_map('unserialize', $date_new);
+
+                        foreach ($multidimensional_date_old as $k => $v) {
+                            if($v['from'] != $multidimensional_date_new[$k]['from']){
+                                $d['key'] = $v['type'] . '_from_date';
+                                $d['old_value'] = $v['from'];
+                                $d['new_value'] = $multidimensional_date_new[$k]['from'];
+                                array_push($insertData, $d);
+                            } 
+                            if($v['to'] != $multidimensional_date_new[$k]['to']){
+                                $d['key'] = $v['type'] . '_to_date';
+                                $d['old_value'] = $v['to'];
+                                $d['new_value'] = $multidimensional_date_new[$k]['to'];
+                                array_push($insertData, $d);
+                            }                        
+                        }
+                    } else if($key == 'roles') {
+                        // checking roles array diffrances
+                        $role_old = array_diff(array_map('serialize', $oldData['roles']), array_map('serialize', $newData['roles']));
+                        $role_new = array_diff(array_map('serialize', $newData['roles']), array_map('serialize', $oldData['roles']));
+                        $multidimensional_role_old = array_map('unserialize', $role_old);
+                        $multidimensional_role_new = array_map('unserialize', $role_new);
+
+                        $oldCount = count($multidimensional_role_old);
+                        $newCount = count($multidimensional_role_new);
+
+                        $greater = $oldCount >= $newCount ? 'old' : 'new';
+
+                        $loopArray = $oldCount >= $newCount ? $multidimensional_role_old : $multidimensional_role_new;
+                        $smallerArray = $oldCount < $newCount ? $multidimensional_role_old : $multidimensional_role_new;
+
+                        foreach ($loopArray as $k => $v) {
+                            if($v['name'] != $smallerArray[$k]['name']){
+                                $d['key'] = $key . '_name';
+                                if($greater == 'old') {
+                                    $d['old_value'] = $v['name'];  
+                                    $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['name'] : '--';
+                                }else {
+                                    $d['old_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['name'] : '--';
+                                    $d['new_value'] = $v['name'];  
+                                }
+                                
+                                array_push($insertData, $d);
+                            }
+                            if($v['description'] != $smallerArray[$k]['description']){
+                                $d['key'] = $key . '_description';
+                                if($greater == 'old') {
+                                    $d['old_value'] = $v['description'];  
+                                    $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['description'] : '--';
+                                }else {
+                                    $d['old_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['description'] : '--';
+                                    $d['new_value'] = $v['description'];  
+                                }
+                                
+                                array_push($insertData, $d);
+                            } 
+                            if($v['image']['url'] != $smallerArray[$k]['image']['url']){
+                                $d['key'] = $key . '_image_url';
+                                if($greater == 'old') {
+                                    $d['old_value'] = $v['image']['url'];  
+                                    $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['url'] : '--';
+                                }else {
+                                    $d['old_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['url'] : '--';
+                                    $d['new_value'] = $v['image']['url'];  
+                                }
+                                
+                                array_push($insertData, $d);
+                            } 
+                            if($v['image']['name'] != $smallerArray[$k]['image']['name']){
+                                $d['key'] = $key . '_image_name';
+                                if($greater == 'old') {
+                                    $d['old_value'] = $v['image']['name'];  
+                                    $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['name'] : '--';
+                                }else {
+                                    $d['old_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['name'] : '--';
+                                    $d['new_value'] = $v['image']['name'];  
+                                }
+                                
+                                array_push($insertData, $d);
+                            }                         
+                        }
+                    } else if($key == 'contributors') {
+                        // checking contributor array diffrances
+                        $contributor_old = array_diff(array_map('serialize', $oldData['contributors']), array_map('serialize', $newData['contributors']));
+                        $contributor_new = array_diff(array_map('serialize', $newData['contributors']), array_map('serialize', $oldData['contributors']));
+                        $multidimensional_contributor_old = array_map('unserialize', $contributor_old);
+                        $multidimensional_contributor_new = array_map('unserialize', $contributor_new);
+
+                        $oldCount = count($multidimensional_contributor_old);
+                        $newCount = count($multidimensional_contributor_new);
+
+                        $greater = $oldCount >= $newCount ? 'old' : 'new';
+
+                        $loopArray = $oldCount >= $newCount ? $multidimensional_contributor_old : $multidimensional_contributor_new;
+                        $smallerArray = $oldCount < $newCount ? $multidimensional_contributor_old : $multidimensional_contributor_new;
+
+                        foreach ($loopArray as $k => $v) {
+                            $d['key'] = $key;
+
+                            if($greater == 'old') {
+                                $d['old_value'] = $v['contributor_info']['email'];
+                                $d['new_value'] = isset($smallerArray[$k]) ? $smallerArray[$k]['contributor_info']['email'] : '--';
+                                array_push($insertData, $d);    
+                            } else {
+                                $d['old_value'] = isset($smallerArray[$k]) ? $smallerArray[$k]['contributor_info']['email'] : '--';
+                                $d['new_value'] = $v['contributor_info']['email'];
+                                array_push($insertData, $d);    
+                            }
+                        }
+                    } else {
+                        $d['key'] = $key;
+                        if($greater == 'old'){
+                            $d['old_value'] = $key == 'location' || $key == 'production' ? json_encode($value) : $value;
+                            if(isset($diffArray[$key])){
+                                $d['new_value'] = $key == 'location' || $key == 'production' ? json_encode($diffArray[$key]) : $diffArray[$key];    
+                            }else {
+                                $d['new_value'] = '--';    
+                            }
+                            
+                            array_push($insertData, $d);    
+                        }else {
+                            if(isset($diffArray[$key])){
+                                $d['old_value'] = $key == 'location' || $key == 'production' ? json_encode($diffArray[$key]) : $diffArray[$key];    
+                            }else {
+                                $d['old_value'] = '--';    
+                            }
+                            $d['new_value'] = $key == 'location' || $key == 'production' ? json_encode($value) : $value;
+                            array_push($insertData, $d);    
+                        }
+                        
+                    }
+                }
+            }
+
+            // dd($insertData);
+            AuditionLog::insert($insertData);
+            // dd([$multidimensional_date_old, $multidimensional_date_new]);
+            return true;
+        } catch (NotFoundException $exception) {
+            $this->log->error("ERR IN AUDITION UPDATE TRACK:::: " . $exception->getMessage());
+            return true;
+        }
+    }
+
+    public function exportAuditionLogs(Request $request)
+    {
+        try{
+            $audition = new AuditionRepository(new Auditions());
+            $audition = $audition->find($request->audition_id);
+
+            $count = AuditionLog::where('audition_id', $audition->id)->count();
+            
+            if($count > 0){
+                return Excel::download(new auditionLogsExport($audition->id), 'AUDITION_'. $audition->title .'_logs.xlsx');    
+            }else{
+                return response()->json(['message' => trans('messages.data_not_found')], 404);
+            }
+        } catch(\Exception $e) {
+            $this->log->error("ERR IN EXPORTING AUDITION LOGS ::: " . $e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 406);
         }
     }
 }
