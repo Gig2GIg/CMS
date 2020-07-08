@@ -18,6 +18,7 @@ return [
     'not_processable' => 'Not processable',
     'unprocesable_entity' => 'Unprocessable Entity',
     'data_not_update' => 'Data Not Update',
+    'custom_unauthorized' => 'This user is already registered, please try again or reset your password',
     'unauthorized' => 'Unauthorized',
     'server_error' => 'Server Error',
     'something_went_wrong' => 'Something went wrong',

@@ -51,7 +51,12 @@ class AuthController extends Controller
 
             JWTAuth::factory()->setTTL($expiration);
             if (!$token = auth()->claims($payload)->attempt($credentials, ['exp' => $expiration])) {
-                return response()->json(['error' => trans('messages.unauthorized')], 401);
+                if($user)
+                {
+                    return response()->json(['error' => trans('messages.custom_unauthorized')], 403);
+                } else {
+                    return response()->json(['error' => trans('messages.unauthorized')], 401);
+                }
                 // return response()->json(['error' => 'Unauthorized'], 401);
             }
 
