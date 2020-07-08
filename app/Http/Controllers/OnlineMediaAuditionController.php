@@ -31,7 +31,6 @@ class OnlineMediaAuditionController extends Controller
 
             $appointment = Appointments::find($request->appointment_id);
             $audition = Auditions::find($appointment->auditions_id);
-            $cuser = User::find($user_id);
 
             if($audition->end_date > Carbon::now('UTC')->format('Y-m-d'))
             {
@@ -41,6 +40,8 @@ class OnlineMediaAuditionController extends Controller
                 }
 
                 try {
+                    $cuser = User::find($audition->user_id);
+
                     if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
                         $this->sendStoreNotificationToUser($cuser, $audition);
                     }
