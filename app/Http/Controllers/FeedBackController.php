@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\LogManger;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Repositories\AppointmentRepository;
+use App\Http\Repositories\AuditionRepository;
 use App\Http\Repositories\FeedbackRepository;
 use App\Http\Repositories\PerformerRepository;
 use App\Http\Repositories\UserSlotsRepository;
@@ -68,10 +70,18 @@ class FeedBackController extends Controller
             $data = $repo->create($data);
 
             if ($data->id) {
-                $this->addFeedbackAddTrack($data);
-
+                $user = User::find($request->user);
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
+                $auditionsRepo = new AuditionRepository(new Auditions());
+                $audition = $appointment ? $auditionsRepo->find($appointmentData->auditions_id) : NULL;
+                if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                    // send notification
+                    $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
+                }
+                $this->saveStoreNotificationToUser($user, $audition, "");
+                //$this->addFeedbackAddTrack($data);
+
                 if ($appointmentData->auditions->user_id === $request->evaluator) {
                     $slotRepo = new UserSlotsRepository(new UserSlots());
                     $slotData = $slotRepo->findbyparam('slots_id', $request->slot_id)->first();
@@ -133,6 +143,24 @@ class FeedBackController extends Controller
             $newFeedback = $feedbacks->where('user_id', $request->user_id)->first();
 
             if ($update) {
+                $user = User::find($request->user_id);
+                $repoAppointment = new AppointmentRepository(new Appointments());
+                $appointment = $repoAppointment->find($request->id);
+                $auditionsRepo = new AuditionRepository(new Auditions());
+                $audition = $appointment ? $auditionsRepo->find($appointment->auditions_id) : NULL;
+                if($audition){
+                    $comment = 'Your feedback has been updated for ' . $audition->title;
+                    $this->saveStoreNotificationToUser($user, $audition, $comment);
+                }else{
+                    $comment = 'Your feedback has been updated';
+                    $this->saveStoreNotificationToUser($user, NULL, $comment);
+                }
+
+                if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                    // send notification
+                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
+                }
+
                 $this->updateFeedbackAddTrack($oldFeedback, $newFeedback);
                 $dataResponse = ['data' => 'Feedback update'];
                 $code = 200;
@@ -332,6 +360,57 @@ class FeedBackController extends Controller
         }
     }
 
+     public function saveStoreNotificationToUser($user, $audition, $comment = ""): void
+    {
+        try {
+            if($comment == ""){
+                $message = 'You have received new feedback for ' . $audition->title;
+            }else{
+                $message = $comment;
+            }
+
+            if(!$audition){
+                $title = 'Feedback Notification';
+            }else{
+                $title = $audition->title;
+            }
+
+            if ($user instanceof User) {
+                $history = $user->notification_history()->create([
+                    'title' => $title,
+                    'code' => 'feedback',
+                    'status' => 'unread',
+                    'message' => $message
+                ]);
+                $this->log->info('saveStoreNotificationToUser:: ', $history);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function sendStoreNotificationToUser($user, $audition, $comment = "", $appointment_id = null): void
+    {
+        try {
+            if($comment == ""){
+                $message = 'You have received new feedback for ' . $audition->title;
+            }else{
+                $message = $comment;
+            }
+            
+            $this->sendPushNotification(
+                $audition,
+                SendNotifications::FEEDBACK,
+                $user,
+                $appointment_id,
+                $message
+            );
+
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
     public function updateFeedbackAddTrack($oldData = null, $newData = null){
         try {
             $oldData = $oldData->toArray();
@@ -381,12 +460,12 @@ class FeedBackController extends Controller
                         if($key == 'favorite'){
                            $d['key'] = 'Feedback Starred';
                         }else{
-                           $d['key'] = 'Feedback ' . ucwords(strtolower($key)); 
+                           $d['key'] = str_replace('_', ' ', 'Feedback ' . ucwords(strtolower($key))); 
                         }
                         $d['old_value'] = $value == 1 ? 'Yes' : 'No';
                         $d['new_value'] = $multidimensional_diff_new[$key] == 1 ? 'Yes' : 'No';
                     } else{
-                        $d['key'] = 'Feedback ' . ucwords(strtolower($key));
+                        $d['key'] = str_replace('_', ' ', 'Feedback ' . ucwords(strtolower($key)));
                         $d['old_value'] = $value;
                         $d['new_value'] = $multidimensional_diff_new[$key];
                     }

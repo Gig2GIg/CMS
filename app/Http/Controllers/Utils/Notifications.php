@@ -25,6 +25,7 @@ class Notifications
     const ICON = '/images/logo-color-push.png';
     const APPOINTMENT_REORDER = 'appointment_reorder';
     const INSTANT_FEEDBACK = 'instant_feedback';
+    const FEEDBACK = 'feedback';
     const CASTER_AUDITION_INVITE = 'caster_audition_invite';
     const AUDITION_CREATED = 'audition_created';
     const NEW_ONLINE_MEDIA = 'new_online_media';
@@ -95,6 +96,13 @@ class Notifications
                     break;
                 case self::INSTANT_FEEDBACK:
                     $log->info("PUSH NOTIFICATION OF INSTANT_FEEDBACK FROM CASTER TO PERFORMER FOR AUDITION" . $audition->title);
+                    $appointment_id = $title;
+                    $title = $audition->title;
+                    $to = 'ONLY_ONE_WITHOUT_CHECK';
+                    $clickToSend = env('PERFORMER_BASE_URL') . '/my/auditions?tab=upcoming&appointment_id=' . $appointment_id . '&performer_id=' . $user->id;
+                    break;
+                case self::FEEDBACK:
+                    $log->info("PUSH NOTIFICATION OF FEEDBACK FROM CASTER TO PERFORMER FOR AUDITION" . $audition->title);
                     $appointment_id = $title;
                     $title = $audition->title;
                     $to = 'ONLY_ONE_WITHOUT_CHECK';
