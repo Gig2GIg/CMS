@@ -6,6 +6,7 @@ use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use App\Models\Appointments;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
 class AuditionLogResource extends JsonResource
 {
@@ -27,12 +28,11 @@ class AuditionLogResource extends JsonResource
         }
         
         return [
-            'id'=>$this->id,
             'key'=>$this->key,
             'old_value' =>$this->old_value,
             'new_value'=>$this->new_value,
             'edited_by'=>$name,
-            'created_at'=>$this->created_at
+            'created_at'=>Carbon::parse($this->created_at)->format('Y-m-d H:i:s')
         ];
     }
 }

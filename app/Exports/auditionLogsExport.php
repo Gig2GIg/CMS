@@ -19,7 +19,6 @@ class auditionLogsExport implements FromCollection, WithHeadings
 	public function headings(): array
     {
         return [
-            '#',
             'key Name',
             'Old Value',
             'New Value',
