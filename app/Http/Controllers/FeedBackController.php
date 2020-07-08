@@ -81,7 +81,7 @@ class FeedBackController extends Controller
                         ]);
                     }
                 }
-                $this->addTalenteToDatabase($request->user);
+                // $this->addTalenteToDatabase($request->user);
                 $dataResponse = ['data' => 'Feedback saved successfully', 'feedback_id' => $data->id];
                 $code = 201;
             } else {
@@ -347,16 +347,49 @@ class FeedBackController extends Controller
             $repoAppointment = new AppointmentRepository(new Appointments());
             $appointment = $repoAppointment->find($oldData['appointment_id']);
 
+            if(count($multidimensional_diff_old) > 0 && $appointment && $appointment->auditions_id){
+                $evaluator = User::find($oldData['evaluator_id'])->details;
+                $roundData = [
+                    [
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Round',
+                        'old_value' => null,
+                        'new_value' => 'Round ' . $appointment->round
+                    ],
+                    [
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Evaluator',
+                        'old_value' => null,
+                        'new_value' => $evaluator ? $evaluator->first_name . ' ' . $evaluator->last_name : $oldData['evaluator_id']
+                    ]
+                ];
+                
+                AuditionLog::insert($roundData);
+            }
+                
             foreach ($multidimensional_diff_old as $key => $value) {
-                if($appointment && $appointment->auditions_id && $key != 'updated_at'){
-                    $d = array();   
+                if($appointment && $appointment->auditions_id && $key != 'updated_at' && $key != 'slot_id' && $key != 'evaluator_id'){
+                    $d = array();  
                     $d['audition_id'] = $appointment->auditions_id;
                     $d['edited_by'] = $this->getUserLogging();
                     $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
-                    $d['key'] = 'feedback_' . $key;
-                    $d['old_value'] = $value;
-                    $d['new_value'] = $multidimensional_diff_new[$key];
-
+                    if($key == 'callback' || $key == 'favorite'){
+                        if($key == 'favorite'){
+                           $d['key'] = 'Feedback Starred';
+                        }else{
+                           $d['key'] = 'Feedback ' . ucwords(strtolower($key)); 
+                        }
+                        $d['old_value'] = $value == 1 ? 'Yes' : 'No';
+                        $d['new_value'] = $multidimensional_diff_new[$key] == 1 ? 'Yes' : 'No';
+                    } else{
+                        $d['key'] = 'Feedback ' . ucwords(strtolower($key));
+                        $d['old_value'] = $value;
+                        $d['new_value'] = $multidimensional_diff_new[$key];
+                    }
                     array_push($insertData, $d);   
                 }
             }
