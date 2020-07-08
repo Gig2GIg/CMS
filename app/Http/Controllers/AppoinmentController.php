@@ -139,7 +139,7 @@ class AppoinmentController extends Controller
                                 'appointment_id' => $createdNextAuditionRound->id, 
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
-                            $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                            $UserAudition = new UserAuditions();
                             $UserAudition->updateOrCreate($dataToInsert, [
                                 'user_id' => $feedback->user_id, 
                                 'appointment_id' => $createdNextAuditionRound->id, 
@@ -155,7 +155,7 @@ class AppoinmentController extends Controller
                                 'appointment_id' => $createdNextAuditionRound->id, 
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
-                            $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                            $UserAudition = new UserAuditions();
                             $UserAudition->updateOrCreate($dataToInsert, [
                                 'user_id' => $uslot->user_id, 
                                 'appointment_id' => $createdNextAuditionRound->id, 
@@ -172,7 +172,7 @@ class AppoinmentController extends Controller
                     ->where('favorite', true);
                 if ($repoFeeadback->count() >= 0) {
                     $idsFeedback = $repoFeeadback->pluck('user_id');
-                    $repoUserAuditions = new UserAuditionsRepository(new UserAuditions());
+                    $repoUserAuditions = new UserAuditions();
                     $dataUserAuditions = $repoUserAuditions->all()->whereNotIn('user_id', $idsFeedback)
                         ->where('appointment_id', $request->appointment_id);
                     if ($dataUserAuditions->count() > 0) {
@@ -318,7 +318,7 @@ class AppoinmentController extends Controller
                                     'appointment_id' => $newAppointmentId, 
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
-                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                                $UserAudition = new UserAuditions();
                                 // $UserAudition->create($dataToInsert);
                                 $UserAudition->updateOrCreate($dataToInsert, [
                                     'user_id' => $feedback->user_id, 
@@ -351,7 +351,7 @@ class AppoinmentController extends Controller
                                     'appointment_id' => $newAppointmentId, 
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
-                                $UserAudition = new UserAuditionsRepository(new UserAuditions());
+                                $UserAudition = new UserAuditions();
                                 $UserAudition->updateOrCreate($dataToInsert, [
                                     'user_id' => $uslot->user_id, 
                                     'appointment_id' => $newAppointmentId, 
