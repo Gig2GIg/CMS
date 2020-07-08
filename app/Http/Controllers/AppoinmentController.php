@@ -98,7 +98,7 @@ class AppoinmentController extends Controller
         try {
             $repo = new AppointmentRepository(new Appointments());
             $data = $repo->find($request->appointment_id);
-            $createdNextAuditionRound = $repo->findbyparams(['auditions_id' => $data->auditions_id, "status" => 2, "round" => (($data->round) + 1)])->first();
+            $createdNextAuditionRound = $repo->findbyparams(['auditions_id' => $data->auditions_id, "round" => (($data->round) + 1)])->first();
             $update = $data->update([
                 'status' => $request->status,
                 'is_group_open' => 0
