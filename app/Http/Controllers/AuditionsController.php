@@ -972,13 +972,21 @@ class AuditionsController extends Controller
 
                         foreach ($multidimensional_date_old as $k => $v) {
                             if($v['from'] != $multidimensional_date_new[$k]['from']){
-                                $d['key'] = $v['type'] . '_from_date';
+                                if($v['type'] == 'contract'){
+                                    $d['key'] = 'Contract Start Date';
+                                } else {
+                                    $d['key'] = 'Rehearsal Start Date';
+                                }
                                 $d['old_value'] = $v['from'];
                                 $d['new_value'] = $multidimensional_date_new[$k]['from'];
                                 array_push($insertData, $d);
                             } 
                             if($v['to'] != $multidimensional_date_new[$k]['to']){
-                                $d['key'] = $v['type'] . '_to_date';
+                                if($v['type'] == 'contract'){
+                                    $d['key'] = 'Contract To Date';
+                                } else {
+                                    $d['key'] = 'Rehearsal To Date';
+                                }
                                 $d['old_value'] = $v['to'];
                                 $d['new_value'] = $multidimensional_date_new[$k]['to'];
                                 array_push($insertData, $d);
@@ -1001,7 +1009,7 @@ class AuditionsController extends Controller
 
                         foreach ($loopArray as $k => $v) {
                             if($v['name'] != $smallerArray[$k]['name']){
-                                $d['key'] = $key . '_name';
+                                $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)) . ' Name');
                                 if($greater == 'old') {
                                     $d['old_value'] = $v['name'];  
                                     $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['name'] : '--';
@@ -1013,7 +1021,7 @@ class AuditionsController extends Controller
                                 array_push($insertData, $d);
                             }
                             if($v['description'] != $smallerArray[$k]['description']){
-                                $d['key'] = $key . '_description';
+                                $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)) . ' Description');
                                 if($greater == 'old') {
                                     $d['old_value'] = $v['description'];  
                                     $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['description'] : '--';
@@ -1025,7 +1033,7 @@ class AuditionsController extends Controller
                                 array_push($insertData, $d);
                             } 
                             if($v['image']['url'] != $smallerArray[$k]['image']['url']){
-                                $d['key'] = $key . '_image_url';
+                                $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)) . ' Image Url');
                                 if($greater == 'old') {
                                     $d['old_value'] = $v['image']['url'];  
                                     $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['url'] : '--';
@@ -1037,7 +1045,7 @@ class AuditionsController extends Controller
                                 array_push($insertData, $d);
                             } 
                             if($v['image']['name'] != $smallerArray[$k]['image']['name']){
-                                $d['key'] = $key . '_image_name';
+                                $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)) . ' Image Name');
                                 if($greater == 'old') {
                                     $d['old_value'] = $v['image']['name'];  
                                     $d['new_value'] = isset($smallerArray[$k]['image']) ? $smallerArray[$k]['image']['name'] : '--';
@@ -1065,7 +1073,7 @@ class AuditionsController extends Controller
                         $smallerArray = $oldCount < $newCount ? $multidimensional_contributor_old : $multidimensional_contributor_new;
 
                         foreach ($loopArray as $k => $v) {
-                            $d['key'] = $key;
+                            $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)));
 
                             if($greater == 'old') {
                                 $d['old_value'] = $v['contributor_info']['email'];
@@ -1078,7 +1086,7 @@ class AuditionsController extends Controller
                             }
                         }
                     } else {
-                        $d['key'] = $key;
+                        $d['key'] = str_replace('_', ' ', ucwords(strtolower($key)));
                         if($greater == 'old'){
                             $d['old_value'] = $key == 'location' || $key == 'production' ? json_encode($value) : $value;
                             if(isset($diffArray[$key])){
