@@ -148,10 +148,10 @@ class OnlineMediaAuditionController extends Controller
         try {
             if ($user instanceof User) {
                 $history = $user->notification_history()->create([
-                    'title' => $audition->title,
+                    'title' => 'New media has been submitted in the audition ' . $audition->title,
                     'code' => 'new_online_media',
                     'status' => 'unread',
-                    'message' => 'New media has been submitted in the audition ' . $audition->title,
+                    'message' => 'New media has been submitted in the audition ' . $audition->title
                 ]);
                 $this->log->info('saveStoreNotificationToUser:: ', $history);
             }
