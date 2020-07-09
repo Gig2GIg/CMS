@@ -718,8 +718,11 @@ class AuditionsController extends Controller
 
                 // Tracking audition update records
                 $newAudition = (new AuditionFullResponse($auditionRepo->find($request->id)))->toResponse(app('request'));
-
-                $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
+                try{
+                    $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
+                } catch (\Exception $exception) {
+                    return true;
+                }
 
                 $dataResponse = ['data' => 'Data Updated'];
                 $code = 200;
