@@ -77,6 +77,8 @@ class AuditionsController extends Controller
                 $auditionData = $this->dataAuditionToProcess($request);
                 if($request->online){
                     $auditionData['status'] = true;
+                }else{
+                    $auditionData['status'] = false;
                 }
                 $auditionData['user_id'] = Auth::user()->getAuthIdentifier();
                 if (isset($request['media'])) {
@@ -208,11 +210,15 @@ class AuditionsController extends Controller
         try {
             $this->sendPushNotification(
                 $audition,
-                SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                1,
-                'You have been invited for the audition ' . $audition->title
+                SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
             );
-            $audition->contributors->each(function ($user_contributor) use ($audition) {
+            // $this->sendPushNotification(
+            //     $audition,
+            //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+            //     1,
+            //     'You have been invited for the audition ' . $audition->title
+            // );
+            //$audition->contributors->each(function ($user_contributor) use ($audition) {
                 //                $this->pushNotifications(
                 //                    'You have been registered for the audition ' . $audition->title,
                 //                    $user_contributor,
@@ -224,7 +230,7 @@ class AuditionsController extends Controller
                 //     $user_contributor,
                 //     'You have been invited for the audition ' . $audition->title
                 // );
-            });
+            // });
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
         }
@@ -250,7 +256,7 @@ class AuditionsController extends Controller
             'union' => strtoupper($request->union),
             'contract' => strtoupper($request->contract),
             'production' => strtoupper($request->production),
-            'status' => false,
+            // 'status' => false,
             'online' => $request->online ?? false
         ];
     }
@@ -335,31 +341,30 @@ class AuditionsController extends Controller
     {
         try {
 
-            $notificationData = [
-                'title' => $audition->title,
-                'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                'type' => 'audition',
-                'notificationable_type' => 'auditions',
-                'notificationable_id' => $audition->id,
-            ];
-
-            $notificationHistoryData = [
-                'title' => $audition->title,
-                'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                'user_id' => $user->id,
-                'message' => 'You have been invited to audition ' . $audition->title,
-                'custom_data' => $auditionContributor->id,
-                'status' => 'unread',
-            ];
+            // $notificationData = [
+            //     'title' => $audition->title,
+            //     'code' => SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
+            //     'type' => 'audition',
+            //     'notificationable_type' => 'auditions',
+            //     'notificationable_id' => $audition->id,
+            // ];
 
             if ($audition !== null) {
-                $notificationRepo = new NotificationRepository(new Notification());
-                $notificationRepo->create($notificationData);
+                // $notificationRepo = new NotificationRepository(new Notification());
+                // $notificationRepo->create($notificationData);
+        
+                $history = $user->notification_history()->create([
+                    'title' => $audition->title,
+                    'code' => 'autidion_add_contribuidor',
+                    'status' => 'unread',
+                    'custom_data' => $auditionContributor->id,
+                    'message' => 'Contributor invitation available for ' . $audition->title,
+                ]);
+                
+                // $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory);
+                // $notificationLog = $notificationHistoryRepo->create($notificationHistoryData);
 
-                $notificationHistoryRepo = new NotificationHistoryRepository(new NotificationHistory);
-                $notificationLog = $notificationHistoryRepo->create($notificationHistoryData);
-
-                $this->log->info("Notification History " . $notificationLog);
+                $this->log->info("Notification History " . $history);
             }
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
@@ -372,7 +377,7 @@ class AuditionsController extends Controller
      * @throws NotFoundException
      * @throws \App\Http\Exceptions\CreateException
      */
-    public function saveContributor($contrib, $audition): void
+    public function saveContributor($contrib, $audition, $update = null): void
     {
         try {
             $user = new UserRepository(new User());
@@ -384,13 +389,19 @@ class AuditionsController extends Controller
                 $contributorRepo = new AuditionContributorsRepository(new AuditionContributors());
                 $contributors = $contributorRepo->create($auditionContributorsData);
                 $send = $email->sendContributor($contrib['email'], $audition->title);
-                // $this->createNotification($audition, $contributors, $dataUser);
-                // $this->sendPushNotification(
-                //     $audition,
-                //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR,
-                //     $dataUser->id,
-                //     'You have been invited for the audition ' . $audition->title
-                // );
+                
+                if($update == 1){
+                    $this->createNotification($audition, $contributors, $dataUser);
+                    
+                    $this->sendPushNotification(
+                        $audition,
+                        SendNotifications::AUTIDION_ADD_IN_UPDATE_CONTRIBUIDOR,
+                        $dataUser,
+                        NULL,
+                        'Contributor invitation available for ' . $audition->title
+                    );
+                }
+                
                 $this->log->info("Contributors" . $contributors);
                 $this->log->info("send mail" . $send);
             }
@@ -706,13 +717,13 @@ class AuditionsController extends Controller
                 if (isset($request['contributors'])) {
                     foreach ($request['contributors'] as $contrib) {
                         if (!isset($contrib['id'])) {
-                            $this->saveContributor($contrib, $audition);
+                            $this->saveContributor($contrib, $audition, 1);
                         }
                     }
-                    $this->sendPushNotification(
-                        $audition,
-                        SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
-                    );
+                    // $this->sendPushNotification(
+                    //     $audition,
+                    //     SendNotifications::AUTIDION_ADD_CONTRIBUIDOR
+                    // );
                 }
                 DB::commit();
 

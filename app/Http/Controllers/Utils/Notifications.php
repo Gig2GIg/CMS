@@ -14,6 +14,7 @@ class Notifications
 {
     const AUTIDION_UPDATE = 'autidion_update';
     const AUTIDION_ADD_CONTRIBUIDOR = 'autidion_add_contribuidor';
+    const AUTIDION_ADD_IN_UPDATE_CONTRIBUIDOR = 'autidion_add_in_update_contribuidor';
     const UPCOMING_AUDITION = 'upcoming_audition';
     const REPRESENTATION_EMAIL = 'representation_email';
     const DOCUMENT_UPLOAD = 'document_upload';
@@ -37,11 +38,18 @@ class Notifications
             $log = new LogManger();
             switch ($type) {
                 case self::AUTIDION_ADD_CONTRIBUIDOR:
-                    $log->info("PUSH NOTIFICATION AUDITION SAVE " . $audition->title);
+                    $log->info("PUSH NOTIFICATION AUDITION SAVE / CONTRIBUTOR ADD " . $audition->title);
                     $title = 'Audition Save';
                     // $message = 'You have been added to the audition ' . $audition->title;
                     $message = 'Contributor invitation available for ' . $audition->title;
                     $to = 'MANY';
+                    $clickToSend = env('CASTER_URL');
+                    break;
+                case self::AUTIDION_ADD_IN_UPDATE_CONTRIBUIDOR:
+                    $log->info("PUSH NOTIFICATION AUDITION CONTRIBUTOR ADD " . $audition->title);
+                    $title = 'Audition Update';
+                    $message = 'Contributor invitation available for ' . $audition->title;
+                    $to = 'ONLY_ONE_WITHOUT_CHECK';
                     $clickToSend = env('CASTER_URL');
                     break;
                 case self::UPCOMING_AUDITION:

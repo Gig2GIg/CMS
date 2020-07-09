@@ -427,7 +427,7 @@ class FeedBackController extends Controller
             $appointment = $repoAppointment->find($oldData['appointment_id']);
 
             if(count($multidimensional_diff_old) > 0 && $appointment && $appointment->auditions_id){
-                $evaluator = User::find($oldData['evaluator_id'])->details;
+                $performer = User::find($oldData['user_id'])->details;
                 $roundData = [
                     [
                         'audition_id' => $appointment->auditions_id,
@@ -441,9 +441,9 @@ class FeedBackController extends Controller
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
                         'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                        'key' => 'Feedback Evaluator',
+                        'key' => 'Feedback Performer',
                         'old_value' => null,
-                        'new_value' => $evaluator ? $evaluator->first_name . ' ' . $evaluator->last_name : $oldData['evaluator_id']
+                        'new_value' => $performer ? $performer->first_name . ' ' . $performer->last_name : $oldData['user_id']
                     ]
                 ];
                 
