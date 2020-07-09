@@ -47,9 +47,13 @@ use App\Models\UserSlots;
 use App\Models\Resources;
 use App\Models\Slots;
 use App\Models\OnlineMediaAudition;
+use App\Models\AuditionLog;
+
 use Illuminate\Support\Facades\Auth;
 
 use Exception;
+use Carbon\Carbon;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -478,8 +482,26 @@ class AuditionManagementController extends Controller
     {
         try {
             $auditionRepo = new AuditionRepository(new Auditions());
-            $result = $auditionRepo->find($request->id)->update([
+            $audition = $auditionRepo->find($request->id);
+            $result = $audition->update([
                 'status' => 1,
+            ]);
+
+            //tracking the audition changes   
+            if($audition->status == 2) {
+                $oldStatus = 'Closed';    
+            } else if($audition->status == 0) {
+                $oldStatus = 'Not Opened';    
+            } else {
+                $oldStatus = '--';    
+            }                   
+            AuditionLog::insert([
+                'audition_id' => $request->id,
+                'edited_by' => $this->getUserLogging(),
+                'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                'key' => 'Status',
+                'old_value' => $oldStatus,
+                'new_value' => 'Opened'
             ]);
 
             if ($result) {
@@ -507,6 +529,17 @@ class AuditionManagementController extends Controller
             $result->update([
                 'status' => 2,
             ]);
+
+            //tracking the audition changes                            
+            AuditionLog::insert([
+                'audition_id' => $request->id,
+                'edited_by' => $this->getUserLogging(),
+                'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                'key' => 'Status',
+                'old_value' => 'Opened',
+                'new_value' => 'Closed'
+            ]);
+
             if ($result) {
                 $repoAppointment = new AppointmentRepository(new Appointments());
                 $dataAppointments = $repoAppointment->findbyparam('auditions_id', $result->id);
