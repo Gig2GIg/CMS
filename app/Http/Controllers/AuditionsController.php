@@ -721,7 +721,7 @@ class AuditionsController extends Controller
                 try{
                     $this->trackAuditionUpdate(json_decode($oldAudition->getContent(), true)['data'], json_decode($newAudition->getContent(), true)['data']);
                 } catch (\Exception $exception) {
-                    return true;
+                    return 'true';
                 }
 
                 $dataResponse = ['data' => 'Data Updated'];
