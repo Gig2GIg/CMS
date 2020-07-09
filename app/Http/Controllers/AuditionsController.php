@@ -962,7 +962,7 @@ class AuditionsController extends Controller
                 $d['edited_by'] = $this->getUserLogging();
                 $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
                 
-                if($key != 'cover_thumbnail' && $key != 'apointment') {
+                if($key != 'cover_thumbnail' && $key != 'apointment' && $key != 'status') {
                     if($key == 'dates') {
                         // checking dates array diffrances
                         $date_old = array_diff(array_map('serialize', $oldData['dates']), array_map('serialize', $newData['dates']));
