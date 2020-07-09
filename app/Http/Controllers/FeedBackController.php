@@ -74,7 +74,7 @@ class FeedBackController extends Controller
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
                 $auditionsRepo = new AuditionRepository(new Auditions());
-                $audition = $appointment ? $auditionsRepo->find($appointmentData->auditions_id) : NULL;
+                $audition = $appointmentData ? $auditionsRepo->find($appointmentData->auditions_id) : NULL;
                 if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                     // send notification
                     $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
