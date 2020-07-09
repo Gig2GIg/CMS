@@ -76,7 +76,7 @@ class AppoinmentController extends Controller
                             $code = 400;    
                         }
                     } else {
-                        $res = ['message' => 'To Re-open this round please close the active Round ' .$existingStarted->round, 'data' => $existingStarted->round];
+                        $res = ['message' => 'To re-open this round please close the active Round ' .$existingStarted->round, 'data' => $existingStarted->round];
                         $code = 400;
                     }
                 }
