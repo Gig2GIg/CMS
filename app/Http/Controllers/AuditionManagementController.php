@@ -1030,7 +1030,7 @@ class AuditionManagementController extends Controller
                 $collection->push($item);
             }
         });
-        return $collection;
+        return $collection->sortByDesc('created_at');
     }
 
     /**
