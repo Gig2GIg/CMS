@@ -81,7 +81,7 @@ class AppoinmentController extends Controller
                                     ->where('appointment_id', $request->appointment_id);
                                 if ($dataUserAuditions->count() > 0) {
                                     $dataUserAuditions->each(function ($element) {
-                                        $element->update(['type' => 2]);
+                                        $element->update(['type' => 1]);
                                     });
                                 }
                             }
