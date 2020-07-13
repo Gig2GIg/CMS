@@ -215,13 +215,13 @@ class AppoinmentController extends Controller
                             ->where('appointment_id', $createdNextAuditionRound->id);
                         if ($dataUserAuditions->count() > 0) {
                             $dataUserAuditions->each(function ($element) {
-                                if($element->slot_id){
-                                    Slots::find($element->slot_id)->update(['status' => 0]);
-                                }
-                                $element->update(['type' => 3, 'slot_id' => NULL]);
-                                UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
-                                // $element->update(['slots_id' => NULL]);
-                                // $element->delete();
+                                if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
+                                    if($element->slot_id){
+                                        Slots::find($element->slot_id)->update(['status' => 0]);
+                                    } 
+                                    $element->update(['type' => 3, 'slot_id' => NULL]);
+                                    UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                } 
                             });
                         }
                     }
@@ -443,11 +443,13 @@ class AppoinmentController extends Controller
                                 ->where('appointment_id', $newAppointmentId);
                             if ($dataUserAuditions->count() > 0) {
                                 $dataUserAuditions->each(function ($element) {
-                                    if($element->slot_id){
-                                        Slots::find($element->slot_id)->update(['status' => 0]);
-                                    }
-                                    $element->update(['type' => 3, 'slot_id' => null]);
-                                    UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
+                                        if($element->slot_id){
+                                            Slots::find($element->slot_id)->update(['status' => 0]);
+                                        }    
+                                        $element->update(['type' => 3, 'slot_id' => null]);
+                                        UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                    } 
                                     // $element->delete();
                                 });
                             }
@@ -641,11 +643,13 @@ class AppoinmentController extends Controller
                                 ->where('appointment_id', $newAppointmentId);
                             if ($dataUserAuditions->count() > 0) {
                                 $dataUserAuditions->each(function ($element) {
-                                    if($element->slot_id){
-                                        Slots::find($element->slot_id)->update(['status' => 0]);
+                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->get()->count() == 0){
+                                        if($element->slot_id){
+                                            Slots::find($element->slot_id)->update(['status' => 0]);
+                                        } 
+                                        $element->update(['type' => 3, 'slot_id' => NULL]);
+                                        UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
                                     }
-                                    $element->update(['type' => 3, 'slot_id' => NULL]);
-                                    UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
                                     // $element->delete();
                                 });
                             }
