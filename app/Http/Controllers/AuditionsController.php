@@ -997,9 +997,9 @@ class AuditionsController extends Controller
                             } 
                             if($v['to'] != $multidimensional_date_new[$k]['to']){
                                 if($v['type'] == 'contract'){
-                                    $d['key'] = 'Contract To Date';
+                                    $d['key'] = 'Contract End Date';
                                 } else {
-                                    $d['key'] = 'Rehearsal To Date';
+                                    $d['key'] = 'Rehearsal End Date';
                                 }
                                 $d['old_value'] = $v['to'];
                                 $d['new_value'] = $multidimensional_date_new[$k]['to'];
