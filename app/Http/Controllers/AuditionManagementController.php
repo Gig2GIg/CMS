@@ -483,9 +483,6 @@ class AuditionManagementController extends Controller
         try {
             $auditionRepo = new AuditionRepository(new Auditions());
             $audition = $auditionRepo->find($request->id);
-            $result = $audition->update([
-                'status' => 1,
-            ]);
 
             //tracking the audition changes   
             if($audition->status == 2) {
@@ -494,12 +491,17 @@ class AuditionManagementController extends Controller
                 $oldStatus = 'Not Opened';    
             } else {
                 $oldStatus = '--';    
-            }                   
+            } 
+
+            $result = $audition->update([
+                'status' => 1,
+            ]);
+                              
             AuditionLog::insert([
                 'audition_id' => $request->id,
                 'edited_by' => $this->getUserLogging(),
                 'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                'key' => 'Status',
+                'key' => 'Audition Status',
                 'old_value' => $oldStatus,
                 'new_value' => 'Opened'
             ]);
@@ -535,7 +537,7 @@ class AuditionManagementController extends Controller
                 'audition_id' => $request->id,
                 'edited_by' => $this->getUserLogging(),
                 'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                'key' => 'Status',
+                'key' => 'Audition Status',
                 'old_value' => 'Opened',
                 'new_value' => 'Closed'
             ]);

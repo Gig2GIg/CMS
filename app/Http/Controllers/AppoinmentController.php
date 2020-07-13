@@ -166,9 +166,7 @@ class AppoinmentController extends Controller
                     //getting those with future kept flag
                     $slotRepo = new UserSlots();
                     $slotData = $slotRepo->where('appointment_id', $request->appointment_id)
-                    ->where(function ($query) {
-                        $query->where('future_kept', 1);
-                    })
+                    ->where('future_kept', 1)
                     ->get();
 
                     if ($repoDatafeedbacks->count() > 0) {
@@ -220,7 +218,7 @@ class AppoinmentController extends Controller
                                 if($element->slot_id){
                                     Slots::find($element->slot_id)->update(['status' => 0]);
                                 }
-                                $element->update(['type' => 3]);
+                                $element->update(['type' => 3, 'slot_id' => NULL]);
                                 UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
                                 // $element->update(['slots_id' => NULL]);
                                 // $element->delete();
@@ -414,9 +412,7 @@ class AppoinmentController extends Controller
                         //getting those with future kept flag
                         $slotRepo = new UserSlots();
                         $slotData = $slotRepo->where('appointment_id', $lasApponitmentId)
-                        ->where(function ($query) {
-                            $query->where('future_kept', 1);
-                        })
+                        ->where('future_kept', 1)
                         ->get();
 
                         if ($slotData->count() > 0) {
@@ -450,7 +446,7 @@ class AppoinmentController extends Controller
                                     if($element->slot_id){
                                         Slots::find($element->slot_id)->update(['status' => 0]);
                                     }
-                                    $element->update(['type' => 3]);
+                                    $element->update(['type' => 3, 'slot_id' => null]);
                                     UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
                                     // $element->delete();
                                 });
@@ -599,9 +595,7 @@ class AppoinmentController extends Controller
                         //getting those with future kept flag
                         $slotRepo = new UserSlots();
                         $slotData = $slotRepo->where('appointment_id', $lasApponitmentId)
-                        ->where(function ($query) {
-                            $query->where('future_kept', 1);
-                        })
+                        ->where('future_kept', 1)
                         ->get();
 
                         if ($slotData->count() > 0) {
@@ -650,7 +644,7 @@ class AppoinmentController extends Controller
                                     if($element->slot_id){
                                         Slots::find($element->slot_id)->update(['status' => 0]);
                                     }
-                                    $element->update(['type' => 3]);
+                                    $element->update(['type' => 3, 'slot_id' => NULL]);
                                     UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
                                     // $element->delete();
                                 });
