@@ -73,7 +73,7 @@ class AuditionFullResponse extends JsonResource
             'additional_info'=>$this->additional_info,
             'phone'=>$this->phone,
             'email'=>$this->email,
-            'ends_date'=>$this->ends_date,
+            'end_date'=>$this->end_date,
             'other_info'=>$this->other_info,
             'dates'=>$this->datesall,
             'union' => $this->union,
