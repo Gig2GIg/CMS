@@ -221,6 +221,9 @@ class AppoinmentController extends Controller
                                     } 
                                     $element->update(['type' => 3, 'slot_id' => NULL]);
                                     UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                    if(Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->get()->count() > 0){
+                                        Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->update(['favorite' => 0]);
+                                    }
                                 } 
                             });
                         }
@@ -449,6 +452,9 @@ class AppoinmentController extends Controller
                                         }    
                                         $element->update(['type' => 3, 'slot_id' => null]);
                                         UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                        if(Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->get()->count() > 0){
+                                            Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->update(['favorite' => 0]);
+                                        }
                                     } 
                                     // $element->delete();
                                 });
@@ -649,6 +655,9 @@ class AppoinmentController extends Controller
                                         } 
                                         $element->update(['type' => 3, 'slot_id' => NULL]);
                                         UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->delete();
+                                        if(Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->get()->count() > 0){
+                                                Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->update(['favorite' => 0]);
+                                            }
                                     }
                                     // $element->delete();
                                 });
