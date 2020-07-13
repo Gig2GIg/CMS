@@ -215,7 +215,7 @@ class AppoinmentController extends Controller
                             ->where('appointment_id', $createdNextAuditionRound->id);
                         if ($dataUserAuditions->count() > 0) {
                             $dataUserAuditions->each(function ($element) {
-                                if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
+                                if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $lasApponitmentId)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
                                     if($element->slot_id){
                                         Slots::find($element->slot_id)->update(['status' => 0]);
                                     } 
@@ -443,7 +443,7 @@ class AppoinmentController extends Controller
                                 ->where('appointment_id', $newAppointmentId);
                             if ($dataUserAuditions->count() > 0) {
                                 $dataUserAuditions->each(function ($element) {
-                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
+                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $lasApponitmentId)->where('future_kept', 1)->where('status', 'checked')->get()->count() == 0){
                                         if($element->slot_id){
                                             Slots::find($element->slot_id)->update(['status' => 0]);
                                         }    
@@ -643,7 +643,7 @@ class AppoinmentController extends Controller
                                 ->where('appointment_id', $newAppointmentId);
                             if ($dataUserAuditions->count() > 0) {
                                 $dataUserAuditions->each(function ($element) {
-                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->where('future_kept', 0)->where('status', 'checked')->get()->count() == 0){
+                                    if(UserSlots::where('user_id', $element->user_id)->where('appointment_id', $lasApponitmentId)->where('future_kept', 0)->where('status', 'checked')->get()->count() == 0){
                                         if($element->slot_id){
                                             Slots::find($element->slot_id)->update(['status' => 0]);
                                         } 
