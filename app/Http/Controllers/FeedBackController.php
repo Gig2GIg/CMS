@@ -135,8 +135,8 @@ class FeedBackController extends Controller
             
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
-            $oldFeedback = $feedbacks->where('user_id', $request->user_id)->first();
-            $feedback = $feedbacks->where('user_id', $request->user_id)->first();
+            $oldFeedback = $feedbacks->where('user_id', $request->user_id)->where('evaluator_id', $request->evaluator)->first();
+            $feedback = $feedbacks->where('user_id', $request->user_id)->where('evaluator_id', $request->evaluator)->first();
 
             $update = $feedback->update($data);
 
