@@ -115,7 +115,18 @@ class InstantFeedbackController extends Controller
                 } elseif ($request->accepted == 2) {
                     $appointmentRepo = new AppointmentRepository(new Appointments());
                     $appointmentData = $appointmentRepo->find($request->appointment_id);
-                    if ($appointmentData->auditions->user_id == $request->evaluator) {
+
+                    $evalUser = User::find($request->evaluator);
+                    $allIdsToInclude = array();
+                    
+                    $allIdsToInclude->push($request->evaluator); 
+                    //It is to fetch other user's data conidering if logged in user is an invited user
+                    if($evalUser->invited_by != NULL){
+                        //pushing own ID into WHERE IN constraint
+                        $allIdsToInclude->push($evalUser->invited_by); 
+                    }
+
+                    if (in_array($appointmentData->auditions->user_id, $allIdsToInclude)) {
 
                         $slotRepo = new UserSlotsRepository(new UserSlots());
                         $condition = array();
