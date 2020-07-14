@@ -123,9 +123,13 @@ class InstantFeedbackController extends Controller
                     //It is to fetch other user's data conidering if logged in user is an invited user
                     if($evalUser->invited_by != NULL){
                         array_push($allIdsToInclude, $evalUser->invited_by);
+                    } else {
+                        $invitedUserIds = User::where('invited_by', $request->evaluator)->get()->pluck('id');
+                        array_merge($allIdsToInclude, $invitedUserIds);
                     }
 
-                    if (in_array($appointmentData->auditions->user_id, $allIdsToInclude)) {
+                    if (in_array($appointmentData->auditions->user_id, $allIdsToInclude))
+                    {
 
                         $slotRepo = new UserSlotsRepository(new UserSlots());
                         $condition = array();
