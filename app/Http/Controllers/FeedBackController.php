@@ -449,7 +449,6 @@ class FeedBackController extends Controller
                 
                 AuditionLog::insert($roundData);
             }
-            echo "TRACK LOG:::::" . json_encode($multidimensional_diff_old);
             foreach ($multidimensional_diff_old as $key => $value) {
                 if($appointment && $appointment->auditions_id && $key != 'updated_at' && $key != 'slot_id' && $key != 'evaluator_id'){
                     $d = array();  
