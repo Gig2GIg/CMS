@@ -119,11 +119,10 @@ class InstantFeedbackController extends Controller
                     $evalUser = User::find($request->evaluator);
                     $allIdsToInclude = array();
                     
-                    $allIdsToInclude->push($request->evaluator); 
+                    array_push($allIdsToInclude, $request->evaluator);
                     //It is to fetch other user's data conidering if logged in user is an invited user
                     if($evalUser->invited_by != NULL){
-                        //pushing own ID into WHERE IN constraint
-                        $allIdsToInclude->push($evalUser->invited_by); 
+                        array_push($allIdsToInclude, $evalUser->invited_by);
                     }
 
                     if (in_array($appointmentData->auditions->user_id, $allIdsToInclude)) {
