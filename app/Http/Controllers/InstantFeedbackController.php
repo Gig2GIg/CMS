@@ -113,45 +113,45 @@ class InstantFeedbackController extends Controller
                     }
                     $this->saveStoreNotificationToUser($user, $audition, $comment);
                 } elseif ($request->accepted == 2) {
-                    $appointmentRepo = new AppointmentRepository(new Appointments());
-                    $appointmentData = $appointmentRepo->find($request->appointment_id);
+                    // $appointmentRepo = new AppointmentRepository(new Appointments());
+                    // $appointmentData = $appointmentRepo->find($request->appointment_id);
 
-                    $evalUser = User::find($request->evaluator);
-                    $allIdsToInclude = array();
+                    // $evalUser = User::find($request->evaluator);
+                    // $allIdsToInclude = array();
                     
-                    array_push($allIdsToInclude, $request->evaluator);
-                    //It is to fetch other user's data conidering if logged in user is an invited user
-                    if($evalUser->invited_by != NULL){
-                        array_push($allIdsToInclude, $evalUser->invited_by);
+                    // array_push($allIdsToInclude, $request->evaluator);
+                    // //It is to fetch other user's data conidering if logged in user is an invited user
+                    // if($evalUser->invited_by != NULL){
+                    //     array_push($allIdsToInclude, $evalUser->invited_by);
+                    // } else {
+                    //     $invitedUserIds = User::where('invited_by', $request->evaluator)->get()->pluck('id');
+                    //     array_merge($allIdsToInclude, $invitedUserIds->toArray());
+                    // }
+
+                    // if (in_array($appointmentData->auditions->user_id, $allIdsToInclude))
+                    // {
+
+                    $slotRepo = new UserSlotsRepository(new UserSlots());
+                    $condition = array();
+                    if($request->has('slots_id') && ($request->slot_id != null || $request->slot_id != '')){
+                        $condition['slots_id'] = $request->slot_id;
+                    }
+                    $condition['appointment_id'] = $request->appointment_id;
+                    $condition['user_id'] = $request->user;
+
+                    $slotData = $slotRepo->findbyparams($condition)->first();
+
+                    if (isset($slotData) && $slotData->future_kept == 0) {
+                        $update = $slotData->update([
+                            'future_kept' => 1,
+                        ]);
                     } else {
-                        $invitedUserIds = User::where('invited_by', $request->evaluator)->get()->pluck('id');
-                        array_merge($allIdsToInclude, $invitedUserIds->toArray());
+                        $dataResponse = ['data' => trans('messages.already_kept_future')];
+                        $code = 406;
+
+                        return response()->json($dataResponse, $code);
                     }
-
-                    if (in_array($appointmentData->auditions->user_id, $allIdsToInclude))
-                    {
-
-                        $slotRepo = new UserSlotsRepository(new UserSlots());
-                        $condition = array();
-                        if($request->has('slots_id') && ($request->slot_id != null || $request->slot_id != '')){
-                            $condition['slots_id'] = $request->slot_id;
-                        }
-                        $condition['appointment_id'] = $request->appointment_id;
-                        $condition['user_id'] = $request->user;
-
-                        $slotData = $slotRepo->findbyparams($condition)->first();
-
-                        if (isset($slotData) && $slotData->future_kept == 0) {
-                            $update = $slotData->update([
-                                'future_kept' => 1,
-                            ]);
-                        } else {
-                            $dataResponse = ['data' => trans('messages.already_kept_future')];
-                            $code = 406;
-
-                            return response()->json($dataResponse, $code);
-                        }
-                    }
+                    // }
 
                     if($user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                         // send notification
