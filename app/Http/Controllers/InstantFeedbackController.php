@@ -125,7 +125,7 @@ class InstantFeedbackController extends Controller
                         array_push($allIdsToInclude, $evalUser->invited_by);
                     } else {
                         $invitedUserIds = User::where('invited_by', $request->evaluator)->get()->pluck('id');
-                        array_merge($allIdsToInclude, $invitedUserIds);
+                        array_merge($allIdsToInclude, $invitedUserIds->toArray());
                     }
 
                     if (in_array($appointmentData->auditions->user_id, $allIdsToInclude))
