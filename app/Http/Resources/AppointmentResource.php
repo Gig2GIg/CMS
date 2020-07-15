@@ -70,7 +70,7 @@ class AppointmentResource extends JsonResource
             'image' => $userData->image->url,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'time' => $slotData->time,
-            'favorite' => $feedback ?? $feedback->favorite : null,
+            'favorite' => $feedback ? $feedback->favorite : null,
             // 'favorite' => $this->favorite,
             'slot_id' => $this->slots_id,
             'is_feedback_sent' => $is_feedback_sent ?? null,
