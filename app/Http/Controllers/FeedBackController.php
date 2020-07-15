@@ -449,28 +449,26 @@ class FeedBackController extends Controller
                 
                 AuditionLog::insert($roundData);
 
-                if((isset($oldData['favorite']) && $oldData['favorite'] != $newData['favorite']) || (isset($oldData['callback']) && $oldData['callback'] != $newData['callback'])){
-                    if(isset($oldData['favorite'])){
-                        AuditionLog::insert([
-                            'audition_id' => $appointment->auditions_id,
-                            'edited_by' => $this->getUserLogging(),
-                            'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                            'key' => 'Feedback Starred',
-                            'old_value' => $oldData['favorite'] == 1 ? 'Yes' : 'No',
-                            'new_value' => $newData['favorite'] == 1 ? 'Yes' : 'No'
-                        ]);
-                    }
+                if(isset($oldData['favorite']) && $oldData['favorite'] != $newData['favorite']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Starred',
+                        'old_value' => $oldData['favorite'] == 1 ? 'Yes' : 'No',
+                        'new_value' => $newData['favorite'] == 1 ? 'Yes' : 'No'
+                    ]);
+                }
 
-                    if(isset($oldData['callback'])){
-                        AuditionLog::insert([
-                            'audition_id' => $appointment->auditions_id,
-                            'edited_by' => $this->getUserLogging(),
-                            'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                            'key' => 'Feedback Callback',
-                            'old_value' => $oldData['callback'] == 1 ? 'Yes' : 'No',
-                            'new_value' => $newData['callback'] == 1 ? 'Yes' : 'No'
-                        ]);
-                    }
+                if(isset($oldData['callback']) && $oldData['callback'] != $newData['callback']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Callback',
+                        'old_value' => $oldData['callback'] == 1 ? 'Yes' : 'No',
+                        'new_value' => $newData['callback'] == 1 ? 'Yes' : 'No'
+                    ]);
                 }
 
             }

@@ -146,6 +146,8 @@ return [
 
     'online_audition_past' => "The audition media submission has ended",
 
+    'add_to_talent_message' => "Add this performer to Talent Database for sharing profile",
+
     // Market Place Categories Controller
     // Managers Controller
     // NotificationManagementController

@@ -45,6 +45,7 @@ class AppointmentResource extends JsonResource
         $feedback = $feedbackRepo->findbyparams([
             'appointment_id' => $this->appointment_id,
             'user_id' => $this->user_id,
+            'evaluator_id' => $this->getUserLogging(),
         ])->first();
 
         $userManagerRepo = new UserManagerRepository(new UserManager());

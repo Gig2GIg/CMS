@@ -96,12 +96,17 @@ class PerformersController extends Controller
     {
 
         try {
+
+            if(!$request->has('code') || $request->code == '' || $request->code == null){
+                return response()->json(['data' => trans('messages.add_to_talent_message')], 400);
+            }
+
             $repoSender = new UserRepository(new User());
             $dataSender = $repoSender->find($this->getUserLogging());
             $repoPerformer = new PerformerRepository(new Performers());
             $dataPerfomer = $repoPerformer->findbyparam('uuid', $request->code)->first();
             $dataReceiver = $repoSender->findbyparam('email', $request->email);
-            
+
             if (is_null($dataPerfomer)) {
                 throw new NotFoundException('Shared code not found', 404);
             }
