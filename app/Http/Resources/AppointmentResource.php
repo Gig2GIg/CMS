@@ -46,7 +46,7 @@ class AppointmentResource extends JsonResource
         $feedback = Feedbacks::where([
             'appointment_id' => $this->appointment_id,
             'user_id' => $this->user_id,
-            'evaluator_id' => Auth::user()->id,
+            'evaluator_id' => Auth::id(),
         ])->first();
 
         $userManagerRepo = new UserManagerRepository(new UserManager());
