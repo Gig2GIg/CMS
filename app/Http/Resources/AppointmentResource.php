@@ -18,6 +18,7 @@ use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserManager;
 use App\Models\UserUnionMembers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class AppointmentResource extends JsonResource
@@ -42,10 +43,10 @@ class AppointmentResource extends JsonResource
         ])->get();
 
         $feedbackRepo = new FeedbackRepository(new Feedbacks());
-        $feedback = $feedbackRepo->findbyparams([
+        $feedback = Feedbacks::where([
             'appointment_id' => $this->appointment_id,
             'user_id' => $this->user_id,
-            'evaluator_id' => $this->getUserLogging(),
+            'evaluator_id' => Auth::user()->id,
         ])->first();
 
         $userManagerRepo = new UserManagerRepository(new UserManager());
@@ -69,7 +70,7 @@ class AppointmentResource extends JsonResource
             'image' => $userData->image->url,
             'name' => $userData->details->first_name . " " . $userData->details->last_name,
             'time' => $slotData->time,
-            'favorite' => $feedback->favorite ?? null,
+            'favorite' => $feedback ?? $feedback->favorite : null,
             // 'favorite' => $this->favorite,
             'slot_id' => $this->slots_id,
             'is_feedback_sent' => $is_feedback_sent ?? null,
