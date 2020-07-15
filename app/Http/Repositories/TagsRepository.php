@@ -69,6 +69,15 @@ class TagsRepository implements ITagsRepository
 
     }
 
+    public function findByMultiVals($column, $value)
+    {
+        try{
+            return $this->model->whereIn($column, $value);
+        }catch (ModelNotFoundException $e){
+            $this->log->error('ERROR' . $e->getMessage(), class_basename($this));
+            throw new NotFoundException("Not found Data");
+        }        
+    }
 
     public function update(array $data) : bool
     {

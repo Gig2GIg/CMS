@@ -114,7 +114,7 @@ class Notifications
                     $appointment_id = $title;
                     $title = $audition->title;
                     $to = 'ONLY_ONE_WITHOUT_CHECK';
-                    $clickToSend = env('PERFORMER_BASE_URL') . '/my/auditions?tab=upcoming&appointment_id=' . $appointment_id . '&performer_id=' . $user->id;
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::APPOINTMENT_REORDER:
                     $log->info("PUSH NOTIFICATION FROM CASTER TO PERFORMER ABOUT APPOINTMENT TIME UPDATE FOR THE AUDITION" . $audition->title);

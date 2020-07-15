@@ -354,8 +354,31 @@ class PerformersController extends Controller
     public function getTags(Request $request)
     {
         try {
+            $user = Auth::user();            
             $dataRepo = new TagsRepository(new Tags());
-            $data = $dataRepo->findbyparam('setUser_id', $this->getUserLogging())->where('user_id', $request->user)->get();
+
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
+
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            // $data = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get();
+
+            $data = $dataRepo->findByMultiVals('setUser_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->get();
 
             // return response()->json(['message' => 'tags by user', 'data' => $data], 200);
             return response()->json(['message' => trans('messages.tag_by_user'), 'data' => $data], 200);
@@ -370,11 +393,34 @@ class PerformersController extends Controller
     public function getCommnents(Request $request)
     {
         try {
+            $user = Auth::user();         
+
             $dataRepo = new FeedbackRepository(new Feedbacks());
             $commentModel = new PerformersComment();
 
-            $dataFeedback = $dataRepo->findbyparam('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
-            $dataComments = $commentModel->where('evaluator_id', $this->getUserLogging())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            //it is to fetch logged in user's invited users data if any
+            $userRepo = new User();
+            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
+
+            //It is to fetch other user's data conidering if logged in user is an invited user
+            if($user->invited_by != NULL){
+                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
+
+                //pushing invited_by ID in array too
+                $allInvitedUsersOfAdminIds->push($user->invited_by); 
+
+                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+            }else{
+                $allIdsToInclude = $invitedUserIds;
+            }
+
+            //pushing own ID into WHERE IN constraint
+            $allIdsToInclude->push($this->getUserLogging()); 
+
+            // $data = $dataRepo->findByMultiVals('setUser_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->get();
+
+            $dataFeedback = $dataRepo->findByMultiVals('evaluator_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            $dataComments = $commentModel->whereIn('evaluator_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->whereNotNull('comment')->get();
             
             if($dataComments && $dataComments->count() > 0){
                 $data = $dataFeedback->merge($dataComments)->SortByDesc('created_at');
