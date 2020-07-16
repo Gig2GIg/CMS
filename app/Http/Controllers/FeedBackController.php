@@ -417,16 +417,16 @@ class FeedBackController extends Controller
             $newData = $newData->toArray();
 
             //checking diff in two arrays old and new
-            $diff_old = array_diff(array_map('serialize', $oldData), array_map('serialize', $newData));
             $diff_new = array_diff(array_map('serialize', $newData), array_map('serialize', $oldData));
-            $multidimensional_diff_old = array_map('unserialize', $diff_old);
             $multidimensional_diff_new = array_map('unserialize', $diff_new);
+
+            unset($multidimensional_diff_new['updated_at']);
 
             $insertData = array();
             $repoAppointment = new AppointmentRepository(new Appointments());
             $appointment = $repoAppointment->find($oldData['appointment_id']);
 
-            if(count($multidimensional_diff_old) > 0 && $appointment && $appointment->auditions_id){
+            if(count($multidimensional_diff_new) > 0 && $appointment && $appointment->auditions_id){
                 $performer = User::find($oldData['user_id'])->details;
                 $roundData = [
                     [
@@ -471,22 +471,51 @@ class FeedBackController extends Controller
                     ]);
                 }
 
-            }
-            foreach ($multidimensional_diff_old as $key => $value) {
-                if($appointment && $appointment->auditions_id && $key != 'updated_at' && $key != 'slot_id' && $key != 'evaluator_id' && $key == 'callback' && $key == 'favorite'){
-                    $d = array();  
-                    $d['audition_id'] = $appointment->auditions_id;
-                    $d['edited_by'] = $this->getUserLogging();
-                    $d['created_at'] = Carbon::now('UTC')->format('Y-m-d H:i:s');
-                    $d['key'] = str_replace('_', ' ', 'Feedback ' . ucwords(strtolower($key)));
-                    $d['old_value'] = $value;
-                    $d['new_value'] = $multidimensional_diff_new[$key];
-
-                    array_push($insertData, $d);   
+                if(isset($oldData['rating']) && $oldData['rating'] != $newData['rating']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Rating',
+                        'old_value' => $oldData['rating'],
+                        'new_value' => $newData['rating']
+                    ]);
                 }
-            }
 
-            AuditionLog::insert($insertData);
+                if(isset($oldData['work']) && $oldData['work'] != $newData['work']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Work On',
+                        'old_value' => $oldData['work'],
+                        'new_value' => $newData['work']
+                    ]);
+                }
+
+                if(isset($oldData['comment']) && $oldData['comment'] != $newData['comment']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback Comment',
+                        'old_value' => $oldData['comment'],
+                        'new_value' => $newData['comment']
+                    ]);
+                }
+
+                if(isset($oldData['evaluation']) && $oldData['evaluation'] != $newData['evaluation']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Feedback evaluation',
+                        'old_value' => $oldData['evaluation'],
+                        'new_value' => $newData['evaluation']
+                    ]);
+                }                
+
+            }
            
             return true;
         } catch (\Exception $exception) {
