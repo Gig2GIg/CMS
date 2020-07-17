@@ -170,6 +170,7 @@ class AppoinmentController extends Controller
                     ->get();
 
                     if ($repoDatafeedbacks->count() > 0) {
+
                         $feedbackData = $repoDatafeedbacks->get();
 
                         foreach ($feedbackData as $feedback) {
@@ -185,6 +186,23 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId],
                                 $dataToInsert
                             );
+
+                            if($data->auditions->online){
+                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $feedback->user_id])->get()->count() == 0){
+                                    $dataSlotRepo->create([
+                                        'user_id' => $feedback->user_id,
+                                        'appointment_id' => $createdNextAuditionRound->id,
+                                        'slots_id' => factory(Slots::class)->create([
+                                            'appointment_id' => $createdNextAuditionRound->id,
+                                            'time' => "00:00",
+                                            'status' => false,
+                                        ])->id,
+                                        'roles_id' => $auditionRoleId,
+                                        'status' => 2,
+                                    ]);
+                                }   
+                            }
                         }
                     }
 
@@ -202,6 +220,23 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId],
                                 $dataToInsert
                             );
+
+                            if($data->auditions->online){
+                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $uslot->user_id])->get()->count() == 0){
+                                    $dataSlotRepo->create([
+                                        'user_id' => $uslot->user_id,
+                                        'appointment_id' => $createdNextAuditionRound->id,
+                                        'slots_id' => factory(Slots::class)->create([
+                                            'appointment_id' => $createdNextAuditionRound->id,
+                                            'time' => "00:00",
+                                            'status' => false,
+                                        ])->id,
+                                        'roles_id' => $auditionRoleId,
+                                        'status' => 2,
+                                    ]);
+                                }   
+                            }
                         }
                     }
 
