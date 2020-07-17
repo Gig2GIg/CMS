@@ -577,7 +577,7 @@ class AppoinmentController extends Controller
                                     'appointment_id' => $newAppointmentId,
                                     'rol_id' => $auditionRoleId
                                 ])->get();
-                                if(!$exists){
+                                if($exists->count() == 0){
                                     $UserAudition->create($dataToInsert);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -620,7 +620,7 @@ class AppoinmentController extends Controller
                                     'appointment_id' => $newAppointmentId, 
                                     'rol_id' => $auditionRoleId, 
                                 ])->get();
-                                if(!$exists){
+                                if($exists->count() == 0){
                                     $UserAudition->create($dataToInsert);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
