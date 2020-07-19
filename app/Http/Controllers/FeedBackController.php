@@ -75,6 +75,17 @@ class FeedBackController extends Controller
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $appointmentData ? $auditionsRepo->find($appointmentData->auditions_id) : NULL;
+
+                //closing the round for online performer
+                if($appointmentData->auditions->online){
+                    $userAudition = UserAuditions::where(['appointment_id' => $request->appointment_id, "user_id" => $request->user])->first(); 
+                    if($userAudition){
+                        $userAudition->update([
+                            'type' => 3
+                        ]);
+                    }    
+                }
+                
                 if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                     // send notification
                     $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
@@ -360,7 +371,7 @@ class FeedBackController extends Controller
         }
     }
 
-     public function saveStoreNotificationToUser($user, $audition, $comment = ""): void
+    public function saveStoreNotificationToUser($user, $audition, $comment = ""): void
     {
         try {
             if($comment == ""){
@@ -449,7 +460,7 @@ class FeedBackController extends Controller
                 
                 AuditionLog::insert($roundData);
 
-                if(isset($oldData['favorite']) && $oldData['favorite'] != $newData['favorite']){
+                if($oldData['favorite'] != $newData['favorite']){
                     AuditionLog::insert([
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
@@ -460,14 +471,34 @@ class FeedBackController extends Controller
                     ]);
                 }
 
-                if(isset($oldData['callback']) && $oldData['callback'] != $newData['callback']){
+                if($oldData['callback'] != $newData['callback']){
+                    if($oldData['callback'] === true){
+                        $oldValCallback = 'Yes';
+                    }else if($oldData['callback'] === false){
+                        $oldValCallback = 'No';
+                    }else if($oldData['callback'] === null){
+                        $oldValCallback = '--';
+                    }else{
+                        $oldValCallback = '--';
+                    }
+
+                    if($newData['callback'] === true){
+                        $newValCallback = 'Yes';
+                    }else if($newData['callback'] === false){
+                        $newValCallback = 'No';
+                    }else if($newData['callback'] === null){
+                        $newValCallback = '--';
+                    }else{
+                        $newValCallback = '--';
+                    }
+                       
                     AuditionLog::insert([
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
                         'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
                         'key' => 'Feedback Callback',
-                        'old_value' => $oldData['callback'] == 1 ? 'Yes' : 'No',
-                        'new_value' => $newData['callback'] == 1 ? 'Yes' : 'No'
+                        'old_value' => $oldValCallback,
+                        'new_value' => $newValCallback
                     ]);
                 }
 

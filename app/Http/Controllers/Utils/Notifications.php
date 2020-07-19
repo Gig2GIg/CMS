@@ -30,6 +30,7 @@ class Notifications
     const CASTER_AUDITION_INVITE = 'caster_audition_invite';
     const AUDITION_CREATED = 'audition_created';
     const NEW_ONLINE_MEDIA = 'new_online_media';
+    const PERFORMER_SELECTED = 'performer_selected';
 
     public static function send($audition = null, $type, $user = null, $title = null, $message = null, $clickToSend = "")
     {
@@ -112,6 +113,12 @@ class Notifications
                 case self::FEEDBACK:
                     $log->info("PUSH NOTIFICATION OF FEEDBACK FROM CASTER TO PERFORMER FOR AUDITION" . $audition->title);
                     $appointment_id = $title;
+                    $title = $audition->title;
+                    $to = 'ONLY_ONE_WITHOUT_CHECK';
+                    $clickToSend = env('PERFORMER_URL');
+                    break;
+                case self::PERFORMER_SELECTED:
+                    $log->info("PUSH NOTIFICATION OF PERFORMER_SELECTED FROM CASTER TO PERFORMER FOR AUDITION" . $audition->title);
                     $title = $audition->title;
                     $to = 'ONLY_ONE_WITHOUT_CHECK';
                     $clickToSend = env('PERFORMER_URL');

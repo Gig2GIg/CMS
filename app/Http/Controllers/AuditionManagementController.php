@@ -255,10 +255,11 @@ class AuditionManagementController extends Controller
                     $join->on('appointments.auditions_id', '=', 'A.id')
                          ->on('F.evaluator_id', '=', 'A.user_id');
                     })
-
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
-                ->where('appointments.status', 0);
+                ->where(function ($q) {
+                    $q->whereRaw("(appointments.status = 0) OR (appointments.status = 1 AND UA.type = 3 AND A.online = 1)");
+                });
 
             if($request->has('only_online') && ($request->only_online == 1 || $request->only_online == 0)){
                 $data->where('A.online', $request->only_online);
@@ -1157,18 +1158,21 @@ class AuditionManagementController extends Controller
             }
 
             $data = $userAuditions->create($data);
-            $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-            $dataSlotRepo->create([
-                'user_id' => $this->getUserLogging(),
-                'appointment_id' => $request->appointment,
-                'slots_id' => factory(Slots::class)->create([
+            
+            if($request->type == 1){
+                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                $dataSlotRepo->create([
+                    'user_id' => $this->getUserLogging(),
                     'appointment_id' => $request->appointment,
-                    'time' => "00:00",
-                    'status' => false,
-                ])->id,
-                'roles_id' => $request->rol,
-                'status' => 2
-            ]);
+                    'slots_id' => factory(Slots::class)->create([
+                        'appointment_id' => $request->appointment,
+                        'time' => "00:00",
+                        'status' => false,
+                    ])->id,
+                    'roles_id' => $request->rol,
+                    'status' => 2
+                ]);    
+            }
             
             return response()->json(['data' => trans('messages.audition_saved')], 201);
             // return response()->json(['data' => 'Audition Saved'], 201);

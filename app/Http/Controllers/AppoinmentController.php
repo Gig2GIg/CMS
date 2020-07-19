@@ -17,6 +17,7 @@ use App\Models\Roles;
 use App\Models\Slots;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
+use App\Models\Auditions;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -155,6 +156,7 @@ class AppoinmentController extends Controller
                 $roleDataRepo = $roleRepo->findbyparam('auditions_id', $data->auditions_id);
 
                 if ($roleDataRepo->count() > 0) {
+                    $performersToNotify = array();
                     
                     $roles = $roleDataRepo->all();
                     $auditionRoleId = $roles[0]->id;
@@ -180,28 +182,34 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
                             $UserAudition = new UserAuditions();
-                            $UserAudition->updateOrCreate([
-                                'user_id' => $feedback->user_id, 
-                                'appointment_id' => $createdNextAuditionRound->id, 
-                                'rol_id' => $auditionRoleId],
-                                $dataToInsert
-                            );
+                            
+                            $exists = $UserAudition->where([
+                                            'user_id' => $feedback->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->get();
+                            
+                            if($exists->count() == 0){
+                                $UserAudition->create($dataToInsert);
 
-                            if($data->auditions->online){
-                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                                if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $feedback->user_id])->get()->count() == 0){
-                                    $dataSlotRepo->create([
-                                        'user_id' => $feedback->user_id,
-                                        'appointment_id' => $createdNextAuditionRound->id,
-                                        'slots_id' => factory(Slots::class)->create([
+                                if($data->auditions->online){
+                                    array_push($performersToNotify, $feedback->user_id);
+
+                                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                    if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $feedback->user_id])->get()->count() == 0){
+                                        $dataSlotRepo->create([
+                                            'user_id' => $feedback->user_id,
                                             'appointment_id' => $createdNextAuditionRound->id,
-                                            'time' => "00:00",
-                                            'status' => false,
-                                        ])->id,
-                                        'roles_id' => $auditionRoleId,
-                                        'status' => 2,
-                                    ]);
-                                }   
+                                            'slots_id' => factory(Slots::class)->create([
+                                                'appointment_id' => $createdNextAuditionRound->id,
+                                                'time' => "00:00",
+                                                'status' => false,
+                                            ])->id,
+                                            'roles_id' => $auditionRoleId,
+                                            'status' => 2,
+                                        ]);
+                                    }   
+                                }
                             }
                         }
                     }
@@ -214,28 +222,34 @@ class AppoinmentController extends Controller
                                 'rol_id' => $auditionRoleId, 
                                 'type' => '1'];
                             $UserAudition = new UserAuditions();
-                            $UserAudition->updateOrCreate([
-                                'user_id' => $uslot->user_id, 
-                                'appointment_id' => $createdNextAuditionRound->id, 
-                                'rol_id' => $auditionRoleId],
-                                $dataToInsert
-                            );
 
-                            if($data->auditions->online){
-                                $dataSlotRepo = new UserSlotsRepository(new UserSlots());
-                                if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $uslot->user_id])->get()->count() == 0){
-                                    $dataSlotRepo->create([
-                                        'user_id' => $uslot->user_id,
-                                        'appointment_id' => $createdNextAuditionRound->id,
-                                        'slots_id' => factory(Slots::class)->create([
+                            $exists = $UserAudition->where([
+                                            'user_id' => $uslot->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->get();
+                            
+                            if($exists->count() == 0){
+                                $UserAudition->create($dataToInsert);
+
+                                if($data->auditions->online){
+                                    array_push($performersToNotify, $uslot->user_id);
+
+                                    $dataSlotRepo = new UserSlotsRepository(new UserSlots());
+                                    if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $uslot->user_id])->get()->count() == 0){
+                                        $dataSlotRepo->create([
+                                            'user_id' => $uslot->user_id,
                                             'appointment_id' => $createdNextAuditionRound->id,
-                                            'time' => "00:00",
-                                            'status' => false,
-                                        ])->id,
-                                        'roles_id' => $auditionRoleId,
-                                        'status' => 2,
-                                    ]);
-                                }   
+                                            'slots_id' => factory(Slots::class)->create([
+                                                'appointment_id' => $createdNextAuditionRound->id,
+                                                'time' => "00:00",
+                                                'status' => false,
+                                            ])->id,
+                                            'roles_id' => $auditionRoleId,
+                                            'status' => 2,
+                                        ]);
+                                    }   
+                                }
                             }
                         }
                     }
@@ -261,6 +275,12 @@ class AppoinmentController extends Controller
                                     }
                                 } 
                             });
+                        }
+                    }
+                    //Notifying users about their new card generated
+                    if(count($performersToNotify) > 0){
+                        if($data->auditions){
+                            $this->sendPushToNewPerformers($performersToNotify, $data->auditions);
                         }
                     }
                 }
@@ -571,6 +591,7 @@ class AppoinmentController extends Controller
                 $roleDataRepo = $roleRepo->findbyparam('auditions_id', $AuditionId);
 
                 if ($roleDataRepo->count() > 0) {
+                    $performersToNotify = array();
                     // dd($roleDataRepo);
                     $roles = $roleDataRepo->all();
                     // dd($roles[0]->id);
@@ -613,6 +634,7 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId
                                 ])->get();
                                 if($exists->count() == 0){
+                                    array_push($performersToNotify, $feedback->user_id);
                                     $UserAudition->create($dataToInsert);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -656,6 +678,7 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId, 
                                 ])->get();
                                 if($exists->count() == 0){
+                                    array_push($performersToNotify, $uslot->user_id);
                                     $UserAudition->create($dataToInsert);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -699,6 +722,13 @@ class AppoinmentController extends Controller
                             }
                         }
                     }
+                    //Notifying users about their new card generated
+                    if(count($performersToNotify) > 0){
+                        $audition = Auditions::find($request->audition_id);
+                        if($audition){
+                            $this->sendPushToNewPerformers($performersToNotify, $audition);
+                        }
+                    }
                 }
             }
 
@@ -718,6 +748,37 @@ class AppoinmentController extends Controller
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.round_not_create'), 'data' => []], 406);
             // return response()->json(['message' => 'Round not create ', 'data' => []], 406);
+        }
+    }
+
+    public function sendPushToNewPerformers($performers = array(), $audition): void{
+        try {
+            $message = 'You are selected for a next round for ' . $audition->title;
+
+            foreach ($performers as $key => $value) {  
+                $user = User::find($value);
+
+                if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        // send notification
+                        $this->sendPushNotification(
+                        $audition,
+                        SendNotifications::PERFORMER_SELECTED,
+                        $user,
+                        NULL,
+                        $message
+                    );
+                } 
+
+                $history = $user->notification_history()->create([
+                    'title' => $audition->title ?? 'Performer Selection',
+                    'code' => 'performer_selected',
+                    'status' => 'unread',
+                    'message' => $message
+                ]);
+                $this->log->info('saveStoreNotificationToUser:: ', $history);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
         }
     }
 
