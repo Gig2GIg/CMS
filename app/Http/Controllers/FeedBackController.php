@@ -497,8 +497,8 @@ class FeedBackController extends Controller
                         'edited_by' => $this->getUserLogging(),
                         'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
                         'key' => 'Feedback Call Back',
-                        'old_value' => $oldData['callbacks'] == 1 ? 'Yes' : 'No',
-                        'new_value' => $newData['callbacks'] == 1 ? 'Yes' : 'No'
+                        'old_value' => $oldData['callback'] == 1 ? 'Yes' : 'No',
+                        'new_value' => $newData['callback'] == 1 ? 'Yes' : 'No'
                     ]);
                 }
 
