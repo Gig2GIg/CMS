@@ -19,6 +19,7 @@ use App\Models\Slots;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
 use App\Models\Auditions;
+use App\Models\OnlineMediaAudition;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -79,7 +80,17 @@ class AppoinmentController extends Controller
                                 ->where('appointment_id', $request->appointment_id);
                             if ($dataUserAuditions->count() > 0) {
                                 $dataUserAuditions->each(function ($element) {
-                                    $element->update(['type' => 1]);
+                                    if($data->auditions->online){
+                                        if(Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->get()->count() > 0){
+                                            $element->update(['type' => 3]);
+                                        } else if(OnlineMediaAudition::where('appointment_id', $element->appointment_id)->where('performer_id', $element->user_id)->get()->count() > 0){
+                                            $element->update(['type' => 1]);
+                                        } else {
+                                            $element->update(['type' => 2]);
+                                        }
+                                    } else {
+                                        $element->update(['type' => 1]);
+                                    }
                                 });
                             }
 
@@ -192,9 +203,10 @@ class AppoinmentController extends Controller
                                         ])->get();
                             
                             if($exists->count() == 0){
-                                $UserAudition->create($dataToInsert);
+                                $created = $UserAudition->create($dataToInsert);
 
                                 if($data->auditions->online){
+                                    $created->update(['type' => 2]);
                                     array_push($performersToNotify, $feedback->user_id);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -232,9 +244,10 @@ class AppoinmentController extends Controller
                                         ])->get();
                             
                             if($exists->count() == 0){
-                                $UserAudition->create($dataToInsert);
+                                $created = $UserAudition->create($dataToInsert);
 
                                 if($data->auditions->online){
+                                    $created->update(['type' => 2]);
                                     array_push($performersToNotify, $uslot->user_id);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
