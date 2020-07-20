@@ -72,6 +72,7 @@ class FeedBackController extends Controller
 
             if ($data->id) {
                 $user = User::find($request->user);
+
                 $appointmentRepo = new AppointmentRepository(new Appointments());
                 $appointmentData = $appointmentRepo->find($request->appointment_id);
                 $auditionsRepo = new AuditionRepository(new Auditions());
@@ -87,12 +88,25 @@ class FeedBackController extends Controller
                     }    
                 }
                 
-                if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
-                    // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
+                if($audition){
+                    $auditionCreator = User::find($audition->user_id);
+                    if($auditionCreator){
+                        if($audition->user_id == $this->getUserLogging()){
+                            if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                                // send notification
+                                $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
+                            }
+                            $this->saveStoreNotificationToUser($user, $audition, "");
+                        }
+                        else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
+                            if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                                // send notification
+                                $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
+                            }
+                            $this->saveStoreNotificationToUser($user, $audition, "");
+                        }
+                    }
                 }
-                $this->saveStoreNotificationToUser($user, $audition, "");
-                //$this->addFeedbackAddTrack($data);
 
                 if ($appointmentData->auditions->user_id === $request->evaluator) {
                     $slotRepo = new UserSlotsRepository(new UserSlots());
