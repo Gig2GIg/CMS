@@ -18,6 +18,7 @@ use App\Models\Feedbacks;
 use App\Models\Performers;
 use App\Models\UserSlots;
 use App\Models\PerformersComment;
+use App\Models\UserAuditions;
 use App\Models\AuditionLog;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
