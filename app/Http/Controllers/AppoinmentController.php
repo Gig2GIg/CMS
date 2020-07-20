@@ -231,6 +231,28 @@ class AppoinmentController extends Controller
                                         ]);
                                     }   
                                 }
+                            }else{
+                                if($data->auditions->online){
+                                    if(Feedbacks::where('user_id', $feedback->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
+                                        $UserAudition->where([
+                                            'user_id' => $feedback->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 3]);
+                                    } else if(OnlineMediaAudition::where('appointment_id', $createdNextAuditionRound->id)->where('performer_id', $feedback->user_id)->get()->count() > 0){
+                                        $UserAudition->where([
+                                            'user_id' => $feedback->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 1]);
+                                    } else {
+                                        $UserAudition->where([
+                                            'user_id' => $feedback->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 2]);
+                                    }
+                                }   
                             }
                         }
                     }
@@ -279,6 +301,28 @@ class AppoinmentController extends Controller
                                         ]);
                                     }   
                                 }
+                            } else {
+                                if($data->auditions->online){
+                                    if(Feedbacks::where('user_id', $uslot->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
+                                        $UserAudition->where([
+                                            'user_id' => $uslot->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 3]);
+                                    } else if(OnlineMediaAudition::where('appointment_id', $createdNextAuditionRound->id)->where('performer_id', $uslot->user_id)->get()->count() > 0){
+                                        $UserAudition->where([
+                                            'user_id' => $uslot->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 1]);
+                                    } else {
+                                        $UserAudition->where([
+                                            'user_id' => $uslot->user_id, 
+                                            'appointment_id' => $createdNextAuditionRound->id, 
+                                            'rol_id' => $auditionRoleId
+                                        ])->update(['type' => 2]);
+                                    }
+                                }   
                             }
                         }
                     }
