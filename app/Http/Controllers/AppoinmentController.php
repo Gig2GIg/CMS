@@ -627,7 +627,7 @@ class AppoinmentController extends Controller
                                     'user_id' => $feedback->user_id,
                                     'appointment_id' => $newAppointmentId,
                                     'rol_id' => $auditionRoleId,
-                                    'type' => '1',
+                                    'type' => '2',
                                 ];
 
                                 $exists = $UserAudition->findbyparams([
@@ -671,7 +671,7 @@ class AppoinmentController extends Controller
                                     'user_id' => $uslot->user_id, 
                                     'appointment_id' => $newAppointmentId, 
                                     'rol_id' => $auditionRoleId, 
-                                    'type' => '1'];
+                                    'type' => '2'];
                                 $UserAudition = new UserAuditionsRepository(new UserAuditions());
 
                                 $exists = $UserAudition->findbyparams([
