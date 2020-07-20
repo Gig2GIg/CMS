@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class AuditionFullResponse extends JsonResource
 {
@@ -59,7 +60,7 @@ class AuditionFullResponse extends JsonResource
         $coverUrl = $coverData[0]['url'] ?? null;
         $coverThumb = $coverData[0]['thumbnail'] ?? null;
 
-        return [
+        $return = [
             'id' => $this->id,
             'appointment_id'=>$appointment["id"],
             'title' => $this->title,
@@ -99,5 +100,10 @@ class AuditionFullResponse extends JsonResource
             'banned' => $this->banned,
             'admin_id' => $admin_id
         ];
+
+        if($this->online == 1){
+            $return['has_ended'] = ($this->end_date && (Carbon::now('UTC')->format('Y-m-d') > $this->end_date)) || $this->end_date == null ? true : false; 
+        }
+        return $return;
     }
 }

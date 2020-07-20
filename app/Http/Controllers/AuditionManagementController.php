@@ -252,11 +252,14 @@ class AuditionManagementController extends Controller
                 ->Join('user_auditions AS UA', 'appointments.id', '=', 'UA.appointment_id')
                 ->Join('feedbacks AS F', 'appointments.id', '=', 'F.appointment_id')
                 ->Join('auditions AS A', function ($join) {
-                    $join->on('appointments.auditions_id', '=', 'A.id')
-                         ->on('F.evaluator_id', '=', 'A.user_id');
-                    })
+                    $join->on('appointments.auditions_id', '=', 'A.id');
+                })
                 ->where('UA.user_id', $this->getUserLogging())
                 ->where('F.user_id', $this->getUserLogging())
+                ->whereNotExists(function ($query) {
+                    $query->from('audition_contributors')
+                        ->whereRaw('(audition_contributors.user_id = F.evaluator_id) AND (audition_contributors.auditions_id = A.id)');
+                })
                 ->where(function ($q) {
                     $q->whereRaw("(appointments.status = 0) OR (appointments.status = 1 AND UA.type = 3 AND A.online = 1)");
                 });
@@ -266,7 +269,6 @@ class AuditionManagementController extends Controller
             }
 
             $dataAuditions = $data->get()->sortByDesc('created_at');
-
                 // dd($data);
             // $userAuditions = new UserAuditionsRepository(new UserAuditions());
             // $userAuditionsData = $userAuditions->getByParam('user_id', $this->getUserLogging());
