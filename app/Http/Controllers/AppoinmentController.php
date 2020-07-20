@@ -18,6 +18,7 @@ use App\Models\Slots;
 use App\Models\UserAuditions;
 use App\Models\UserSlots;
 use App\Models\Auditions;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
