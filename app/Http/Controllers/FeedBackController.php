@@ -174,17 +174,27 @@ class FeedBackController extends Controller
                 $appointment = $repoAppointment->find($request->id);
                 $auditionsRepo = new AuditionRepository(new Auditions());
                 $audition = $appointment ? $auditionsRepo->find($appointment->auditions_id) : NULL;
+
                 if($audition){
                     $comment = 'Your feedback has been updated for ' . $audition->title;
-                    $this->saveStoreNotificationToUser($user, $audition, $comment);
-                }else{
-                    $comment = 'Your feedback has been updated';
-                    $this->saveStoreNotificationToUser($user, NULL, $comment);
-                }
 
-                if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
-                    // send notification
-                    $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
+                    $auditionCreator = User::find($audition->user_id);
+                    if($auditionCreator){
+                        if($audition->user_id == $this->getUserLogging()){
+                            if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                                // send notification
+                                $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
+                            }
+                            $this->saveStoreNotificationToUser($user, $audition, $comment);
+                        }
+                        else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
+                            if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                                // send notification
+                                $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
+                            }
+                            $this->saveStoreNotificationToUser($user, $audition, $comment);
+                        }
+                    }
                 }
 
                 $this->updateFeedbackAddTrack($oldFeedback, $newFeedback);
