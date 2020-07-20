@@ -50,7 +50,7 @@ class OnlineMediaAuditionController extends Controller
                     $exists = UserSlots::where([
                         'user_id' => $this->getUserLogging(),
                         'appointment_id' => $request->appointment_id,
-                        'rols_id' => $userRequest->rol_id,
+                        'roles_id' => $userRequest->rol_id,
                         'status' => 2
                     ])->get();
 
