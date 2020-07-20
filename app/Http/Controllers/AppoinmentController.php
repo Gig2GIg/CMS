@@ -79,7 +79,7 @@ class AppoinmentController extends Controller
                             $dataUserAuditions = $repoUserAuditions->all()
                                 ->where('appointment_id', $request->appointment_id);
                             if ($dataUserAuditions->count() > 0) {
-                                $dataUserAuditions->each(function ($element) {
+                                $dataUserAuditions->each(function ($element) use($data) {
                                     if($data->auditions->online){
                                         if(Feedbacks::where('user_id', $element->user_id)->where('appointment_id', $element->appointment_id)->get()->count() > 0){
                                             $element->update(['type' => 3]);
