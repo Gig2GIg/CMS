@@ -12,6 +12,7 @@ use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\UserAuditions;
 use App\Models\User;
+use App\Models\UserSlots;
 use Illuminate\Http\Request;
 use App\Models\Slots;
 use Carbon\Carbon;
@@ -41,46 +42,54 @@ class OnlineMediaAuditionController extends Controller
                     throw new CreateException('media not created');
                 }
 
-                $userRequest = UserAuditions::where(['appointment_id' => $request->appointment_id, "user_id" => $this->getUserLogging()])->first(); 
+                $userRequest = UserAuditions::where(['appointment_id' => $request->appointment_id, "user_id" => $this->getUserLogging(), 'type' => 2])->first();
 
-                UserSlots::updateOrCreate([
-                    'user_id' => $this->getUserLogging(),
-                    'appointment_id' => $request->appointment_id,
-                    'roles_id' => $userRequest->rol_id,
-                    'status' => 2
-                ],[
-                    'user_id' => $this->getUserLogging(),
-                    'appointment_id' => $request->appointment_id,
-                    'slots_id' => factory(Slots::class)->create([
+                if($userRequest){
+                    $userRequest->update(['type' => 1]);
+
+                    $exists = UserSlots::where([
+                        'user_id' => $this->getUserLogging(),
                         'appointment_id' => $request->appointment_id,
-                        'time' => "00:00",
-                        'status' => false,
-                    ])->id,
-                    'roles_id' => $userRequest->rol_id,
-                    'status' => 2
-                ]);    
+                        'rol_id' => $userRequest->rol_id,
+                        'status' => 2
+                    ])->get();
 
-                try {
-                    $cuser = User::find($audition->user_id);
+                    if($exists->count() == 0){
+                        UserSlots::create([
+                            'user_id' => $this->getUserLogging(),
+                            'appointment_id' => $request->appointment_id,
+                            'slots_id' => factory(Slots::class)->create([
+                                'appointment_id' => $request->appointment_id,
+                                'time' => "00:00",
+                                'status' => false,
+                            ])->id,
+                            'roles_id' => $userRequest->rol_id,
+                            'status' => 2
+                        ]); 
+                    }   
 
-                    if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
-                        $this->sendStoreNotificationToUser($cuser, $audition);
-                    }
-                    $this->saveStoreNotificationToUser($cuser, $audition);
+                    try {
+                        $cuser = User::find($audition->user_id);
 
-                    //send push to admin about new media uploaded
-                    if($cuser->invited_by != NULL){
-                        $auser = User::find($auser->invited_by);
-
-                        if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
-                            $this->sendStoreNotificationToUser($auser, $audition);
+                        if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
+                            $this->sendStoreNotificationToUser($cuser, $audition);
                         }
-                        $this->saveStoreNotificationToUser($auser, $audition);
-                    }
+                        $this->saveStoreNotificationToUser($cuser, $audition);
 
-                } catch (NotificationException $exception) {
-                    $this->log->error($exception->getMessage());
-                }
+                        //send push to admin about new media uploaded
+                        if($cuser->invited_by != NULL){
+                            $auser = User::find($auser->invited_by);
+
+                            if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
+                                $this->sendStoreNotificationToUser($auser, $audition);
+                            }
+                            $this->saveStoreNotificationToUser($auser, $audition);
+                        }
+
+                    } catch (NotificationException $exception) {
+                        $this->log->error($exception->getMessage());
+                    } 
+                } 
 
                 return response()->json([
                     'message' => trans('messages.media_created'),
