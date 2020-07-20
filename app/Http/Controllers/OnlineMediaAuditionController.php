@@ -78,7 +78,7 @@ class OnlineMediaAuditionController extends Controller
 
                         //send push to admin about new media uploaded
                         if($cuser->invited_by != NULL){
-                            $auser = User::find($auser->invited_by);
+                            $auser = User::find($cuser->invited_by);
 
                             if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
                                 $this->sendStoreNotificationToUser($auser, $audition);
