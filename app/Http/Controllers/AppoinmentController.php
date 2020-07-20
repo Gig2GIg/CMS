@@ -206,7 +206,14 @@ class AppoinmentController extends Controller
                                 $created = $UserAudition->create($dataToInsert);
 
                                 if($data->auditions->online){
-                                    $created->update(['type' => 2]);
+                                    if(Feedbacks::where('user_id', $feedback->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
+                                        $created->update(['type' => 3]);
+                                    } else if(OnlineMediaAudition::where('appointment_id', $createdNextAuditionRound->id)->where('performer_id', $feedback->user_id)->get()->count() > 0){
+                                        $created->update(['type' => 1]);
+                                    } else {
+                                        $created->update(['type' => 2]);
+                                    }
+                                    
                                     array_push($performersToNotify, $feedback->user_id);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
@@ -247,7 +254,14 @@ class AppoinmentController extends Controller
                                 $created = $UserAudition->create($dataToInsert);
 
                                 if($data->auditions->online){
-                                    $created->update(['type' => 2]);
+                                    if(Feedbacks::where('user_id', $uslot->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
+                                        $created->update(['type' => 3]);
+                                    } else if(OnlineMediaAudition::where('appointment_id', $createdNextAuditionRound->id)->where('performer_id', $uslot->user_id)->get()->count() > 0){
+                                        $created->update(['type' => 1]);
+                                    } else {
+                                        $created->update(['type' => 2]);
+                                    }
+
                                     array_push($performersToNotify, $uslot->user_id);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
