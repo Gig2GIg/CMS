@@ -460,7 +460,7 @@ class FeedBackController extends Controller
                 
                 AuditionLog::insert($roundData);
 
-                if($oldData['favorite'] != $newData['favorite']){
+                if(isset($oldData['favorite']) && $oldData['favorite'] != $newData['favorite']){
                     AuditionLog::insert([
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
@@ -471,7 +471,7 @@ class FeedBackController extends Controller
                     ]);
                 }
 
-                if($oldData['callback'] != $newData['callback']){
+                if(isset($oldData['callback']) && $oldData['callback'] != $newData['callback']){
                     if($oldData['callback'] === true){
                         $oldValCallback = 'Yes';
                     }else if($oldData['callback'] === false){
@@ -496,7 +496,7 @@ class FeedBackController extends Controller
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
                         'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                        'key' => 'Feedback Callback',
+                        'key' => 'Feedback Call Back',
                         'old_value' => $oldData['callbacks'] == 1 ? 'Yes' : 'No',
                         'new_value' => $newData['callbacks'] == 1 ? 'Yes' : 'No'
                     ]);
