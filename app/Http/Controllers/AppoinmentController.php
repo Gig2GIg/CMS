@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Utils\ManageDates;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Repositories\AppointmentRepository;
 use App\Http\Repositories\FeedbackRepository;
