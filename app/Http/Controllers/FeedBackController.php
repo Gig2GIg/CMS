@@ -64,7 +64,7 @@ class FeedBackController extends Controller
                 'favorite' => $request->favorite,
                 'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
-                'rating' => $request->rating && $request->rating != null && $request->rating != "" ? $request->rating : null,
+                'rating' => isset($request->rating) && is_numeric($request->rating) ? $request->rating : null,
             ];
 
             $repo = new FeedbackRepository(new Feedbacks());
@@ -156,9 +156,9 @@ class FeedBackController extends Controller
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
-                'rating' => $request->rating && $request->rating != null && $request->rating != "" ? $request->rating : null,
+                'rating' => isset($request->rating) && is_numeric($request->rating) ? $request->rating : null,
             ];
-            
+
             $feedbackRepo = new FeedbackRepository(new Feedbacks());
             $feedbacks = $feedbackRepo->findbyparam('appointment_id', $request->id);
             $oldFeedback = $feedbacks->where('user_id', $request->user_id)->where('evaluator_id', $request->evaluator)->first();
@@ -241,10 +241,21 @@ class FeedBackController extends Controller
             $repoAppointment = new AppointmentRepository(new Appointments());
             $dataRepo = $repoAppointment->find($request->id);
             $data = $repo->findbyparam('appointment_id', $request->id);
-
-            $dataPre = $data->where('user_id', '=', $this->getUserLogging())
+  
+            $dataPre = $data->where('feedbacks.user_id', '=', $this->getUserLogging())
             // ->where('evaluator_id', '=', $dataRepo->auditions->user_id)
+                ->Join('appointments AS AP', function ($join) {
+                    $join->on('feedbacks.appointment_id', '=', 'AP.id');
+                })
+                ->Join('auditions AS A', function ($join) {
+                    $join->on('AP.auditions_id', '=', 'A.id');
+                })
+                ->whereNotExists(function ($query) {
+                    $query->from('audition_contributors')
+                        ->whereRaw('(audition_contributors.user_id = feedbacks.evaluator_id) AND (audition_contributors.auditions_id = A.id)');
+                })
                 ->first() ?? new Collection();
+                
             if ($dataPre->count() > 0) {
                 $dataResponse = ['data' => new FeedbackResource($dataPre)];
                 $code = 200;
@@ -255,6 +266,7 @@ class FeedBackController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
+            dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Data Not Found'], 404);
