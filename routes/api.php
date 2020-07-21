@@ -92,7 +92,7 @@ $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use 
     $router->get('/appointments/show/{id}/walk', ['uses' => 'AppoinmentAuditionsController@showListWalk']);
     $router->get('/appointments/show/{id}/notwalk', ['uses' => 'AppoinmentAuditionsController@showListNotWalk']);
     $router->get('/appointments/show/{id}/allWithUsers', ['uses' => 'AppoinmentAuditionsController@showAllWithUsers']);
-
+    
     //monitor update
     $router->get('/monitor/show/{id}', ['uses' => 'MonitorManagerController@list']);
     $router->get('/monitor/show/{id}/pre', ['uses' => 'MonitorManagerController@listNotificationsCreate']);
@@ -164,6 +164,8 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->put('auditions/appointments/{id}/slots', ['uses' => 'AuditionManagementController@reorderAppointmentTimes']);
     $router->post('auditions/{id}/contributors', ['uses' => 'AuditionsController@addContruibuitor']);
     $router->get('/auditions/{id}/individualPerformers', ['uses' => 'AuditionManagementController@getPerformersWithoutManager']);
+
+    $router->post('/auditions/notifyPerformers', ['uses' => 'AppoinmentAuditionsController@notifyPerformers']);
 
     /// Telent Database Get Auditions by performer and video list
     $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);

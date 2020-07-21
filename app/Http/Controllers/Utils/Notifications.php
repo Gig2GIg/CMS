@@ -31,6 +31,7 @@ class Notifications
     const AUDITION_CREATED = 'audition_created';
     const NEW_ONLINE_MEDIA = 'new_online_media';
     const PERFORMER_SELECTED = 'performer_selected';
+    const CASTER_TO_PERFORMER = 'caster_to_performer';
 
     public static function send($audition = null, $type, $user = null, $title = null, $message = null, $clickToSend = "")
     {
@@ -72,6 +73,11 @@ class Notifications
                     $title = 'Representation Email';
                     $message = "Some message";
                     $to = 'ONE';
+                    $clickToSend = env('PERFORMER_URL');
+                    break;
+                case self::CASTER_TO_PERFORMER:
+                    $log->info("PUSH NOTIFICATION CASTER TO PERFORMER PRIOR TO AUDITION " . $audition->title);
+                    $to = 'MANY';
                     $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::DOCUMENT_UPLOAD:
@@ -168,8 +174,8 @@ class Notifications
                             }
                         });
 
-                        $tokens = $tokenArray->unique()->toArray();
-                        $webTokens = $webTokenArray->unique()->toArray();
+                        $tokens = $tokenArray->unique()->values()->toArray();
+                        $webTokens = $webTokenArray->unique()->values()->toArray();
                         
                         $notification = array();
                         $notification['title'] = $title;
@@ -214,8 +220,8 @@ class Notifications
                                     }
                                 }
                             });
-                            $tokens = $tokenArray->unique()->toArray();
-                            $webTokens = $webTokenArray->unique()->toArray();
+                            $tokens = $tokenArray->unique()->values()->toArray();
+                            $webTokens = $webTokenArray->unique()->values()->toArray();
 
                             $notification = array();
                             $notification['title'] = $title;
@@ -280,8 +286,8 @@ class Notifications
                                         }
                                     }
                                 });
-                                $tokens = $tokenArray->unique()->toArray();
-                                $webTokens = $webTokenArray->unique()->toArray();
+                                $tokens = $tokenArray->unique()->values()->toArray();
+                                $webTokens = $webTokenArray->unique()->values()->toArray();
                             
                                 $notification = array();
                                 $notification['title'] = $title;
@@ -304,6 +310,60 @@ class Notifications
                                 }
                             }
                         });
+                    } elseif ($type == 'caster_to_performer') {
+                        // dd($user);
+                        if(is_array($user)){
+                            $tokenArray = new Collection();
+                            $webTokenArray = new Collection();
+                            
+                            foreach ($user as $key => $u) {
+                                $userRepo = new UserRepository(new User);
+                                $tomsg = !empty($message) ? $message : $title;
+                                $user_result = $userRepo->find($u);
+                                $history = $user_result->notification_history()->create([
+                                    'title' => $title,
+                                    'code' => $type,
+                                    'status' => 'unread',
+                                    'custom_data' => $u,
+                                    'message' => $tomsg,
+                                ]);
+                                
+                                $log->info($history);
+                                
+                                $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                                    if($user_token_detail->device_token){
+                                        if($user_token_detail->device_type == 'web'){
+                                            $webTokenArray->push($user_token_detail->device_token);
+                                        }else{
+                                            $tokenArray->push($user_token_detail->device_token);
+                                        }
+                                    }
+                                });
+                            }
+
+                            $tokens = $tokenArray->unique()->values()->toArray();
+                            $webTokens = $webTokenArray->unique()->values()->toArray();
+                        
+                            $notification = array();
+                            $notification['title'] = $title;
+                            $notification['body'] = $tomsg;
+                            $notification['icon'] = self::ICON;
+                            $notification['click_action'] = '';
+
+                            $fcm = fcm();
+                            $fcm->to($tokens);
+                            $fcm->notification($notification);
+                            $fcm->send();
+
+                            //send to web with click action
+                            if(count($webTokens) != 0){
+                                $notification['click_action'] = $clickToSend;
+
+                                $fcm->to($webTokens);
+                                $fcm->notification($notification);
+                                $fcm->send();
+                            }
+                        }
                     } else {
                         $audition->contributors->each(function ($contributor) use ($title, $message, $type, $audition, $log, $clickToSend) {
                             $userRepo = new UserRepository(new User);
@@ -330,8 +390,8 @@ class Notifications
                                     }
                                 }
                             });
-                            $tokens = $tokenArray->unique()->toArray();
-                            $webTokens = $webTokenArray->unique()->toArray();
+                            $tokens = $tokenArray->unique()->values()->toArray();
+                            $webTokens = $webTokenArray->unique()->values()->toArray();
                         
                             $notification = array();
                             $notification['title'] = $title;
@@ -376,8 +436,8 @@ class Notifications
                                 }
                             }
                         });
-                        $tokens = $tokenArray->unique()->toArray();
-                        $webTokens = $webTokenArray->unique()->toArray();
+                        $tokens = $tokenArray->unique()->values()->toArray();
+                        $webTokens = $webTokenArray->unique()->values()->toArray();
                     
                         $notification = array();
                         $notification['title'] = $title;
@@ -411,8 +471,8 @@ class Notifications
                             }
                         }
                     });
-                    $tokens = $tokenArray->unique()->toArray();
-                    $webTokens = $webTokenArray->unique()->toArray();
+                    $tokens = $tokenArray->unique()->values()->toArray();
+                    $webTokens = $webTokenArray->unique()->values()->toArray();
                    
                     $notification = array();
                     $notification['title'] = $title;

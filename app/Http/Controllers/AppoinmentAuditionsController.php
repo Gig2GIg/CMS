@@ -23,6 +23,7 @@ use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\UserDetails;
 use App\Models\UserSlots;
+use App\Http\Requests\NotifyPerformersRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -385,6 +386,49 @@ class AppoinmentAuditionsController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+    }
+
+    public function notifyPerformers(NotifyPerformersRequest $request)
+    {
+        try {
+            $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => 1])
+                ->select('id')
+                ->with(['slot' => function($query){
+                    $query->whereHas('userSlot');
+                    $query->with(['userSlot' => function($q){
+                        $q->with('user:id');
+                        $q->whereHas('user');
+                    }]);
+                }])
+                ->first();
+
+            $performerIds = array(); 
+
+            if($data){
+                $data->slot->each(function ($i) use(&$performerIds) {
+                    array_push($performerIds, $i['userSlot']['user']['id']); 
+                });    
+            }
+            
+            if(count($performerIds) > 0){
+                $audition = Auditions::find($request->audition_id);
+
+                if($audition){
+                    $this->sendPushNotification(
+                        $audition,
+                        SendNotifications::CASTER_TO_PERFORMER,
+                        $performerIds,
+                        $request->title,
+                        $request->message
+                    );
+                }
+            }
+            
+            return response()->json(['data' => trans('messages.caster_notification_success')], 200);
+        } catch (\Exception $exception) {
+            $this->log->error('SEND CASTER NOTIFICATION:::' . $exception->getMessage());
+            return response()->json(['data' => trans('messages.something_went_wrong')], 400);
         }
     }
 }
