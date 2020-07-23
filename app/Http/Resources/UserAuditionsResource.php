@@ -39,7 +39,7 @@ class UserAuditionsResource extends JsonResource
         $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
         
         // $feedback_comment = Feedbacks::select('comment')->where('appointment_id', $this->appointment_id)->first();
-
+        $dataSlots = null;
         $slot = $this->slot_id;
         if ($slot != null) {
             $repoSlot = new SlotsRepository(new Slots());
@@ -68,6 +68,7 @@ class UserAuditionsResource extends JsonResource
             'round' => $dataRepo->round,
             'grouping_capacity' => $dataRepo->grouping_capacity ?? null,
             'grouping_enabled' => $dataRepo->grouping_enabled ?? null,
+            'group_number' => $dataSlots->group_number ?? null,
             // ===========================
             'comment' => isset($this->comment) && $this->comment ? $this->comment : "",
             'status' => $dataRepo->status,

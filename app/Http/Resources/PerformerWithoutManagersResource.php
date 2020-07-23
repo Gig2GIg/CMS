@@ -41,6 +41,7 @@ class PerformerWithoutManagersResource extends JsonResource
         $rolanme = Roles::whereIn('id', $roles)->get()->pluck('name');
 
         $slot = $this->slot_id;
+        $dataSlots = null;
         if ($slot != null) {
             $repoSlot = new SlotsRepository(new Slots());
             $dataSlots = $repoSlot->find($slot);
@@ -71,7 +72,8 @@ class PerformerWithoutManagersResource extends JsonResource
             'media' => $media[0] ?? null,
             'media_thumbnail' => $url_thumb[0] ?? null,
             'media_name' => $cover_name[0] ?? null,
-            'round' => $dataRepo->round
+            'round' => $dataRepo->round,
+            'group_number' => $dataSlots->group_number ?? null
         ];
         
         return $return;

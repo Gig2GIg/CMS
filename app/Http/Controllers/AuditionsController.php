@@ -135,10 +135,25 @@ class AuditionsController extends Controller
                     $appointment = $appointmentRepo->create($dataAppoinment);
                     if (!$request->online) {
                         if (isset($round['appointment']['slots'])) {
-                            foreach ($round['appointment']['slots'] as $slot) {
-                                $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
-                                $slotsRepo = new SlotsRepository(new Slots());
-                                $slotsRepo->create($dataSlots);
+                            if(($round['grouping_enabled'] || $round['grouping_enabled'] == 1) && (int)$round['grouping_capacity'] > 0){
+                                $length = count($round['appointment']['slots']);
+                                $capacity = (int)$round['grouping_capacity'];
+                                $limit = ceil($length/$capacity);
+                                $j = 0;
+                                for($i = 0; $i < $limit; $i++){
+                                    foreach (array_slice($round['appointment']['slots'], $j, $capacity) as $slot) {
+                                        $dataSlots = $this->dataToSlotsProcess($appointment, $slot, $i+1);
+                                        $slotsRepo = new SlotsRepository(new Slots());
+                                        $slotsRepo->create($dataSlots);
+                                    }
+                                    $j = $j + $capacity;
+                                }    
+                            } else {
+                                foreach ($round['appointment']['slots'] as $slot) {
+                                    $dataSlots = $this->dataToSlotsProcess($appointment, $slot);
+                                    $slotsRepo = new SlotsRepository(new Slots());
+                                    $slotsRepo->create($dataSlots);
+                                }
                             }
                         }
                     }
@@ -303,6 +318,13 @@ class AuditionsController extends Controller
             $lng = $round['location']['longitude']; 
         }
 
+        $grouping_enabled = $round['grouping_enabled'];
+        if($grouping_enabled || $grouping_enabled == 1){
+            $grouping_capacity = (int)$round['grouping_capacity'] ?? null;
+        }else{
+            $grouping_capacity = null;
+        }
+
         return [
             'auditions_id' => $audition->id,
             'date' => isset($round['date']) ? $this->toDate->transformDate($round['date']) : null, //null
@@ -317,8 +339,8 @@ class AuditionsController extends Controller
             'end' => $round['appointment']['end'] ?? null,
             'status' => $status,
             'round' => $count,
-            'grouping_capacity' => $round['grouping_capacity'] ?? null,
-            'grouping_enabled' => $round['grouping_enabled'],
+            'grouping_enabled' => $grouping_enabled,
+            'grouping_capacity' => $grouping_capacity
         ];
     }
 
@@ -327,13 +349,14 @@ class AuditionsController extends Controller
      * @param $slot
      * @return array
      */
-    public function dataToSlotsProcess($appointment, $slot): array
+    public function dataToSlotsProcess($appointment, $slot, $groupNo = null): array
     {
         return [
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
             'number' => $slot['number'] ?? null,
             'status' => $slot['status'],
+            'group_number' => $groupNo,
             'is_walk' => $slot['is_walk'],
         ];
     }
