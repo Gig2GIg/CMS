@@ -40,6 +40,8 @@ class FeedbackResource extends JsonResource
             'favorite'=>$this->favorite,
             'comment'=>$this->comment,
             'round' => $round->round,
+            'grouping_capacity' => $round->grouping_capacity ?? null,
+            'grouping_enabled' => $round->grouping_enabled ?? null
         ];
     }
 }

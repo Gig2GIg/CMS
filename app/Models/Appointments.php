@@ -19,6 +19,8 @@ class Appointments extends Model
         'start',
         'end',
         'round',
+        'grouping_capacity',
+        'grouping_enabled',
         'status',
         'auditions_id',
         'group_no',

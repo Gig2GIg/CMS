@@ -26,6 +26,8 @@ class AuditionsDetResponse extends JsonResource
             'date' => $appoinmentData->auditions->date,
             'time' => $appoinmentData->auditions->time,
             'slot_reserved'=>$this->slot_id,
+            'grouping_capacity' => $appoinmentData->grouping_capacity ?? null,
+            'grouping_enabled' => $appoinmentData->grouping_enabled ?? null,
             'create'=>$this->created_at,
         ];
     }

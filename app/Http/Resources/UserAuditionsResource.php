@@ -66,6 +66,8 @@ class UserAuditionsResource extends JsonResource
             'media_name' => $cover_name[0] ?? null,
             'number_roles' => count($dataRepo->auditions->roles),
             'round' => $dataRepo->round,
+            'grouping_capacity' => $dataRepo->grouping_capacity ?? null,
+            'grouping_enabled' => $dataRepo->grouping_enabled ?? null,
             // ===========================
             'comment' => isset($this->comment) && $this->comment ? $this->comment : "",
             'status' => $dataRepo->status,

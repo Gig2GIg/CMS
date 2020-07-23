@@ -11,6 +11,7 @@ class Slots extends Model
         'status',
         'is_walk',
         'number',
+        'group_number',
         'appointment_id'
     ];
 

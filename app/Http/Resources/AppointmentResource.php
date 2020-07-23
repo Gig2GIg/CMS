@@ -10,7 +10,7 @@ use App\Http\Repositories\SlotsRepository;
 use App\Http\Repositories\UserManagerRepository;
 use App\Http\Repositories\UserRepository;
 use App\Http\Repositories\UserUnionMemberRepository;
-//use App\Models\Appointments;
+use App\Models\Appointments;
 //use App\Models\Auditions;
 use App\Models\Feedbacks;
 use App\Models\InstantFeedback;
@@ -35,6 +35,8 @@ class AppointmentResource extends JsonResource
         $userData = $user->find($this->user_id);
         $slot = new SlotsRepository(new Slots());
         $slotData = $slot->find($this->slots_id);
+
+        $appointment = Appointments::find($this->appointment_id);
 
         $repo = new InstantFeedbackRepository(new InstantFeedback());
         $instant_feedback = $repo->findbyparams([
@@ -80,7 +82,9 @@ class AppointmentResource extends JsonResource
             'representation_email' => isset($userManager->email) ? $userManager->email : "",
             'union_string' => $userUnionMemberString,
             'union_array' => $userUnionMember,
-            'website' => isset($user->details->url) ? $user->details->url : ""
+            'website' => isset($user->details->url) ? $user->details->url : "",
+            'grouping_capacity' => $appointment ? $appointment->grouping_capacity : null,
+            'grouping_enabled' => $appointment ? $appointment->grouping_enabled : null,
         ];
     }
 }

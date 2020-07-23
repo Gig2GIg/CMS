@@ -66,6 +66,8 @@ class AuditionFullResponse extends JsonResource
             'title' => $this->title,
             'date' => $appointment->date ?? null,
             'time' => $appointment->time ?? null,
+            'grouping_capacity' => $appointment->grouping_capacity ?? null,
+            'grouping_enabled' => $appointment->grouping_enabled ?? null,
             'create'=>$this->created_at,
             'location' =>json_decode($appointment["location"]),
             'description' => $this->description,

@@ -72,6 +72,8 @@ class AuditionResponseInstantFeedback extends JsonResource
             "date" => $appointment->date ?? null,
             'create' => $this->created_at,
             "time" => $appointment->time ?? null,
+            'grouping_capacity' => $appointment->grouping_capacity ?? null,
+            'grouping_enabled' => $appointment->grouping_enabled ?? null,
             "location" => json_decode($appointment->location),
             "description" => $this->description,
             "url" => $this->url,

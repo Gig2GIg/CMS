@@ -165,7 +165,6 @@ class AuditionsController extends Controller
             }
             return response()->json($responseData, $code);
         } catch (\Exception $exception) {
-            // dd($exception);
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
@@ -318,6 +317,8 @@ class AuditionsController extends Controller
             'end' => $round['appointment']['end'] ?? null,
             'status' => $status,
             'round' => $count,
+            'grouping_capacity' => $round['grouping_capacity'] ?? null,
+            'grouping_enabled' => $round['grouping_enabled'],
         ];
     }
 

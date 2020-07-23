@@ -73,6 +73,8 @@ class AuditionResourceFind extends JsonResource
             "roles" => $roles,
             // "roles" => $this->roles,
             "location" => (isset($appointment->location) && $appointment->location != '') ? json_decode($appointment->location) : null,
+            'grouping_capacity' => $appointment->grouping_capacity ?? null,
+            'grouping_enabled' => $appointment->grouping_enabled ?? null,
         ];
     }
 }
