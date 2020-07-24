@@ -124,7 +124,7 @@ class AppoinmentAuditionsController extends Controller
                        
                     //updating user_audition data to type 2 and with slot data
                     $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-                    $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1'])->first();
+                    $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1', 'user_id' => $iduser])->first();
                     $updateAudi = $dataAuditionsUser->update([
                         'type' => '2',
                         'slot_id' => NULL
@@ -188,9 +188,10 @@ class AppoinmentAuditionsController extends Controller
             ]);
 
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-            $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1'])->first();
-            if($dataAuditionsUser->slot_id == NULL){
-                $updateAudi = $dataAuditionsUser->update([
+            $userAudition = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1', 'user_id' => $iduser])->first();
+
+            if($userAudition->slot_id == NULL){ 
+                $updateAudi = $userAudition->update([
                     'slot_id' => $request->slot
                 ]);    
             }
