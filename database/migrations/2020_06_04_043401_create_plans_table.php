@@ -16,6 +16,7 @@ class CreatePlansTable extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
+            $table->string('header')->nullable();
             $table->string('stripe_plan')->nullable();
             $table->integer('allowed_performers')->default(0);
             $table->text('description')->description();
@@ -23,6 +24,7 @@ class CreatePlansTable extends Migration
             $table->enum('type',['monthly','annual','quarterly','daily'])->nullable()->default('monthly');
             $table->integer('user_type')->nullable();
             $table->boolean('is_custom')->default(false);
+            $table->boolean('is_discounted')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
