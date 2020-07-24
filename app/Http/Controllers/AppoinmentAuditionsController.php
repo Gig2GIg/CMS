@@ -186,6 +186,15 @@ class AppoinmentAuditionsController extends Controller
             $slot->find($request->slot)->update([
                 'status' => '1',
             ]);
+
+            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
+            $dataAuditionsUser = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1'])->first();
+            if($dataAuditionsUser->slot_id == NULL){
+                $updateAudi = $dataAuditionsUser->update([
+                    'slot_id' => $request->slot
+                ]);    
+            }
+            
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($iduser);
 
