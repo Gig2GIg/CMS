@@ -183,7 +183,7 @@ class AuditionsController extends Controller
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
-            dd($exception);
+            // dd($exception);
             return response()->json(['error' => trans('messages.not_processable')], 406);
             // return response()->json(['error' => 'Unprocessable '], 406);
         }
