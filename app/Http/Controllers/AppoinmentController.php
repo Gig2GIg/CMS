@@ -603,7 +603,7 @@ class AppoinmentController extends Controller
                 }
             }
 
-            $updatedRound = Appointments::find($data->id);
+            $updatedRound = Appointments::find($newAppointmentId);
             if(($updatedRound->grouping_enabled || $updatedRound->grouping_enabled == 1) && (int)$updatedRound->grouping_capacity > 0){
                 $length = count($request['slots']);
                 $capacity = (int)$updatedRound->grouping_capacity;
