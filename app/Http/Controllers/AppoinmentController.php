@@ -603,7 +603,7 @@ class AppoinmentController extends Controller
                 }
             }
 
-            $updatedRound = Appointments::find($newAppointmentId);
+            $updatedRound = Appointments::find($data->id);
             if(($updatedRound->grouping_enabled || $updatedRound->grouping_enabled == 1) && (int)$updatedRound->grouping_capacity > 0){
                 $length = count($request['slots']);
                 $capacity = (int)$updatedRound->grouping_capacity;
@@ -611,7 +611,7 @@ class AppoinmentController extends Controller
                 $j = 0;
                 for($i = 0; $i < $limit; $i++){
                     foreach (array_slice($request['slots'], $j, $capacity) as $slot) {
-                        $dataSlots = $this->dataToSlotsProcess($appointment, $slot, $i+1);
+                        $dataSlots = $this->dataToSlotsProcess($updatedRound, $slot, $i+1);
                         $slotsRepo = new SlotsRepository(new Slots());
                         $slotsRepo->create($dataSlots);
                     }
