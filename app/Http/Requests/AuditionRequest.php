@@ -42,8 +42,8 @@ class AuditionRequest extends ApiRequest
             'online' => 'required',
             'rounds' => 'required|array',
             'rounds.*.appointment' => 'required',
-            'rounds.*.grouping_enabled' => 'required',
-            'rounds.*.grouping_capacity' => 'required_if:rounds.*.grouping_enabled,true',
+            //'rounds.*.grouping_enabled' => 'required',
+            //'rounds.*.grouping_capacity' => 'required_if:rounds.*.grouping_enabled,true',
             'rounds.*.date' => 'required_if:online,false',
             'rounds.*.time' => 'required_if:online,false',
             'rounds.*.location' => 'required_if:online,false'

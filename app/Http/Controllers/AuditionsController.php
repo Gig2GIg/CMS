@@ -135,7 +135,7 @@ class AuditionsController extends Controller
                     $appointment = $appointmentRepo->create($dataAppoinment);
                     if (!$request->online) {
                         if (isset($round['appointment']['slots'])) {
-                            if(($round['grouping_enabled'] || $round['grouping_enabled'] == 1) && (int)$round['grouping_capacity'] > 0){
+                            if(isset($round['grouping_enabled']) && (($round['grouping_enabled'] || $round['grouping_enabled'] == 1) && (int)$round['grouping_capacity'] > 0)){
                                 $length = count($round['appointment']['slots']);
                                 $capacity = (int)$round['grouping_capacity'];
                                 $limit = ceil($length/$capacity);
@@ -183,6 +183,7 @@ class AuditionsController extends Controller
             DB::rollBack();
             $this->log->error($exception->getMessage());
             $this->log->error($exception->getLine());
+            dd($exception);
             return response()->json(['error' => trans('messages.not_processable')], 406);
             // return response()->json(['error' => 'Unprocessable '], 406);
         }
@@ -318,7 +319,11 @@ class AuditionsController extends Controller
             $lng = $round['location']['longitude']; 
         }
 
-        $grouping_enabled = $round['grouping_enabled'];
+        if(isset($round['grouping_enabled'])){
+            $grouping_enabled = $round['grouping_enabled'];
+        }else{
+            $grouping_enabled = 0;
+        }
         if($grouping_enabled || $grouping_enabled == 1){
             $grouping_capacity = (int)$round['grouping_capacity'] ?? null;
         }else{
