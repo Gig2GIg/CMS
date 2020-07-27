@@ -384,13 +384,14 @@ class AppoinmentController extends Controller
         }
     }
 
-    public function dataToSlotsProcess($appointment, $slot): array
+    public function dataToSlotsProcess($appointment, $slot, $groupNo = null): array
     {
         return [
             'appointment_id' => $appointment->id,
             'time' => $slot['time'],
             'number' => $slot['number'] ?? null,
             'status' => false,
+            'group_number' => $groupNo,
             'is_walk' => $slot['is_walk'],
         ];
     }
@@ -440,6 +441,7 @@ class AppoinmentController extends Controller
                 $lng = $request->location['longitude']; 
             }
             $repo = new AppointmentRepository(new Appointments());
+
             $appointment = [
                 'date' => $this->toDate->transformDate($request->date),
                 'time' => $request->time,
@@ -504,6 +506,15 @@ class AppoinmentController extends Controller
                         $lasApponitment = $repoDataPreviousAppointments->get();
 
                         $lasApponitmentId = $lasApponitment[0]->id;
+
+                        $grouping_enabled = $lasApponitment[0]->grouping_enabled;
+                        if($grouping_enabled || $grouping_enabled == 1){
+                            $grouping_capacity = (int)$lasApponitment[0]->grouping_capacity ?? null;
+                        }else{
+                            $grouping_capacity = null;
+                        }
+
+                        $data->update(['grouping_enabled' => $grouping_enabled, 'grouping_capacity' => $grouping_capacity]);
 
                         //Get all users who got feedback in previous round
                         $feedbacksRepo = new FeedbackRepository(new Feedbacks());
@@ -592,11 +603,28 @@ class AppoinmentController extends Controller
                 }
             }
 
-            foreach ($request['slots'] as $slot) {
-                $dataSlots = $this->dataToSlotsProcess($data, $slot);
-                $slotsRepo = new SlotsRepository(new Slots());
-                $slotsRepo->create($dataSlots);
+            $updatedRound = Appointments::find($data->id);
+            if(($updatedRound->grouping_enabled || $updatedRound->grouping_enabled == 1) && (int)$updatedRound->grouping_capacity > 0){
+                $length = count($request['slots']);
+                $capacity = (int)$updatedRound->grouping_capacity;
+                $limit = ceil($length/$capacity);
+                $j = 0;
+                for($i = 0; $i < $limit; $i++){
+                    foreach (array_slice($request['slots'], $j, $capacity) as $slot) {
+                        $dataSlots = $this->dataToSlotsProcess($appointment, $slot, $i+1);
+                        $slotsRepo = new SlotsRepository(new Slots());
+                        $slotsRepo->create($dataSlots);
+                    }
+                    $j = $j + $capacity;
+                }    
+            } else {
+                foreach ($request['slots'] as $slot) {
+                    $dataSlots = $this->dataToSlotsProcess($data, $slot);
+                    $slotsRepo = new SlotsRepository(new Slots());
+                    $slotsRepo->create($dataSlots);
+                }
             }
+            
             // return response()->json(['message' => 'Round Create', 'data' => $data], 200);
             return response()->json(['message' => trans('messages.round_create'), 'data' => $data], 200);
         } catch (\Exception $exception) {

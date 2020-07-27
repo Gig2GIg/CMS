@@ -903,6 +903,14 @@ class UserController extends Controller
                         ->orderByRaw('ISNULL(amount), amount ASC')
                         ->get();
 
+            // if(count($plans) > 0){
+            //     foreach ($plans as $value) {
+            //         if($this->is_decimal($value->amount)){
+            //             $value->amount = number_format((float)$value->amount, 2, '.', '');
+            //         }
+            //     }
+            // }
+
             // $repo = new Plan();
             // $plans = $repo->where('user_type', 1)->get()->sortBy('-amount')->values();
 
@@ -921,6 +929,11 @@ class UserController extends Controller
             }
         }
     }
+
+    // public function is_decimal( $val )
+    // {
+    //     return is_numeric( $val ) && floor( $val ) != $val;
+    // }
 
     public function subscriptionDetails(Request $request)
     {
