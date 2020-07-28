@@ -320,6 +320,19 @@ class Notifications
                                 $userRepo = new UserRepository(new User);
                                 $tomsg = !empty($message) ? $message : $title;
                                 $user_result = $userRepo->find($u);
+
+                                if($user_result && $user_result->details && (($user_result->details->type == 2 && $user_result->is_premium == 1) || $user_result->details->type != 2)){
+                                    $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                                        if($user_token_detail->device_token){
+                                            if($user_token_detail->device_type == 'web'){
+                                                $webTokenArray->push($user_token_detail->device_token);
+                                            }else{
+                                                $tokenArray->push($user_token_detail->device_token);
+                                            }
+                                        }
+                                    });
+                                }
+                                
                                 $history = $user_result->notification_history()->create([
                                     'title' => $title,
                                     'code' => $type,
@@ -329,16 +342,6 @@ class Notifications
                                 ]);
                                 
                                 $log->info($history);
-                                
-                                $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
-                                    if($user_token_detail->device_token){
-                                        if($user_token_detail->device_type == 'web'){
-                                            $webTokenArray->push($user_token_detail->device_token);
-                                        }else{
-                                            $tokenArray->push($user_token_detail->device_token);
-                                        }
-                                    }
-                                });
                             }
 
                             $tokens = $tokenArray->unique()->values()->toArray();

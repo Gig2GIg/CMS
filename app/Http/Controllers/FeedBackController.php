@@ -266,7 +266,7 @@ class FeedBackController extends Controller
 
             return response()->json($dataResponse, $code);
         } catch (\Exception $exception) {
-            dd($exception);
+            // dd($exception);
             $this->log->error($exception->getMessage());
             return response()->json(['data' => trans('messages.data_not_found')], 404);
             // return response()->json(['data' => 'Data Not Found'], 404);
