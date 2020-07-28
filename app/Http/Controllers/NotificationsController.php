@@ -87,7 +87,14 @@ class NotificationsController extends Controller
             $device_type = $request->device_type;
             if ($device_id != '' && $userResult->id != '') {
                 //deleting records with same device id but with diffrent userIds
-                UserPushKeys::where('user_id' , '!=', $userResult->id)->where('device_id', $device_id)->delete();
+
+                UserPushKeys::Join('user_details AS UD', function ($join) {
+                        $join->on('user_push_keys.user_id', '=', 'UD.user_id');
+                    })
+                    ->where('user_push_keys.device_id', $device_id)
+                    ->where('user_push_keys.user_id' , '!=', $userResult->id)
+                    ->where('UD.type', $userResult->details->type)
+                    ->delete();
 
                 $userPushkeys = new UserPushKeysRepository(new UserPushKeys());
                 $userPushkeyExists = $userPushkeys->findbyparams(['user_id' => $userResult->id, 'device_id' => $device_id])->first();
