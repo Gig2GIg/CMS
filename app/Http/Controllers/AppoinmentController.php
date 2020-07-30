@@ -205,6 +205,8 @@ class AppoinmentController extends Controller
                             if($exists->count() == 0){
                                 $created = $UserAudition->create($dataToInsert);
 
+                                array_push($performersToNotify, $feedback->user_id);
+
                                 if($data->auditions->online){
                                     if(Feedbacks::where('user_id', $feedback->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
                                         $created->update(['type' => 3]);
@@ -214,8 +216,6 @@ class AppoinmentController extends Controller
                                         $created->update(['type' => 2]);
                                     }
                                     
-                                    array_push($performersToNotify, $feedback->user_id);
-
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                                     if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $feedback->user_id])->get()->count() == 0){
                                         $dataSlotRepo->create([
@@ -274,6 +274,8 @@ class AppoinmentController extends Controller
                             
                             if($exists->count() == 0){
                                 $created = $UserAudition->create($dataToInsert);
+                                
+                                array_push($performersToNotify, $uslot->user_id);
 
                                 if($data->auditions->online){
                                     if(Feedbacks::where('user_id', $uslot->user_id)->where('appointment_id', $createdNextAuditionRound->id)->get()->count() > 0){
@@ -283,8 +285,6 @@ class AppoinmentController extends Controller
                                     } else {
                                         $created->update(['type' => 2]);
                                     }
-
-                                    array_push($performersToNotify, $uslot->user_id);
 
                                     $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                                     if($dataSlotRepo->findbyparams(['appointment_id' => $createdNextAuditionRound->id, 'status' => 2, 'user_id' => $uslot->user_id])->get()->count() == 0){
@@ -353,7 +353,7 @@ class AppoinmentController extends Controller
                     //Notifying users about their new card generated
                     if(count($performersToNotify) > 0){
                         if($data->auditions){
-                            $this->sendPushToNewPerformers($performersToNotify, $data->auditions);
+                            $this->sendPushToNewPerformers(array_values(array_unique($performersToNotify)), $data->auditions);
                         }
                     }
                 }
@@ -494,9 +494,9 @@ class AppoinmentController extends Controller
                 $roleDataRepo = $roleRepo->findbyparam('auditions_id', $AuditionId);
 
                 if ($roleDataRepo->count() > 0) {
-                    // dd($roleDataRepo);
+                    $performersToNotify = array();
+
                     $roles = $roleDataRepo->all();
-                    // dd($roles[0]->id);
                     $auditionRoleId = $roles[0]->id;
 
                     $repoPreviousAppointments = new AppointmentRepository(new Appointments());
@@ -534,12 +534,25 @@ class AppoinmentController extends Controller
                                     'type' => '1'];
                                 $UserAudition = new UserAuditions();
                                 // $UserAudition->create($dataToInsert);
-                                $UserAudition->updateOrCreate([
-                                    'user_id' => $feedback->user_id, 
-                                    'appointment_id' => $newAppointmentId, 
-                                    'rol_id' => $auditionRoleId],
-                                    $dataToInsert
-                                );
+                                // $UserAudition->updateOrCreate([
+                                //     'user_id' => $feedback->user_id, 
+                                //     'appointment_id' => $newAppointmentId, 
+                                //     'rol_id' => $auditionRoleId],
+                                //     $dataToInsert
+                                // );
+
+                                $exists = $UserAudition->where([
+                                            'user_id' => $feedback->user_id, 
+                                            'appointment_id' => $newAppointmentId, 
+                                            'rol_id' => $auditionRoleId])
+                                            ->get();
+                            
+                                if($exists->count() == 0){
+                                    $created = $UserAudition->create($dataToInsert);
+
+                                    array_push($performersToNotify, $feedback->user_id);
+                                }
+
                                 // $dataSlotRepo = new UserSlotsRepository(new UserSlots());
                                 // $dataSlotRepo->create([
                                 //     'user_id' => $feedback->user_id,
@@ -565,12 +578,24 @@ class AppoinmentController extends Controller
                                     'rol_id' => $auditionRoleId, 
                                     'type' => '1'];
                                 $UserAudition = new UserAuditions();
-                                $UserAudition->updateOrCreate([
-                                    'user_id' => $uslot->user_id, 
-                                    'appointment_id' => $newAppointmentId, 
-                                    'rol_id' => $auditionRoleId],
-                                    $dataToInsert
-                                );
+
+                                $exists = $UserAudition->where([
+                                            'user_id' => $uslot->user_id, 
+                                            'appointment_id' => $newAppointmentId, 
+                                            'rol_id' => $auditionRoleId])
+                                            ->get();
+                            
+                                if($exists->count() == 0){
+                                    $created = $UserAudition->create($dataToInsert);
+
+                                    array_push($performersToNotify, $uslot->user_id);
+                                }
+                                // $UserAudition->updateOrCreate([
+                                //     'user_id' => $uslot->user_id, 
+                                //     'appointment_id' => $newAppointmentId, 
+                                //     'rol_id' => $auditionRoleId],
+                                //     $dataToInsert
+                                // );
                                 // $UserAudition->create($dataToInsert);
                             }
                         }
@@ -598,6 +623,12 @@ class AppoinmentController extends Controller
                                     // $element->delete();
                                 });
                             }
+                        }
+                    }
+                    //Notifying users about their new card generated
+                    if(count($performersToNotify) > 0){
+                        if($data->auditions){
+                            $this->sendPushToNewPerformers(array_values(array_unique($performersToNotify)), $data->auditions);
                         }
                     }
                 }
@@ -827,7 +858,7 @@ class AppoinmentController extends Controller
                     if(count($performersToNotify) > 0){
                         $audition = Auditions::find($request->audition_id);
                         if($audition){
-                            $this->sendPushToNewPerformers($performersToNotify, $audition);
+                            $this->sendPushToNewPerformers(array_values(array_unique($performersToNotify)), $audition);
                         }
                     }
                 }
