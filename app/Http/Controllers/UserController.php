@@ -1107,15 +1107,23 @@ class UserController extends Controller
                 $insertData['current_transaction'] = $request->current_transaction;
             }
 
-            if(!$subscription->where(['original_transaction' => $request->original_transaction, 'current_transaction' => $request->current_transaction])->where('user_id', '!=', $request->user_id)->first()){
-                $subscription->updateOrCreate(
-                    ['user_id' => $request->user_id],
-                    $insertData
-                );
+            // if(!$subscription->where(['original_transaction' => $request->original_transaction, 'current_transaction' => $request->current_transaction])->where('user_id', '!=', $request->user_id)->first()){
+            //     $subscription->updateOrCreate(
+            //         ['user_id' => $request->user_id],
+            //         $insertData
+            //     );
 
-                $user->update(array('is_premium' => 1));
-                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
-            }
+            //     $user->update(array('is_premium' => 1));
+            //     $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+            // }
+
+            $subscription->updateOrCreate(
+                ['user_id' => $request->user_id],
+                $insertData
+            );
+
+            $user->update(array('is_premium' => 1));
+            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
 
             $responseOut = [
                 'message' => trans('messages.success'),
