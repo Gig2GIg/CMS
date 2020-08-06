@@ -1076,9 +1076,9 @@ class AuditionManagementController extends Controller
             $userManager = $user->findbyparam('user_id', $this->getUserLogging());
             
             if(!$userManager){
-                if($request->type == 1){
-                    return response()->json(['error' => trans('messages.save_audition_not_allowed')], 406);
-                }
+                // if($request->type == 1){
+                //     return response()->json(['error' => trans('messages.save_audition_not_allowed')], 406);
+                // }
                 $data['has_manager'] = 0;
             }
 
