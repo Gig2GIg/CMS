@@ -107,7 +107,7 @@ class CalendarController extends Controller
             $data = [
                 'production_type' => $request->production_type,
                 'project_name' => $request->project_name,
-                'event_type' => $request->event_type,
+                'event_type' => $request->event_type ?? null,
                 'start_date' => $start_date,
                 'end_date' => $end_date,
                 'user_id' => $user_id,
@@ -199,7 +199,7 @@ class CalendarController extends Controller
                 $data = [
                     'production_type' => $request->production_type,
                     'project_name' => $request->project_name,
-                    'event_type' => $request->event_typ,
+                    'event_type' => $request->event_typ ?? null,
                     'start_date' => $start_date,
                     'end_date' => $end_date
                 ];
