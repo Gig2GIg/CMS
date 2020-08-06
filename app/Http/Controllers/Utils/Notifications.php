@@ -95,9 +95,9 @@ class Notifications
                     $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::CUSTOM:
-                    $log->info("PUSH NOTIFICATION  CUSTOM");
+                    $log->info("PUSH NOTIFICATION CUSTOM");
                     $to = 'MANY';
-                    $clickToSend = env('CASTER_URL');
+                    $clickToSend = env('PERFORMER_URL');
                     break;
                 case self::CMS:
                     $log->info("PUSH NOTIFICATION FROM CMS");
@@ -266,13 +266,15 @@ class Notifications
                             $tomsg = !empty($message) ? $message : $title;
                             $userRepo = new UserRepository(new User);
                             $user_result = $userRepo->find($useraudition->user_id);
-                            if($user_result->details && (($user_result->details->type == 2 && $user_result->is_premium == 1) || $user_result->details->type != 2)){
-                                $user_result->notification_history()->create([
+                            
+                            $user_result->notification_history()->create([
                                     'title' => $title,
                                     'code' => $type,
                                     'status' => 'unread',
                                     'message' => $tomsg,
                                 ]);
+
+                            if($user_result->details && (($user_result->details->type == 2 && $user_result->is_premium == 1) || $user_result->details->type != 2)){
 
                                 $tokenArray = new Collection();
                                 $webTokenArray = new Collection();
