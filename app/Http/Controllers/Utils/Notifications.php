@@ -259,10 +259,9 @@ class Notifications
 //                        $repData = $repo->getByParam('appointment_id', $audition->id);
                         $repData = $repo->findbyparams(['appointment_id'=> $audition->id, 'rejected' => 0]);
 
-
-                        if ($repData->count() === 0) {
-                            throw new \Exception('NULL ELEMENTS TO NOTIFICATE');
-                        }
+                        // if ($repData->count() === 0) {
+                        //     throw new \Exception('NULL ELEMENTS TO NOTIFICATE');
+                        // }
                         $repData->each(function ($useraudition) use ($title, $message, $type, $clickToSend) {
                             $tomsg = !empty($message) ? $message : $title;
                             $userRepo = new UserRepository(new User);
