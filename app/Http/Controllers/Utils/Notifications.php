@@ -8,6 +8,7 @@ use App\Http\Repositories\UserAuditionsRepository;
 use App\Http\Repositories\UserRepository;
 use App\Models\User;
 use App\Models\UserAuditions;
+use App\Models\UserSettings;
 use Illuminate\Support\Collection;
 
 class Notifications
@@ -385,36 +386,48 @@ class Notifications
                             
                             $tokenArray = new Collection();
                             $webTokenArray = new Collection();
-                            $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
-                                if($user_token_detail->device_token){
-                                    if($user_token_detail->device_type == 'web'){
-                                        $webTokenArray->push($user_token_detail->device_token);
-                                    }else{
-                                        $tokenArray->push($user_token_detail->device_token);
-                                    }
+
+                            $isDisabled = false;
+                            $whereCondition = NULL;
+                            if($user_result->details && (($user_result->details->type == 1 && $type == self::AUTIDION_ADD_CONTRIBUIDOR))){
+                                $whereCondition = 'CONTRIBUTORS';
+                                if(UserSettings::where('user_id',$user_result->id)->where('setting', $whereCondition)->where('value', 0)->get()->count() > 0){
+                                    $isDisabled = true;
                                 }
-                            });
-                            $tokens = $tokenArray->unique()->values()->toArray();
-                            $webTokens = $webTokenArray->unique()->values()->toArray();
-                        
-                            $notification = array();
-                            $notification['title'] = $title;
-                            $notification['body'] = $tomsg;
-                            $notification['icon'] = self::ICON;
-                            $notification['click_action'] = '';
+                            }
 
-                            $fcm = fcm();
-                            $fcm->to($tokens);
-                            $fcm->notification($notification);
-                            $fcm->send();
+                            if($isDisabled == false){
+                                $user_result->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                                    if($user_token_detail->device_token){
+                                        if($user_token_detail->device_type == 'web'){
+                                            $webTokenArray->push($user_token_detail->device_token);
+                                        }else{
+                                            $tokenArray->push($user_token_detail->device_token);
+                                        }
+                                    }
+                                });
+                                $tokens = $tokenArray->unique()->values()->toArray();
+                                $webTokens = $webTokenArray->unique()->values()->toArray();
+                            
+                                $notification = array();
+                                $notification['title'] = $title;
+                                $notification['body'] = $tomsg;
+                                $notification['icon'] = self::ICON;
+                                $notification['click_action'] = '';
 
-                            //send to web with click action
-                            if(count($webTokens) != 0){
-                                $notification['click_action'] = $clickToSend;
-
-                                $fcm->to($webTokens);
+                                $fcm = fcm();
+                                $fcm->to($tokens);
                                 $fcm->notification($notification);
                                 $fcm->send();
+
+                                //send to web with click action
+                                if(count($webTokens) != 0){
+                                    $notification['click_action'] = $clickToSend;
+
+                                    $fcm->to($webTokens);
+                                    $fcm->notification($notification);
+                                    $fcm->send();
+                                }
                             }
                         });
                     }
@@ -466,44 +479,61 @@ class Notifications
                 } else if($to == 'ONLY_ONE_WITHOUT_CHECK' && ($user instanceof User)){
                     $tokenArray = new Collection();
                     $webTokenArray = new Collection();
-                    $user->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
-                        if($user_token_detail->device_token){
-                            if($user_token_detail->device_type == 'web'){
-                                $webTokenArray->push($user_token_detail->device_token);
-                            }else{
-                                $tokenArray->push($user_token_detail->device_token);
-                            }
+
+                    $isDisabled = false;
+                    $whereCondition = NULL;
+                    if($user->details && (($user->details->type == 1 && ($type == self::AUDITION_CREATED || $type == self::NEW_ONLINE_MEDIA)))){
+                        $whereCondition = 'AUDITIONS';
+                        if(UserSettings::where('user_id',$user->id)->where('setting', $whereCondition)->where('value', 0)->get()->count() > 0){
+                            $isDisabled = true;
                         }
-                    });
-                    $tokens = $tokenArray->unique()->values()->toArray();
-                    $webTokens = $webTokenArray->unique()->values()->toArray();
-                   
-                    $notification = array();
-                    $notification['title'] = $title;
-                    $notification['body'] = $message;
-                    $notification['icon'] = self::ICON;
-                    $notification['click_action'] = '';
-
-                    $fcm = fcm();
-
-                    $fcm->to($tokens);
-                    if($type == self::INSTANT_FEEDBACK){
-                        $fcm->data([
-                            'type' => $type,
-                            'appointment_id' => $appointment_id,
-                            'performer_id' => $user->id
-                        ]);
+                    } elseif ($user->details && (($user->details->type == 1 && ($type == self::AUTIDION_ADD_IN_UPDATE_CONTRIBUIDOR || $type == self::CASTER_AUDITION_INVITE)))) {
+                        $whereCondition = 'CONTRIBUTORS';
+                        if(UserSettings::where('user_id',$user->id)->where('setting', $whereCondition)->where('value', 0)->get()->count() > 0){
+                            $isDisabled = true;
+                        }
                     }
-                    $fcm->notification($notification);
-                    $fcm->send();
 
-                    //send to web with click action
-                    if(count($webTokens) != 0){
-                        $notification['click_action'] = $clickToSend;
+                    if($isDisabled == false){
+                        $user->pushkey->each(function ($user_token_detail) use ($tokenArray, $webTokenArray) {
+                            if($user_token_detail->device_token){
+                                if($user_token_detail->device_type == 'web'){
+                                    $webTokenArray->push($user_token_detail->device_token);
+                                }else{
+                                    $tokenArray->push($user_token_detail->device_token);
+                                }
+                            }
+                        });
+                        $tokens = $tokenArray->unique()->values()->toArray();
+                        $webTokens = $webTokenArray->unique()->values()->toArray();
+                       
+                        $notification = array();
+                        $notification['title'] = $title;
+                        $notification['body'] = $message;
+                        $notification['icon'] = self::ICON;
+                        $notification['click_action'] = '';
 
-                        $fcm->to($webTokens);
+                        $fcm = fcm();
+
+                        $fcm->to($tokens);
+                        if($type == self::INSTANT_FEEDBACK){
+                            $fcm->data([
+                                'type' => $type,
+                                'appointment_id' => $appointment_id,
+                                'performer_id' => $user->id
+                            ]);
+                        }
                         $fcm->notification($notification);
                         $fcm->send();
+
+                        //send to web with click action
+                        if(count($webTokens) != 0){
+                            $notification['click_action'] = $clickToSend;
+
+                            $fcm->to($webTokens);
+                            $fcm->notification($notification);
+                            $fcm->send();
+                        }
                     }
                 }
             }
