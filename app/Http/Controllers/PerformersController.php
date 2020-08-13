@@ -315,14 +315,14 @@ class PerformersController extends Controller
     {
         try {
             $dataFilter = null;
-            if ($union == 0) {
+            if ($union == 1) {
                 $dataFilter = $userDetails->reject(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
                     return $count === 0;
                 });
             }
-            if ($union == 1) {
+            if ($union == 2) {
                 $dataFilter = $userDetails->filter(function ($element) {
                     $repoUnion = new UserUnionMemberRepository(new UserUnionMembers());
                     $count = $repoUnion->findbyparam('user_id', $element->user_id)->count();
@@ -330,7 +330,7 @@ class PerformersController extends Controller
                 });
             }
 
-            if ($union == 2) {
+            if ($union == 0) {
                 $dataFilter = $userDetails;
             }
 
