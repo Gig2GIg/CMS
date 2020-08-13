@@ -330,7 +330,7 @@ class PerformersController extends Controller
                 });
             }
 
-            if ($union == 0) {
+            if ($union == 2) {
                 $dataFilter = $userDetails;
             }
 
