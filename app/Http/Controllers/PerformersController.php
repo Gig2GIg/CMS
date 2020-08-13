@@ -241,9 +241,16 @@ class PerformersController extends Controller
 
             $repoPerformer = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->pluck('performer_id')->toArray();
 
-            $base = $this->filterBase($request->base, $repoPerformer);
-            $dataResponse = $base;
+            $repoUserDetails = new UserDetailsRepository(new UserDetails());
+            $collectionFind = $repoUserDetails->all()->whereIn('user_id', $repoPerformer);
 
+            if($request->base != '' && $request->base != null){
+                $base = $this->filterBase($request->base, $collectionFind);
+                $dataResponse = $base;
+            } else {
+                $dataResponse = $collectionFind;
+            }
+            
             if (isset($request->union)) {
                 $dataResponse = $this->filterUnion($request->union, $dataResponse);
             }
@@ -255,6 +262,7 @@ class PerformersController extends Controller
             $request->request->add(['allIdsToInclude' => $allIdsToInclude]);
 
             $finalResponse = PerformerFilterResource::collection($dataResponse);
+            // dd($finalResponse);
             
             return response()->json(['data' => $finalResponse], 200);
         } catch (\Exception $exception) {
@@ -265,19 +273,19 @@ class PerformersController extends Controller
     }
 
 
-    public function filterBase($value, array $data)
+    public function filterBase($value, $data)
     {
         try {
             $collection = collect();
+            
             $name = explode(' ', $value);
-            $repoUserDetails = new UserDetailsRepository(new UserDetails());
-            $collectionFind = $repoUserDetails->all()->whereIn('user_id', $data);
-
+            $collectionFind = $data;
+            
             if (count($name) == 1) {
                 $nameColl = $collectionFind->reject(function ($item) use ($name) {
                     return mb_strripos($item->first_name, $name[0]) === false;
                 });
-
+                
                 $nameColl->each(function ($element) use ($collection) {
                     $collection->push($element);
                 });

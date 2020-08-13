@@ -47,6 +47,9 @@ class AuditionFullResponse extends JsonResource
         $dataProduction = explode(',',$this->production);
         
         $appointment = $this->appointment()->where('status', 1)->first();
+        if(!$appointment){
+            $appointment = $this->appointment()->latest()->first();
+        }
 
         $slotsData = new SlotsRepository(new Slots());
         $slots = $slotsData->findbyparam('appointment_id',$appointment["id"])->get();
