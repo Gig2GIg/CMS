@@ -118,9 +118,9 @@ class AuditionManagementController extends Controller
             $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
             $dataAuditionsUser = $dataRepoAuditionUser->find($request->id);
 
-            if($dataAuditionsUser->has_manager == 0){
-                return response()->json(['error' => trans('messages.to_upcomming_not_allowed')], 406);
-            }
+            // if($dataAuditionsUser->has_manager == 0){
+            //     return response()->json(['error' => trans('messages.to_upcomming_not_allowed')], 406);
+            // }
             
             $dataRepo = new UserSlotsRepository(new UserSlots());
             $dataRepo->create([
