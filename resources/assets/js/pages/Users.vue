@@ -599,6 +599,10 @@ export default {
         } else if(requestParam.image && requestParam.image.url) {
           requestParam.image = requestParam.image.url;
         }
+        if(requestParam.details.gender != 'self describe') {
+          requestParam.details.gender_desc = null;
+        }
+
         if(requestParam.details.birth){
           requestParam.details.birth = Vue.moment(requestParam.details.birth).format("YYYY-MM-DD");
         }

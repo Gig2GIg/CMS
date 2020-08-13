@@ -44,6 +44,7 @@ export default {
         "stage_name":user.details.stage_name ? user.details.stage_name : null,
         "url":user.details.url ? user.details.url : null,        
         "gender":user.details.gender ? user.details.gender : null,
+        "gender_desc":user.details.gender_desc ? user.details.gender_desc : null,
         "address":user.details.address,
         "city":user.details.city,
         "state":user.details.state,
