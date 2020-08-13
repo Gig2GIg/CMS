@@ -36,7 +36,7 @@ class AuditionAnalyticsResponse extends JsonResource
             $userAuditionRepo = new UserAuditionsRepository(new UserAuditions());
             $userAuditions = $userAuditionRepo->all()->where('appointment_id', $item->id);
 
-            $gender = new Collection(["male" => 0, "female" => 0, "other" => 0]);
+            $gender = new Collection(["male" => 0, "female" => 0, "agender" => 0, "gender diverse" => 0, "gender expansive" => 0, "gender fluid" => 0, "genderqueer" => 0, "intersex" => 0, "non-binary" => 0, "transfemale/transfeminine" => 0, "transmale/transmasculine" => 0, "two-spirit" => 0, 'Prefer not to answer' => 0, 'self describe' => 0]);
 
             $userAuditions->each(function ($uD) use ($gender) {
                 $userDetails = new UserDetailsRepository(new UserDetails());
@@ -46,8 +46,30 @@ class AuditionAnalyticsResponse extends JsonResource
                     $gender["male"] += 1;
                 } else if($dataUserDetails && $dataUserDetails->gender == "female") {
                     $gender["female"] += 1;
-                } else {
-                    $gender["other"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "agender") {
+                    $gender["agender"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "gender diverse") {
+                    $gender["gender diverse"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "gender expansive") {
+                    $gender["gender expansive"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "gender fluid") {
+                    $gender["gender fluid"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "genderqueer") {
+                    $gender["genderqueer"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "intersex") {
+                    $gender["intersex"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "non-binary") {
+                    $gender["non-binary"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "transfemale/transfeminine") {
+                    $gender["transfemale/transfeminine"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "transmale/transmasculine") {
+                    $gender["transmale/transmasculine"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "two-spirit") {
+                    $gender["two-spirit"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "self describe") {
+                    $gender["self describe"] += 1;
+                }  else if($dataUserDetails && $dataUserDetails->gender == "Prefer not to answer") {
+                    $gender["Prefer not to answer"] += 1;
                 }
             });
 

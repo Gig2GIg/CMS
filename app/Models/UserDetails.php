@@ -14,6 +14,7 @@ class UserDetails extends Model
         'city',
         'birth',
         'gender',
+        'gender_desc',
 //        'location',
         'state',
         'user_id',
