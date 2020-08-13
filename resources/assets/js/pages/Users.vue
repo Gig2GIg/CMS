@@ -145,6 +145,10 @@
                             <strong>Gender:</strong>
                             <span v-html=" props.row.details.gender"></span>
                           </p>
+                          <p v-if="props.row.details && props.row.details.gender == 'self describe'">
+                            <strong>Self Describe:</strong>
+                            <span v-html=" props.row.details.gender_desc"></span>
+                          </p>
                       </template>
                       
                                       
@@ -370,6 +374,21 @@
                 </b-select>
               </b-field>
 
+              <b-field           
+                  v-if="selectedUser.details.gender == 'self describe'"   
+                  label="Self Describe"
+                  :type="{'is-info': errors.has('gender_desc')}"
+                  :message="errors.first('gender_desc')"
+              >
+                <b-input
+                  v-model="selectedUser.details.gender_desc"
+                  v-validate="'required|max:255'"
+                  name="gender_desc"
+                  data-vv-as="self describe"
+                  autofocus
+                />
+              </b-field>
+
             </template>
 
             <b-field
@@ -475,16 +494,22 @@ export default {
     selectedUser: {},
     user_type : DEFINE.user_type,
     states,
-    genderList: [{
-        id: 'male',
-        value: 'Male',
-      }, {
-        id: 'female',
-        value: 'Female',
-      }, {
-        id: 'other',
-        value: 'Other',
-      }],
+    genderList: [
+      { value : 'Agender', id: 'agender' },
+      { value : 'Female', id: 'female' },
+      { value : 'Gender diverse', id: 'gender diverse' },
+      { value : 'Gender expansive', id: 'gender expansive' },
+      { value : 'Gender fluid', id: 'gender fluid' },
+      { value : 'Genderqueer', id: 'genderqueer' },
+      { value : 'Intersex', id: 'intersex' },
+      { value : 'Male', id: 'male' },
+      { value : 'Non-binary', id: 'non-binary' },
+      { value : 'Transfemale/transfeminine', id: 'transfemale/transfeminine' },
+      { value : 'Transmale/transmasculine', id: 'transmale/transmasculine' },
+      { value : 'Two-spirit', id: 'two-spirit' },
+      { value : 'Self describe', id: 'self describe' },
+      { value : 'Prefer not to answer', id: 'Prefer not to answer' },
+    ],
     showWeekNumber : false,
     profile_file : null,
     data: [],
