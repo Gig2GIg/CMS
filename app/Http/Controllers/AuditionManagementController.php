@@ -33,6 +33,7 @@ use App\Http\Resources\AuditionListByPerformer;
 use App\Http\Resources\NoficationsResource;
 
 use App\Http\Requests\UpcommingRequest;
+use App\Http\Requests\SaveUserAuditionRequest;
 
 use App\Models\Appointments;
 use App\Models\AuditionContract;
@@ -69,7 +70,7 @@ class AuditionManagementController extends Controller
         $this->log = new LogManger();
     }
 
-    public function saveUserAudition(Request $request)
+    public function saveUserAudition(SaveUserAuditionRequest $request)
     {
         if (!$request->online) {
             return $this->registerNotOnline($request);
@@ -1126,7 +1127,7 @@ class AuditionManagementController extends Controller
                 $message = 'Not Saved';
             }
 
-            return response()->json(['error' => $message], $code);
+            return response()->json(['error' => trans('messages.something_went_wrong')], $code);
         }
     }
 
@@ -1182,7 +1183,7 @@ class AuditionManagementController extends Controller
             $this->log->error($exception->getMessage());
             $message = $exception->getMessage();
             $code = 406;
-            return response()->json(['error' => $message], $code);
+            return response()->json(['error' => trans('messages.something_went_wrong')], $code);
         }
     }
 
