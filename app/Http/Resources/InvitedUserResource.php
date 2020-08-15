@@ -21,6 +21,7 @@ class InvitedUserResource extends JsonResource
             'image' => $this->image,
             'is_active' => $this->is_active,
             'is_premium' => $this->is_premium,
+            'is_profile_completed' => $this->is_profile_completed,
             'is_invited' => $this->invited_by ? true : false,
         ];
     }
