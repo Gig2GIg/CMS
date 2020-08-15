@@ -32,6 +32,7 @@ use App\Models\AuditionContributors;
 use App\Models\Auditions;
 use App\Models\Dates;
 use App\Models\Feedbacks;
+use App\Models\InstantFeedback;
 use App\Models\Notifications\Notification;
 use App\Models\Notifications\NotificationHistory;
 use App\Models\Resources;
@@ -40,6 +41,7 @@ use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\AuditionLog;
+use App\Models\UserAuditionMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
@@ -847,7 +849,17 @@ class AuditionsController extends Controller
 
     public function destroy($audition)
     {
-        Auditions::find($audition)->delete();
+        $auditionData = Auditions::find($audition);
+        AuditionLog::where('audition_id', $audition)->delete();
+        UserAuditionMedia::where('auditions_id', $audition)->delete();
+        $auditionData->resources()->delete();
+        
+        $appointmentIds = Appointments::where('auditions_id', $audition)->get()->pluck('id')->toArray();
+        if(count($appointmentIds) > 0){
+            InstantFeedback::where('appointment_id', $appointmentIds)->delete();
+        }
+        $auditionData->delete();
+
         return response()->json(['status' => trans('messages.success')]);
         // return response()->json(['status' => 'Success',]);
     }
