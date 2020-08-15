@@ -149,6 +149,7 @@ return [
     'add_to_talent_message' => "Add this performer to Talent Database for sharing profile",
  
     'caster_notification_success' => "Notifications sent successfully",
+    'resend_email_success' => "Invitation email sent successfully",
     // Market Place Categories Controller
     // Managers Controller
     // NotificationManagementController

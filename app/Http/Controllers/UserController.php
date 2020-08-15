@@ -339,6 +339,8 @@ class UserController extends Controller
                 $data['password'] = Hash::make($request->password);
             }
             $data['is_profile_completed'] = 1;
+            $data['temp_pass'] = NULL;
+
             $dataUser->update($data);
             $userDataDetails = [
                 'first_name' => $request->first_name,
@@ -403,6 +405,8 @@ class UserController extends Controller
                 $data['password'] = Hash::make($request->password);
             }
             $data['is_profile_completed'] = 1;
+            $data['temp_pass'] = NULL;
+
             $dataUser->update($data);
             $name = explode(' ', $request->name);
 
@@ -1018,7 +1022,9 @@ class UserController extends Controller
                         $userData = [
                             'email' => $item['email'],
                             'password' => bcrypt($password),
+                            'temp_pass' => $password,
                             'invited_by' => $user->id,
+                            'is_profile_completed' => 0,
                             'is_premium' => 1
                         ];
 
@@ -1077,6 +1083,42 @@ class UserController extends Controller
                 return response()->json(['message' => self::NOT_FOUND_DATA], 404);
             } else {
                 return response()->json(['message' => trans('not_processable')], 406);
+            }
+        }
+    }
+
+    public function resendInvitation(Request $request)
+    {
+        try {
+            $userRepo = new User();
+            $user = $userRepo->findOrFail($request->user_id);
+
+            if($user->is_profile_completed == 0 && $user->temp_pass != NULL && $user->invited_by != NULL){
+                $mail = new SendMail(); 
+                $emailData = array();
+                $adminUser = $userRepo->findOrFail($user->invited_by);
+
+                $emailData['name'] = $adminUser->details ? $adminUser->details->first_name . ' ' . $adminUser->details->last_name : 'A Gig2Gig Caster User'; 
+
+                if(!$mail->sendInvitedCaster($user->temp_pass, $user->email, $emailData)){
+                    $responseData = ['message' => 'Something went wrong with sending email'];
+                    $code = 400;
+                } else {
+                    $responseData = ['message' => trans('messages.resend_email_success')];
+                    $code = 200;
+                }
+            } else {
+                $responseData = ['message' => trans('messages.not_processable')];
+                $code = 400;
+            }
+            
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => trans('something_went_wrong')], 400);
             }
         }
     }

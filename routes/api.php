@@ -115,6 +115,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->get('/users/cancelSubscription', ['uses' => 'UserController@cancelSubscriptionManually']);
     $router->get('/users/resumeSubscription', ['uses' => 'UserController@resumeCanceledSubscription']);
     $router->post('/users/inviteCaster', ['uses' => 'UserController@inviteCaster']);
+    $router->get('/users/resendInvitation/{user_id}', ['uses' => 'UserController@resendInvitation']);
 
     Route::get('/performers/tags', ['uses' => 'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);
@@ -488,7 +489,6 @@ $router->group(['middleware' => ['auth:admin']], function () use ($router) {
         // AUDITIONS
         Route::get('/auditions/show/{id}', ['uses' => 'AuditionsController@get']);
         Route::get('/auditions', ['uses' => 'AuditionsController@getFullData']);
-        Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
         Route::delete('/auditions/{auditions}', 'AuditionsController@destroy');
         Route::delete('/contributors/{id}', 'AuditionsController@deleteContributor');
         Route::delete('/slots/{id}', 'AppoinmentAuditionsController@deleteUserSlot');
