@@ -41,6 +41,7 @@ use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserAuditions;
 use App\Models\AuditionLog;
+use App\Models\Recommendations;
 use App\Models\UserAuditionMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -852,6 +853,7 @@ class AuditionsController extends Controller
         $auditionData = Auditions::find($audition);
         AuditionLog::where('audition_id', $audition)->delete();
         UserAuditionMedia::where('auditions_id', $audition)->delete();
+        Recommendations::where('audition_id', $audition)->delete();
         $auditionData->resources()->delete();
         
         $appointmentIds = Appointments::where('auditions_id', $audition)->get()->pluck('id')->toArray();
