@@ -974,7 +974,7 @@ class UserController extends Controller
                         $subscriptionData->allowed_performers = 0;
                     }
                 } else {
-                    $subscriptionData = new stdClass();
+                    $subscriptionData = (object) array();
                 }
                 
                 $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
