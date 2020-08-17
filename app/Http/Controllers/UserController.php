@@ -1093,7 +1093,18 @@ class UserController extends Controller
             $userRepo = new User();
             $user = $userRepo->findOrFail($request->user_id);
 
-            if($user->is_profile_completed == 0 && $user->temp_pass != NULL && $user->invited_by != NULL){
+            if($user->temp_pass == NULL && $user->is_profile_completed == 0 && $user->invited_by != NULL){
+                //generating new password
+                $password = str_random(8);
+                $userData = [
+                    'password' => bcrypt($password),
+                    'temp_pass' => $password
+                ];
+
+                $user->update($userData);
+            }
+
+            if($user->is_profile_completed == 0 && $user->invited_by != NULL){
                 $mail = new SendMail(); 
                 $emailData = array();
                 $adminUser = $userRepo->findOrFail($user->invited_by);
