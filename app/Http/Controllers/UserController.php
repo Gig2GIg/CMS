@@ -946,46 +946,45 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            if($user->is_premium == 1 && $user->stripe_id != null && $user->invited_by == null)
+            if($user->is_premium == 1 && $user->invited_by == null)
             {
                 $subscriptionData = $user->subscriptions()->first();
-                $subscriptionData->card_brand = $user->card_brand;
-                $subscriptionData->card_last_four = $user->card_last_four;
-                if($subscriptionData->stripe_status == 'past_due'){
-                    $subscriptionData->attempt_url = route('cashier.payment', [$subscriptionData->latestPayment()->id, 'redirect' => env('CASTER_BASE_URL')]);
-                }
-                if($user->details->type == 1){
-                    $repo = new Performers();
-                    $total_performers = $repo->where('director_id', $user->id)->get()->count();
-                    
-                    $planRepo = new PLan();
-                    $allowed_performers = $planRepo->find($subscriptionData->plan_id);
-                    if($allowed_performers){
-                        $allowedCount = $allowed_performers->allowed_performers;
-                    }else{
-                        $allowedCount = 0;
+                if($subscriptionData){
+                    $subscriptionData->card_brand = $user->card_brand;
+                    $subscriptionData->card_last_four = $user->card_last_four;
+                    if($subscriptionData->stripe_status == 'past_due'){
+                        $subscriptionData->attempt_url = route('cashier.payment', [$subscriptionData->latestPayment()->id, 'redirect' => env('CASTER_BASE_URL')]);
                     }
-                    $subscriptionData->total_performers = $total_performers;
-                    $subscriptionData->allowed_performers = $allowedCount;
-                }else{
-                    $subscriptionData->total_performers = 0;
-                    $subscriptionData->allowed_performers = 0;
-                }
 
+                    if($user->details->type == 1){
+                        $repo = new Performers();
+                        $total_performers = $repo->where('director_id', $user->id)->get()->count();
+                        
+                        $planRepo = new PLan();
+                        $allowed_performers = $planRepo->find($subscriptionData->plan_id);
+                        if($allowed_performers){
+                            $allowedCount = $allowed_performers->allowed_performers;
+                        }else{
+                            $allowedCount = 0;
+                        }
+                        $subscriptionData->total_performers = $total_performers;
+                        $subscriptionData->allowed_performers = $allowedCount;
+                    }else{
+                        $subscriptionData->total_performers = 0;
+                        $subscriptionData->allowed_performers = 0;
+                    }
+                } else {
+                    $subscriptionData = new stdClass();
+                }
+                
                 $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
                 
-                if ($subscriptionData)
-                {
-                    $response = (object)[
-                        'subscription' => $subscriptionData,
-                        'invitedUsers' => $invitedUsers
-                    ];
-                    $responseData = ['data' => $response];
-                    $code = 200;
-                }else {
-                    $responseData = ['message' => self::NOT_FOUND_DATA];
-                    $code = 404;
-                }
+                $response = (object)[
+                    'subscription' => $subscriptionData,
+                    'invitedUsers' => $invitedUsers
+                ];
+                $responseData = ['data' => $response];
+                $code = 200;
             }else {
                 $responseData = ['message' => self::NOT_FOUND_DATA];
                 $code = 404;
