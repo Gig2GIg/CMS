@@ -1007,7 +1007,7 @@ class UserController extends Controller
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($request->user_id);
 
-            if($user->is_premium == 1 && $user->stripe_id != null && $user->invited_by == null)
+            if($user->is_premium == 1 && $user->invited_by == null)
             {
                 $data = collect($request->data);
                 foreach ($data as $item) {
