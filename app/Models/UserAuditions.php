@@ -13,4 +13,12 @@ class UserAuditions extends Model
     public function appointments(){
         return $this->belongsTo(Appointments::class, 'appointment_id');
     }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function slot(){
+        return $this->belongsTo(Slots::class, 'slot_id');
+    }
 }

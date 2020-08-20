@@ -32,14 +32,18 @@ class Appointments extends Model
     }
 
     public function auditions(){
-        return$this->belongsTo(Auditions::class);
+        return $this->belongsTo(Auditions::class);
     }
 
     public function userSlots(){
-        return$this->belongsTo(UserSlots::class, 'id', 'appointment_id');
+        return $this->belongsTo(UserSlots::class, 'id', 'appointment_id');
     }
 
     public function allUserSlots(){
-        return$this->hasMany(UserSlots::class, 'appointment_id');
+        return $this->hasMany(UserSlots::class, 'appointment_id');
+    }
+
+    public function userAuditions(){
+        return $this->hasMany(UserAuditions::class, 'appointment_id');
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Resources\AppointmentDetailsUserResource;
 use App\Http\Resources\AppointmentSlotsResourceWithUsers;
 use App\Http\Resources\AppointmentResource;
 use App\Http\Resources\AppointmentSlotsResource;
+use App\Http\Resources\AppointmentManualCheckInResource;
 use App\Models\Appointments;
 use App\Models\Auditions;
 use App\Models\Slots;
@@ -188,12 +189,23 @@ class AppoinmentAuditionsController extends Controller
                 'status' => '1',
             ]);
 
-            $dataRepoAuditionUser = new UserAuditionsRepository(new UserAuditions());
-            $userAudition = $dataRepoAuditionUser->findbyparams(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'type' => '1', 'user_id' => $iduser])->first();
+            $dataRepoAuditionUser = new UserAuditions();
+            $userAudition = $dataRepoAuditionUser->where(['appointment_id' => $request->appointment_id, 'rol_id' => $request->rol, 'user_id' => $iduser])
+            ->where(function ($q) {
+                $q->where('type', 1)
+                    ->orWhere('type', 2);
+            })
+            ->first();
 
-            if($userAudition->slot_id == NULL){ 
+            if($userAudition && $userAudition->slot_id == NULL){ 
                 $updateAudi = $userAudition->update([
                     'slot_id' => $request->slot
+                ]);    
+            }
+
+            if($userAudition && $userAudition->type == 2){ 
+                $updateAudi = $userAudition->update([
+                    'type' => 1
                 ]);    
             }
             
@@ -390,6 +402,43 @@ class AppoinmentAuditionsController extends Controller
             $data = $dataRepo->findbyparams(['auditions_id' => $request->id, 'round' => 1])->first();
             if($data){
                 $dataResponse = new AppointmentSlotsResourceWithUsers($data);
+            }else{
+                $dataResponse = [];
+            }
+            return response()->json(['data' => $dataResponse], 200);
+        } catch (\Exception $exception) {
+            $this->log->error($exception->getMessage());
+            return response()->json(['data' => trans('messages.data_not_found')], 404);
+        }
+    }
+
+    public function getAllperforemrsWithSorting(Request $request)
+    {
+        try {
+            $dataRepo = new AppointmentRepository(new Appointments());
+            $data = $dataRepo->find($request->appointment_id);
+
+            if($data){
+                $performers = $data->userAuditions()
+                    ->with(['user.details', 'user.image', 'slot'])
+                    ->with(['user' => function($query) use($request){
+                        $query->with(['userSlot' => function($q) use($request){
+                            $q->where('appointment_id', $request->appointment_id);
+                        }]);
+                    }])
+                    ->get()->sortByDesc(function ($e) {
+                        return $e->user->userSlot;
+                    })->values();
+                
+                $dataResponse = Collect(AppointmentManualCheckInResource::collection($performers));
+
+                if ($request->has('orderByName') && $request->orderByName != null) {
+                    if(strtoupper($request->orderByName) == 'ASC') {
+                        $dataResponse = $dataResponse->sortBy('name')->values();
+                    }else{
+                        $dataResponse = $dataResponse->sortByDesc('name')->values();
+                    }
+                }
             }else{
                 $dataResponse = [];
             }

@@ -167,6 +167,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->get('/auditions/{id}/individualPerformers', ['uses' => 'AuditionManagementController@getPerformersWithoutManager']);
 
     $router->post('/auditions/notifyPerformers', ['uses' => 'AppoinmentAuditionsController@notifyPerformers']);
+    $router->get('/auditions/getAllperforemrsWithSorting/{appointment_id}', ['uses' => 'AppoinmentAuditionsController@getAllperforemrsWithSorting']);
 
     /// Telent Database Get Auditions by performer and video list
     $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);

@@ -150,4 +150,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Performers::class, 'performer_id');
     }
+
+    public function userSlot()
+    {
+        return $this->hasMany(UserSlots::class, 'user_id');
+    }
 }
