@@ -39,7 +39,7 @@ class AppointmentManualCheckInResource extends JsonResource
             'status' => $status,
             'appointment_time' => $this->slot ? $this->slot->time : 'N/A',
             'is_checked_in' => $this->user->userSlot && count($this->user->userSlot) > 0 && $this->user->userSlot[0]->status == 'checked' ? true : false,
-            'slot' => $this->slot->id,
+            'slot' => $this->slot ? $this->slot->id : NULL,
             'user' => $this->user->id,
             'auditions' => $audition->auditions_id,
             'rol' => $this['rol_id'],
