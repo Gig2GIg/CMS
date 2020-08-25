@@ -23,9 +23,9 @@ class AppointmentManualCheckInResource extends JsonResource
     public function toArray($request)
     {
         $status = '';
-        if($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this->user->userSlot[0]->slot_id != NULL)){
+        if($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this['slots_id'] != NULL)){
             $status = 'Has Appointment';
-        } elseif($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this->user->userSlot[0]->slot_id == NULL)) {
+        } elseif($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this['slots_id'] == NULL)) {
             $status = 'Saved Audition';
         } else {
             $status = 'Requested Audition';
