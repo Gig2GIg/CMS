@@ -120,6 +120,7 @@ class AppoinmentAuditionsController extends Controller
             $dataCompareExistsRegister = $dataSlotUser->where('user_id', $iduser)
                 ->where('roles_id', '=', $request->rol)
                 // ->where('slots_id', '=', $request->slot)
+                ->where('appointment_id', $request->appointment_id)
                 ->where('status', '=', 'checked');
             if ($dataCompareExistsRegister->count() > 0) {
                 if($request->has('nonRevert') && !$request->nonRevert){
