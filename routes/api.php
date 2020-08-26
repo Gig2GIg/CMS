@@ -126,6 +126,9 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->get('/group/status/{appointment_id}', ['uses' => 'AuditionManagementController@checkGroupStatus']);
     $router->get('/group/close/{appointment_id}', ['uses' => 'AuditionManagementController@closeGroup']);
 
+    //media manager
+    $router->get('media/user/list/{type}', ['uses' => 'MediaManagerController@getByType']);
+
     // ======================================================
     //final cast
     $router->post('finalcast', ['uses' => 'FinalCastController@add']);

@@ -106,7 +106,12 @@ class MediaManagerController extends Controller
     {
         try {
             $media = new Resources();
-            $data = $media->where('resource_id','=',$this->getUserLogging())
+            if($request->has('performer_id') && $request->performer_id != "" && $request->performer_id != NULL){
+                $userId = $request->performer_id;
+            }else{
+                $userId = $this->getUserLogging();
+            }
+            $data = $media->where('resource_id','=',$userId)
                 ->where('resource_type','=','App\Models\User')
                 ->where('type','=',$request->type)
                 ->get();
