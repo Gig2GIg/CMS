@@ -128,6 +128,7 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
 
     //media manager
     $router->get('media/user/list/{type}', ['uses' => 'MediaManagerController@getByType']);
+    $router->get('media/auditon/list', ['uses' => 'MediaManagerController@getbyuser']);
 
     // ======================================================
     //final cast

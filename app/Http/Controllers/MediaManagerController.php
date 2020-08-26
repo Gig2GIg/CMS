@@ -165,7 +165,12 @@ class MediaManagerController extends Controller
     {
         try {
             $userauditions = new UserAuditionMedia();
-            $dataUserAudi = $userauditions->where('user_id','=',$this->getUserLogging())->get();
+            if($request->has('performer_id') && $request->performer_id != "" && $request->performer_id != NULL){
+                $userId = $request->performer_id;
+            }else{
+                $userId = $this->getUserLogging();
+            }
+            $dataUserAudi = $userauditions->where('user_id','=',$userId)->get();
             $dataUserAudi->each(function ($element){
                 $auditions = new AuditionRepository(new Auditions());
                 $dataAuditions = $auditions->find($element->auditions_id);
