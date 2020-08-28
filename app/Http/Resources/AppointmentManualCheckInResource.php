@@ -25,7 +25,7 @@ class AppointmentManualCheckInResource extends JsonResource
         $status = '';
         if($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this['slot_id'] != NULL)){
             $status = 'Has Appointment';
-        } elseif($this['type'] == 1 && (count($this->user->userSlot) > 0 && $this['slot_id'] == NULL)) {
+        } elseif($this['type'] == 1 && $this['slot_id'] == NULL) {
             $status = 'Saved Audition';
         } else {
             $status = 'Requested Audition';
