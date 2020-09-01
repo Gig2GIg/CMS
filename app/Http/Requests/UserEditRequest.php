@@ -33,7 +33,7 @@ class UserEditRequest extends ApiRequest
 //            'location'=>'required',
 //            'stage_name'=>'required',
             //'country'=>'required|integer',
-            'profesion'=>'required',
+            // 'profesion'=>'required',
             //'zip'=>'required'
         ];
     }

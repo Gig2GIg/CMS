@@ -223,7 +223,7 @@
             >
               <b-input
                 v-model="selectedUser.details.first_name"
-                v-validate="'required|max:255'"
+                v-validate="'required|max:50'"
                 name="first_name"
                 data-vv-as="first name"
                 autofocus
@@ -237,7 +237,7 @@
             >
               <b-input
                 v-model="selectedUser.details.last_name"
-                v-validate="'required|max:255'"
+                v-validate="'required|max:50'"
                 name="last_name"
                 data-vv-as="last name"
                 autofocus
@@ -266,7 +266,6 @@
               <b-datepicker
                 :show-week-number="showWeekNumber"
                 v-model="selectedUser.details.birth"
-                v-validate="'required'"
                 name="birth"
                 autofocus
                 placeholder="Click to select..."
@@ -285,7 +284,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.profesion"
-                  v-validate="'required|max:255'"
+                  v-validate="'max:255'"
                   name="profesion"
                   data-vv-as="job title"
                   autofocus
@@ -299,7 +298,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.agency_name"
-                  v-validate="'required|max:255'"
+                  v-validate="'max:255'"
                   name="agency_name"
                   data-vv-as="agency name"
                   autofocus
@@ -318,7 +317,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.stage_name"
-                  v-validate="'required|max:255'"
+                  v-validate="'max:255'"
                   name="stage_name"
                   data-vv-as="stage name"
                   autofocus
@@ -332,7 +331,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.profesion"
-                  v-validate="'required|max:255'"
+                  v-validate="'max:255'"
                   name="profesion"
                   data-vv-as="working title"
                   autofocus
@@ -346,7 +345,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.url"
-                  v-validate="'required|url'"
+                  v-validate="'url'"
                   name="url"
                   data-vv-as="personal website"
                   autofocus
@@ -361,7 +360,7 @@
                 <b-select
                   name="gender"
                   v-model="selectedUser.details.gender"
-                  v-validate="'required'"
+                  v-validate="''"
                   placeholder="Select a gender"
                 >
                   <option
@@ -382,7 +381,7 @@
               >
                 <b-input
                   v-model="selectedUser.details.gender_desc"
-                  v-validate="'required|max:255'"
+                  v-validate="'max:255'"
                   name="gender_desc"
                   data-vv-as="self describe"
                   autofocus
@@ -398,7 +397,7 @@
             >
               <b-input
                 v-model="selectedUser.details.address"
-                v-validate="'required|max:300'"
+                v-validate="'max:300'"
                 name="address"
                 data-vv-as="address"
                 autofocus
@@ -412,7 +411,7 @@
             >
               <b-input
                 v-model="selectedUser.details.city"
-                v-validate="'required|max:255'"
+                v-validate="'max:255'"
                 name="city"
                 data-vv-as="city"
                 autofocus
@@ -427,7 +426,7 @@
               <b-select
                 name="state"
                 v-model="selectedUser.details.state"
-                v-validate="'required'"
+                v-validate="''"
                 placeholder="Select a state"
               >
                <option
@@ -447,7 +446,7 @@
             >
               <b-input
                 v-model="selectedUser.details.zip"
-                v-validate="'required|integer|max:5'"
+                v-validate="'integer|max:5'"
                 name="zip"
                 data-vv-as="zip code"
                 autofocus

@@ -22,6 +22,7 @@ class auditionLogsExport implements FromCollection, WithHeadings
             'key Name',
             'Old Value',
             'New Value',
+            'Editor Email',
             'Edited By User',
             'Time Of Edit'
         ];

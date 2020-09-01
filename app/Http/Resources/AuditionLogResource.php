@@ -23,14 +23,17 @@ class AuditionLogResource extends JsonResource
         $userData = $userRepo->find($this->edited_by);
         if($userData->details){
             $name = $userData->details->first_name . " " . $userData->details->last_name;
+            $email = $userData->email;
         }else{
             $name = $this->edited_by;
+            $email = 'N/A';
         }
         
         return [
             'key'=>$this->key,
             'old_value' =>$this->old_value,
             'new_value'=>$this->new_value,
+            'editor_email'=>$email,
             'edited_by'=>$name,
             'created_at'=>Carbon::parse($this->created_at)->format('Y-m-d H:i:s')
         ];

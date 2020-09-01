@@ -40,7 +40,7 @@ class UserRequest extends ApiRequest
                 // 'zip' => 'required',
                 // 'agency_name' => 'required',
                 'image' => 'required|url',
-                'profesion' => 'required'
+                // 'profesion' => 'required'
             ];
         }else{
             return [
@@ -57,7 +57,7 @@ class UserRequest extends ApiRequest
                 'union_member' => 'required',
 //                'stage_name' => 'required',
                 'image' => 'required|url',
-                'profesion' => 'required'
+                // 'profesion' => 'required'
             ];
         }
 
