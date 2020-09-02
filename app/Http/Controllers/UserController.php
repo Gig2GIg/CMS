@@ -353,6 +353,7 @@ class UserController extends Controller
                 'gender_desc' => isset($request->gender_desc) && $request->gender_desc != '' ? $request->gender_desc : null,
                 'stage_name' => isset($request->stage_name) && $request->stage_name != '' ? $request->stage_name : null,
                 'profesion' => isset($request->profesion) && $request->profesion != '' ? $request->profesion : null,
+                'agency_name' => isset($request->agency_name) && $request->agency_name != '' ? $request->agency_name : null,
                 'url' => isset($request->url) && $request->url != '' ? $request->url : null,
                 'country' => isset($request->country) ? $request->country : null,
                 //'location' => $request->location,
