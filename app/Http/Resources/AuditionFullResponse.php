@@ -49,10 +49,11 @@ class AuditionFullResponse extends JsonResource
         $dataProduction = explode(',',$this->production);
         
         $appointment = $this->appointment()->where('status', 1)->first();
-        $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
         if(!$appointment){
             $appointment = $this->appointment()->latest()->first();
             $submissionsCount = OnlineMediaAudition::where('appointment_id', $appointment->id)->groupBy('performer_id')->count();
+        }else{
+            $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
         }
 
         $slotsData = new SlotsRepository(new Slots());
