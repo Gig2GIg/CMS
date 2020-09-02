@@ -11,6 +11,7 @@ use App\Models\Appointments;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\UserAuditions;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -107,6 +108,10 @@ class AuditionFullResponse extends JsonResource
         ];
 
         if($this->online == 1){
+            if($appointment){
+                $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
+                $return['submissions'] = $submissionsCount;
+            }
             $return['has_ended'] = ($this->end_date && (Carbon::now('UTC')->format('Y-m-d') > $this->end_date)) || $this->end_date == null ? true : false; 
         }
         return $return;

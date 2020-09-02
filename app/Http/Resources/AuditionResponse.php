@@ -54,8 +54,8 @@ class AuditionResponse extends JsonResource
 
         return [
             'id' => $this->id,
-            'appointment_id'=>$appointment->id,
-            'round'=>$appointment->round,
+            'appointment_id'=>$appointment->id ?? null,
+            'round'=>$appointment->round ?? null,
             'grouping_capacity' => $appointment->grouping_capacity ?? null,
             'grouping_enabled' => $appointment->grouping_enabled ?? null,
             'id_user'=>$this->user_id,
@@ -64,7 +64,7 @@ class AuditionResponse extends JsonResource
             "date" => $appointment->date ?? null,
             'create'=>$this->created_at,
             "time" => $appointment->time ?? null,
-            "location" => json_decode($appointment->location),
+            "location" => $appointment ? json_decode($appointment->location) : null,
             "description" => $this->description,
             "url" => $this->url,
             'personal_information'=>$this->personal_information,
