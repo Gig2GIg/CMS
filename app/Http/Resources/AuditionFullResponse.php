@@ -12,6 +12,7 @@ use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserAuditions;
+use App\Models\OnlineMediaAudition;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -48,8 +49,10 @@ class AuditionFullResponse extends JsonResource
         $dataProduction = explode(',',$this->production);
         
         $appointment = $this->appointment()->where('status', 1)->first();
+        $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
         if(!$appointment){
             $appointment = $this->appointment()->latest()->first();
+            $submissionsCount = OnlineMediaAudition::where('appointment_id', $appointment->id)->groupBy('performer_id')->count();
         }
 
         $slotsData = new SlotsRepository(new Slots());
@@ -109,7 +112,6 @@ class AuditionFullResponse extends JsonResource
 
         if($this->online == 1){
             if($appointment){
-                $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
                 $return['submissions'] = $submissionsCount;
             }
             $return['has_ended'] = ($this->end_date && (Carbon::now('UTC')->format('Y-m-d') > $this->end_date)) || $this->end_date == null ? true : false; 
