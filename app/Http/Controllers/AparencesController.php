@@ -27,14 +27,14 @@ class AparencesController extends Controller
     {
         try {
             $data = [
-                'weight' => $request->weight,
-                'height' => $request->height,
-                'hair' => $request->hair,
-                'eyes' => $request->eyes,
-                'race' => $request->race,
-                'personal_flare' => $request->personal_flare,
+                'weight' => $request->weight ? $request->weight : null,
+                'height' => $request->height ? $request->height : null, 
+                'hair' => $request->hair ? $request->hair : null,
+                'eyes' => $request->eyes ? $request->eyes : null,
+                'race' => $request->race ? $request->race :null,
+                'personal_flare' => $request->personal_flare ? $request->personal_flare : null,
+                'gender_pronouns' => $request->gender_pronouns ? $request->gender_pronouns : null,
                 'user_id' => $this->getUserLogging(),
-                'gender_pronouns' => $request->gender_pronouns
             ];
             $repo = new UserAparenceRepository(new UserAparence());
             $repo->create($data);
@@ -80,13 +80,13 @@ class AparencesController extends Controller
     {
         try {
             $data = [
-                'weight' => $request->weight,
-                'height' => $request->height,
-                'hair' => $request->hair,
-                'eyes' => $request->eyes,
-                'race' => $request->race,
-                'personal_flare' => $request->personal_flare,
-                'gender_pronouns' => $request->gender_pronouns
+                'weight' => $request->weight ? $request->weight : null,
+                'height' => $request->height ? $request->height : null, 
+                'hair' => $request->hair ? $request->hair : null,
+                'eyes' => $request->eyes ? $request->eyes : null,
+                'race' => $request->race ? $request->race :null,
+                'personal_flare' => $request->personal_flare ? $request->personal_flare : null,
+                'gender_pronouns' => $request->gender_pronouns ? $request->gender_pronouns : null
             ];
             $repo = new UserAparenceRepository(new UserAparence());
             $dataManager = $repo->find(request('id'));

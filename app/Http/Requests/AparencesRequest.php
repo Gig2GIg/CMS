@@ -24,12 +24,12 @@ class AparencesRequest extends FormRequest
     public function rules()
     {
         return [
-            'height'=>'required',
-            'weight'=>'required',
-            'hair'=>'required',
-            'eyes'=>'required',
-            'race'=>'required',
-            'gender_pronouns'=>'required'
+            // 'height'=>'required',
+            // 'weight'=>'required',
+            // 'hair'=>'required',
+            // 'eyes'=>'required',
+            // 'race'=>'required',
+            // 'gender_pronouns'=>'required'
         ];
     }
 }
