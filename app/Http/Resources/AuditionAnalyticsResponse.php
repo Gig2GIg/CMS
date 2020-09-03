@@ -37,12 +37,12 @@ class AuditionAnalyticsResponse extends JsonResource
             $userAuditions = $userAuditionRepo->all()->where('appointment_id', $item->id);
 
             $gender = new Collection(["male" => 0, "female" => 0, "agender" => 0, "gender diverse" => 0, "gender expansive" => 0, "gender fluid" => 0, "genderqueer" => 0, "intersex" => 0, "non-binary" => 0, "transfemale/transfeminine" => 0, "transmale/transmasculine" => 0, "two-spirit" => 0, 'Prefer not to answer' => 0, 'self describe' => 0]);
-
-            $userAuditions->each(function ($uD) use ($gender) {
-                $userDetails = new UserDetailsRepository(new UserDetails());
-                $dataUserDetails = $userDetails->findbyparam('user_id', $uD->user_id)->first();
-
-                if($dataUserDetails->ge && $dataUserDetails->gender == "male") {
+            
+            $userAuditions->each(function ($uD) use (&$gender) {
+                $dataUserDetails = new Collection();
+                $dataUserDetails = UserDetails::where('user_id', $uD->user_id)->first();
+                
+                if($dataUserDetails && $dataUserDetails->gender == "male") {
                     $gender["male"] += 1;
                 } else if($dataUserDetails && $dataUserDetails->gender == "female") {
                     $gender["female"] += 1;
@@ -78,8 +78,8 @@ class AuditionAnalyticsResponse extends JsonResource
 
             $i->count += 1;
             $csvArray->push([(string)$i->count, (string)count($userAuditions), implode(":", $gender->toArray()), (string)$repoDatafeedbacks->count()]);
-
         });
+         
         return $csvArray;
     }
 }
