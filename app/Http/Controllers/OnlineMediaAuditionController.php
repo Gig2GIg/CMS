@@ -69,22 +69,50 @@ class OnlineMediaAuditionController extends Controller
                     }   
 
                     try {
-                        $cuser = User::find($audition->user_id);
+                        $cuser = User::find($audition->user_id);         
 
-                        if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
-                            $this->sendStoreNotificationToUser($cuser, $audition);
-                        }
-                        $this->saveStoreNotificationToUser($cuser, $audition);
+                        //it is to fetch logged in user's invited users data if any
+                        $invitedUserIds = User::where('invited_by', $cuser->id)->get()->pluck('id');
 
-                        //send push to admin about new media uploaded
+                        //It is to fetch other user's data conidering if logged in user is an invited user
                         if($cuser->invited_by != NULL){
-                            $auser = User::find($cuser->invited_by);
+                            $allInvitedUsersOfAdminIds = User::where('invited_by', $cuser->invited_by)->get()->pluck('id');
+
+                            //pushing invited_by ID in array too
+                            $allInvitedUsersOfAdminIds->push($cuser->invited_by); 
+
+                            $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
+                        }else{
+                            $allIdsToInclude = $invitedUserIds;
+                        }
+
+                        //pushing own ID into WHERE IN constraint
+                        $allIdsToInclude->push($cuser->id);
+                        
+                        foreach($allIdsToInclude->toArray() as $id){
+                            $auser = User::find($id);
 
                             if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
                                 $this->sendStoreNotificationToUser($auser, $audition);
                             }
                             $this->saveStoreNotificationToUser($auser, $audition);
                         }
+
+                        // if($cuser && $cuser->details && (($cuser->details->type == 2 && $cuser->is_premium == 1) || $cuser->details->type != 2)){
+                        //     $this->sendStoreNotificationToUser($cuser, $audition);
+                        // }
+                        // $this->saveStoreNotificationToUser($cuser, $audition);
+
+
+                        //send push to admin about new media uploaded
+                        // if($cuser->invited_by != NULL){
+                        //     $auser = User::find($cuser->invited_by);
+
+                        //     if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
+                        //         $this->sendStoreNotificationToUser($auser, $audition);
+                        //     }
+                        //     $this->saveStoreNotificationToUser($auser, $audition);
+                        // }
 
                     } catch (NotificationException $exception) {
                         $this->log->error($exception->getMessage());
