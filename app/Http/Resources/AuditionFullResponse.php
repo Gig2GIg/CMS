@@ -51,7 +51,11 @@ class AuditionFullResponse extends JsonResource
         $appointment = $this->appointment()->where('status', 1)->first();
         if(!$appointment){
             $appointment = $this->appointment()->latest()->first();
-            $submissionsCount = OnlineMediaAudition::where('appointment_id', $appointment->id)->groupBy('performer_id')->get()->count();
+            if($appointment){
+                $submissionsCount = OnlineMediaAudition::where('appointment_id', $appointment->id)->groupBy('performer_id')->get()->count();
+            }else{
+                $submissionsCount = 0;
+            }
         }else{
             $submissionsCount = UserAuditions::where('type', 1)->where('appointment_id', $appointment->id)->count();
         }
