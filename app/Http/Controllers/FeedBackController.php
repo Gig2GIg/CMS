@@ -65,7 +65,7 @@ class FeedBackController extends Controller
                 'slot_id' => $request->slot_id && $request->slot_id != null && $request->slot_id != "" ? $request->slot_id : null,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
                 'rating' => isset($request->rating) && is_numeric($request->rating) ? $request->rating : null,
-                'recommendation' => isset($request->recommendation) && is_numeric($request->recommendation) ? $request->recommendation : null
+                'recommendation' => $request->recommendation && $request->recommendation != null && $request->recommendation != "" ? $request->recommendation : null
             ];
 
             $repo = new FeedbackRepository(new Feedbacks());
@@ -158,7 +158,7 @@ class FeedBackController extends Controller
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
                 'rating' => isset($request->rating) && is_numeric($request->rating) ? $request->rating : null,
-                'recommendation' => isset($request->recommendation) && is_numeric($request->recommendation) ? $request->recommendation : null
+                'recommendation' => $request->recommendation && $request->recommendation != null && $request->recommendation != "" ? $request->recommendation : null
             ];
 
             $feedbackRepo = new FeedbackRepository(new Feedbacks());

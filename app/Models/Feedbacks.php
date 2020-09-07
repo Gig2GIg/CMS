@@ -16,7 +16,8 @@ class Feedbacks extends Model
         'work',
         'favorite',
         'slot_id',
-        'comment'
+        'comment',
+        'recommendation'
     ];
 
     public function tags(){
