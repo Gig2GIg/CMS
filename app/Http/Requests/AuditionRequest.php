@@ -31,7 +31,7 @@ class AuditionRequest extends ApiRequest
             //'location'=>'required',
             'description' => 'required',
 //            'url' => 'required',
-            'end_date' => 'required_if:online,true|date_format:Y-m-d',
+            'end_date' => 'required_if:online,true|date_format:Y-m-d H:i:s',
             'cover' => 'required',
             'union',
             'contract',
