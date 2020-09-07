@@ -39,6 +39,7 @@ class FeedbackResource extends JsonResource
             'work'=>$this->work,
             'favorite'=>$this->favorite,
             'comment'=>$this->comment,
+            'recommendation'=>$this->recommendation,
             'round' => $round->round,
             'grouping_capacity' => $round->grouping_capacity ?? null,
             'grouping_enabled' => $round->grouping_enabled ?? null
