@@ -350,10 +350,13 @@ class AppoinmentAuditionsController extends Controller
     {
         try {
             $appoinments = Appointments::where('auditions_id', $request->audition)->get()->pluck('id');
-
-            $data = UserSlots::whereIn('appointment_id', $appoinments->toArray());
-
-            $dataResponse = AppointmentDetailsUserResource::collection($data);
+            if(count($appoinments)){
+                $data = UserSlots::whereIn('appointment_id', $appoinments->toArray())->get();
+                $dataResponse = AppointmentDetailsUserResource::collection($data);
+            }else{
+                $dataResponse = [];
+            }
+            
             return response()->json(['data' => $dataResponse], 200);
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
