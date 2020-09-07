@@ -349,8 +349,9 @@ class AppoinmentAuditionsController extends Controller
     public function showCms(Request $request)
     {
         try {
-            $dataRepo = new UserSlotsRepository(new UserSlots());
-            $data = $dataRepo->findbyparam('auditions_id', $request->audition);
+            $appoinments = Appointments::where('auditions_id', $request->audition)->get()->pluck('id');
+
+            $data = UserSlots::whereIn('appointment_id', $appoinments->toArray());
 
             $dataResponse = AppointmentDetailsUserResource::collection($data);
             return response()->json(['data' => $dataResponse], 200);
