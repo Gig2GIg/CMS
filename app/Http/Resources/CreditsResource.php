@@ -20,9 +20,9 @@ class CreditsResource extends JsonResource
             'rol' =>            $this->rol,
             'name'=>            $this->name,
             'production' =>     $this->production,
-            'year' =>           $this->year,
-            'end_year' =>       $this->end_year,
-            'month' =>          $this->month,
+            'year' =>           $this->year ?? "",
+            'end_year' =>       $this->end_year ?? "",
+            'month' =>          $this->month ?? "",
             'user_id'=>         $this->user_id,
         ];
     }

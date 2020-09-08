@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Credits extends Model
 {
-    protected $fillable =['name','date','year','type','rol','production','month','user_id'];
+    protected $fillable =['name','date','year','end_year','type','rol','production','month','user_id'];
 
     public function user(){
         return $this->belongsTo(User::class);
