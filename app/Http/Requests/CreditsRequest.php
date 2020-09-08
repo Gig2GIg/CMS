@@ -28,8 +28,8 @@ class CreditsRequest extends ApiRequest
             'rol' => 'required',
             'name' => 'required',
             'production' => 'required',
-            'year' => 'required',
-            'month' => 'required',
+            'year' => '',
+            'month' => '',
         ];
     }
 }

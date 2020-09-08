@@ -21,6 +21,7 @@ class CreditsResource extends JsonResource
             'name'=>            $this->name,
             'production' =>     $this->production,
             'year' =>           $this->year,
+            'end_year' =>       $this->end_year,
             'month' =>          $this->month,
             'user_id'=>         $this->user_id,
         ];

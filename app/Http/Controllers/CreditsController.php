@@ -30,8 +30,9 @@ class CreditsController extends Controller
                 'rol' => $request->rol,
                 'name' => $request->name,
                 'production' => $request->production,
-                'year' => $request->year,
-                'month' => $request->month,
+                'year' => $request->year ?? null,
+                'end_year' => $request->end_year ?? null,
+                'month' => $request->month ?? null,
                 'user_id' => Auth::user()->getAuthIdentifier(),
             ];
             $repo = new CreditsRepository(new Credits());
@@ -106,8 +107,9 @@ class CreditsController extends Controller
                 'rol' => $request->rol,
                 'name' => $request->name,
                 'production' => $request->production,
-                'year' => $request->year,
-                'month' => $request->month,
+                'year' => $request->year ?? null,
+                'end_year' => $request->end_year ?? null,
+                'month' => $request->month ?? null,
             ];
             $repo = new CreditsRepository(new Credits());
             $dataCredit = $repo->find(request('id'));
