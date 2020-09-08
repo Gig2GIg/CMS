@@ -35,7 +35,7 @@ class OnlineMediaAuditionController extends Controller
             $appointment = Appointments::find($request->appointment_id);
             $audition = Auditions::find($appointment->auditions_id);
 
-            if($audition->end_date > Carbon::now('UTC')->format('Y-m-d'))
+            if($audition->end_date > Carbon::now('UTC')->format('Y-m-d H:i:s'))
             {
                 $res = $repo->create($data);
                 if (is_null($res->id)) {

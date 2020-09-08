@@ -77,7 +77,7 @@ class UserAuditionsResource extends JsonResource
         ];
 
         if($dataRepo->auditions->online == 1){
-            $return['has_ended'] = ($dataRepo->auditions->end_date && (Carbon::now('UTC')->format('Y-m-d') > $dataRepo->auditions->end_date)) || $dataRepo->auditions->end_date == null ? true : false; 
+            $return['has_ended'] = ($dataRepo->auditions->end_date && (Carbon::now('UTC')->format('Y-m-d H:i:s') > $dataRepo->auditions->end_date)) || $dataRepo->auditions->end_date == null ? true : false; 
         }
         return $return;
     }

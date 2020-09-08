@@ -119,7 +119,7 @@ class AuditionFullResponse extends JsonResource
             if($appointment){
                 $return['submissions'] = $submissionsCount;
             }
-            $return['has_ended'] = ($this->end_date && (Carbon::now('UTC')->format('Y-m-d') > $this->end_date)) || $this->end_date == null ? true : false; 
+            $return['has_ended'] = ($this->end_date && (Carbon::now('UTC')->format('Y-m-d H:i:s') > $this->end_date)) || $this->end_date == null ? true : false; 
         }
         return $return;
     }
