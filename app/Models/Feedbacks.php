@@ -13,6 +13,7 @@ class Feedbacks extends Model
         'evaluation',
         'rating',
         'callback',
+        'simple_feedback',
         'work',
         'favorite',
         'slot_id',

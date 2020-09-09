@@ -36,6 +36,7 @@ class FeedbackResource extends JsonResource
             'evaluation'=>$this->evaluation,
             'rating'=>$this->rating,
             'callback'=>$this->callback,
+            'simple_feedback'=>$this->simple_feedback ?? "",
             'work'=>$this->work,
             'favorite'=>$this->favorite,
             'comment'=>$this->comment,

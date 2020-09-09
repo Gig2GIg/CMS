@@ -59,6 +59,7 @@ class FeedBackController extends Controller
                 'user_id' => $request->user, //id usuario que recibe evaluacion
                 'evaluator_id' => $request->evaluator && $request->evaluator != null && $request->evaluator != "" ? $request->evaluator : null, //id de usuario que da feecback,
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
+                'simple_feedback' => $request->simple_feedback && $request->simple_feedback != null && $request->simple_feedback != "" ? $request->simple_feedback : null, //used for round 1 only
                 'callback' => $request->callback,
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
@@ -154,6 +155,7 @@ class FeedBackController extends Controller
             $data = [
                 'evaluation' => $request->evaluation && $request->evaluation != null && $request->evaluation != "" ? $request->evaluation : null,
                 'callback' => $request->callback,
+                'simple_feedback' => $request->simple_feedback && $request->simple_feedback != null && $request->simple_feedback != "" ? $request->simple_feedback : null, //used for round 1 only
                 'work' => $request->work && $request->work != null && $request->work != "" ? $request->work : null,
                 'favorite' => $request->favorite,
                 'comment' => $request->comment && $request->comment != null && $request->comment != "" ? $request->comment : null,
@@ -583,7 +585,18 @@ class FeedBackController extends Controller
                         'old_value' => $oldData['evaluation'],
                         'new_value' => $newData['evaluation']
                     ]);
-                }                
+                }  
+                
+                if(isset($oldData['simple_feedback']) && $oldData['simple_feedback'] != $newData['simple_feedback']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Round 1 Feedback',
+                        'old_value' => $oldData['simple_feedback'],
+                        'new_value' => $newData['simple_feedback']
+                    ]);
+                }  
 
             }
            
