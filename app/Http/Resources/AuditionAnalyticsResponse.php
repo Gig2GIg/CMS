@@ -77,9 +77,33 @@ class AuditionAnalyticsResponse extends JsonResource
             $repoDatafeedbacks = $feedbacksRepo->findbyparams(['appointment_id' => $item->id, 'favorite' => 1]);
 
             $i->count += 1;
-            $csvArray->push([(string)$i->count, (string)count($userAuditions), implode(":", $gender->toArray()), (string)$repoDatafeedbacks->count()]);
+            $csvArray->push([   
+                'Round' => (string)$i->count,
+                'Total Auditioners' => (string)count($userAuditions),
+                'Starred Performers' => (string)$repoDatafeedbacks->count(),
+                'Male' =>	$gender["male"],
+                'Female' => $gender["female"],
+                'Agender' => $gender["agender"],
+                'Gender Diverse' => $gender["gender diverse"],
+                'Gender Expansive' =>	$gender["gender expansive"],
+                'Gender Fluid' =>	$gender["gender fluid"],
+                'Genderqueer' => $gender["genderqueer"],
+                'Intersex' =>	$gender["intersex"],
+                'Non-Binary' => $gender["non-binary"],
+                'Transfemale/Transfeminine' => $gender["transfemale/transfeminine"],
+                'Transmale/Transmasculine' =>	$gender["transmale/transmasculine"],
+                'Two-Spirit' => $gender["two-spirit"],
+                'Prefer not to answer' =>	$gender["Prefer not to answer"],
+                'Self Describe' => $gender["self describe"]
+            ]);
         });
          
         return $csvArray;
     }
 }
+
+    
+
+ 
+
+
