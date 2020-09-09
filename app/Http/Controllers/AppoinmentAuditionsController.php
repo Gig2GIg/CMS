@@ -463,43 +463,57 @@ class AppoinmentAuditionsController extends Controller
 
             if($audition->status == 0){
                 //send to performers of round 1
-                $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => 1])
-                    ->select('id')
-                    ->with(['slot' => function($query){
-                        $query->whereHas('userSlot');
-                        $query->with(['userSlot' => function($q){
-                            $q->with('user:id');
-                            $q->whereHas('user');
-                        }]);
-                    }])
-                    ->first();  
-                    
+                // $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => 1])
+                //     ->select('id')
+                //     ->with(['slot' => function($query){
+                //         $query->whereHas('userSlot');
+                //         $query->with(['userSlot' => function($q){
+                //             $q->with('user:id');
+                //             $q->whereHas('user');
+                //         }]);
+                //     }])
+                //     ->first();
+                
+                $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => 1])->first();
+                
                 if($data){
-                    $data->slot->each(function ($i) use(&$performerIds) {
-                        array_push($performerIds, $i['userSlot']['user']['id']); 
-                    });    
+                    $allPerformers = $data->userAuditions()->get();
+
+                    $allPerformers->each(function ($i) use(&$performerIds) {
+                        array_push($performerIds, $i['user_id']); 
+                    });
+                    
+                    // $data->slot->each(function ($i) use(&$performerIds) {
+                    //     array_push($performerIds, $i['userSlot']['user']['id']); 
+                    // });    
                 }  
             } elseif ($audition->status == 1) {
                 //finding any active round
                 $activeRound = Appointments::where(['auditions_id' => $request->audition_id, "status" => 1])->first();
 
                 if($activeRound){
-                    $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => $activeRound->round])
-                        ->select('id')
-                        ->with(['slot' => function($query){
-                            $query->whereHas('userSlot');
-                            $query->with(['userSlot' => function($q){
-                                $q->with('user:id');
-                                $q->whereHas('user');
-                            }]);
-                        }])
-                        ->first();  
+                    // $data = Appointments::where(['auditions_id' => $request->audition_id, 'round' => $activeRound->round])
+                    //     ->select('id')
+                    //     ->with(['slot' => function($query){
+                    //         $query->whereHas('userSlot');
+                    //         $query->with(['userSlot' => function($q){
+                    //             $q->with('user:id');
+                    //             $q->whereHas('user');
+                    //         }]);
+                    //     }])
+                    //     ->first();  
+                    
+                    $allPerformers = $activeRound->userAuditions()->get();
 
-                    if($data){
-                        $data->slot->each(function ($i) use(&$performerIds) {
-                            array_push($performerIds, $i['userSlot']['user']['id']); 
-                        });    
-                    }
+                    $allPerformers->each(function ($i) use(&$performerIds) {
+                        array_push($performerIds, $i['user_id']); 
+                    });
+
+                    // if($data){
+                    //     $data->slot->each(function ($i) use(&$performerIds) {
+                    //         array_push($performerIds, $i['userSlot']['user']['id']); 
+                    //     });    
+                    // }
                 } else {
                     //send to performers who have starred feedback or future kept flag
                     $latestAppointment = Appointments::where('auditions_id', $request->audition_id)
