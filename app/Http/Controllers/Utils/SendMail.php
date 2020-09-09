@@ -57,7 +57,7 @@ class SendMail
             // $data['name'],
             // $data['url'],
             // $data['audition']);
-            $content = $data['name'] . ' has requested an appointment for ' . $data['audition'] . '.<br/><br/>Why am I receiving this email?<br/>Gig2Gig is the latest in Casting Technology.<br/>You have most likely been added as "representation" for one or more of your clients who are currently using this platform.<br/>Due to the recent Covid19 pandemic, Gig2Gig is committed to making auditions as safe as possible. This platform allows for 100% paperless casting, audition management, social distance grouping and crowd management, and up to the minute updates and notifications.<br/><br/>To learn more about Gig2Gig, please visit <a href="www.Gig2Gig.com">www.Gig2Gig.com</a>.';
+            $content = $data['name'] . ' has requested an appointment for ' . $data['audition'] . '.<br/><br/>Why am I receiving this email?<br/>Gig2Gig is the latest in Casting Technology.<br/>You have most likely been added as "representation" for one or more of your clients who are currently using this platform.<br/>Due to the recent Covid19 pandemic, Gig2Gig is committed to making auditions as safe as possible. This platform allows for 100% paperless casting, audition management, social distance grouping and crowd management, and up to the minute updates and notifications.<br/><br/>To learn more about Gig2Gig, please visit <a href="https://gig2gig.com/" target="_blank">www.Gig2Gig.com</a>.';
             // $content = sprintf("%s has requested an appointment for %s",
             //     $data['name'],
             //     $data['audition'],
