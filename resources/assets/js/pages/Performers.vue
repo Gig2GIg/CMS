@@ -111,21 +111,29 @@
                     <div class="content">
                       <h3>Feedback</h3>
                       <div v-if="props.row.feedback">
-                        <p class="flex items-center">
+                        <p class="flex items-center" v-if="props.row.feedback.simple_feedback == null">
                           <strong>Instant Feedback:</strong>
                           <img :src="`/images/emoji-${props.row.feedback.evaluation}.png`" class="w-6 h-6 mx-2 inline" alt>
                         </p>
-                        <p>
+                        <p v-if="props.row.feedback.simple_feedback == null">
                           <strong>Call Back:</strong>
-                          {{props.row.feedback.callBack === '0' ? 'No' : 'Yes'}}
+                          {{ props.row.feedback.callBack === '0' ? 'No' : 'Yes' }}
                         </p>
-                        <p>
+                        <p v-if="props.row.feedback.simple_feedback == null">
                           <strong>Work On:</strong>
                           {{ props.row.feedback.work }}
                         </p>
+                        <p v-if="props.row.feedback.simple_feedback != null">
+                          <strong>Call Back:</strong>
+                          {{ props.row.feedback.simple_feedback }}
+                        </p>
                         <p>
                           <strong>Comment:</strong>
-                          <span v-html=" props.row.comment_feedback"></span>
+                          <span v-html=" props.row.feedback.comment"></span>
+                        </p>
+                        <p>
+                          <strong>Recommendation:</strong>
+                          <span v-html=" props.row.feedback.recommendation"></span>
                         </p>
                       </div>
                       <p v-else>No feedback.</p>

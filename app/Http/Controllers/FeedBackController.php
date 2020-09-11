@@ -592,9 +592,20 @@ class FeedBackController extends Controller
                         'audition_id' => $appointment->auditions_id,
                         'edited_by' => $this->getUserLogging(),
                         'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                        'key' => 'Round 1 Feedback',
+                        'key' => 'Round 1 Call Back',
                         'old_value' => $oldData['simple_feedback'],
                         'new_value' => $newData['simple_feedback']
+                    ]);
+                }  
+
+                if(isset($oldData['recommendation']) && $oldData['recommendation'] != $newData['recommendation']){
+                    AuditionLog::insert([
+                        'audition_id' => $appointment->auditions_id,
+                        'edited_by' => $this->getUserLogging(),
+                        'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+                        'key' => 'Recommendation',
+                        'old_value' => $oldData['recommendation'],
+                        'new_value' => $newData['recommendation']
                     ]);
                 }  
 

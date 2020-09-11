@@ -351,7 +351,7 @@ class AppoinmentAuditionsController extends Controller
         try {
             $appoinments = Appointments::where('auditions_id', $request->audition)->get()->pluck('id');
             if(count($appoinments)){
-                $data = UserSlots::whereIn('appointment_id', $appoinments->toArray())->get();
+                $data = UserSlots::whereIn('appointment_id', $appoinments->toArray())->groupBy('user_id')->get();
                 $dataResponse = AppointmentDetailsUserResource::collection($data);
             }else{
                 $dataResponse = [];

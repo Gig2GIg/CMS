@@ -35,7 +35,7 @@ class AppointmentDetailsUserResource extends JsonResource
         $videosRepo = new AuditionVideosRepository(new AuditionVideos());
         $videoData = $videosRepo->findbyparam('user_id',$this->user_id)->first();
         $feedbackRepo = new FeedbackRepository(new Feedbacks());
-        $feedbackData = $feedbackRepo->findbyparam('user_id',$this->user_id)->first();
+        $feedbackData = $feedbackRepo->findbyparams(['user_id'=>$this->user_id, 'appointment_id'=>$this->appointment_id])->latest()->first();
 
 
         return [
