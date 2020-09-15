@@ -11,6 +11,7 @@ use App\Models\Appointments;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\CasterTeam;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
@@ -33,9 +34,13 @@ class AuditionCasterResponse extends JsonResource
 
         $collection->push(collect($uData));
 
-        if($uData && $uData->invited_by){
-            $admin_data = $user->with(['details','image'])->where('id', $uData->invited_by)->first();
-            $collection->push(collect($admin_data));
+        if($uData && CasterTeam::where('admin_id', $uData->id)->count() == 0){
+            $teamFetch = CasterTeam::where('member_id', $this->getUserLogging())->first();
+            if($teamFetch){
+                $admin = $teamFetch->admin_id;
+                $admin_data = $user->with(['details','image'])->where('id', $admin)->first();
+                $collection->push(collect($admin_data));
+            }
         }
 
         $this->contributors->each(function ($item) use($user, $collection) {

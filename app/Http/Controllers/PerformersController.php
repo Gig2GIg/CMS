@@ -47,26 +47,17 @@ class PerformersController extends Controller
                 return response()->json(['data' => "This performer does not exist!"], 406);
             }
 
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
-
-            $count = $data->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id',$data->performer_id);
+            $count = $data->whereIn('director_id', $fullTeam)->where('performer_id',$data->performer_id);
 
             $this->log->info($data);
             if ($count->count() > 0) {
@@ -158,26 +149,17 @@ class PerformersController extends Controller
             $user = Auth::user();            
             $repo = new PerformerRepository(new Performers());
 
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
-
-            $data = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get();            
+            $data = $repo->findByMultiVals('director_id', $fullTeam)->get();            
 
             if ($data->count() == 0) {
                 throw new \Exception('Not found data');
@@ -220,26 +202,17 @@ class PerformersController extends Controller
             $user = Auth::user();            
             $repo = new PerformerRepository(new Performers());
 
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
-
-            $repoPerformer = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get()->pluck('performer_id')->toArray();
+            $repoPerformer = $repo->findByMultiVals('director_id', $fullTeam)->get()->pluck('performer_id')->toArray();
 
             $repoUserDetails = new UserDetailsRepository(new UserDetails());
             $collectionFind = $repoUserDetails->all()->whereIn('user_id', $repoPerformer);
@@ -365,28 +338,19 @@ class PerformersController extends Controller
             $user = Auth::user();            
             $dataRepo = new TagsRepository(new Tags());
 
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
-
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
             // $data = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get();
 
-            $data = $dataRepo->findByMultiVals('setUser_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->get();
+            $data = $dataRepo->findByMultiVals('setUser_id', $fullTeam)->where('user_id', $request->user)->get();
 
             // return response()->json(['message' => 'tags by user', 'data' => $data], 200);
             return response()->json(['message' => trans('messages.tag_by_user'), 'data' => $data], 200);
@@ -406,29 +370,20 @@ class PerformersController extends Controller
             $dataRepo = new FeedbackRepository(new Feedbacks());
             $commentModel = new PerformersComment();
 
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
-
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
             // $data = $dataRepo->findByMultiVals('setUser_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->get();
 
-            $dataFeedback = $dataRepo->findByMultiVals('evaluator_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->whereNotNull('comment')->get();
-            $dataComments = $commentModel->whereIn('evaluator_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->whereNotNull('comment')->get();
+            $dataFeedback = $dataRepo->findByMultiVals('evaluator_id', $fullTeam)->where('user_id', $request->user)->whereNotNull('comment')->get();
+            $dataComments = $commentModel->whereIn('evaluator_id', $fullTeam)->where('user_id', $request->user)->whereNotNull('comment')->get();
             
             if($dataComments && $dataComments->count() > 0){
                 $data = $dataFeedback->merge($dataComments)->SortByDesc('created_at');

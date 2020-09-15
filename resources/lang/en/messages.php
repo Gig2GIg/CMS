@@ -150,6 +150,7 @@ return [
  
     'caster_notification_success' => "Notifications sent successfully",
     'resend_email_success' => "Invitation email sent successfully",
+    'is_already_admin' => ""
     // Market Place Categories Controller
     // Managers Controller
     // NotificationManagementController

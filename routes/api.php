@@ -29,6 +29,8 @@ Route::post('/handle_android_subscription', ['uses' => 'UserController@handleAnd
 //IOS webhook URL
 Route::post('/handle_apple_subscription', ['uses' => 'UserController@handleAppleSubscription']);
 
+Route::get('/fixAdminIds', 'UserController@fixAdminIds');
+
 //Talent Database apis w/o authentication 
 Route::group(['prefix' => 'talentDatabase'], function () use ($router) {
     $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);
@@ -69,7 +71,7 @@ $router->group(['middleware' => ['api']], function () use ($router) {
 
 $router->group(['middleware' => ['jwt.auth', 'checkIsactive']], function () use ($router) {
     $router->get('/users/subscriptionDetails', ['uses' => 'UserController@subscriptionDetails']);
-    $router->post('/users/changeDefaultPaymentMethod', ['uses' => 'UserController@changeDefaultPaymentMethod']);
+    $router->post('/users/changeDefaultPaTempUserImportedListymentMethod', ['uses' => 'UserController@changeDefaultPaymentMethod']);
 
     $router->get('/users/settings', ['uses' => 'UserSettingsController@list']);
     $router->put('/users/settings/{id}', ['uses' => 'UserSettingsController@update']);

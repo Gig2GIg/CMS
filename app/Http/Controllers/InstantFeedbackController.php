@@ -420,26 +420,17 @@ class InstantFeedbackController extends Controller
 
             $user = Auth::user();            
             
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId); 
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
-
-            $count = $repo->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id', $performer_id);
+            $count = $repo->whereIn('director_id',$fullTeam)->where('performer_id', $performer_id);
 
             if ($count->count() > 0) {
                 throw new \Exception("User exists in your database");

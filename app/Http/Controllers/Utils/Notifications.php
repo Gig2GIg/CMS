@@ -33,6 +33,7 @@ class Notifications
     const NEW_ONLINE_MEDIA = 'new_online_media';
     const PERFORMER_SELECTED = 'performer_selected';
     const CASTER_TO_PERFORMER = 'caster_to_performer';
+    const CASTING_TEAM_MEMBER = 'casting_team_member';
 
     public static function send($audition = null, $type, $user = null, $title = null, $message = null, $clickToSend = "")
     {
@@ -147,6 +148,11 @@ class Notifications
                     break;
                 case self::NEW_ONLINE_MEDIA:
                     $log->info("PUSH NOTIFICATION FROM CMS TO DIRECTOR ABOUT NEW ONLINE MEDIA SUBMITTED IN AUDITION CREATED WITH TITLE" . $audition->title);
+                    $to = 'ONLY_ONE_WITHOUT_CHECK';
+                    $clickToSend = env('CASTER_URL');
+                    break;
+                case self::CASTING_TEAM_MEMBER:
+                    $log->info("PUSH NOTIFICATION CASTING TEAM MEMBER");
                     $to = 'ONLY_ONE_WITHOUT_CHECK';
                     $clickToSend = env('CASTER_URL');
                     break;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Utils\LogManger;
 use App\Http\Controllers\Utils\ManageDates;
 use App\Http\Controllers\Utils\SendMail;
+use App\Http\Controllers\Utils\Notifications as SendNotifications;
 use App\Http\Exceptions\CreateException;
 use App\Http\Exceptions\NotFoundException;
 use App\Http\Exceptions\UpdateException;
@@ -39,6 +40,7 @@ use App\Models\UserSubscription;
 use App\Models\Performers;
 use App\Models\Plan;
 use App\Models\TempUserImportedList;
+use App\Models\CasterTeam;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +64,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers', 'fixAdminIds']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -790,7 +792,7 @@ class UserController extends Controller
                     $subscription->update(array('plan_id' => $request->plan_id, 'ends_at' => $ends_at, 'purchased_price' => $planPrice , 'purchased_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')));
                     
                     $user->update(array('is_premium' => 1));
-                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+                    //$userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
 
                     $userBillingDetails = new UserBillingDetails();
                     $billingDetails = [
@@ -947,7 +949,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth::user();
-            if($user->is_premium == 1 && $user->invited_by == null)
+            if($user->is_premium == 1 && CasterTeam::where('member_id', $user->id)->count() == 0)
             {
                 $subscriptionData = $user->subscriptions()->first();
                 if($subscriptionData){
@@ -978,7 +980,7 @@ class UserController extends Controller
                     $subscriptionData = null;
                 }
                 
-                $invitedUsers = InvitedUserResource::collection(User::where('invited_by', $user->id)->get());
+                $invitedUsers = InvitedUserResource::collection(CasterTeam::where('admin_id', $user->id)->get());
                 
                 $response = (object)[
                     'subscription' => $subscriptionData,
@@ -1008,7 +1010,7 @@ class UserController extends Controller
             $userRepo = new UserRepository(new User());
             $user = $userRepo->find($request->user_id);
 
-            if($user->is_premium == 1 && $user->invited_by == null)
+            if($user->is_premium == 1 && CasterTeam::where('member_id', $user->id)->count() == 0)
             {
                 $data = collect($request->data);
                 foreach ($data as $item) {
@@ -1023,7 +1025,6 @@ class UserController extends Controller
                             'email' => $item['email'],
                             'password' => bcrypt($password),
                             'temp_pass' => $password,
-                            'invited_by' => $user->id,
                             'is_profile_completed' => 0,
                             'is_premium' => 1
                         ];
@@ -1031,6 +1032,9 @@ class UserController extends Controller
                         $cuser = new UserRepository(new User());
                         $usert = $cuser->create($userData);
                         $customer = $this->createCustomer($usert);    
+
+                        //Entering team pair value in Caster Teams Tabel
+                        CasterTeam::create(['admin_id' => $user->id, 'member_id' => $usert->id]);
 
                         $usert->image()->create(['url' => url('/images/roles.jpg'), 'thumbnail' => url('/images/roles.jpg'), 'type' => 'cover', 'name' => 'user_default.jpg']);
 
@@ -1063,9 +1067,46 @@ class UserController extends Controller
                             return response()->json($responseData, $code);
                         }
                     }else {
-                        $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is already registered with us'];
-                        $code = 400;
-                        return response()->json($responseData, $code);
+                        // $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is already registered with us'];
+                        // $code = 400;
+                        // return response()->json($responseData, $code);
+                        // storing user data
+                        if($exist->details->type == 1){
+                            $isAdminToAny = CasterTeam::where(['admin_id' => $exist->id])->get();
+                            
+                            if($isAdminToAny->count() == 0){
+                                $isTeamExists = CasterTeam::where(['admin_id' => $user->id, 'member_id' => $exist->id])->get();
+
+                                if($isTeamExists->count() == 0){
+                                    //Entering team pair value in Caster Teams Tabel
+                                    CasterTeam::create(['admin_id' => $user->id, 'member_id' => $exist->id]);
+    
+                                    $senderName = $user->details ? $user->details->first_name . ' ' . $user->details->last_name : 'A Gig2Gig Caster User';
+                                    $message = $senderName . ' has invited you to join their Gig2Gig+ team.';
+    
+                                    // send notification and save to history
+                                    $this->sendStoreNotificationToUser($exist, $message);
+                                    $this->saveStoreNotificationToUser($exist, $message);
+                                    
+                                    $mail = new SendMail(); 
+                                    $emailData = array();
+                                    $emailData['name'] = $senderName; 
+                                    $mail->sendInvitedCaster(null, $exist->email, $emailData);
+                                } else {
+                                    $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is already a Team Member'];
+                                    $code = 400;
+                                    return response()->json($responseData, $code);    
+                                }
+                            }else{
+                                $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is already an Admin account'];
+                                $code = 400;
+                                return response()->json($responseData, $code);
+                            }
+                        } else {
+                            $responseData = ['message' => 'Sorry! The email '. $item['email'] .' is a Performer account'];
+                            $code = 400;
+                            return response()->json($responseData, $code);
+                        }
                     }                    
                 };
 
@@ -1093,7 +1134,7 @@ class UserController extends Controller
             $userRepo = new User();
             $user = $userRepo->findOrFail($request->user_id);
 
-            if($user->temp_pass == NULL && $user->is_profile_completed == 0 && $user->invited_by != NULL){
+            if($user->temp_pass == NULL && $user->is_profile_completed == 0 && CasterTeam::where('member_id', $user->id)->count() == 0){
                 //generating new password
                 $password = str_random(8);
                 $userData = [
@@ -1104,11 +1145,13 @@ class UserController extends Controller
                 $user->update($userData);
             }
 
-            if($user->is_profile_completed == 0 && $user->invited_by != NULL){
+            if($user->is_profile_completed == 0 && CasterTeam::where('member_id', $user->id)->count() == 0){
                 $mail = new SendMail(); 
                 $emailData = array();
-                $adminUser = $userRepo->findOrFail($user->invited_by);
-
+                
+                // $adminUser = $userRepo->findOrFail($user->invited_by);
+                $adminUser = $userRepo->findOrFail(CasterTeam::where('member_id', $user->id)->first()->admin_id);
+                
                 $emailData['name'] = $adminUser->details ? $adminUser->details->first_name . ' ' . $adminUser->details->last_name : 'A Gig2Gig Caster User'; 
 
                 if(!$mail->sendInvitedCaster($user->temp_pass, $user->email, $emailData)){
@@ -1179,7 +1222,7 @@ class UserController extends Controller
             );
 
             $user->update(array('is_premium' => 1));
-            $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+            // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
 
             $responseOut = [
                 'message' => trans('messages.success'),
@@ -1258,7 +1301,7 @@ class UserController extends Controller
             if($subscription && $subscription->count() != 0){
                 $subscription->update(['updated_by' => 'mobile', 'stripe_status' => 'canceled', 'ends_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
                 $user->update(array('is_premium' => 0));
-                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
+                // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
 
                 $responseOut = [
                     'message' => trans('messages.success'),
@@ -1345,10 +1388,10 @@ class UserController extends Controller
 
                 if($data['auto_renew_status'] == "false"){
                     $user->update(array('is_premium' => 0));
-                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
+                    // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
                 }else{
                     $user->update(array('is_premium' => 1));
-                    $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+                    // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
                 }
             }
 
@@ -1420,12 +1463,12 @@ class UserController extends Controller
                 //revoke premium flag from user
                 $autoRenewStatus = false;
                 $user->update(array('is_premium' => 0));
-                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
+                // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 0));
             }else if($notificationType == 1 || $notificationType == 2 || $notificationType == 4 || $notificationType == 7){
                 //Make user a premium user again
                 $autoRenewStatus = true;
                 $user->update(array('is_premium' => 1));
-                $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
+                // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => 1));
             }
 
             $expiryDate = $latestReceipt->subscriptionNotification->subscriptionId == env('ANDROID_PROD_MONTHLY') ? Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addMonth()->format('Y-m-d H:i:s') : Carbon::createFromTimestampMs($latestReceipt->eventTimeMillis)->setTimezone('UTC')->addYear()->format('Y-m-d H:i:s');
@@ -1540,6 +1583,59 @@ class UserController extends Controller
         } catch(\Exception $e) {
             $this->log->error($e->getMessage());
             return response()->json(['message' => $e->getMessage()], 406);
+        }
+    }
+
+    public function saveStoreNotificationToUser($user, $comment = ""): void
+    {
+        try {
+        
+            $title = 'Gig2Gig Casting Team Member';
+
+            if ($user instanceof User) {
+                $history = $user->notification_history()->create([
+                    'title' => $title,
+                    'code' => 'casting_team_member',
+                    'status' => 'unread',
+                    'message' => $comment
+                ]);
+                $this->log->info('saveStoreNotificationToUser:: ', $history);
+            }
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function sendStoreNotificationToUser($user, $comment = ""): void
+    {
+        try {
+            
+            $this->sendPushNotification(
+                NULL,
+                SendNotifications::CASTING_TEAM_MEMBER,
+                $user,
+                'Gig2Gig Casting Team Member',
+                $comment
+            );
+
+        } catch (NotFoundException $exception) {
+            $this->log->error($exception->getMessage());
+        }
+    }
+
+    public function fixAdminIds ()
+    {
+        try {
+            
+            $all = User::select('id', 'invited_by')->where('invited_by', '!=', null)->get();
+            $insertData = array();
+            $all->each(function ($v) use(&$insertData) {
+                array_push($insertData, ['admin_id' => $v->invited_by, 'member_id' => $v->id, 'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
+            });
+            CasterTeam::insert($insertData);
+            echo "Success";
+        } catch (NotFoundException $exception) {
+            echo $exception->getMessage();
         }
     }
 }

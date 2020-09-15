@@ -72,10 +72,9 @@ class EveryHalfHourNotifiation extends Command
                 $subscriptionRepo->whereIn('id', $subscription->pluck('id'))->update(array('updated_by' => 'cron', 'stripe_status' => 'canceled'));
 
                 $adminCasterIds = $subscription->pluck('user_id');
-                $invitedUserIds = $userRepo->whereIn('invited_by', $subscription->pluck('user_id'))->get()->pluck('id');
-
-                $revokeIds = $adminCasterIds->merge($invitedUserIds);
-                $userRepo->whereIn('id', $revokeIds)->update(array('is_premium' => 0));
+                //$invitedUserIds = $userRepo->whereIn('invited_by', $subscription->pluck('user_id'))->get()->pluck('id');
+                // $revokeIds = $adminCasterIds->merge($invitedUserIds);
+                $userRepo->whereIn('id', $adminCasterIds)->update(array('is_premium' => 0));
             }                         
         } catch (\Exception $e) {
             $this->log->error($e->getMessage());

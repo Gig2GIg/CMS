@@ -20,6 +20,7 @@ use App\Models\UserSlots;
 use App\Models\PerformersComment;
 use App\Models\UserAuditions;
 use App\Models\AuditionLog;
+use App\Models\CasterTeam;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -93,20 +94,29 @@ class FeedBackController extends Controller
                 if($audition){
                     $auditionCreator = User::find($audition->user_id);
                     if($auditionCreator){
-                        if($audition->user_id == $this->getUserLogging()){
+                        $fullTeam = array();
+                        if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                            $whereId = $this->getUserLogging();         
+                        } else {
+                            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                        }
+                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                        array_push($fullTeam, $whereId);
+                        
+                        if(in_array($audition->user_id, $fullTeam)){
                             if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                                 // send notification
                                 $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
                             }
                             $this->saveStoreNotificationToUser($user, $audition, "");
                         }
-                        else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
-                            if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
-                                // send notification
-                                $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
-                            }
-                            $this->saveStoreNotificationToUser($user, $audition, "");
-                        }
+                        // else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
+                        //     if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        //         // send notification
+                        //         $this->sendStoreNotificationToUser($user, $audition, "", $request->appointment_id);
+                        //     }
+                        //     $this->saveStoreNotificationToUser($user, $audition, "");
+                        // }
                     }
                 }
 
@@ -184,20 +194,30 @@ class FeedBackController extends Controller
 
                     $auditionCreator = User::find($audition->user_id);
                     if($auditionCreator){
-                        if($audition->user_id == $this->getUserLogging()){
+                        //process to fetch full team member list
+                        $fullTeam = array();
+                        if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                            $whereId = $this->getUserLogging();         
+                        } else {
+                            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                        }
+                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                        array_push($fullTeam, $whereId);
+                        
+                        if(in_array($audition->user_id, $fullTeam)){
                             if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
                                 // send notification
                                 $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
                             }
                             $this->saveStoreNotificationToUser($user, $audition, $comment);
                         }
-                        else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
-                            if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
-                                // send notification
-                                $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
-                            }
-                            $this->saveStoreNotificationToUser($user, $audition, $comment);
-                        }
+                        // else if($auditionCreator->invited_by != NULL && ($auditionCreator->invited_by == $this->getUserLogging())){
+                        //     if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
+                        //         // send notification
+                        //         $this->sendStoreNotificationToUser($user, $audition, $comment, $request->id);
+                        //     }
+                        //     $this->saveStoreNotificationToUser($user, $audition, $comment);
+                        // }
                     }
                 }
 
@@ -316,26 +336,17 @@ class FeedBackController extends Controller
 
             $user = Auth::user();            
             
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging()); 
-
-            $count = $repo->whereIn('director_id',$allIdsToInclude->unique()->values())->where('performer_id', $performer_id);
+            $count = $repo->whereIn('director_id', $fullTeam)->where('performer_id', $performer_id);
 
             if ($count->count() > 0) {
                 throw new \Exception("User exists in your database");

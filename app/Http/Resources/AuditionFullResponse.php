@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserAuditions;
 use App\Models\OnlineMediaAudition;
+use App\Models\CasterTeam;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -31,7 +32,12 @@ class AuditionFullResponse extends JsonResource
         $user = new UserRepository(new User());
         $uData = $user->find($this->user_id);
         if($uData){
-            $admin_id = $uData->invited_by;
+            $teamFetch = CasterTeam::where('member_id', $uData->id)->first();
+            if($teamFetch){
+                $admin_id = $teamFetch->admin_id;
+            }else{
+                $admin_id = NULL;
+            }
         }else{
             $admin_id = NULL;
         }

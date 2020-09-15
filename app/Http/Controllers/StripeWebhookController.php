@@ -159,7 +159,7 @@ class StripeWebhookController extends CashierController
         $userRepo = new User;
 
         $user->update(array('is_premium' => $status));
-        $userRepo->where('invited_by', $user->id)->update(array('is_premium' => $status));
+        // $userRepo->where('invited_by', $user->id)->update(array('is_premium' => $status));
 
         return true;
     }

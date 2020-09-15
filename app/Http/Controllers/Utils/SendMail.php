@@ -240,11 +240,18 @@ class SendMail
     public function sendInvitedCaster($password, $emailTo, $data)
     {   
         try {
+
+            if($password != null){
+                $emailBody = "Congratulations!<br/><br/>". $data['name'] ." has invited you to join their Gig2Gig+ team.<br/><br/>To access your account login with this email address.<br/><br/>Your temporary password is : <strong>" . $password . "</strong><br/><br/>You'll have the ability to change your password during your first login.<br/><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click Here to Login</a><br/>Thanks,<br/><br/>The Gig2Gig Team";
+            } else {
+                $emailBody = "Congratulations!<br/><br/>". $data['name'] ." has invited you to join their Gig2Gig+ team.<br/><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click Here to Login</a><br/>Thanks,<br/><br/>The Gig2Gig Team";
+            }
+
             $email = new Mail();
             $email->setFrom(env('SUPPORT_EMAIL'));
             $email->setSubject('Gig2Gig Casting Team Member');
             $email->addTo($emailTo);
-            $email->addContent("text/html", "Congratulations!<br/><br/>". $data['name'] ." has invited you to join their Gig2Gig+ team.<br/><br/>To access your account login with this email address.<br/><br/>Your temporary password is : <strong>" . $password . "</strong><br/><br/>You'll have the ability to change your password during your first login.<br/><br/><a href='" . env('CASTER_BASE_URL') . "' target='_blank'>Click Here to Login</a><br/>Thanks,<br/><br/>The Gig2Gig Team");
+            $email->addContent("text/html", $emailBody);
 
             $sendgrid = new \SendGrid(env('SENDGRID_API_KEY'));
 

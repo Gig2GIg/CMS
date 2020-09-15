@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
+use App\Models\CasterTeam;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class InvitedUserResource extends JsonResource
@@ -14,15 +16,17 @@ class InvitedUserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $user = User::findOrFail($this->member_id);
+
         return [
-            'id' => $this->id,
-            'details' => $this->details,
-            'email' => $this->email,
-            'image' => $this->image,
-            'is_active' => $this->is_active,
-            'is_premium' => $this->is_premium,
-            'is_profile_completed' => $this->is_profile_completed,
-            'is_invited' => $this->invited_by ? true : false,
+            'id' => $user->id,
+            'details' => $user->details,
+            'email' => $user->email,
+            'image' => $user->image,
+            'is_active' => $user->is_active,
+            'is_premium' => $user->is_premium,
+            'is_profile_completed' => $user->is_profile_completed,
+            'is_invited' => CasterTeam::where('admin_id', $user->id)->count() == 0 ? true : false,
         ];
     }
 }

@@ -12,6 +12,7 @@ use App\Models\Auditions;
 use App\Models\Slots;
 use App\Models\User;
 use App\Models\UserDetails;
+use App\Models\CasterTeam;
 use DemeterChain\A;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Collection;
@@ -45,7 +46,12 @@ class AuditionResponse extends JsonResource
         $user = $userRepo->find($this->user_id);
 
         if($user){
-            $admin_id = $user->invited_by;
+            $teamFetch = CasterTeam::where('member_id', $user->id)->first();
+            if($teamFetch){
+                $admin_id = $teamFetch->admin_id;
+            }else{
+                $admin_id = NULL;
+            }
         }else{
             $admin_id = NULL;
         }

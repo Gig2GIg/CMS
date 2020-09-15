@@ -372,29 +372,19 @@ class AuditionManagementController extends Controller
         try {
             $this->collection = new Collection();
             $dataAuditions = new AuditionRepository(new Auditions());
-            $user = Auth::user();         
-
-            //it is to fetch logged in user's invited users data if any
-            $userRepo = new User();
-            $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-            //It is to fetch other user's data conidering if logged in user is an invited user
-            if($user->invited_by != NULL){
-                $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-                //pushing invited_by ID in array too
-                $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-                $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-            }else{
-                $allIdsToInclude = $invitedUserIds;
+            $user = Auth::user();
+            
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+                $whereId = $this->getUserLogging();         
+            } else {
+                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
             }
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);
 
-            //pushing own ID into WHERE IN constraint
-            $allIdsToInclude->push($this->getUserLogging());
-            // //pushing own ID into WHERE IN constraint
-            // $invitedUserIds->push($this->getUserLogging()); 
-            $data = $dataAuditions->findByMultiVals('user_id', $allIdsToInclude);          
+            $data = $dataAuditions->findByMultiVals('user_id', $fullTeam);          
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
             $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
@@ -406,7 +396,6 @@ class AuditionManagementController extends Controller
                     $this->collection->push($audiData);
                 }
             });
-
 
             $data->each(function ($item) {
                 if ($item['status'] != 2) {
@@ -436,7 +425,6 @@ class AuditionManagementController extends Controller
             }
 
             $dataResponse['unreadNotificationsCount'] = $unreadNotificationsCount;
-
 
             return response()->json($dataResponse, $code);
         } catch (Exception $exception) {
@@ -1027,28 +1015,17 @@ class AuditionManagementController extends Controller
         $dataAuditions = new AuditionRepository(new Auditions());
         $user = Auth::user();         
 
-        //it is to fetch logged in user's invited users data if any
-        $userRepo = new User();
-        $invitedUserIds = $userRepo->where('invited_by', $this->getUserLogging())->get()->pluck('id');
-
-        //It is to fetch other user's data conidering if logged in user is an invited user
-        if($user->invited_by != NULL){
-            $allInvitedUsersOfAdminIds = $userRepo->where('invited_by', $user->invited_by)->get()->pluck('id');
-
-            //pushing invited_by ID in array too
-            $allInvitedUsersOfAdminIds->push($user->invited_by); 
-
-            $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-        }else{
-            $allIdsToInclude = $invitedUserIds;
+        //process to fetch full team member list
+        $fullTeam = array();
+        if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
+            $whereId = $this->getUserLogging();         
+        } else {
+            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
         }
+        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+        array_push($fullTeam, $whereId);
 
-        //pushing own ID into WHERE IN constraint
-        $allIdsToInclude->push($this->getUserLogging());
-
-        // //pushing own ID into WHERE IN constraint
-        // $invitedUserIds->push($this->getUserLogging()); 
-        $data = $dataAuditions->findByMultiVals('user_id', $allIdsToInclude);       
+        $data = $dataAuditions->findByMultiVals('user_id', $fullTeam);       
 
         $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
         $dataContri = $dataContributors->findbyparam('user_id', $this->getUserLogging())->where('status', '=', 1)->sortByDesc('created_at');
@@ -1060,7 +1037,6 @@ class AuditionManagementController extends Controller
                 $collection->push($audiData);
             }
         });
-
 
         $data->each(function ($item) use ($collection) {
             if ($item['status'] == 2) {

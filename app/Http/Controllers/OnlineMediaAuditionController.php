@@ -70,26 +70,18 @@ class OnlineMediaAuditionController extends Controller
 
                     try {
                         $cuser = User::find($audition->user_id);         
-
-                        //it is to fetch logged in user's invited users data if any
-                        $invitedUserIds = User::where('invited_by', $cuser->id)->get()->pluck('id');
-
-                        //It is to fetch other user's data conidering if logged in user is an invited user
-                        if($cuser->invited_by != NULL){
-                            $allInvitedUsersOfAdminIds = User::where('invited_by', $cuser->invited_by)->get()->pluck('id');
-
-                            //pushing invited_by ID in array too
-                            $allInvitedUsersOfAdminIds->push($cuser->invited_by); 
-
-                            $allIdsToInclude = $invitedUserIds->merge($allInvitedUsersOfAdminIds);
-                        }else{
-                            $allIdsToInclude = $invitedUserIds;
-                        }
-
-                        //pushing own ID into WHERE IN constraint
-                        $allIdsToInclude->push($cuser->id);
                         
-                        foreach($allIdsToInclude->toArray() as $id){
+                        //process to fetch full team member list
+                        $fullTeam = array();
+                        if(CasterTeam::where('admin_id', $cuser->id)->count() > 0){
+                            $whereId = $cuser->id;         
+                        } else {
+                            $whereId = CasterTeam::where('member_id', $cuser->id)->first()->admin_id;
+                        }
+                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                        array_push($fullTeam, $whereId);
+
+                        foreach($fullTeam as $id){
                             $auser = User::find($id);
 
                             if($auser && $auser->details && (($auser->details->type == 2 && $auser->is_premium == 1) || $auser->details->type != 2)){
