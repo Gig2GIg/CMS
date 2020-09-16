@@ -13,6 +13,7 @@ use App\Models\Auditions;
 use App\Models\UserAuditions;
 use App\Models\User;
 use App\Models\UserSlots;
+use App\Models\CasterTeam;
 use Illuminate\Http\Request;
 use App\Models\Slots;
 use Carbon\Carbon;
@@ -70,16 +71,21 @@ class OnlineMediaAuditionController extends Controller
 
                     try {
                         $cuser = User::find($audition->user_id);         
-                        
+
                         //process to fetch full team member list
                         $fullTeam = array();
                         if(CasterTeam::where('admin_id', $cuser->id)->count() > 0){
-                            $whereId = $cuser->id;         
+                            $whereId = $cuser->id;      
+                            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                            array_push($fullTeam, $whereId);   
                         } else {
-                            $whereId = CasterTeam::where('member_id', $cuser->id)->first()->admin_id;
+                            $teamData = CasterTeam::where(['member_id' => $cuser->id, 'is_selected' => 1])->first();
+                            if($teamData){
+                                $whereId = $teamData->admin_id;
+                                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                                array_push($fullTeam, $whereId);   
+                            }
                         }
-                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-                        array_push($fullTeam, $whereId);
 
                         foreach($fullTeam as $id){
                             $auser = User::find($id);

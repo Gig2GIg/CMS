@@ -17,7 +17,7 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {      
-        $teamFetch = CasterTeam::where('member_id', $this->id)->first();
+        $teamFetch = CasterTeam::where(['member_id' => $this->id, 'is_selected' => 1])->first();
         if($teamFetch){
             $admin_id = $teamFetch->admin_id;
         }else{

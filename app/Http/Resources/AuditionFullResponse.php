@@ -32,7 +32,7 @@ class AuditionFullResponse extends JsonResource
         $user = new UserRepository(new User());
         $uData = $user->find($this->user_id);
         if($uData){
-            $teamFetch = CasterTeam::where('member_id', $uData->id)->first();
+            $teamFetch = CasterTeam::where(['member_id' => $uData->id, 'is_selected' => 1])->first();
             if($teamFetch){
                 $admin_id = $teamFetch->admin_id;
             }else{

@@ -20,6 +20,7 @@ use App\Models\Performers;
 use App\Models\User;
 use App\Models\UserSlots;
 use App\Models\UserAuditions;
+use App\Models\CasterTeam;
 use Hashids\Hashids;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -423,12 +424,17 @@ class InstantFeedbackController extends Controller
             //process to fetch full team member list
             $fullTeam = array();
             if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
+                $whereId = $this->getUserLogging();      
+                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                array_push($fullTeam, $whereId);   
             } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+                if($teamData){
+                    $whereId = $teamData->admin_id;
+                    $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                    array_push($fullTeam, $whereId);   
+                }
             }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId); 
 
             $count = $repo->whereIn('director_id',$fullTeam)->where('performer_id', $performer_id);
 

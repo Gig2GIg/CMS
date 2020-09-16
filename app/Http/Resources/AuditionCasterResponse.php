@@ -35,7 +35,7 @@ class AuditionCasterResponse extends JsonResource
         $collection->push(collect($uData));
 
         if($uData && CasterTeam::where('admin_id', $uData->id)->count() == 0){
-            $teamFetch = CasterTeam::where('member_id', $this->getUserLogging())->first();
+            $teamFetch = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
             if($teamFetch){
                 $admin = $teamFetch->admin_id;
                 $admin_data = $user->with(['details','image'])->where('id', $admin)->first();

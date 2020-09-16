@@ -94,14 +94,20 @@ class FeedBackController extends Controller
                 if($audition){
                     $auditionCreator = User::find($audition->user_id);
                     if($auditionCreator){
+                        //process to fetch full team member list
                         $fullTeam = array();
                         if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                            $whereId = $this->getUserLogging();         
+                            $whereId = $this->getUserLogging();      
+                            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                            array_push($fullTeam, $whereId);   
                         } else {
-                            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                            $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+                            if($teamData){
+                                $whereId = $teamData->admin_id;
+                                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                                array_push($fullTeam, $whereId);   
+                            }
                         }
-                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-                        array_push($fullTeam, $whereId);
                         
                         if(in_array($audition->user_id, $fullTeam)){
                             if($user && $audition && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
@@ -197,12 +203,17 @@ class FeedBackController extends Controller
                         //process to fetch full team member list
                         $fullTeam = array();
                         if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                            $whereId = $this->getUserLogging();         
+                            $whereId = $this->getUserLogging();      
+                            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                            array_push($fullTeam, $whereId);   
                         } else {
-                            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                            $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+                            if($teamData){
+                                $whereId = $teamData->admin_id;
+                                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                                array_push($fullTeam, $whereId);   
+                            }
                         }
-                        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-                        array_push($fullTeam, $whereId);
                         
                         if(in_array($audition->user_id, $fullTeam)){
                             if($user && $user->details && (($user->details->type == 2 && $user->is_premium == 1) || $user->details->type != 2)){
@@ -339,12 +350,17 @@ class FeedBackController extends Controller
             //process to fetch full team member list
             $fullTeam = array();
             if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
+                $whereId = $this->getUserLogging();      
+                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                array_push($fullTeam, $whereId);   
             } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+                if($teamData){
+                    $whereId = $teamData->admin_id;
+                    $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                    array_push($fullTeam, $whereId);   
+                }
             }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
 
             $count = $repo->whereIn('director_id', $fullTeam)->where('performer_id', $performer_id);
 

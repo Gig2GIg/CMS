@@ -49,6 +49,7 @@ use App\Models\Resources;
 use App\Models\Slots;
 use App\Models\OnlineMediaAudition;
 use App\Models\AuditionLog;
+use App\Models\CasterTeam;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -377,13 +378,18 @@ class AuditionManagementController extends Controller
             //process to fetch full team member list
             $fullTeam = array();
             if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
+                $whereId = $this->getUserLogging();      
+                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                array_push($fullTeam, $whereId);   
             } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+                $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+                if($teamData){
+                    $whereId = $teamData->admin_id;
+                    $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                    array_push($fullTeam, $whereId);   
+                }
             }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
-
+            
             $data = $dataAuditions->findByMultiVals('user_id', $fullTeam);          
 
             $dataContributors = new AuditionContributorsRepository(new AuditionContributors());
@@ -1018,12 +1024,17 @@ class AuditionManagementController extends Controller
         //process to fetch full team member list
         $fullTeam = array();
         if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-            $whereId = $this->getUserLogging();         
+            $whereId = $this->getUserLogging();      
+            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+            array_push($fullTeam, $whereId);   
         } else {
-            $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
+            $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'is_selected' => 1])->first();
+            if($teamData){
+                $whereId = $teamData->admin_id;
+                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                array_push($fullTeam, $whereId);   
+            }
         }
-        $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-        array_push($fullTeam, $whereId);
 
         $data = $dataAuditions->findByMultiVals('user_id', $fullTeam);       
 

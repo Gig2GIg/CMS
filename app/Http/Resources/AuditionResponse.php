@@ -46,7 +46,7 @@ class AuditionResponse extends JsonResource
         $user = $userRepo->find($this->user_id);
 
         if($user){
-            $teamFetch = CasterTeam::where('member_id', $user->id)->first();
+            $teamFetch = CasterTeam::where(['member_id' => $user->id, 'is_selected' => 1])->first();
             if($teamFetch){
                 $admin_id = $teamFetch->admin_id;
             }else{

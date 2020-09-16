@@ -22,6 +22,7 @@ use App\Models\Tags;
 use App\Models\User;
 use App\Models\UserDetails;
 use App\Models\UserUnionMembers;
+use App\Models\CasterTeam;
 use App\Models\PerformersComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -49,13 +50,7 @@ class PerformersController extends Controller
 
             //process to fetch full team member list
             $fullTeam = array();
-            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
-            } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
-            }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
+            $fullTeam = $this->getFullTeam($this->getUserLogging());
 
             $count = $data->whereIn('director_id', $fullTeam)->where('performer_id',$data->performer_id);
 
@@ -151,13 +146,7 @@ class PerformersController extends Controller
 
             //process to fetch full team member list
             $fullTeam = array();
-            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
-            } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
-            }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
+            $fullTeam = $this->getFullTeam($this->getUserLogging());
 
             $data = $repo->findByMultiVals('director_id', $fullTeam)->get();            
 
@@ -204,13 +193,7 @@ class PerformersController extends Controller
 
             //process to fetch full team member list
             $fullTeam = array();
-            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
-            } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
-            }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
+            $fullTeam = $this->getFullTeam($this->getUserLogging());
 
             $repoPerformer = $repo->findByMultiVals('director_id', $fullTeam)->get()->pluck('performer_id')->toArray();
 
@@ -340,13 +323,7 @@ class PerformersController extends Controller
 
             //process to fetch full team member list
             $fullTeam = array();
-            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
-            } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
-            }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
+            $fullTeam = $this->getFullTeam($this->getUserLogging());
 
             // $data = $repo->findByMultiVals('director_id', $allIdsToInclude->unique()->values())->get();
 
@@ -372,13 +349,7 @@ class PerformersController extends Controller
 
             //process to fetch full team member list
             $fullTeam = array();
-            if(CasterTeam::where('admin_id', $this->getUserLogging())->count() > 0){
-                $whereId = $this->getUserLogging();         
-            } else {
-                $whereId = CasterTeam::where('member_id', $this->getUserLogging())->first()->admin_id;
-            }
-            $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
-            array_push($fullTeam, $whereId);
+            $fullTeam = $this->getFullTeam($this->getUserLogging());
 
             // $data = $dataRepo->findByMultiVals('setUser_id', $allIdsToInclude->unique()->values())->where('user_id', $request->user)->get();
 
@@ -419,6 +390,30 @@ class PerformersController extends Controller
         } catch (\Exception $exception) {
             $this->log->error($exception->getMessage());
             return response()->json(['message' => trans('messages.data_not_found'), 'data' => ''], 404);
+        }
+    }
+
+    protected function getFullTeam($userId)
+    {
+        try {
+            //process to fetch full team member list
+            $fullTeam = array();
+            if(CasterTeam::where('admin_id', $userId)->count() > 0){
+                $whereId = $userId;      
+                $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                array_push($fullTeam, $whereId);   
+            } else {
+                $teamData = CasterTeam::where(['member_id' => $userId, 'is_selected' => 1])->first();
+                if($teamData){
+                    $whereId = $teamData->admin_id;
+                    $fullTeam = CasterTeam::where('admin_id', $whereId)->get()->pluck('member_id')->toArray();
+                    array_push($fullTeam, $whereId);   
+                }
+            }
+            return $fullTeam;
+        } catch(\Exception $e) {
+            $this->log->error($e->getMessage());
+            return [];
         }
     }
 }
