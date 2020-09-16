@@ -119,6 +119,9 @@ $router->group(['prefix' => 't', 'middleware' => ['jwt.auth', 'acl:1', 'checkIsa
     $router->post('/users/inviteCaster', ['uses' => 'UserController@inviteCaster']);
     $router->get('/users/resendInvitation/{user_id}', ['uses' => 'UserController@resendInvitation']);
 
+    $router->get('/listTeamAdmins', ['uses' => 'UserController@listTeamAdmins']);
+    $router->put('/selectAdmin/{admin_id}', ['uses' => 'UserController@selectAdmin']);
+
     Route::get('/performers/tags', ['uses' => 'PerformersController@getTags']);
     Route::get('/performers/comments', ['uses' => 'PerformersController@getCommnents']);
     Route::get('/performers/contracts', ['uses' => 'PerformersController@getContracts']);

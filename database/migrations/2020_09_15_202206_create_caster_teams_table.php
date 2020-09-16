@@ -17,6 +17,7 @@ class CreateCasterTeamsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('admin_id')->unsigned();
             $table->integer('member_id')->unsigned();
+            $table->boolean('is_selected')->nullable()->default(NULL)->comment('To determine which team is selected in case caster is in multiple teams');
             $table->timestamps();
         });
     }

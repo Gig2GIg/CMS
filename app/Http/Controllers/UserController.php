@@ -940,6 +940,52 @@ class UserController extends Controller
         }
     }
 
+    public function listTeamAdmins(Request $request)
+    {
+        try {
+            
+            $teamAdmins = CasterTeam::with(['admins', 'admins.details', 'admins.image'])->where('member_id', $this->getUserLogging())->get();
+            
+            $responseData = ['data' => $teamAdmins];
+            $code = 200;
+
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => trans('something_went_wrong')], 400);
+            }
+        }
+    }
+
+    public function selectAdmin(Request $request)
+    {
+        try {
+            
+            $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'admin_id' => $request->admin_id])->first();
+
+            if($teamData){
+                $teamData->update(['is_selected' => 1]);
+                $responseData = ['message' => trans('success')];
+                $code = 200;
+            } else {
+                $responseData = ['message' => self::NOT_FOUND_DATA];
+                $code = 404;
+            }
+
+            return response()->json($responseData, $code);
+        } catch (\Exception $e) {
+            $this->log->error($e->getMessage());
+            if ($e instanceof NotFoundException) {
+                return response()->json(['message' => self::NOT_FOUND_DATA], 404);
+            } else {
+                return response()->json(['message' => trans('something_went_wrong')], 400);
+            }
+        }
+    }
+
     // public function is_decimal( $val )
     // {
     //     return is_numeric( $val ) && floor( $val ) != $val;

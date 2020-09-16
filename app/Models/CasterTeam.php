@@ -8,7 +8,8 @@ class CasterTeam extends Model
 {
     protected $fillable = [
         'admin_id',
-        'member_id'
+        'member_id',
+        'is_selected'
     ];
 
     protected $dates = [
