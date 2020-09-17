@@ -968,7 +968,7 @@ class UserController extends Controller
             if($teamData){
                 //syncing selected admin subscription with sub user
                 $admin = User::find($request->admin_id);
-                $user->update('is_premium', $admin->is_premium);
+                $user->update(['is_premium', $admin->is_premium]);
 
                 CasterTeam::where('member_id', $user->id)->where('admin_id', '!=', $request->admin_id)->update(['is_selected' => 0]);
                 $teamData->update(['is_selected' => 1]);
