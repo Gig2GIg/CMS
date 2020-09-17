@@ -967,6 +967,7 @@ class UserController extends Controller
             $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'admin_id' => $request->admin_id])->first();
 
             if($teamData){
+                CasterTeam::where('member_id', $this->getUserLogging())->where('admin_id', '!=', $request->admin_id)->update(['is_selected' => 0]);
                 $teamData->update(['is_selected' => 1]);
                 $responseData = ['message' => trans('success')];
                 $code = 200;
