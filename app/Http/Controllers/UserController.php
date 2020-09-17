@@ -943,7 +943,6 @@ class UserController extends Controller
     public function listTeamAdmins(Request $request)
     {
         try {
-            
             $teamAdmins = CasterTeam::with(['admins', 'admins.details', 'admins.image'])->where('member_id', $this->getUserLogging())->get();
             
             $responseData = ['data' => $teamAdmins];
@@ -963,11 +962,15 @@ class UserController extends Controller
     public function selectAdmin(Request $request)
     {
         try {
-            
-            $teamData = CasterTeam::where(['member_id' => $this->getUserLogging(), 'admin_id' => $request->admin_id])->first();
+            $user = Auth::user();
+            $teamData = CasterTeam::where(['member_id' => $user->id, 'admin_id' => $request->admin_id])->first();
 
             if($teamData){
-                CasterTeam::where('member_id', $this->getUserLogging())->where('admin_id', '!=', $request->admin_id)->update(['is_selected' => 0]);
+                //syncing selected admin subscription with sub user
+                $admin = User::find($request->admin_id);
+                $user->update('is_premium', $admin->is_premium);
+
+                CasterTeam::where('member_id', $user->id)->where('admin_id', '!=', $request->admin_id)->update(['is_selected' => 0]);
                 $teamData->update(['is_selected' => 1]);
                 $responseData = ['message' => trans('success')];
                 $code = 200;
@@ -1192,7 +1195,7 @@ class UserController extends Controller
                 $user->update($userData);
             }
 
-            if($user->is_profile_completed == 0 && CasterTeam::where('member_id', $user->id)->count() == 0){
+            if($user->is_profile_completed == 0 && CasterTeam::where('member_id', $user->id)->count() > 0){
                 $mail = new SendMail(); 
                 $emailData = array();
                 
