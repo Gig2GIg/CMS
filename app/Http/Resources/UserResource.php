@@ -19,7 +19,7 @@ class UserResource extends JsonResource
     {      
         $teamFetch = CasterTeam::where(['member_id' => $this->id, 'is_selected' => 1])->first();
         if($teamFetch){
-            $admin_id = $teamFetch->admin_id;
+            $admin_id = $selected_admin = $teamFetch->admin_id;
         }else{
             $memberFetch = CasterTeam::where(['member_id' => $this->id])->first();
             if($memberFetch){
@@ -45,6 +45,7 @@ class UserResource extends JsonResource
             'card_brand' => $this->card_brand,
             'card_last_four' => $this->card_last_four,
             'admin_id' => $admin_id,
+            'selected_admin' => $selected_admin
         ];
 
         if($this->details->type == 1){
