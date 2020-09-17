@@ -21,7 +21,12 @@ class UserResource extends JsonResource
         if($teamFetch){
             $admin_id = $teamFetch->admin_id;
         }else{
-            $admin_id = NULL;
+            $memberFetch = CasterTeam::where(['member_id' => $this->id])->first();
+            if($memberFetch){
+                $admin_id = $memberFetch->admin_id;
+            } else {
+                $admin_id = NULL;
+            }
         }
 
         $return = [
