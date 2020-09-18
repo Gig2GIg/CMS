@@ -64,7 +64,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers', 'fixAdminIds']]);
+        $this->middleware('jwt', ['except' => ['store', 'sendPassword', 'sendPasswordAdmin', 'forgotPassword', 'resetPassword', 'listSubscriptionPlans', 'handleAppleSubscription', 'handleAndroidSubscription', 'handleExpiredUsers', 'importUsers', 'exportImportedUsers']]);
         $this->log = new LogManger();
         $this->date = new ManageDates();
     }
@@ -1670,22 +1670,6 @@ class UserController extends Controller
 
         } catch (NotFoundException $exception) {
             $this->log->error($exception->getMessage());
-        }
-    }
-
-    public function fixAdminIds ()
-    {
-        try {
-            
-            $all = User::select('id', 'invited_by')->where('invited_by', '!=', null)->get();
-            $insertData = array();
-            $all->each(function ($v) use(&$insertData) {
-                array_push($insertData, ['admin_id' => $v->invited_by, 'member_id' => $v->id, 'is_selected' => 1, 'created_at' => Carbon::now('UTC')->format('Y-m-d H:i:s')]);
-            });
-            CasterTeam::insert($insertData);
-            echo "Success";
-        } catch (NotFoundException $exception) {
-            echo $exception->getMessage();
         }
     }
 }

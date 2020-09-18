@@ -29,8 +29,6 @@ Route::post('/handle_android_subscription', ['uses' => 'UserController@handleAnd
 //IOS webhook URL
 Route::post('/handle_apple_subscription', ['uses' => 'UserController@handleAppleSubscription']);
 
-Route::get('/fixAdminIds', 'UserController@fixAdminIds');
-
 //Talent Database apis w/o authentication 
 Route::group(['prefix' => 'talentDatabase'], function () use ($router) {
     $router->get('/auditions/list/{id}', ['uses' => 'AuditionManagementController@getAuditionListByPerformer']);
